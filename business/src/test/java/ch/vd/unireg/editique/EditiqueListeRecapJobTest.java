@@ -21,7 +21,6 @@ import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.tiers.TiersDAO;
 import ch.vd.unireg.type.PeriodiciteDecompte;
 
-@SuppressWarnings({"JavaDoc"})
 public class EditiqueListeRecapJobTest extends JobTest {
 
 	private static final String DB_UNIT_DATA_FILE = "classpath:ch/vd/unireg/editique/ListeRecapJobTest.xml";

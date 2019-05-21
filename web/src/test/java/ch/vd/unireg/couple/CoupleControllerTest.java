@@ -14,7 +14,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.common.WebTestSpring3;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
@@ -198,7 +198,7 @@ public class CoupleControllerTest extends WebTestSpring3 {
 		}
 		final Ids ids = new Ids();
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noInd, date(1963, 4, 22), "Roberelle", "René", Sexe.MASCULIN);

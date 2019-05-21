@@ -16,7 +16,7 @@ import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.unireg.evenement.civil.interne.MessageCollector;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -69,7 +69,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Crée les données du mock service civil
 		 */
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividu, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -141,7 +141,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Crée les données du mock service civil
 		 */
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividu, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -218,7 +218,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Crée les données du mock service civil
 		 */
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividuPrincipal, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -328,7 +328,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Crée les données du mock service civil
 		 */
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividu, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -416,7 +416,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Crée les données du mock service civil
 		 */
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividu, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -469,7 +469,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Crée les données du mock service civil
 		 */
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividuLAbbaye, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -570,7 +570,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Crée les données du mock service civil
 		 */
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividuLeSentier, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -686,7 +686,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Crée les données du mock service civil
 		 */
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividu, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -748,7 +748,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Création des données du mock service civil
 		 */
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividu, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -831,7 +831,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Création des données du mock service civil
 		 */
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividu, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -925,7 +925,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Création des données du mock service civil
 		 */
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividu, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -1008,7 +1008,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Création des données du mock service civil
 		 */
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividu, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -1095,7 +1095,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Création des données du mock service civil
 		 */
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividu, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -1194,7 +1194,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Création des données du mock service civil
 		 */
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividuPrincipal, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -1329,7 +1329,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		 * Création des données du mock service civil
 		 */
 		final ServiceInfrastructureService infraService = getBean(ServiceInfrastructureService.class, "serviceInfrastructureService");
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividuPrincipal, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -1471,7 +1471,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		 * Création des données du mock service civil
 		 */
 		final ServiceInfrastructureService infraService = getBean(ServiceInfrastructureService.class, "serviceInfrastructureService");
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividuPrincipal, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -1602,7 +1602,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Création des données du mock service civil
 		 */
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividu, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -1695,7 +1695,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		 * Création des données du mock service civil
 		 */
 		final ServiceInfrastructureService infraService = getBean(ServiceInfrastructureService.class, "serviceInfrastructureService");
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividuPrincipal, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -1830,7 +1830,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Création des données du mock service civil
 		 */
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final RegDate dateNaissance = RegDate.get(1987, 5, 1);
@@ -1942,7 +1942,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Création des données du mock service civil
 		 */
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividuPrincipal, dateNaissancePierre, "Dupont", "Pierre", true);
@@ -2116,7 +2116,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 		// Crée un habitant actuellement dans le canton et avec un mode d'imposition source-mixte
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu ind = addIndividu(noInd, date(1950, 1, 1), "Pouly", "Mohamed", true);
@@ -2184,7 +2184,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 		// Crée un habitant actuellement hors-canton et avec un mode d'imposition source-mixte
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu ind = addIndividu(noInd, date(1950, 1, 1), "Pouly", "Mohamed", true);
@@ -2238,7 +2238,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final long noInd = 123456;
 		final RegDate dateArrivee = date(2009, 12, 1);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu ind = addIndividu(noInd, date(1950, 1, 1), "Pouly", "Mohamed", true);
@@ -2323,7 +2323,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		 * Création des données du mock service civil
 		 */
 		final ServiceInfrastructureService infraService = getBean(ServiceInfrastructureService.class, "serviceInfrastructureService");
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu pierre = addIndividu(noIndividuPierre, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -2428,7 +2428,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 		// Crée un habitant actuellement hors-Suisse et avec un mode d'imposition source-mixte
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu ind = addIndividu(noInd, date(1950, 1, 1), "Pouly", "Mohamed", true);
@@ -2485,7 +2485,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 		// Crée un habitant actuellement hors-Suisse et avec un mode d'imposition source-mixte
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noInd, date(1950, 1, 1), "Descombaz", "Louis", true);
@@ -2547,7 +2547,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 		// Crée un habitant actuellement hors-Suisse et avec un mode d'imposition source-mixte
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noInd, date(1950, 1, 1), "Descombaz", "Louis", true);
@@ -2607,7 +2607,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 		// Crée un habitant actuellement hors-Suisse et avec un mode d'imposition source-mixte
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu ind = addIndividu(noInd, date(1950, 1, 1), "Descombaz", "Louis", true);
@@ -2666,7 +2666,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		//
 		// Crée un individu
 		//
-		class ServiceCivil extends MockServiceCivil {
+		class IndividuConnector extends MockIndividuConnector {
 
 			private MockIndividu roger;
 
@@ -2677,7 +2677,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		}
 
-		final ServiceCivil civil = new ServiceCivil();
+		final IndividuConnector civil = new IndividuConnector();
 		serviceCivil.setUp(civil);
 
 		//
@@ -2737,7 +2737,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		//
 		// Créer un menage civil
 		//
-		class ServiceCivil extends MockServiceCivil {
+		class IndividuConnector extends MockIndividuConnector {
 
 			private MockIndividu romeo;
 			private MockIndividu juliette;
@@ -2756,7 +2756,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		}
 
 
-		final ServiceCivil civil = new ServiceCivil();
+		final IndividuConnector civil = new IndividuConnector();
 		serviceCivil.setUp(civil);
 
 		//

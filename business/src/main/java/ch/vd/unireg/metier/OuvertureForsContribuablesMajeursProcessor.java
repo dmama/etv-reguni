@@ -28,7 +28,7 @@ import ch.vd.unireg.common.FiscalDateHelper;
 import ch.vd.unireg.common.LoggingStatusManager;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.hibernate.HibernateTemplate;
-import ch.vd.unireg.interfaces.civil.ServiceCivilException;
+import ch.vd.unireg.interfaces.civil.IndividuConnectorException;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.Individu;
@@ -408,7 +408,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		try {
 			individu = tiersService.getIndividu(habitant, dateReference, AttributeIndividu.PERMIS, AttributeIndividu.NATIONALITES);
 		}
-		catch (ServiceCivilException e) {
+		catch (IndividuConnectorException e) {
 			LOGGER.error("Impossible de récupérer l'habitant n° " + habitant.getNumero(), e);
 			throw new OuvertureForsErreurException(habitant, ErreurType.CIVIL_EXCEPTION, e);
 		}

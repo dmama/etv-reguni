@@ -3,7 +3,7 @@ package ch.vd.unireg.norentes.civil.separation;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.norentes.annotation.Check;
@@ -54,7 +54,7 @@ public class Ec_6000_08_Separation_JIRA1057_Scenario extends EvenementCivilScena
 	private long noHabBea;
 	private long noMenage;
 
-	private final class LocalServiceCivil extends DefaultMockServiceCivil {
+	private final class LocalIndividuConnector extends DefaultMockIndividuConnector {
 		
 		void separeIndividus(RegDate dateSeparation) {
 			separeIndividus(getIndividu(noIndMomo), getIndividu(noIndBea), dateSeparation);
@@ -62,11 +62,11 @@ public class Ec_6000_08_Separation_JIRA1057_Scenario extends EvenementCivilScena
 		
 	}
 	
-	private LocalServiceCivil serviceCivil;
+	private LocalIndividuConnector serviceCivil;
 
 	@Override
 	protected void initServiceCivil() {
-		serviceCivil = new LocalServiceCivil();
+		serviceCivil = new LocalIndividuConnector();
 		serviceCivilService.setUp(serviceCivil);
 	}
 

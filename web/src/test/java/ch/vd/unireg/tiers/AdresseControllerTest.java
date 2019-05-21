@@ -16,7 +16,7 @@ import ch.vd.unireg.adresse.AdresseSupplementaire;
 import ch.vd.unireg.adresse.AdresseTiers;
 import ch.vd.unireg.common.WebTestSpring3;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
@@ -46,7 +46,7 @@ public class AdresseControllerTest extends WebTestSpring3 {
 		final int noIndividu = 282315;
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, RegDate.get(1974, 3, 22), "Bolomey", "Alain", true);
@@ -76,7 +76,7 @@ public class AdresseControllerTest extends WebTestSpring3 {
 		final int noIndividu = 282315;
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, RegDate.get(1974, 3, 22), "Bolomey", "Alain", true);
@@ -128,7 +128,7 @@ public class AdresseControllerTest extends WebTestSpring3 {
 		final int noIndividu = 282315;
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, RegDate.get(1974, 3, 22), "Bolomey", "Alain", true);
@@ -182,7 +182,7 @@ public class AdresseControllerTest extends WebTestSpring3 {
 		final int noIndividu = 282316;
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, RegDate.get(1974, 3, 22), "Richard", "Marcel", true);
@@ -235,7 +235,7 @@ public class AdresseControllerTest extends WebTestSpring3 {
 		final int noIndividu = 282316;
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, RegDate.get(1974, 3, 22), "Richard", "Marcel", true);
@@ -287,7 +287,7 @@ public class AdresseControllerTest extends WebTestSpring3 {
 		final int noIndividu = 282316;
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, RegDate.get(1974, 3, 22), "Richard", "Marcel", true);
@@ -332,7 +332,7 @@ public class AdresseControllerTest extends WebTestSpring3 {
 		final int noIndividu = 282316;
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, RegDate.get(1974, 3, 22), "Richard", "Marcel", true);

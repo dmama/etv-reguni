@@ -10,8 +10,8 @@ import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.common.WebMockMvcTest;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.tache.view.NouveauDossierListView;
 import ch.vd.unireg.tache.view.TacheListView;
 
@@ -27,7 +27,7 @@ public class TacheControllerTest extends WebMockMvcTest {
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		serviceCivil.setUp(new DefaultMockServiceCivil());
+		serviceCivil.setUp(new DefaultMockIndividuConnector());
 		loadDatabase(DB_UNIT_FILE);
 	}
 

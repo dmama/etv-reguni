@@ -17,15 +17,15 @@ import ch.vd.unireg.type.TexteCasePostale;
 import ch.vd.unireg.type.TypeAdresseCivil;
 import ch.vd.unireg.type.TypePermis;
 
-public class DefaultMockServiceCivil extends MockServiceCivil {
+public class DefaultMockIndividuConnector extends MockIndividuConnector {
 
 	private final boolean returnFakeAdresses;
 
-	public DefaultMockServiceCivil() {
+	public DefaultMockIndividuConnector() {
 		this.returnFakeAdresses = true; // pour des raisons historiques
 	}
 
-	public DefaultMockServiceCivil(boolean returnFakeAdresses) {
+	public DefaultMockIndividuConnector(boolean returnFakeAdresses) {
 		this.returnFakeAdresses = returnFakeAdresses;
 	}
 

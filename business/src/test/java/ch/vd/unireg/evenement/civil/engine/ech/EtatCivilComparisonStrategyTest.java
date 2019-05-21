@@ -5,7 +5,7 @@ import org.junit.Test;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.type.ActionEvenementCivilEch;
 import ch.vd.unireg.type.TypeEvenementCivilEch;
 
@@ -21,7 +21,7 @@ public class EtatCivilComparisonStrategyTest extends AbstractIndividuComparisonS
 
 	private void setupCivil(final long noIndividu, final long noEvt1, final RegDate debut1, final TypeEtatCivil etat1,
 	                        final long noEvt2, final RegDate debut2, final TypeEtatCivil etat2) {
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, null, "Leblanc", "Juste", true);

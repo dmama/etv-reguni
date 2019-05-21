@@ -12,7 +12,7 @@ import ch.vd.unireg.indexer.GlobalIndexInterface;
 import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.unireg.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.unireg.indexer.tiers.TiersIndexedData;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.stats.StatsService;
@@ -173,7 +173,7 @@ public class DatabaseIndexationProcessorTest extends BusinessTest {
 	@Test
 	public void testRunFullIncrementalWithType() throws Exception {
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				// vide

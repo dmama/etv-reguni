@@ -4,7 +4,7 @@ import org.junit.Assert;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
@@ -22,7 +22,7 @@ public abstract class AbstractCorrectionEchProcessorTest extends AbstractEveneme
 		final long noIndividu = 126673246L;
 		final RegDate dateEvt = date(2011, 10, 31);
 		final RegDate dateNaissance = date(1956, 4, 23);
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				MockIndividu gerard = addIndividu(noIndividu, dateNaissance, "Gérard", "Manfind", true);

@@ -13,7 +13,7 @@ import org.springframework.validation.FieldError;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.WebTest;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
@@ -83,7 +83,7 @@ public class TiersAdresseValidatorTest extends WebTest {
 		validator.setSecurityProvider(new MockSecurityProvider(roles));
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				final MockIndividu olivia = addIndividu(noIndOlivia, date(1985, 8, 12), "Tartempion", "Olivia", false);
@@ -155,7 +155,7 @@ public class TiersAdresseValidatorTest extends WebTest {
 		validator.setSecurityProvider(new MockSecurityProvider(roles));
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				final MockIndividu olivia = addIndividu(noIndOlivia, date(1985, 8, 12), "Tartempion", "Olivia", false);

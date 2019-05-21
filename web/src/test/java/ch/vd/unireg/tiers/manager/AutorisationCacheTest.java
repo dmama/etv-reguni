@@ -8,7 +8,7 @@ import ch.vd.unireg.common.WebTest;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -70,7 +70,7 @@ public class AutorisationCacheTest extends WebTest {
 		});
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu lui = addIndividu(noIndividuLui, null, "Duchnok", "Federico", Sexe.MASCULIN);

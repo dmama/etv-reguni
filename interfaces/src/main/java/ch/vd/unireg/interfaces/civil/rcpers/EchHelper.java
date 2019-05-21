@@ -9,9 +9,9 @@ import org.apache.commons.lang3.StringUtils;
 import ch.vd.registre.base.date.DateConstants;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.civil.ServiceCivilException;
-import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.common.XmlUtils;
+import ch.vd.unireg.interfaces.civil.IndividuConnectorException;
+import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.type.Sexe;
 
 public abstract class EchHelper {
@@ -150,7 +150,7 @@ public abstract class EchHelper {
 		}
 		else if ("7".equals(maritalStatus)) { // Partenariat dissous...
 			if (cancelationReason == null) {
-				throw new ServiceCivilException("Dans la cas d'une dissolution de partenariat, la raison précise doit être renseignée."); // SIREF-1834
+				throw new IndividuConnectorException("Dans la cas d'une dissolution de partenariat, la raison précise doit être renseignée."); // SIREF-1834
 			}
 			if ("1".equals(cancelationReason)) {
 				// Partenariat dissous judiciairement

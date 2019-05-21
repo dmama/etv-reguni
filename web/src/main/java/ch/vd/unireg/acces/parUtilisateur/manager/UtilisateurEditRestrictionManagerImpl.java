@@ -31,7 +31,7 @@ import ch.vd.unireg.general.manager.TiersGeneralManager;
 import ch.vd.unireg.general.manager.UtilisateurManager;
 import ch.vd.unireg.general.view.TiersGeneralView;
 import ch.vd.unireg.general.view.UtilisateurView;
-import ch.vd.unireg.interfaces.civil.ServiceCivilException;
+import ch.vd.unireg.interfaces.civil.IndividuConnectorException;
 import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseException;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.security.DroitAccesDAO;
@@ -116,7 +116,7 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 				final DroitAccesUtilisateurView view = new DroitAccesUtilisateurView(droitAcces, tiersService, adresseService);
 				views.add(view);
 			}
-			catch (ServiceEntrepriseException | ServiceCivilException e) {
+			catch (ServiceEntrepriseException | IndividuConnectorException e) {
 				LOGGER.warn("Exception lors de la récupération des données du contribuable protégé " + FormatNumeroHelper.numeroCTBToDisplay(droitAcces.getTiers().getNumero()) + ".", e);
 				final DroitAccesUtilisateurView view = new DroitAccesUtilisateurView(droitAcces, e);
 				views.add(view);
@@ -223,7 +223,7 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 						final DroitAccesUtilisateurView view = new DroitAccesUtilisateurView(droitAcces, tiersService, adresseService);
 						infos.add(view);
 					}
-					catch (ServiceEntrepriseException | ServiceCivilException e) {
+					catch (ServiceEntrepriseException | IndividuConnectorException e) {
 						LOGGER.warn("Exception lors de la récupération des données du contribuable protégé " + FormatNumeroHelper.numeroCTBToDisplay(droitAcces.getTiers().getNumero()) + ".", e);
 						final DroitAccesUtilisateurView view = new DroitAccesUtilisateurView(droitAcces, e);
 						infos.add(view);

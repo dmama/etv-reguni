@@ -1,7 +1,7 @@
 package ch.vd.unireg.norentes.civil.annulation.mariage;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.norentes.annotation.Check;
@@ -44,7 +44,7 @@ public class Ec_4001_03_AnnulationMariage_Marie_Scenario extends EvenementCivilS
 
 	@Override
 	protected void initServiceCivil() {
-		serviceCivilService.setUp(new DefaultMockServiceCivil() {
+		serviceCivilService.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				super.init();

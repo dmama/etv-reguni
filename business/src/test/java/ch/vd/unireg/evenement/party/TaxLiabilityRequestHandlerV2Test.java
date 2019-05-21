@@ -12,7 +12,7 @@ import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.evenement.RequestHandlerResult;
 import ch.vd.unireg.evenement.party.control.TaxLiabilityControlService;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.security.MockSecurityProvider;
 import ch.vd.unireg.security.Role;
@@ -121,7 +121,7 @@ public class TaxLiabilityRequestHandlerV2Test extends BusinessTest {
 		final long noIndMere = 1236;
 		final RegDate dateNaissance = RegDate.get().addYears(-10);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu enfant = addIndividu(noIndEnfant, dateNaissance, "Ramaldadji", "Jacques", Sexe.MASCULIN);

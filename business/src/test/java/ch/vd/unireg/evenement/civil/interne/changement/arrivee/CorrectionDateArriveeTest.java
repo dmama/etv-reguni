@@ -11,7 +11,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
@@ -40,7 +40,7 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 

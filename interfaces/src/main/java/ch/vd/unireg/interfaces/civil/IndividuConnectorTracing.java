@@ -13,20 +13,20 @@ import ch.vd.unireg.stats.ServiceTracing;
 import ch.vd.unireg.stats.StatsService;
 
 /**
- * Implémentation qui permet de comptabiliser le temps passé dans les appels du service.
+ * Implémentation qui permet de comptabiliser le temps passé dans les appels du connecteur.
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class ServiceCivilTracing implements ServiceCivilRaw, InitializingBean, DisposableBean, ServiceCivilServiceWrapper {
+public class IndividuConnectorTracing implements IndividuConnector, InitializingBean, DisposableBean, IndividuConnectorWrapper {
 
-//	private static final Logger LOGGER = LoggerFactory.getLogger(ServiceCivilTracing.class);
+//	private static final Logger LOGGER = LoggerFactory.getLogger(IndividuConnectorTracing.class);
 	
-	private ServiceCivilRaw target;
+	private IndividuConnector target;
 	private StatsService statsService;
 
 	private final ServiceTracing tracing = new ServiceTracing(SERVICE_NAME);
 
-	public void setTarget(ServiceCivilRaw target) {
+	public void setTarget(IndividuConnector target) {
 		this.target = target;
 	}
 
@@ -35,7 +35,7 @@ public class ServiceCivilTracing implements ServiceCivilRaw, InitializingBean, D
 	}
 
 	@Override
-	public Individu getIndividu(final long noIndividu, final AttributeIndividu... parties) throws ServiceCivilException {
+	public Individu getIndividu(final long noIndividu, final AttributeIndividu... parties) throws IndividuConnectorException {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();
@@ -46,7 +46,7 @@ public class ServiceCivilTracing implements ServiceCivilRaw, InitializingBean, D
 			}
 			return ind;
 		}
-		catch (ServiceCivilException e) {
+		catch (IndividuConnectorException e) {
 			t = e;
 			throw e;
 		}
@@ -60,7 +60,7 @@ public class ServiceCivilTracing implements ServiceCivilRaw, InitializingBean, D
 	}
 
 	@Override
-	public List<Individu> getIndividus(final Collection<Long> nosIndividus, final AttributeIndividu... parties) throws ServiceCivilException {
+	public List<Individu> getIndividus(final Collection<Long> nosIndividus, final AttributeIndividu... parties) throws IndividuConnectorException {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();
@@ -69,7 +69,7 @@ public class ServiceCivilTracing implements ServiceCivilRaw, InitializingBean, D
 			items = list == null ? 0 : list.size();
 			return list;
 		}
-		catch (ServiceCivilException e) {
+		catch (IndividuConnectorException e) {
 			t = e;
 			throw e;
 		}
@@ -83,7 +83,7 @@ public class ServiceCivilTracing implements ServiceCivilRaw, InitializingBean, D
 	}
 
 	@Override
-	public Individu getIndividuByEvent(final long evtId, final AttributeIndividu... parties) throws ServiceCivilException {
+	public Individu getIndividuByEvent(final long evtId, final AttributeIndividu... parties) throws IndividuConnectorException {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();
@@ -94,7 +94,7 @@ public class ServiceCivilTracing implements ServiceCivilRaw, InitializingBean, D
 			}
 			return ind;
 		}
-		catch (ServiceCivilException e) {
+		catch (IndividuConnectorException e) {
 			t = e;
 			throw e;
 		}
@@ -129,13 +129,13 @@ public class ServiceCivilTracing implements ServiceCivilRaw, InitializingBean, D
 	}
 
 	@Override
-	public void ping() throws ServiceCivilException {
+	public void ping() throws IndividuConnectorException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
 			target.ping();
 		}
-		catch (ServiceCivilException e) {
+		catch (IndividuConnectorException e) {
 			t = e;
 			throw e;
 		}
@@ -168,14 +168,14 @@ public class ServiceCivilTracing implements ServiceCivilRaw, InitializingBean, D
 	}
 
 	@Override
-	public ServiceCivilRaw getTarget() {
+	public IndividuConnector getTarget() {
 		return target;
 	}
 
 	@Override
-	public ServiceCivilRaw getUltimateTarget() {
-		if (target instanceof ServiceCivilServiceWrapper) {
-			return ((ServiceCivilServiceWrapper) target).getUltimateTarget();
+	public IndividuConnector getUltimateTarget() {
+		if (target instanceof IndividuConnectorWrapper) {
+			return ((IndividuConnectorWrapper) target).getUltimateTarget();
 		}
 		else {
 			return target;

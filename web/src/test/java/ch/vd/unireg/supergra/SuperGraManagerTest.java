@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.WebTestSpring3;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.tiers.AppartenanceMenage;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
@@ -42,7 +42,7 @@ public class SuperGraManagerTest extends WebTestSpring3 {
 		final long noInd = 123456;
 		final Long idPrincipal = 12300001L;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noInd, date(1966,3,12), "Paul", "Trohion", Sexe.MASCULIN);
@@ -118,7 +118,7 @@ public class SuperGraManagerTest extends WebTestSpring3 {
 
 		final long noInd = 123456;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noInd, date(1966,3,12), "Paul", "Trohion", Sexe.MASCULIN);

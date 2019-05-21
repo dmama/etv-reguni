@@ -27,9 +27,9 @@ import ch.vd.unireg.cache.UniregCacheManager;
 import ch.vd.unireg.common.ProgrammingException;
 import ch.vd.unireg.data.CivilDataEventListener;
 import ch.vd.unireg.data.CivilDataEventService;
-import ch.vd.unireg.interfaces.civil.ServiceCivilException;
-import ch.vd.unireg.interfaces.civil.ServiceCivilRaw;
-import ch.vd.unireg.interfaces.civil.ServiceCivilServiceWrapper;
+import ch.vd.unireg.interfaces.civil.IndividuConnector;
+import ch.vd.unireg.interfaces.civil.IndividuConnectorException;
+import ch.vd.unireg.interfaces.civil.IndividuConnectorWrapper;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
@@ -38,19 +38,19 @@ import ch.vd.unireg.stats.StatsService;
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class ServiceCivilPersistentCache implements ServiceCivilRaw, UniregCacheInterface, CivilDataEventListener, InitializingBean, DisposableBean, ServiceCivilServiceWrapper {
+public class IndividuConnectorPersistentCache implements IndividuConnector, UniregCacheInterface, CivilDataEventListener, InitializingBean, DisposableBean, IndividuConnectorWrapper {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ServiceCivilPersistentCache.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(IndividuConnectorPersistentCache.class);
 
-	public static final String CACHE_NAME = "ServiceCivilPersistent";
+	public static final String CACHE_NAME = "IndividuConnectorPersistent";
 
 	private PersistentCache<IndividuCacheValueWithParts> cache;
-	private ServiceCivilRaw target;
+	private IndividuConnector target;
 	private UniregCacheManager uniregCacheManager;
 	private StatsService statsService;
 	private CivilDataEventService dataEventService;
 
-	public void setTarget(ServiceCivilRaw target) {
+	public void setTarget(IndividuConnector target) {
 		this.target = target;
 	}
 
@@ -101,7 +101,7 @@ public class ServiceCivilPersistentCache implements ServiceCivilRaw, UniregCache
 	 */
 	@Override
 	public String getDescription() {
-		return "service civil persistent";
+		return "connecteur persistent des individus";
 	}
 
 	/**
@@ -109,7 +109,7 @@ public class ServiceCivilPersistentCache implements ServiceCivilRaw, UniregCache
 	 */
 	@Override
 	public String getName() {
-		return "CIVIL-PERSISTENT";
+		return "INDIVIDU-PERSISTENT";
 	}
 
 	/**
@@ -145,7 +145,7 @@ public class ServiceCivilPersistentCache implements ServiceCivilRaw, UniregCache
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Individu getIndividu(final long noIndividu, AttributeIndividu... parties) throws ServiceCivilException {
+	public Individu getIndividu(final long noIndividu, AttributeIndividu... parties) throws IndividuConnectorException {
 
 		final Individu individu;
 		final Set<AttributeIndividu> partiesSet = arrayToSet(parties);
@@ -168,7 +168,7 @@ public class ServiceCivilPersistentCache implements ServiceCivilRaw, UniregCache
 					// on complète la liste des parts à la volée
 					final Individu ind = target.getIndividu(noIndividu, setToArray(delta));
 					if (ind == null) {
-						throw new ServiceCivilException("Le service civil ne trouve pas l'individu n°" + noIndividu + " alors que des données le concernant pré-existent dans le cache !");
+						throw new IndividuConnectorException("Le connecteur des individus ne trouve pas l'individu n°" + noIndividu + " alors que des données le concernant pré-existent dans le cache !");
 					}
 					return ind;
 				}
@@ -188,7 +188,7 @@ public class ServiceCivilPersistentCache implements ServiceCivilRaw, UniregCache
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Individu> getIndividus(Collection<Long> nosIndividus, AttributeIndividu... parties) throws ServiceCivilException {
+	public List<Individu> getIndividus(Collection<Long> nosIndividus, AttributeIndividu... parties) throws IndividuConnectorException {
 
 		final Set<AttributeIndividu> partiesSet = arrayToSet(parties);
 
@@ -200,7 +200,7 @@ public class ServiceCivilPersistentCache implements ServiceCivilRaw, UniregCache
 			final GetIndividuKey key = new GetIndividuKey(no);
 			final IndividuCacheValueWithParts value = cache.get(key);
 			if (value == null) {
-				// l'élément n'est pas dans le cache -> on doit le demander au service civil
+				// l'élément n'est pas dans le cache -> on doit le demander au connecteur des individus
 				uncached.add(no);
 			}
 			else {
@@ -210,7 +210,7 @@ public class ServiceCivilPersistentCache implements ServiceCivilRaw, UniregCache
 					map.put(no, individu);
 				}
 				else {
-					// l'élément dans le cache ne possède *pas* toutes les parties demandées -> on doit le demander au service civil
+					// l'élément dans le cache ne possède *pas* toutes les parties demandées -> on doit le demander au connecteur des individus
 					uncached.add(no);
 				}
 			}
@@ -250,13 +250,13 @@ public class ServiceCivilPersistentCache implements ServiceCivilRaw, UniregCache
 	}
 
 	@Override
-	public Individu getIndividuByEvent(long evtId, AttributeIndividu... parties) throws ServiceCivilException {
+	public Individu getIndividuByEvent(long evtId, AttributeIndividu... parties) throws IndividuConnectorException {
 		// on ne cache pas ce genre d'info
 		return target.getIndividuByEvent(evtId, parties);
 	}
 
 	@Override
-	public void ping() throws ServiceCivilException {
+	public void ping() throws IndividuConnectorException {
 		target.ping();
 	}
 
@@ -314,14 +314,14 @@ public class ServiceCivilPersistentCache implements ServiceCivilRaw, UniregCache
 	}
 
 	@Override
-	public ServiceCivilRaw getTarget() {
+	public IndividuConnector getTarget() {
 		return target;
 	}
 
 	@Override
-	public ServiceCivilRaw getUltimateTarget() {
-		if (target instanceof ServiceCivilServiceWrapper) {
-			return ((ServiceCivilServiceWrapper) target).getUltimateTarget();
+	public IndividuConnector getUltimateTarget() {
+		if (target instanceof IndividuConnectorWrapper) {
+			return ((IndividuConnectorWrapper) target).getUltimateTarget();
 		}
 		else {
 			return target;

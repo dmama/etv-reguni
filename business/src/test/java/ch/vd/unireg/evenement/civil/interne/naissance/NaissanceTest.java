@@ -22,11 +22,11 @@ import ch.vd.unireg.evenement.fiscal.EvenementFiscal;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalDAO;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalParente;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalSituationFamille;
-import ch.vd.unireg.interfaces.civil.cache.ServiceCivilCache;
+import ch.vd.unireg.interfaces.civil.cache.IndividuConnectorCache;
 import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.tiers.Parente;
 import ch.vd.unireg.tiers.PersonnePhysique;
 
@@ -61,7 +61,7 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
-		serviceCivil.setUp(new DefaultMockServiceCivil());
+		serviceCivil.setUp(new DefaultMockIndividuConnector());
 		evenementFiscalDAO = getBean(EvenementFiscalDAO.class, "evenementFiscalDAO");
 
 		cacheManager = getBean(CacheManager.class, "ehCacheManager");
@@ -181,7 +181,7 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 		final RegDate dateNaissanceEnfant = date(2010, 2, 8);
 
 		// On crée la situation de départ : une mère et un fils mineur
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pere = addIndividu(indPere, date(1980, 1, 1), "Cognac", "Raoul", true);
@@ -268,7 +268,7 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 		final long indFils = 3;
 
 		// On crée la situation de départ : une mère et un fils mineur
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pere = addIndividu(indPere, date(1980, 1, 1), "Cognac", "Raoul", true);
@@ -357,7 +357,7 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 		final RegDate dateNaissance = date(2010, 2, 8);
 
 		// On crée la situation de départ : le service civil est vide
-		final MockServiceCivil realService = new MockServiceCivil() {
+		final MockIndividuConnector realService = new MockIndividuConnector() {
 
 			@Override
 			protected void init() {
@@ -376,7 +376,7 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 		};
 
 		// On setup le service civil avec un cache
-		final ServiceCivilCache cache = new ServiceCivilCache();
+		final IndividuConnectorCache cache = new IndividuConnectorCache();
 		cache.setTarget(realService);
 		cache.setCacheManager(cacheManager);
 		cache.setCacheName("serviceCivil");

@@ -6,7 +6,7 @@ import org.junit.Test;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
 import ch.vd.unireg.common.BusinessTest;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -38,7 +38,7 @@ public class ListeContribuablesResidentsSansForVaudoisProcessorTest extends Busi
 		final long noIndividu = 12352326L;
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, date(1980, 10, 25), "Malfoy", "Draco", true);
@@ -73,7 +73,7 @@ public class ListeContribuablesResidentsSansForVaudoisProcessorTest extends Busi
 		final long noIndividu = 12352326L;
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, date(2000, 10, 25), "Malfoy", "Draco", true);
@@ -108,7 +108,7 @@ public class ListeContribuablesResidentsSansForVaudoisProcessorTest extends Busi
 		final long noIndividu = 12352326L;
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, date(1980, 10, 25), "Malfoy", "Draco", true);
@@ -144,7 +144,7 @@ public class ListeContribuablesResidentsSansForVaudoisProcessorTest extends Busi
 		final long noIndividu = 12352326L;
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, date(1980, 10, 25), "Malfoy", "Draco", true);
@@ -176,7 +176,7 @@ public class ListeContribuablesResidentsSansForVaudoisProcessorTest extends Busi
 		final long noIndividu = 12352326L;
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, date(1980, 10, 25), "Malfoy", "Draco", true);
@@ -209,7 +209,7 @@ public class ListeContribuablesResidentsSansForVaudoisProcessorTest extends Busi
 		final long noIndividu = 12352326L;
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, date(1980, 10, 25), "Malfoy", "Draco", true);
@@ -241,7 +241,7 @@ public class ListeContribuablesResidentsSansForVaudoisProcessorTest extends Busi
 	public void testNonHabitantAvecAdresseCourrierVaudoise() throws Exception {
 
 		// mise en place civile (vide, où sont-ils tous partis ???)
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 			}
@@ -273,7 +273,7 @@ public class ListeContribuablesResidentsSansForVaudoisProcessorTest extends Busi
 	public void testTiersAnnule() throws Exception {
 
 		// mise en place civile (vide, où sont-ils tous partis ???)
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 			}

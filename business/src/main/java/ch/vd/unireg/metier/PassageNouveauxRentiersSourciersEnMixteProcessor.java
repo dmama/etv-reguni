@@ -25,7 +25,7 @@ import ch.vd.unireg.common.BatchTransactionTemplateWithResults;
 import ch.vd.unireg.common.LoggingStatusManager;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.hibernate.HibernateTemplate;
-import ch.vd.unireg.interfaces.civil.ServiceCivilException;
+import ch.vd.unireg.interfaces.civil.IndividuConnectorException;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
@@ -285,7 +285,7 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 			data.setSexe(tiersService.getSexe(sourcier));
 			data.setDateNaissance(tiersService.getDateNaissance(sourcier));
 		}
-		catch (ServiceCivilException e) {
+		catch (IndividuConnectorException e) {
 			LOGGER.error("Impossible de récupérer l'individu [" + sourcier.getNumeroIndividu() + "]", e);
 			throw new PassageNouveauxRentiersSourciersEnMixteException(sourcier, PassageNouveauxRentiersSourciersEnMixteResults.ErreurType.CIVIL_EXCEPTION, e);
 		}

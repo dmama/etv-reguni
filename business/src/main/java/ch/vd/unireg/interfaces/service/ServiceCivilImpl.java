@@ -15,9 +15,9 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.adresse.HistoriqueCommune;
 import ch.vd.unireg.common.DonneesCivilesException;
 import ch.vd.unireg.common.NomPrenom;
-import ch.vd.unireg.interfaces.civil.ServiceCivilException;
-import ch.vd.unireg.interfaces.civil.ServiceCivilRaw;
-import ch.vd.unireg.interfaces.civil.ServiceCivilServiceWrapper;
+import ch.vd.unireg.interfaces.civil.IndividuConnector;
+import ch.vd.unireg.interfaces.civil.IndividuConnectorException;
+import ch.vd.unireg.interfaces.civil.IndividuConnectorWrapper;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.Individu;
@@ -33,12 +33,12 @@ import ch.vd.unireg.interfaces.model.AdressesCiviles;
 import ch.vd.unireg.interfaces.model.AdressesCivilesHisto;
 import ch.vd.unireg.tiers.IndividuNotFoundException;
 
-public class ServiceCivilImpl implements ServiceCivilService, ServiceCivilServiceWrapper {
+public class ServiceCivilImpl implements ServiceCivilService, IndividuConnectorWrapper {
 
 	//private static final Logger LOGGER = LoggerFactory.getLogger(ServiceCivilImpl.class);
 
 	private ServiceInfrastructureService infraService;
-	private ServiceCivilRaw target;
+	private IndividuConnector target;
 
 	public ServiceCivilImpl() {
 	}
@@ -47,12 +47,12 @@ public class ServiceCivilImpl implements ServiceCivilService, ServiceCivilServic
 		this.infraService = infraService;
 	}
 
-	public ServiceCivilImpl(ServiceInfrastructureService infraService, ServiceCivilRaw target) {
+	public ServiceCivilImpl(ServiceInfrastructureService infraService, IndividuConnector target) {
 		this.infraService = infraService;
 		this.target = target;
 	}
 
-	public void setTarget(ServiceCivilRaw target) {
+	public void setTarget(IndividuConnector target) {
 		this.target = target;
 	}
 
@@ -294,7 +294,7 @@ public class ServiceCivilImpl implements ServiceCivilService, ServiceCivilServic
 	}
 
 	@Override
-	public Individu getIndividu(long noIndividu, @Nullable RegDate date, AttributeIndividu... parties) throws ServiceCivilException {
+	public Individu getIndividu(long noIndividu, @Nullable RegDate date, AttributeIndividu... parties) throws IndividuConnectorException {
 		final Individu individu = target.getIndividu(noIndividu, parties);
 		if (date == null || individu == null) {
 			return individu;
@@ -305,7 +305,7 @@ public class ServiceCivilImpl implements ServiceCivilService, ServiceCivilServic
 	}
 
 	@Override
-	public List<Individu> getIndividus(Collection<Long> nosIndividus, @Nullable RegDate date, AttributeIndividu... parties) throws ServiceCivilException {
+	public List<Individu> getIndividus(Collection<Long> nosIndividus, @Nullable RegDate date, AttributeIndividu... parties) throws IndividuConnectorException {
 		final List<Individu> list = target.getIndividus(nosIndividus, parties);
 		if (date == null) {
 			return list;
@@ -325,7 +325,7 @@ public class ServiceCivilImpl implements ServiceCivilService, ServiceCivilServic
 	}
 
 	@Override
-	public Individu getIndividuByEvent(long eventId, @Nullable RegDate date, AttributeIndividu... parties) throws ServiceCivilException {
+	public Individu getIndividuByEvent(long eventId, @Nullable RegDate date, AttributeIndividu... parties) throws IndividuConnectorException {
 		final Individu individu = target.getIndividuByEvent(eventId, parties);
 		if (date == null || individu == null) {
 			return individu;
@@ -341,14 +341,14 @@ public class ServiceCivilImpl implements ServiceCivilService, ServiceCivilServic
 	}
 
 	@Override
-	public ServiceCivilRaw getTarget() {
+	public IndividuConnector getTarget() {
 		return target;
 	}
 
 	@Override
-	public ServiceCivilRaw getUltimateTarget() {
-		if (target instanceof ServiceCivilServiceWrapper) {
-			return ((ServiceCivilServiceWrapper) target).getUltimateTarget();
+	public IndividuConnector getUltimateTarget() {
+		if (target instanceof IndividuConnectorWrapper) {
+			return ((IndividuConnectorWrapper) target).getUltimateTarget();
 		}
 		else {
 			return target;

@@ -31,7 +31,7 @@ import ch.vd.unireg.editique.ConstantesEditique;
 import ch.vd.unireg.editique.TypeDocumentEditique;
 import ch.vd.unireg.efacture.DocumentEFacture;
 import ch.vd.unireg.efacture.DocumentEFactureDAO;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
@@ -526,7 +526,7 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 		final int anneeDeclaration = 2016;
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// rien ni personne

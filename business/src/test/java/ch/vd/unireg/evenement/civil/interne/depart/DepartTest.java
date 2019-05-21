@@ -25,9 +25,9 @@ import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
@@ -101,7 +101,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 		serviceInfra.setUp(new DefaultMockServiceInfrastructureService());
 		loadDatabase(DB_UNIT_DATA_FILE);
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu marianne = addIndividu(NUMERO_INDIVIDU_SEUL, RegDate.get(1961, 3, 12), "Durant", "Marianne", false);
@@ -827,7 +827,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		final long noIndividu = 123456L;
 		final RegDate dateDepart = date(2008, 12, 4);
 
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, date(1956, 4, 30), "Talon", "Achille", true);
@@ -884,7 +884,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		final long noIndividu = 123456L;
 		final RegDate dateDepart = date(2008, 12, 4);
 
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, date(1956, 4, 30), "Talon", "Achille", true);
@@ -925,7 +925,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		final long noIndividu = 123456L;
 		final RegDate dateDepart = date(2008, 12, 4);
 
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, date(1956, 4, 30), "Talon", "Achille", true);
@@ -975,7 +975,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		final long noIndividu = 123456L;
 		final RegDate dateDepart = date(2008, 12, 4);
 
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, date(1956, 4, 30), "Talon", "Achille", true);
@@ -1013,7 +1013,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		final long noIndividu = 123456L;
 		final RegDate dateDepart = date(2008, 12, 4);
 
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, date(1956, 4, 30), "Talon", "Achille", true);
@@ -1058,7 +1058,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		final long noIndividu = 123456L;
 		final RegDate dateDepart = date(2008, 12, 4);
 
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, date(1956, 4, 30), "Talon", "Achille", true);
@@ -1112,7 +1112,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		final long noIndividu = 123456L;
 		final RegDate dateDepart = date(2008, 12, 4);
 
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, date(1956, 4, 30), "Talon", "Achille", true);
@@ -1166,7 +1166,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		final long noIndividu = 123456L;
 		final RegDate dateDepart = date(2008, 12, 4);
 
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, date(1956, 4, 30), "Talon", "Achille", true);
@@ -1231,7 +1231,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		final long noIndividu = 123456L;
 		final RegDate dateDepart = date(2008, 12, 4);
 
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, date(1956, 4, 30), "Talon", "Achille", true);
@@ -1292,7 +1292,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		final long noIndividu = 123456L;
 		final RegDate dateDepart = date(2008, 12, 4);
 
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, date(1956, 4, 30), "Talon", "Achille", true);
@@ -1345,7 +1345,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		final long noIndividu = 123456L;
 		final RegDate dateDepart = date(2008, 12, 4);
 
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, date(1956, 4, 30), "Talon", "Achille", true);
@@ -1396,7 +1396,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		final long noIndividu = 123456L;
 		final RegDate dateDepart = date(2009, 12, 19);
 
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, date(1956, 4, 30), "Talon", "Achille", true);
@@ -1442,7 +1442,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		final long noIndividu = 123456L;
 		final RegDate dateDepart = date(2009, 12, 21);
 
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, date(1956, 4, 30), "Talon", "Achille", true);
@@ -1488,7 +1488,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		final long noIndividu = 123456L;
 		final RegDate dateDepart = date(2009, 12, 20);
 
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, date(1956, 4, 30), "Talon", "Achille", true);
@@ -1526,7 +1526,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		final RegDate today = RegDate.get();
 
 		// préparation civile
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, date(1970, 4, 12), "Petipoint", "Justin", true);
@@ -1570,7 +1570,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		final RegDate dateDepart = RegDate.get().getOneDayBefore();
 
 		// préparation civile
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, date(1970, 4, 12), "Petipoint", "Justin", true);

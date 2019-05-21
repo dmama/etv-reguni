@@ -49,7 +49,7 @@ import ch.vd.unireg.efacture.ImpressionDocumentEfactureHelperImpl;
 import ch.vd.unireg.evenement.docsortant.EvenementDocumentSortantService;
 import ch.vd.unireg.evenement.fiscal.MockEvenementFiscalService;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -774,7 +774,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 		final int annee = 2012;
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Sorel", "Julien", Sexe.MASCULIN);

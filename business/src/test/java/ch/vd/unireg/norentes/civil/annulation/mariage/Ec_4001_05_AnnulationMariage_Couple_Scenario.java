@@ -1,12 +1,12 @@
 package ch.vd.unireg.norentes.civil.annulation.mariage;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.norentes.annotation.Check;
 import ch.vd.unireg.norentes.annotation.Etape;
 import ch.vd.unireg.norentes.common.EvenementCivilScenario;
@@ -48,7 +48,7 @@ public class Ec_4001_05_AnnulationMariage_Couple_Scenario extends EvenementCivil
 		return NAME;
 	}
 
-	private final class DefaultMockServiceCivil extends MockServiceCivil {
+	private final class DefaultMockIndividuConnector extends MockIndividuConnector {
 
 		@Override
 		protected void init() {
@@ -72,11 +72,11 @@ public class Ec_4001_05_AnnulationMariage_Couple_Scenario extends EvenementCivil
 
 	}
 
-	private DefaultMockServiceCivil serviceCivil;
+	private DefaultMockIndividuConnector serviceCivil;
 
 	@Override
 	protected void initServiceCivil() {
-		serviceCivil = new DefaultMockServiceCivil();
+		serviceCivil = new DefaultMockIndividuConnector();
 		serviceCivilService.setUp(serviceCivil);
 	}
 

@@ -17,7 +17,7 @@ import ch.vd.unireg.evenement.civil.interne.MessageCollector;
 import ch.vd.unireg.evenement.common.EvenementErreur;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -72,7 +72,7 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 	public void onSetUp() throws Exception {
 
 		super.onSetUp();
-		serviceCivil.setUp(new DefaultMockServiceCivil());
+		serviceCivil.setUp(new DefaultMockIndividuConnector());
 	}
 
 	@Test
@@ -81,7 +81,7 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 
 		final long noIndMonsieur = 1234566L;
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu monsieur = addIndividu(noIndMonsieur, date(1956, 12, 5), "Talon", "Achille", true);
@@ -404,7 +404,7 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 		final RegDate dateMariage = date(2005, 5, 5);
 
 		// création d'un ménage-commun marié au civil
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu monsieur = addIndividu(noMonsieur, date(1923, 2, 12), "Crispus", "Santacorpus", true);
@@ -467,7 +467,7 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 		final RegDate dateMariageFiscal = date(2005, 5, 4);
 
 		// création d'un ménage-commun marié au civil
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu monsieur = addIndividu(noMonsieur, date(1923, 2, 12), "Crispus", "Santacorpus", true);
@@ -532,7 +532,7 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 		final RegDate dateDecesMonsieur = dateMariage.addDays(-5);
 
 		// création d'un ménage-commun marié au civil
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu monsieur = addIndividu(noMonsieur, dateNaissanceMonsieur, "Crispus", "Santacorpus", true);

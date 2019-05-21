@@ -43,7 +43,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.shared.avs.AvsHelper;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.common.XmlUtils;
-import ch.vd.unireg.interfaces.civil.ServiceCivilException;
+import ch.vd.unireg.interfaces.civil.IndividuConnectorException;
 import ch.vd.unireg.interfaces.civil.mock.CollectionLimitator;
 import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
 import ch.vd.unireg.interfaces.common.Adresse;
@@ -135,8 +135,8 @@ public class IndividuRCPers implements Individu, Serializable {
 				this.etatsCivils = initEtatsCivils(person.getCurrentMaritalStatus());
 			}
 		}
-		catch (ServiceCivilException e) {
-			throw new ServiceCivilException("Individu n°" + this.noTechnique + ": " + e.getMessage(), e);
+		catch (IndividuConnectorException e) {
+			throw new IndividuConnectorException("Individu n°" + this.noTechnique + ": " + e.getMessage(), e);
 		}
 
 		if (history) {

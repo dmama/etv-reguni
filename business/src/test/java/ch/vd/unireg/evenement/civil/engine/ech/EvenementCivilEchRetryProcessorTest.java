@@ -20,7 +20,7 @@ import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchDAO;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchProcessingMode;
 import ch.vd.unireg.evenement.civil.ech.MockEvenementCivilEchRecuperateur;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.type.ActionEvenementCivilEch;
 import ch.vd.unireg.type.EtatEvenementCivil;
 import ch.vd.unireg.type.TypeEvenementCivilEch;
@@ -46,7 +46,7 @@ public class EvenementCivilEchRetryProcessorTest extends BusinessTest {
 		final long noIndividuAvecErreur = 2367485247L;
 		final long noIndividuAvecAttenteEtErreur = 43784236L;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividuSans, null, "Sans", "Rien", true);

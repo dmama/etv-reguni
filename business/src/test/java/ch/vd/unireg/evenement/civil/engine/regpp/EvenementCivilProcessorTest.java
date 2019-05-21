@@ -23,11 +23,11 @@ import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPPDAO;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPPErreur;
 import ch.vd.unireg.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.unireg.indexer.tiers.TiersIndexedData;
-import ch.vd.unireg.interfaces.civil.cache.ServiceCivilCache;
+import ch.vd.unireg.interfaces.civil.cache.IndividuConnectorCache;
 import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
@@ -64,7 +64,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 	private EvenementCivilRegPPDAO evenementCivilRegPPDAO;
 	private TiersDAO tiersDAO;
 	private GlobalTiersSearcher searcher;
-	private DefaultMockServiceCivil mockServiceCivil;
+	private DefaultMockIndividuConnector mockServiceCivil;
 
 	/**
 	 * Crée la connexion à la base de données
@@ -73,7 +73,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
-		mockServiceCivil = new DefaultMockServiceCivil();
+		mockServiceCivil = new DefaultMockIndividuConnector();
 		serviceCivil.setUp(mockServiceCivil);
 
 		evenementCivilProcessor = getBean(EvenementCivilProcessor.class, "evenementCivilProcessor");
@@ -195,7 +195,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		final long NO_INDIVIDU = 78912L;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(NO_INDIVIDU, date(1944,12,12), "Rufus", "Bonpoil", true);
@@ -657,7 +657,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		final RegDate dateMariage = date(1983, 3, 12);
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu mr = addIndividu(noIndividuMonsieur, dateNaissanceMonsieur, "Tartempion", "Marcel", true);
@@ -732,7 +732,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		final long evtId = 1234567890L;
 
 		// on crée un individu avec un contribuable associé
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividuMonsieur, date(1966, 3, 12), "Fussnacht", "Cyril", true);
@@ -805,7 +805,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		assertNotNull(uniregCacheManager);
 
 		// Initialisation du service civil avec un cache
-		final ServiceCivilCache cache = new ServiceCivilCache();
+		final IndividuConnectorCache cache = new IndividuConnectorCache();
 		cache.setCacheManager(cacheManager);
 		cache.setCacheName("serviceCivil");
 		cache.setUniregCacheManager(uniregCacheManager);
@@ -816,7 +816,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			serviceCivil.setUp(cache);
 
 			// mise en place civile
-			cache.setTarget(new DefaultMockServiceCivil() {
+			cache.setTarget(new DefaultMockIndividuConnector() {
 				@Override
 				protected void init() {
 					addIndividu(noIndividu, date(1940, 10, 31), "Hitchcock", "Alfredo", true);
@@ -898,7 +898,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		assertNotNull(uniregCacheManager);
 
 		// Initialisation du service civil avec un cache
-		final ServiceCivilCache cache = new ServiceCivilCache();
+		final IndividuConnectorCache cache = new IndividuConnectorCache();
 		cache.setCacheManager(cacheManager);
 		cache.setCacheName("serviceCivil");
 		cache.setUniregCacheManager(uniregCacheManager);
@@ -909,7 +909,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			serviceCivil.setUp(cache);
 
 			// mise en place civile
-			cache.setTarget(new DefaultMockServiceCivil() {
+			cache.setTarget(new DefaultMockIndividuConnector() {
 				@Override
 				protected void init() {
 					addIndividu(noIndividu, date(1940, 10, 31), "Hitchcock", "Alfredo", true);
@@ -1001,7 +1001,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		assertNotNull(uniregCacheManager);
 
 		// Initialisation du service civil avec un cache
-		final ServiceCivilCache cache = new ServiceCivilCache();
+		final IndividuConnectorCache cache = new IndividuConnectorCache();
 		cache.setCacheManager(cacheManager);
 		cache.setCacheName("serviceCivil");
 		cache.setUniregCacheManager(uniregCacheManager);
@@ -1012,7 +1012,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			serviceCivil.setUp(cache);
 
 			// mise en place civile
-			cache.setTarget(new DefaultMockServiceCivil() {
+			cache.setTarget(new DefaultMockIndividuConnector() {
 				@Override
 				protected void init() {
 					addIndividu(noIndividu, date(1940, 10, 31), "Hitchcock", "Alfredo", true);

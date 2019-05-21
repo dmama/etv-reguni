@@ -8,7 +8,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.WebTestSpring3;
 import ch.vd.unireg.fourreNeutre.view.FourreNeutreView;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.security.AccessDeniedException;
@@ -32,7 +32,7 @@ public class FourreNeutreControllerTest extends WebTestSpring3 {
 		super.onSetUp();
 
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu1 = addIndividu(320073L, RegDate.get(1960, 1, 1), "Totor", "Marcel", true);

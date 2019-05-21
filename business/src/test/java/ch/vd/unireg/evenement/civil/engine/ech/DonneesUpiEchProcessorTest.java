@@ -6,7 +6,7 @@ import org.junit.Test;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.type.ActionEvenementCivilEch;
 import ch.vd.unireg.type.EtatEvenementCivil;
@@ -22,7 +22,7 @@ public class DonneesUpiEchProcessorTest extends AbstractEvenementCivilEchProcess
 		final String avsAssigne = "7567839088263";
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, null, "Clette", "Lara", false);
@@ -73,7 +73,7 @@ public class DonneesUpiEchProcessorTest extends AbstractEvenementCivilEchProcess
 		final String avsAssigne = "7567839088263";
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, null, "Clette", "Lara", false);
@@ -125,7 +125,7 @@ public class DonneesUpiEchProcessorTest extends AbstractEvenementCivilEchProcess
 		final String avsAssigneFiscal = "7567839088263";
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, null, "Clette", "Lara", false);
@@ -176,7 +176,7 @@ public class DonneesUpiEchProcessorTest extends AbstractEvenementCivilEchProcess
 		final String avsAssigne = "7567839088263";
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, null, "Clette", "Lara", false);

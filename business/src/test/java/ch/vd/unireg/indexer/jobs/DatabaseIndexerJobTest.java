@@ -11,7 +11,7 @@ import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer.Mode;
 import ch.vd.unireg.indexer.tiers.TiersIndexedData;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
@@ -57,7 +57,7 @@ public class DatabaseIndexerJobTest extends BusinessTest {
 			}
 		});
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 
 			@Override
 			protected void init() {

@@ -11,7 +11,7 @@ import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.unireg.evenement.civil.interne.MessageCollector;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -70,7 +70,7 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 	private static final String DB_UNIT_DATA_FILE = "ObtentionPermisTest.xml";
 
 	private void setupServiceCivilAndLoadDb() throws Exception {
-		serviceCivil.setUp(new DefaultMockServiceCivil());
+		serviceCivil.setUp(new DefaultMockIndividuConnector());
 		loadDatabase(DB_UNIT_DATA_FILE);
 	}
 
@@ -298,7 +298,7 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 		final RegDate dateNaissance = date(1977, 4, 19);
 		final RegDate dateObtentionNationalite = date(2006, 6, 1);
 
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				final MockIndividu julie = addIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, dateNaissance, "Goux", "Julie", false);
@@ -344,7 +344,7 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 		final RegDate dateNaissance = date(1977, 4, 19);
 		final RegDate dateObtentionNationalite = date(2006, 6, 1);
 
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				final MockIndividu julie = addIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, dateNaissance, "Goux", "Julie", false);

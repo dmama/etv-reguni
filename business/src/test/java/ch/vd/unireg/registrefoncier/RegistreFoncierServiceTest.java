@@ -31,7 +31,7 @@ import ch.vd.unireg.foncier.DegrevementICI;
 import ch.vd.unireg.foncier.DonneesUtilisation;
 import ch.vd.unireg.foncier.ExonerationIFONC;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
@@ -91,7 +91,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 		final RegDate dateNaissance = date(1970, 7, 2);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, date(1970, 7, 2), "Charles", "Widmer", Sexe.MASCULIN);
@@ -191,7 +191,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, date(1970, 7, 2), "Charles", "Widmer", Sexe.MASCULIN);
@@ -311,7 +311,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 		final RegDate dateNaissance = date(1970, 7, 2);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, date(1970, 7, 2), "Charles", "Widmer", Sexe.MASCULIN);
@@ -2827,7 +2827,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, date(1920, 7, 2), "Charles", "Widmer", Sexe.MASCULIN);
@@ -3100,7 +3100,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, date(1920, 7, 2), "Charles", "Widmer", Sexe.MASCULIN);
@@ -3435,7 +3435,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 		final RegDate dateDecesCharles = date(2006, 9, 3);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu charles = addIndividu(noIndividuCharles, dateNaissanceCharles, "Charles", "Widmer", Sexe.MASCULIN);

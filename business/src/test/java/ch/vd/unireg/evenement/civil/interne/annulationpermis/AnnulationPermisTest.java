@@ -9,7 +9,7 @@ import ch.vd.unireg.common.WithoutSpringTest;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockPermis;
 import ch.vd.unireg.interfaces.infra.mock.MockCanton;
@@ -68,7 +68,7 @@ public class AnnulationPermisTest extends WithoutSpringTest {
 	}, tiersDAO);
 
 	// Crée les données du mock service civil
-	ServiceCivilService serviceCivil = new ServiceCivilImpl(infrastructureService, new DefaultMockServiceCivil() {
+	ServiceCivilService serviceCivil = new ServiceCivilImpl(infrastructureService, new DefaultMockIndividuConnector() {
 
 		@Override
 		protected void init() {

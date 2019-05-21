@@ -10,8 +10,8 @@ import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchErreur;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockPermis;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
@@ -37,7 +37,7 @@ public class CorrectionCategorieEtrangerEchProcessorTest extends AbstractEveneme
 		final RegDate dateObtentionPermis = date(2011, 6, 3);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final RegDate dateNaissance = date(1964, 3, 12);
@@ -107,7 +107,7 @@ public class CorrectionCategorieEtrangerEchProcessorTest extends AbstractEveneme
 		final RegDate dateObtentionPermis = date(2011, 6, 3);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final RegDate dateNaissance = date(1964, 3, 12);
@@ -177,7 +177,7 @@ public class CorrectionCategorieEtrangerEchProcessorTest extends AbstractEveneme
 		final RegDate dateObtentionPermis = date(2011, 6, 3);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final RegDate dateNaissance = date(1964, 3, 12);

@@ -9,7 +9,7 @@ import ch.vd.unireg.adresse.AdresseSuisse;
 import ch.vd.unireg.adresse.AdresseTiers;
 import ch.vd.unireg.adresse.AdresseTiersDAO;
 import ch.vd.unireg.common.WebTest;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.tiers.TiersDAO;
 import ch.vd.unireg.tiers.view.AdresseView;
@@ -34,7 +34,7 @@ public class TiersAdresseManagerTest extends WebTest {
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(282315, RegDate.get(1974, 3, 22), "Bolomey", "Alain", true);

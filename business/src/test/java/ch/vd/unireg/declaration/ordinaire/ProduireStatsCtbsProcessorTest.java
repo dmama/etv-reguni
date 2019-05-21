@@ -8,7 +8,7 @@ import org.junit.Test;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BusinessTest;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -105,7 +105,7 @@ public class ProduireStatsCtbsProcessorTest extends BusinessTest {
 	public void testExtractionCtbSourceAvecPIIS() throws Exception {
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// rien
@@ -156,7 +156,7 @@ public class ProduireStatsCtbsProcessorTest extends BusinessTest {
 	public void testExtractionCtbSourceSansPIIS() throws Exception {
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// rien
@@ -197,7 +197,7 @@ public class ProduireStatsCtbsProcessorTest extends BusinessTest {
 //	public void testExtractionCtbAvecForSurCommuneFusionnee() throws Exception {
 //
 //		// mise en place civile
-//		serviceCivil.setUp(new MockServiceCivil() {
+//		serviceCivil.setUp(new MockIndividuConnector() {
 //			@Override
 //			protected void init() {
 //				// rien

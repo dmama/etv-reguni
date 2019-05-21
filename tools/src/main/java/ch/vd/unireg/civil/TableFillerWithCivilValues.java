@@ -33,13 +33,13 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.StandardBatchIterator;
-import ch.vd.unireg.interfaces.civil.ServiceCivilRaw;
-import ch.vd.unireg.interfaces.civil.ServiceCivilTracing;
+import ch.vd.unireg.interfaces.civil.IndividuConnector;
+import ch.vd.unireg.interfaces.civil.IndividuConnectorTracing;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
 import ch.vd.unireg.interfaces.civil.data.TypeRelationVersIndividu;
-import ch.vd.unireg.interfaces.civil.rcpers.ServiceCivilRCPers;
+import ch.vd.unireg.interfaces.civil.rcpers.IndividuConnectorRCPers;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureTracing;
@@ -74,7 +74,7 @@ public class TableFillerWithCivilValues {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(TableFillerWithCivilValues.class);
 
-	private final ServiceCivilRaw serviceCivil;
+	private final IndividuConnector serviceCivil;
 
 	public static void main(String[] args) throws Exception {
 		Class.forName(dbDriverClassName);
@@ -108,14 +108,14 @@ public class TableFillerWithCivilValues {
 
 		final ServiceInfrastructureRaw infraServiceCache = new ServiceInfraGetPaysSimpleCache(infraServiceTracing);
 
-		final ServiceCivilRCPers serviceCivilRCPers = new ServiceCivilRCPers();
-		serviceCivilRCPers.setClient(rcpersClient);
-		serviceCivilRCPers.setInfraService(infraServiceCache);
+		final IndividuConnectorRCPers donneesCivilesAccessorRCPers = new IndividuConnectorRCPers();
+		donneesCivilesAccessorRCPers.setClient(rcpersClient);
+		donneesCivilesAccessorRCPers.setInfraService(infraServiceCache);
 
-		final ServiceCivilTracing serviceCivilTracing = new ServiceCivilTracing();
-		serviceCivilTracing.setTarget(serviceCivilRCPers);
+		final IndividuConnectorTracing donneesCivilesAccessorTracing = new IndividuConnectorTracing();
+		donneesCivilesAccessorTracing.setTarget(donneesCivilesAccessorRCPers);
 
-		serviceCivil = serviceCivilTracing;
+		serviceCivil = donneesCivilesAccessorTracing;
 	}
 
 	private interface ConnectionCallback<T> {

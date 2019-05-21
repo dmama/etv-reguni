@@ -8,7 +8,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessTestingConstants;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
@@ -50,7 +50,7 @@ public class AnnulationMariageEchProcessorTest extends AbstractEvenementCivilEch
 		final RegDate dateOuvertureFor1 = date(1995, 1, 1);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final RegDate dateNaissanceLui = date(1960, 1, 26);
@@ -123,7 +123,7 @@ public class AnnulationMariageEchProcessorTest extends AbstractEvenementCivilEch
 		final RegDate dateMariage = date(2012, 2, 10);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final RegDate dateNaissanceLui = date(1960, 1, 26);

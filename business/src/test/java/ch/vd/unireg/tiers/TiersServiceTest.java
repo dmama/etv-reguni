@@ -47,10 +47,10 @@ import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockNationalite;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
 import ch.vd.unireg.interfaces.entreprise.data.StatusInscriptionRC;
@@ -132,7 +132,7 @@ public class TiersServiceTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testInsertTiers() {
 
-		serviceCivil.setUp(new DefaultMockServiceCivil());
+		serviceCivil.setUp(new DefaultMockIndividuConnector());
 		LOGGER.debug("Début de testInsertTiers");
 		tiersService = getBean(TiersService.class, "tiersService");
 
@@ -147,7 +147,7 @@ public class TiersServiceTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testInsertContribuable() {
 
-		serviceCivil.setUp(new DefaultMockServiceCivil());
+		serviceCivil.setUp(new DefaultMockIndividuConnector());
 		PersonnePhysique tiers = new PersonnePhysique(false);
 		tiers.setNom("Bla");
 
@@ -167,7 +167,7 @@ public class TiersServiceTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testInsertAndUpdateTiers() {
 
-		serviceCivil.setUp(new DefaultMockServiceCivil());
+		serviceCivil.setUp(new DefaultMockIndividuConnector());
 		LOGGER.debug("Début de testInsertTiers");
 		Long noIndividu = 54321L;
 
@@ -217,7 +217,7 @@ public class TiersServiceTest extends BusinessTest {
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testIsEtrangerSansPermisC_AvecNationaliteSuisse() throws Exception {
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(NUMERO_INDIVIDU, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -234,7 +234,7 @@ public class TiersServiceTest extends BusinessTest {
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testIsEtrangerSansPermisC_AvecNationaliteEtrangere_PermisC() throws Exception {
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(NUMERO_INDIVIDU, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -251,7 +251,7 @@ public class TiersServiceTest extends BusinessTest {
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testIsEtrangerSansPermisC_AvecNationaliteEtrangere_PermisCAnnule() throws Exception {
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(NUMERO_INDIVIDU, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -268,7 +268,7 @@ public class TiersServiceTest extends BusinessTest {
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testIsEtrangerSansPermisC_AvecNationaliteEtrangere_PermisNonC() throws Exception {
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(NUMERO_INDIVIDU, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -285,7 +285,7 @@ public class TiersServiceTest extends BusinessTest {
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testIsEtrangerSansPermisC_SansNationalite_OrigineSuisse() throws Exception {
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(NUMERO_INDIVIDU, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -302,7 +302,7 @@ public class TiersServiceTest extends BusinessTest {
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testIsEtrangerSansPermisC_SansNationalite_OrigineNonSuisse_PaysOrigineRenseigne_SansPermisC() throws Exception {
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(NUMERO_INDIVIDU, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -318,7 +318,7 @@ public class TiersServiceTest extends BusinessTest {
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testIsEtrangerSansPermisC_SansNationalite_OrigineNonSuisse_PaysOrigineRenseigne_AvecPermisC() throws Exception {
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(NUMERO_INDIVIDU, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -335,7 +335,7 @@ public class TiersServiceTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testIsEtrangerSansPermisC_SansNationalite_OrigineNonSuisse_PaysOrigineNonRenseigne_AvecPermisC() throws Exception {
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(NUMERO_INDIVIDU, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -352,7 +352,7 @@ public class TiersServiceTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetIndividu() {
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(NUMERO_INDIVIDU, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -388,7 +388,7 @@ public class TiersServiceTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetIndividuParAnnee() {
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(NUMERO_INDIVIDU, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -433,7 +433,7 @@ public class TiersServiceTest extends BusinessTest {
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testIsEtrangerSansPermisC_SansNationalite_OrigineNonSuisse_PaysOrigineNonRenseigne_SansPermisC() throws Exception {
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(NUMERO_INDIVIDU, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -449,7 +449,7 @@ public class TiersServiceTest extends BusinessTest {
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testIsEtrangerSansPermisC_SansNationalite_OrigineNonSuisse_PaysOrigineNonRenseigne_SansAucunPermis() {
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(NUMERO_INDIVIDU, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -476,7 +476,7 @@ public class TiersServiceTest extends BusinessTest {
 		final long numeroLisette = 3;
 		final long numeroGudrun = 4;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(numeroPierre, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -621,7 +621,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		final RegDate dateOuverture = RegDate.get(1990, 7, 1);
 
-		serviceCivil.setUp(new DefaultMockServiceCivil());
+		serviceCivil.setUp(new DefaultMockIndividuConnector());
 
 		final Set<ForFiscal> forsFiscaux = new HashSet<>();
 		PersonnePhysique habitant = new PersonnePhysique(true);
@@ -653,7 +653,7 @@ public class TiersServiceTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testCloseAppartenanceMenageAvecRapportAnnule() throws Exception {
 
-		serviceCivil.setUp(new DefaultMockServiceCivil());
+		serviceCivil.setUp(new DefaultMockIndividuConnector());
 
 		PersonnePhysique momo = new PersonnePhysique(true);
 		momo.setNumeroIndividu(54321L);
@@ -698,7 +698,7 @@ public class TiersServiceTest extends BusinessTest {
 		/*
 		 * Crée les données du mock service civil
 		 */
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noNouveauHabitant, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -738,7 +738,7 @@ public class TiersServiceTest extends BusinessTest {
 		final long noIndividu = 3244521L;
 
 		// registre civil
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, RegDate.get(1963, 4, 12), "Dupont", "Albert", true);
@@ -824,7 +824,7 @@ public class TiersServiceTest extends BusinessTest {
 		final long noIndividu = 3244521L;
 
 		// registre civil
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, RegDate.get(1963, 4, 12), "Dupont", "Albert", true);
@@ -965,7 +965,7 @@ public class TiersServiceTest extends BusinessTest {
 		 * Mise en place des données
 		 */
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne seul
@@ -1165,7 +1165,7 @@ public class TiersServiceTest extends BusinessTest {
 		 * Mise en place des données
 		 */
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne seul
@@ -3028,7 +3028,7 @@ debut PF                                                                        
 		final long noIndMadame = 123254L;
 		final long noIndMonsieur = 424566L;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndMonsieur, date(1950, 3, 24), "Achille", "Talon", true);
@@ -3090,7 +3090,7 @@ debut PF                                                                        
 		final long noIndMadame = 123254L;
 		final long noIndMonsieur = 424566L;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu mr = addIndividu(noIndMonsieur, date(1950, 3, 24), "Achille", "Talon", true);
@@ -3189,7 +3189,7 @@ debut PF                                                                        
 		final long noIndAchille = 123456L;
 		final long noIndHuguette = 32421L;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndAchille, date(1950, 3, 24), "Achille", "Talon", true);
@@ -3351,7 +3351,7 @@ debut PF                                                                        
 
 		final long noIndAchille = 12345L;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndAchille, date(1950, 3, 24), "Achille", "Talon", true);
@@ -3394,7 +3394,7 @@ debut PF                                                                        
 
 		final long noIndAchille = 12345L;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndAchille, date(1950, 3, 24), "Achille", "Talon", true);
@@ -4382,7 +4382,7 @@ debut PF                                                                        
 		final RegDate dateMariage = date(1995, 5, 1);
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu m = addIndividu(noIndM, date(1970, 4, 12), "Petipoint", "Justin", true);
@@ -4417,7 +4417,7 @@ debut PF                                                                        
 		final RegDate dateMariage = date(1995, 5, 1);
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu m = addIndividu(noIndM, date(1970, 4, 12), "Petipoint", "Justin", true);
@@ -4489,7 +4489,7 @@ debut PF                                                                        
 		final RegDate dateNaissance = date(1996, 1, 7);
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, dateNaissance, "Pittet", "Martine", false);
@@ -4743,7 +4743,7 @@ debut PF                                                                        
 		final RegDate dateNaissance = date(1993, 2, 8);
 
 		// On crée la situation de départ : une mère et un fils mineur
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
@@ -4818,7 +4818,7 @@ debut PF                                                                        
 		final RegDate dateNaissance = date(1993, 2, 8);
 
 		// On crée la situation de départ : un père et un fils mineur
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Raoul", true);
@@ -4883,7 +4883,7 @@ debut PF                                                                        
 		final RegDate dateNaissance = date(1993, 2, 8);
 
 		// On crée la situation de départ : une mère mariée seule et un fils mineur
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
@@ -4962,7 +4962,7 @@ debut PF                                                                        
 		final RegDate dateNaissance = date(1993, 2, 8);
 
 		// On crée la situation de départ : une mère et un fils mineur qui possède un immeuble
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
@@ -5031,7 +5031,7 @@ debut PF                                                                        
 		final RegDate dateNaissanceFille = date(1988, 2, 8);
 
 		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeure
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
@@ -5101,7 +5101,7 @@ debut PF                                                                        
 		final RegDate dateDecesFille = date(2011, 2, 2);
 
 		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
@@ -5171,7 +5171,7 @@ debut PF                                                                        
 		final RegDate dateNaissanceFille = date(2007, 2, 8);
 
 		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
@@ -5239,7 +5239,7 @@ debut PF                                                                        
 		final RegDate dateNaissanceFille = date(2007, 2, 8);
 
 		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
@@ -5312,7 +5312,7 @@ debut PF                                                                        
 		final RegDate dateNaissanceEnfantCommun = date(2012, 11, 22);
 
 		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Champagne", "Josette", Sexe.FEMININ);
@@ -5393,7 +5393,7 @@ debut PF                                                                        
 		final RegDate dateNaissanceFille = date(2007, 2, 8);
 
 		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
@@ -5462,7 +5462,7 @@ debut PF                                                                        
 		final RegDate dateNaissanceFille = date(2007, 2, 8);
 
 		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
@@ -5531,7 +5531,7 @@ debut PF                                                                        
 		final RegDate dateNaissanceFille = date(2007, 2, 8);
 
 		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
@@ -5599,7 +5599,7 @@ debut PF                                                                        
 		final RegDate dateNaissanceFille = date(2007, 2, 8);
 
 		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
@@ -5667,7 +5667,7 @@ debut PF                                                                        
 		final RegDate dateNaissanceFille = date(2007, 2, 8);
 
 		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
@@ -5735,7 +5735,7 @@ debut PF                                                                        
 		final RegDate dateNaissanceFille = date(2007, 2, 8);
 
 		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
@@ -5792,7 +5792,7 @@ debut PF                                                                        
 		final RegDate dateNaissanceFille = date(2007, 2, 8);
 
 		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
@@ -5855,7 +5855,7 @@ debut PF                                                                        
 		final RegDate dateNaissanceFille = date(2007, 2, 8);
 
 		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
@@ -5919,7 +5919,7 @@ debut PF                                                                        
 		final RegDate dateNaissanceFille = date(2007, 2, 8);
 
 		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
@@ -5986,7 +5986,7 @@ debut PF                                                                        
 		final RegDate dateNaissanceFille2 = date(2006, 2, 8);
 
 		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
@@ -6101,7 +6101,7 @@ debut PF                                                                        
 		final long noIndividuElle = 451248463163L;
 		final RegDate dateMariage = date(2010, 6, 12);
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu lui = addIndividu(noIndividuLui, date(1980, 10, 25), "Petitpoint", "Justin", true);
@@ -6148,7 +6148,7 @@ debut PF                                                                        
 		final RegDate dateDebutSurchargeCourrier = date(2012, 1, 1);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final RegDate dateNaissance = date(1980, 8, 12);
@@ -6229,7 +6229,7 @@ debut PF                                                                        
 
 		final long FALBALA = 784515L;
 
-		final MockServiceCivil civil = new MockServiceCivil() {
+		final MockIndividuConnector civil = new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(JEAN, date(1965, 3, 24), "Jean", "Strudelopom", Sexe.MASCULIN);
@@ -6370,7 +6370,7 @@ debut PF                                                                        
 
 		final long FALBALA = 784515L;
 
-		final MockServiceCivil civil = new MockServiceCivil() {
+		final MockIndividuConnector civil = new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(JEAN, date(1965, 3, 24), "Jean", "Strudelopom", Sexe.MASCULIN);
@@ -6501,7 +6501,7 @@ debut PF                                                                        
 		final RegDate dateNaissance = date(1989, 10, 3);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Bouliokova", "Tatiana", Sexe.FEMININ);
@@ -6776,7 +6776,7 @@ debut PF                                                                        
 		final RegDate dateNaissanceAncienHabitant = date(2011, 2, 21);
 		final RegDate dateNaissanceNonHabitant = date(2010, 12, 4);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu indigene = addIndividu(noIndividuHabitant, dateNaissanceHabitant, "Lepetit", "François", Sexe.MASCULIN);
@@ -6839,7 +6839,7 @@ debut PF                                                                        
 
 		final long noIndividu = 437843687L;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, date(1980, 8, 23), "Cardamonne", "Perlette", Sexe.FEMININ);
@@ -6886,7 +6886,7 @@ debut PF                                                                        
 		final RegDate dateNaissanceFiston = date(2005, 10, 25);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu papy = addIndividu(noIndPapy, null, "Bernard", "Eugène", Sexe.MASCULIN);
@@ -7359,7 +7359,7 @@ debut PF                                                                        
 		final RegDate dateNaissanceEnfant = date(2000, 7, 12);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu parent = addIndividu(noIndividuParent, null, "Swift", "John Senior", Sexe.MASCULIN);
@@ -7485,7 +7485,7 @@ debut PF                                                                        
 		final RegDate dateNaissanceFiston = date(2005, 10, 25);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu papy = addIndividu(noIndPapy, null, "Bernard", "Eugène", Sexe.MASCULIN);
@@ -7703,7 +7703,7 @@ debut PF                                                                        
 		final RegDate dateDesaveuEnfant = date(2006, 4, 30);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu parent = addIndividu(noIndParent, null, "Dursley", "Vernon", Sexe.MASCULIN);
@@ -7759,7 +7759,7 @@ debut PF                                                                        
 		final RegDate dateDesaveuEnfant = date(2006, 4, 30);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu parent = addIndividu(noIndParent, null, "Dursley", "Vernon", Sexe.MASCULIN);
@@ -7815,7 +7815,7 @@ debut PF                                                                        
 		final long noIndividu = 42L;
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// vide...
@@ -7867,7 +7867,7 @@ debut PF                                                                        
 		final long noIndividu = 42L;
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// vide...
@@ -7917,7 +7917,7 @@ debut PF                                                                        
 	public void testBlocageRemboursementAutomatiqueNonVaudoisAvecPeriodeImpositionISSourceEtIBAN() throws Exception {
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// vide...
@@ -7960,7 +7960,7 @@ debut PF                                                                        
 	public void testBlocageRemboursementAutomatiqueNonVaudoisAvecPeriodeImpositionISSourceSansIBAN() throws Exception {
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// vide...
@@ -8002,7 +8002,7 @@ debut PF                                                                        
 	public void testBlocageRemboursementAutomatiqueNonVaudoisAvecPeriodeImpositionISSourceAvecIBANMaisDecede() throws Exception {
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// vide...
@@ -8046,7 +8046,7 @@ debut PF                                                                        
 	public void testBlocageRemboursementAutomatiqueNonVaudoisSansPeriodeImpositionISEtIBAN() throws Exception {
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// vide...
@@ -8086,7 +8086,7 @@ debut PF                                                                        
 	public void testBlocageRemboursementAutomatiqueNonVaudoisAvecPeriodeImpositionISMixteEtIBAN() throws Exception {
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// vide...
@@ -8218,7 +8218,7 @@ debut PF                                                                        
 		final long noIndividuLui = 236723537L;
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu lui = addIndividu(noIndividuLui, null, "Bollomey", "Francis", Sexe.MASCULIN);
@@ -8283,7 +8283,7 @@ debut PF                                                                        
 		final long noIndividuLui = 236723537L;
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu lui = addIndividu(noIndividuLui, null, "Bollomey", "Francis", Sexe.MASCULIN);
@@ -8920,7 +8920,7 @@ debut PF                                                                        
 	public void testPeriodesDeResidenceSurInconnuAuCivil() throws Exception {
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne...
@@ -8954,7 +8954,7 @@ debut PF                                                                        
 		final RegDate dateDepart = date(2015, 2, 13);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, date(1970, 7, 2), "Charles", "Widmer", Sexe.MASCULIN);
@@ -8989,7 +8989,7 @@ debut PF                                                                        
 		final RegDate dateDepart = date(2015, 2, 13);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, date(1970, 7, 2), "Charles", "Widmer", Sexe.MASCULIN);
@@ -9023,7 +9023,7 @@ debut PF                                                                        
 		final RegDate dateNaissance = date(1970, 7, 2);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, date(1970, 7, 2), "Charles", "Widmer", Sexe.MASCULIN);
@@ -9057,7 +9057,7 @@ debut PF                                                                        
 		final RegDate dateNaissance = date(1970, 7, 2);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, date(1970, 7, 2), "Charles", "Widmer", Sexe.MASCULIN);
@@ -9093,7 +9093,7 @@ debut PF                                                                        
 		final RegDate dateRetour = date(2015, 3, 12);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, date(1970, 7, 2), "Charles", "Widmer", Sexe.MASCULIN);
@@ -9131,7 +9131,7 @@ debut PF                                                                        
 		final RegDate dateDeces = date(2010, 4, 22);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, date(1970, 7, 2), "Charles", "Widmer", Sexe.MASCULIN);

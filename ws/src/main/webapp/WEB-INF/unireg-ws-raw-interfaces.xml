@@ -22,21 +22,21 @@
 		</property>
 	</bean>
 
-	<!-- Service civil -->
+	<!-- Connecteur individus -->
 
-	<bean id="serviceCivilRemote" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
-		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/serviceCivil.remoting" />
-		<property name="serviceInterface" value="ch.vd.unireg.interfaces.civil.ServiceCivilRaw" />
+	<bean id="individuConnectorRemote" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
+		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/individuConnector.remoting" />
+		<property name="serviceInterface" value="ch.vd.unireg.interfaces.civil.IndividuConnector" />
 		<property name="executor" ref="nexusHttpRequestExecutor" />
 	</bean>
 
-	<bean id="serviceCivilServiceTracing" class="ch.vd.unireg.interfaces.civil.ServiceCivilTracing">
-		<property name="target" ref="serviceCivilRemote" />
+	<bean id="individuConnectorTracing" class="ch.vd.unireg.interfaces.civil.IndividuConnectorTracing">
+		<property name="target" ref="individuConnectorRemote" />
 		<property name="statsService" ref="statsService" />
 	</bean>
 
-	<bean id="serviceCivilServiceCache" class="ch.vd.unireg.interfaces.civil.cache.ServiceCivilCache">
-		<property name="target" ref="serviceCivilServiceTracing" />
+	<bean id="individuConnectorCache" class="ch.vd.unireg.interfaces.civil.cache.IndividuConnectorCache">
+		<property name="target" ref="individuConnectorTracing" />
 		<property name="cacheManager" ref="ehCacheManager" />
 		<property name="cacheName" value="serviceCivil" />
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
@@ -44,7 +44,7 @@
 		<property name="dataEventService" ref="dataEventService" />
 	</bean>
 
-	<alias alias="serviceCivilRaw" name="serviceCivilServiceCache"/>
+	<alias alias="individuConnector" name="individuConnectorCache"/>
 
 	<!-- Service Entreprise -->
 

@@ -6,7 +6,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.type.ActionEvenementCivilEch;
 import ch.vd.unireg.type.TypeEvenementCivilEch;
 import ch.vd.unireg.type.TypePermis;
@@ -23,7 +23,7 @@ public class PermisComparisonStrategyTest extends AbstractIndividuComparisonStra
 
 	private void setupCivil(final long noIndividu, final long noEvt1, final DateRange range1, final TypePermis type1,
 	                        final long noEvt2, final DateRange range2, final TypePermis type2) {
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, null, "Leblanc", "Juste", true);

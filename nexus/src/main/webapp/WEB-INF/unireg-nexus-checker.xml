@@ -25,7 +25,7 @@
 	</bean>
 
 	<bean id="serviceCivilChecker" class="ch.vd.unireg.checker.ServiceCivilChecker">
-		<property name="serviceCivilRaw" ref="serviceCivilServiceTracing" />
+		<property name="individuConnector" ref="individuConnectorTracing" />
 	</bean>
 
 	<bean id="serviceEntrepriseChecker" class="ch.vd.unireg.checker.ServiceEntrepriseChecker">

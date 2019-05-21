@@ -4,15 +4,15 @@ import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.interfaces.infra.mock.MockBatiment;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.unireg.evenement.civil.interne.arrivee.Arrivee;
 import ch.vd.unireg.evenement.civil.interne.arrivee.ArriveePrincipale;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
+import ch.vd.unireg.interfaces.infra.mock.MockBatiment;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
 import ch.vd.unireg.tiers.ForFiscalSecondaire;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -47,7 +47,7 @@ public class DemenagementTranslationStrategyTest extends AbstractEvenementCivilI
 		final RegDate dateDemenagement = date(2010, 9, 1);
 
 		// Crée un individu qui déménage entre deux communes fusionnées pendant la période où elles sont fusionnées au civil, mais pas encore au fiscal
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noInd, date(1970, 1, 1), "Hutter", "Marcel", true);
@@ -96,7 +96,7 @@ public class DemenagementTranslationStrategyTest extends AbstractEvenementCivilI
 		final RegDate dateDemenagement = date(2010, 9, 1);
 
 		// Crée un individu qui déménage à l'intérieur d'une commune fusionnée pendant la période où elle est fusionnée au civil, mais pas encore au fiscal
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noInd, date(1970, 1, 1), "Hutter", "Marcel", true);
@@ -143,7 +143,7 @@ public class DemenagementTranslationStrategyTest extends AbstractEvenementCivilI
 		final RegDate dateDemenagement = date(2010, 9, 1);
 
 		// Crée un individu qui déménage à l'intérieur d'une commune fusionnée pendant la période où elle est fusionnée au civil, mais pas encore au fiscal
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noInd, date(1970, 1, 1), "Hutter", "Marcel", true);

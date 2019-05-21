@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.identification.contribuable.IdentificationContribuableService;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
 import ch.vd.unireg.interfaces.entreprise.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.entreprise.data.StatusRegistreIDE;
@@ -210,7 +210,7 @@ public class IdentificationContribuableRequestHandlerV4Test extends BusinessTest
 	public void testMultipleQuestions() throws Exception {
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne... où sont-ils tous partis ?

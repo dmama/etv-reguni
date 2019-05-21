@@ -8,9 +8,9 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.data.DataEventService;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.unireg.indexer.tiers.TiersIndexedData;
-import ch.vd.unireg.interfaces.civil.cache.ServiceCivilCache;
+import ch.vd.unireg.interfaces.civil.cache.IndividuConnectorCache;
 import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
@@ -55,11 +55,11 @@ public class CorrectionAutresNomsEchProcessorTest extends AbstractCorrectionEchP
 		final RegDate dateNaissance = date(1956, 4, 23);
 
 		// créée le service civil et un cache par devant
-		final ServiceCivilCache cache = new ServiceCivilCache();
+		final IndividuConnectorCache cache = new IndividuConnectorCache();
 		cache.setCacheManager(getBean(CacheManager.class, "ehCacheManager"));
 		cache.setCacheName("serviceCivil");
 		cache.setDataEventService(getBean(DataEventService.class, "dataEventService"));
-		cache.setTarget(new DefaultMockServiceCivil(false) {
+		cache.setTarget(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				MockIndividu gerard = addIndividu(noIndividu, dateNaissance, "Manfind", "Gérard", true);

@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.common.WebserviceTest;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -53,7 +53,7 @@ public class PartyWebServicePMTest extends WebserviceTest {
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 
 		login = new UserLogin("iamtestuser", 22);
-		serviceCivil.setUp(new DefaultMockServiceCivil());
+		serviceCivil.setUp(new DefaultMockIndividuConnector());
 	}
 
 	@Test

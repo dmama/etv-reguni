@@ -7,8 +7,8 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.common.XmlUtils;
+import ch.vd.unireg.interfaces.civil.IndividuConnectorException;
 import ch.vd.unireg.type.TypePermis;
 
 public class PermisRCPers implements Permis, Serializable {
@@ -42,7 +42,7 @@ public class PermisRCPers implements Permis, Serializable {
 		}
 		this.dateFin = validTill;
 		this.dateValeur = reportingDate;
-		DateRangeHelper.assertValidRange(dateDebut, dateFin, ServiceCivilException.class);
+		DateRangeHelper.assertValidRange(dateDebut, dateFin, IndividuConnectorException.class);
 		this.dateAnnulation = null; // les permis annulés ne sont pas exposés par RCPers
 		this.typePermis = TypePermis.getFromEvd(permit.getResidencePermit());
 	}

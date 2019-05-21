@@ -11,7 +11,7 @@ import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.common.BusinessTestingConstants;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
@@ -87,7 +87,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		final RegDate dateArrivee = date(year - 1, 3, 12);
 
 		// mise en place civile -> personne !
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// un monde vierge...
@@ -151,7 +151,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		final RegDate dateDebutExploitation = date(year - 1, 3, 12);
 
 		// mise en place civile -> personne !
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// un monde vierge...
@@ -228,7 +228,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		final RegDate dateDebutExploitation = date(year - 1, 3, 12);
 
 		// mise en place civile -> personne !
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// un monde vierge...
@@ -307,7 +307,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		final RegDate dateArrivee = date(year - 1, 3, 12);
 
 		// mise en place civile -> personne !
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// un monde vierge...
@@ -389,7 +389,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		final RegDate dateDebutExploitation = date(year - 1, 3, 12);
 
 		// mise en place civile -> personne !
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// un monde vierge...
@@ -484,7 +484,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		final RegDate dateDebutExploitation = date(year - 1, 3, 12);
 
 		// mise en place civile -> personne !
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// un monde vierge...
@@ -583,7 +583,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		final RegDate dateArrivee = date(year - 1, 3, 12);
 
 		// mise en place civile -> personne !
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// un monde vierge...
@@ -665,7 +665,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		final RegDate dateDebutExploitation = date(year - 1, 3, 12);
 
 		// mise en place civile -> personne !
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// un monde vierge...
@@ -760,7 +760,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		final RegDate dateDebutExploitation = date(year - 1, 3, 12);
 
 		// mise en place civile -> personne !
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// un monde vierge...
@@ -863,7 +863,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		final RegDate dateArrivee = date(year - 1, 3, 12);
 
 		// mise en place civile -> personne !
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// un monde vierge...
@@ -920,7 +920,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		final RegDate dateDebutExploitation = date(year - 1, 3, 12);
 
 		// mise en place civile -> personne !
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// un monde vierge...
@@ -990,7 +990,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		final RegDate dateDebutExploitation = date(year - 1, 3, 12);
 
 		// mise en place civile -> personne !
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// un monde vierge...
@@ -1064,7 +1064,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		final RegDate dateDebutExploitation = date(year - 1, 3, 12);
 
 		// mise en place civile -> personne !
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// un monde vierge...
@@ -1154,7 +1154,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		final RegDate dateArrivee = date(year - 1, 3, 12);
 
 		// mise en place civile -> personne !
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// un monde vierge...
@@ -1237,7 +1237,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		final RegDate dateFinExploitation = date(PREMIERE_PERIODE_DECLARATIONS_PM, 5, 3);
 
 		// mise en place civile -> personne !
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// un monde vierge...

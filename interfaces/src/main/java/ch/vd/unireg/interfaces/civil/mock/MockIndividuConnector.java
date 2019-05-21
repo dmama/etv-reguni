@@ -20,8 +20,8 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.ProgrammingException;
-import ch.vd.unireg.interfaces.civil.ServiceCivilException;
-import ch.vd.unireg.interfaces.civil.ServiceCivilRaw;
+import ch.vd.unireg.interfaces.civil.IndividuConnector;
+import ch.vd.unireg.interfaces.civil.IndividuConnectorException;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.Individu;
@@ -52,7 +52,7 @@ import ch.vd.unireg.type.TypeEvenementCivilEch;
 import ch.vd.unireg.type.TypePermis;
 
 /**
- * Mock du Service Civil.
+ * Mock du connecteur des individus.
  * <p>
  * Pour utiliser cette classe, le plus simple est d'instancier une classe anonyme et d'implémenter la méthode init() de manière à charger
  * les données de test voulues.
@@ -60,7 +60,7 @@ import ch.vd.unireg.type.TypePermis;
  * Par exemple:
  *
  * <pre>
- *  ServiceCivil serviceCivil = new MockServiceCivil() {
+ *  IndividuConnector individuConnector = new MockIndividuConnector() {
  *  protected void init() {
  *  MockIndividu pierre = addIndividu(...);
  *  addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, ...);
@@ -70,8 +70,7 @@ import ch.vd.unireg.type.TypePermis;
  *  };
  * </pre>
  */
-@SuppressWarnings({"JavaDoc"})
-public abstract class MockServiceCivil implements ServiceCivilRaw {
+public abstract class MockIndividuConnector implements IndividuConnector {
 
 	/**
 	 * Map des individus par numéro
@@ -93,7 +92,7 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	 * Constructeur qui permet d'injecter le service infrastructure ; appelle init()
 	 * pour l'initialisation des données
 	 */
-	public MockServiceCivil() {
+	public MockIndividuConnector() {
 		init();
 	}
 
@@ -103,7 +102,7 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	protected abstract void init();
 
 	/**
-	 * Cette méthode permet de modifier les données du service civil après sa création.
+	 * Cette méthode permet de modifier les données du connecteur des individus après sa création.
 	 */
 	public void step1() {
 	}
@@ -143,7 +142,7 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 
 	/**
 	 * Ajoute un numéro individu dans la liste des parias qui explosent dès qu'on essaie de les toucher...
-	 * (il y en a dans le vrai service civil, autant les utiliser ici aussi...)
+	 * (il y en a dans le vrai connecteur des individus, autant les utiliser ici aussi...)
 	 * @param numero le numéro d'individu miné
 	 */
 	protected void addIndividuMine(long numero) {
@@ -611,7 +610,7 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 
 	public MockIndividu getIndividu(Long numeroIndividu) {
 		if (explodingIndividus.contains(numeroIndividu)) {
-			throw new ServiceCivilException("Individu miné !");
+			throw new IndividuConnectorException("Individu miné !");
 		}
 		return individusMap.get(numeroIndividu);
 	}
@@ -647,7 +646,7 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	}
 
 	@Override
-	public Individu getIndividu(long noIndividu, AttributeIndividu... parties) throws ServiceCivilException {
+	public Individu getIndividu(long noIndividu, AttributeIndividu... parties) throws IndividuConnectorException {
 		final MockIndividu individu = getIndividu(noIndividu);
 		if (individu != null && !individu.isNonHabitantNonRenvoye()) {
 			// on fait la copie avec les parts demandées seulements
@@ -666,7 +665,7 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	}
 
 	@Override
-	public List<Individu> getIndividus(Collection<Long> nosIndividus, AttributeIndividu... parties) throws ServiceCivilException {
+	public List<Individu> getIndividus(Collection<Long> nosIndividus, AttributeIndividu... parties) throws IndividuConnectorException {
 		final List<Individu> individus = new ArrayList<>(nosIndividus.size());
 		for (Long noIndividu : nosIndividus) {
 			final Individu individu = getIndividu(noIndividu, parties);
@@ -683,13 +682,13 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	}
 
 	@Override
-	public Individu getIndividuByEvent(long evtId, AttributeIndividu... parties) throws ServiceCivilException {
+	public Individu getIndividuByEvent(long evtId, AttributeIndividu... parties) throws IndividuConnectorException {
 		final IndividuApresEvenement ind = evenementsMap.get(evtId);
 		return ind != null ? getIndividu(ind.getIndividu().getNoTechnique(), parties) : null;
 	}
 
 	@Override
-	public void ping() throws ServiceCivilException {
+	public void ping() throws IndividuConnectorException {
 		// rien à faire
 	}
 

@@ -7,7 +7,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
 import ch.vd.unireg.common.BusinessTest;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
@@ -44,7 +44,7 @@ public class ExtractionDonneesRptPMProcessorTest extends BusinessTest {
 		final RegDate dateFermetureForVaudois = date(anneeExtraction - 1, 12, 4);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// vide
@@ -112,7 +112,7 @@ public class ExtractionDonneesRptPMProcessorTest extends BusinessTest {
 		final RegDate datePrononceFaillite = date(anneeExtraction - 1, 12, 4);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// vide
@@ -179,7 +179,7 @@ public class ExtractionDonneesRptPMProcessorTest extends BusinessTest {
 		final RegDate dateDepartHorsCanton = date(anneeExtraction - 1, 12, 4);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// vide

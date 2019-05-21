@@ -19,7 +19,7 @@ import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.unireg.declaration.source.ListeRecapService;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
 import ch.vd.unireg.iban.IbanValidator;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.jms.BamMessageSender;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
@@ -91,7 +91,7 @@ public class PartyWebServiceBatchTest extends WebserviceTest {
 	@Test
 	public void testCrashMappingThread() throws Exception {
 
-		serviceCivil.setUp(new DefaultMockServiceCivil());
+		serviceCivil.setUp(new DefaultMockIndividuConnector());
 
 		final List<Integer> ids = doInNewTransaction(status -> {
 			List<Integer> ids1 = new ArrayList<>();

@@ -8,7 +8,7 @@ import org.springframework.validation.FieldError;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.WebTestSpring3;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -39,7 +39,7 @@ public class AddForPrincipalValidatorTest extends WebTestSpring3 {
 	@Test
 	public void testAbsenceMotifOuvertureForPrincipal() throws Exception {
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				// vide...

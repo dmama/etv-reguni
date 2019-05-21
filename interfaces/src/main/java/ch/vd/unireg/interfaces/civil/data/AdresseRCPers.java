@@ -17,7 +17,7 @@ import ch.vd.evd0001.v5.Residence;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.XmlUtils;
-import ch.vd.unireg.interfaces.civil.ServiceCivilException;
+import ch.vd.unireg.interfaces.civil.IndividuConnectorException;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
@@ -80,7 +80,7 @@ public class AdresseRCPers implements Adresse, Serializable {
 	private AdresseRCPers(AddressInformation addressInfo, @Nullable RegDate dateDebut, @Nullable RegDate dateFin, ServiceInfrastructureRaw infraService) {
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
-		DateRangeHelper.assertValidRange(this.dateDebut, this.dateFin, ServiceCivilException.class);
+		DateRangeHelper.assertValidRange(this.dateDebut, this.dateFin, IndividuConnectorException.class);
 		this.casePostale = initCasePostale(addressInfo.getPostOfficeBoxText(), addressInfo.getPostOfficeBoxNumber());
 		this.localite = addressInfo.getTown();
 		this.numero = addressInfo.getHouseNumber();
@@ -110,7 +110,7 @@ public class AdresseRCPers implements Adresse, Serializable {
 
 		this.dateDebut = initDateDebut(residence); // voir SIREF-1617
 		this.dateFin = initDateFin(residence, next, dateDeces); // voir SIREF-1794, SIFISC-13595
-		DateRangeHelper.assertValidRange(dateDebut, dateFin, ServiceCivilException.class);
+		DateRangeHelper.assertValidRange(dateDebut, dateFin, IndividuConnectorException.class);
 		this.casePostale = null;
 		this.localite = addressInfo.getTown();
 		this.numero = addressInfo.getHouseNumber();

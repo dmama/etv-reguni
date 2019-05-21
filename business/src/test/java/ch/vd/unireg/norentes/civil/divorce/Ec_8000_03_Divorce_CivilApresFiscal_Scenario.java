@@ -2,7 +2,7 @@ package ch.vd.unireg.norentes.civil.divorce;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -69,7 +69,7 @@ public class Ec_8000_03_Divorce_CivilApresFiscal_Scenario extends EvenementCivil
 
 	private final Commune commune = MockCommune.Vevey;
 
-	private class InternalServiceCivil extends MockServiceCivil {
+	private class InternalIndividuConnector extends MockIndividuConnector {
 
 		@Override
 		protected void init() {
@@ -93,11 +93,11 @@ public class Ec_8000_03_Divorce_CivilApresFiscal_Scenario extends EvenementCivil
 		}
 	}
 
-	private InternalServiceCivil serviceCivil;
+	private InternalIndividuConnector serviceCivil;
 
 	@Override
 	protected void initServiceCivil() {
-		serviceCivil = new InternalServiceCivil();
+		serviceCivil = new InternalIndividuConnector();
 		serviceCivilService.setUp(serviceCivil);
 	}
 

@@ -3,7 +3,7 @@ package ch.vd.unireg.evenement.party.control;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.MenageCommun;
@@ -21,7 +21,7 @@ public class ControlRuleForMenageDateTest extends AbstractControlTaxliabilityTes
 	public void testCheckTiersNonAssujettiSansMenageCommun() throws Exception {
 		final long noInd = 1244;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noInd, date(1994, 3, 12), "RuppertDate", "Jeroma", Sexe.FEMININ);
@@ -57,7 +57,7 @@ public class ControlRuleForMenageDateTest extends AbstractControlTaxliabilityTes
 		}
 		final Ids ids = new Ids();
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noInd, date(1994, 3, 12), "RuppertDate", "Jeroma", Sexe.FEMININ);
@@ -103,7 +103,7 @@ public class ControlRuleForMenageDateTest extends AbstractControlTaxliabilityTes
 		}
 		final Ids ids = new Ids();
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noInd, date(1994, 3, 12), "RuppertPeriode", "Jeroma", Sexe.FEMININ);

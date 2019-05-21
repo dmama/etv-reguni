@@ -3,7 +3,7 @@ package ch.vd.unireg.evenement.party.control;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.type.ModeImposition;
@@ -22,7 +22,7 @@ public class ControlRuleForTiersDateTest extends AbstractControlTaxliabilityTest
 	public void testCheckForFiscalVaudois() throws Exception {
 		final long noInd = 1234;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noInd, date(1956, 3, 12), "Ruppert", "Jerome", Sexe.MASCULIN);
@@ -50,7 +50,7 @@ public class ControlRuleForTiersDateTest extends AbstractControlTaxliabilityTest
 	public void testCheckForFiscalAbsent() throws Exception {
 		final long noInd = 1234;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noInd, date(1956, 3, 12), "Ruppert", "Jerome", Sexe.MASCULIN);
@@ -77,7 +77,7 @@ public class ControlRuleForTiersDateTest extends AbstractControlTaxliabilityTest
 	public void testCheckForFiscalHorsCanton() throws Exception {
 		final long noInd = 1234;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noInd, date(1956, 3, 12), "Ruppert", "Jerome", Sexe.MASCULIN);

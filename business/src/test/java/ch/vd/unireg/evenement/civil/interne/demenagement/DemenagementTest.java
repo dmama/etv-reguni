@@ -17,9 +17,9 @@ import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.unireg.evenement.civil.interne.MessageCollector;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockBatiment;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -93,7 +93,7 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 
 		tacheDAO = getBean(TacheDAO.class, "tacheDAO");
 
-		serviceCivil.setUp(new DefaultMockServiceCivil());
+		serviceCivil.setUp(new DefaultMockIndividuConnector());
 		loadDatabase(DB_UNIT_DATA_FILE);
 	}
 
@@ -350,7 +350,7 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 		final RegDate dateDemenagement = date(2011, 2, 1);
 
 		// Crée un individu qui déménage à l'intérieur d'une commune résultant de la fusion de plusieurs communes après la date de fusion fiscale
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noInd, date(1970, 1, 1), "Hutter", "Marcel", true);

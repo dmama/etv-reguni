@@ -42,7 +42,7 @@ import ch.vd.unireg.editique.ZoneAffranchissementEditique;
 import ch.vd.unireg.etiquette.Etiquette;
 import ch.vd.unireg.etiquette.EtiquetteService;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.unireg.interfaces.infra.mock.MockBatiment;
@@ -856,7 +856,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 		final RegDate dateNaissanceFille = date(2005, 2, 8);
 
 		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Guy", true);
@@ -1011,7 +1011,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 		final RegDate dateNaissanceFille = date(2005, 2, 8);
 
 		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Guy", true);

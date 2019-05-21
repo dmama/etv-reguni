@@ -12,10 +12,10 @@ import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.unireg.evenement.civil.interne.HandleStatus;
 import ch.vd.unireg.evenement.civil.interne.MessageCollector;
 import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockPermis;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
@@ -81,7 +81,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 	private static final String DB_UNIT_DATA_FILE = "ObtentionPermisTest.xml";
 
 	private void setupServiceCivilAndLoadDatabase() throws Exception {
-		serviceCivil.setUp(new DefaultMockServiceCivil());
+		serviceCivil.setUp(new DefaultMockIndividuConnector());
 		loadDatabase(DB_UNIT_DATA_FILE);
 	}
 
@@ -171,7 +171,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		final AssujettissementService assujettissementService = getBean(AssujettissementService.class, "assujettissementService");
 
 		// mise en place civile : étranger résident depuis plusieurs années lorsqu'il reçoit le permis C un premier jour de mois
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Oulianov", "Wladimir", Sexe.MASCULIN);
@@ -255,7 +255,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		if (RegDate.get().isAfterOrEqual(dateObtentionPermis)) {
 
 			// mise en place civile : étranger résident depuis plusieurs années lorsqu'il reçoit le permis C un premier jour de mois
-			serviceCivil.setUp(new MockServiceCivil() {
+			serviceCivil.setUp(new MockIndividuConnector() {
 				@Override
 				protected void init() {
 					final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Oulianov", "Wladimir", Sexe.MASCULIN);
@@ -331,7 +331,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		final RegDate dateArrivee = dateObtentionPermis.addYears(-5);
 
 		// mise en place civile : étranger résident depuis plusieurs années lorsqu'il reçoit le permis C aujourd'hui
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Oulianov", "Wladimir", Sexe.MASCULIN);
@@ -526,7 +526,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		final RegDate dateObtentionPermis = date(2005, 6, 12);
 		final RegDate dateDepart = date(2002, 1, 1);
 
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				final MockIndividu julie = addIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, dateNaissance, "Goux", "Julie", false);
@@ -574,7 +574,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		final RegDate dateObtentionPermis = date(2005, 6, 12);
 		final RegDate dateDepart = date(2002, 1, 1);
 
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				final MockIndividu julie = addIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, dateNaissance, "Goux", "Julie", false);
@@ -628,7 +628,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		final RegDate dateDebutMoisProchain = dateObtentionPermis.getLastDayOfTheMonth().getOneDayAfter();
 
 		// On crée la situation suivante : contribuable de nationalité française domicilée à Lausanne et recevant un permis d'établissement aujourd'hui
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				final MockIndividu julie = addIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, dateNaissance, "Goux", "Julie", false);
@@ -691,7 +691,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		final RegDate dateDebutMoisProchain = dateObtentionPermis.getLastDayOfTheMonth().getOneDayAfter();
 
 		// On crée la situation suivante : contribuable de nationalité française domicilée à Lausanne et recevant un permis d'établissement aujourd'hui
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				final MockIndividu julie = addIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, dateNaissance, "Goux", "Julie", false);
@@ -755,7 +755,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		final RegDate datePermisC = date(2011, 4, 12);
 
 		// mise en place civile d'un individu en secondaire dans le canton avec un permis B
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Kaderate", "Yamamoto", true);
@@ -826,7 +826,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		final RegDate datePermisC = date(2011, 4, 12);
 
 		// mise en place civile d'un individu en secondaire dans le canton avec un permis B
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Kaderate", "Yamamoto", true);
@@ -891,7 +891,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		final RegDate datePermisC = date(2011, 4, 12);
 
 		// mise en place civile d'un individu en secondaire dans le canton avec un permis B
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Kaderate", "Yamamoto", true);

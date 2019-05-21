@@ -17,9 +17,9 @@ import ch.vd.shared.validation.EntityValidator;
 import ch.vd.shared.validation.ValidationResults;
 import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.common.BusinessTest;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.security.DroitAccesDAO;
@@ -74,7 +74,7 @@ public class CoupleManagerImplTest extends BusinessTest {
 		final int noIndArnold = 829837;
 		final int noIndJanine = 829838;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu arnold = addIndividu(noIndArnold, date(1970, 1, 1), "Arnold", "Simon", true);
@@ -156,7 +156,7 @@ public class CoupleManagerImplTest extends BusinessTest {
 		final int noIndAgnes = 405927;
 		final RegDate dateArrivee = date(1995, 10, 19);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu arnold = addIndividu(noIndOleg, date(1970, 1, 1), "Kulinich", "Oleg", true);
@@ -219,7 +219,7 @@ public class CoupleManagerImplTest extends BusinessTest {
 		final int noIndArnold = 829837;
 		final int noIndJanine = 829838;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu arnold = addIndividu(noIndArnold, date(1970, 1, 1), "Arnold", "Simon", true);
@@ -312,7 +312,7 @@ public class CoupleManagerImplTest extends BusinessTest {
 		final int noIndArnold = 829837;
 		final int noIndJanine = 829838;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu arnold = addIndividu(noIndArnold, date(1970, 1, 1), "Arnold", "Simon", true);
@@ -393,7 +393,7 @@ public class CoupleManagerImplTest extends BusinessTest {
 		final RegDate dateSeparation = date(2005, 10, 13);
 
 		// civil
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				final MockIndividu mr = addIndividu(noMr, date(1948, 1, 26), "Tartempion", "Robert", true);

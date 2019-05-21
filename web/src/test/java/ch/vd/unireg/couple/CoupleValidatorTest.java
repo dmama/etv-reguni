@@ -13,7 +13,7 @@ import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.common.ValidatorHelperImpl;
 import ch.vd.unireg.common.WebTest;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.metier.MetierService;
@@ -69,7 +69,7 @@ public class CoupleValidatorTest extends WebTest {
 
 		final long noIndividu = 123542L;
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, date(1970, 5, 7), "Petipoint", "Justin", true);
@@ -108,7 +108,7 @@ public class CoupleValidatorTest extends WebTest {
 
 		final long noIndividu = 123542L;
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, date(1970, 5, 7), "Petipoint", "Justin", true);

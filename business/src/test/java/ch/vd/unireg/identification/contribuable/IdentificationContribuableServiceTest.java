@@ -42,8 +42,8 @@ import ch.vd.unireg.indexer.tiers.NonHabitantIndexable;
 import ch.vd.unireg.indexer.tiers.TiersIndexedData;
 import ch.vd.unireg.indexer.tiers.TopList;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockNationalite;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -220,7 +220,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, date(1953, 4, 3), "Zweisteinen", "Albert", true);
@@ -326,7 +326,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividuAlbert, date(1953, 4, 3), "Zweisteinen", "Albert", true);
@@ -394,7 +394,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu indClaude = addIndividu(noIndividuClaude, date(1900, 1, 1), "Rosat", "Claude", true);
@@ -480,7 +480,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 
@@ -550,7 +550,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 
@@ -608,7 +608,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu indClaude = addIndividu(noIndividuClaude, date(1978,5,6), "Rosat", "Claude", true);
@@ -675,7 +675,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu indClaude = addIndividu(noIndividuClaude, date(1978,5,6), "Rosat", "Claude", true);
@@ -750,7 +750,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu indClaude = addIndividu(noIndividuClaude, date(1978,5,6), "Rosat", "Claude", true);
@@ -811,7 +811,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu indJudith = addIndividu(noIndividuJudith, date(1978,5,6), "Henchoz", "Judith", true);
@@ -873,7 +873,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu indAndre = addIndividu(noIndividuAndre, date(1913,9,10), "Gailloud", "André", true);
@@ -934,7 +934,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu indAndre = addIndividu(noIndividuAndre, date(1913,9,10), "Gailloud", "André", true);
@@ -993,7 +993,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu indClaude = addIndividu(noIndividuClaude, date(1990,10,11), "Farge", "Thomas", true);
@@ -1050,7 +1050,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu indClaude = addIndividu(noIndividuClaude, date(1990,10,11), "Farge", "Thomas", true);
@@ -1114,7 +1114,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu indClaude = addIndividu(noIndividuClaude, null, "Rosat", "Claude", true);
@@ -1181,7 +1181,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu indClaude = addIndividu(noIndividuClaude, (date(1979,10,4)), "Rosat", "Claude", true);
@@ -1248,7 +1248,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu indClaude = addIndividu(noIndividuClaude, (date(1979,10,3)), "Rosat", "Claude", true);
@@ -1305,7 +1305,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu indClaude = addIndividu(noIndividuClaude, (date(1979,10,3)), "Rosat", "Claude", true);
@@ -1362,7 +1362,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu indClaude = addIndividu(noIndividuClaude, null, "Rosat", "Claude", true);
@@ -1418,7 +1418,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu indClaude = addIndividu(noIndividuClaude, (date(1979,10,4)), "Rosat", "Claude", true);
@@ -1485,7 +1485,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu indClaude = addIndividu(noIndividuClaude, (RegDate.get(1979)), "Rosat", "Claude", true);
@@ -1552,7 +1552,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu indClaude = addIndividu(noIndividuClaude, (date(1979,10,4)), "Rosat", "Claude", true);
@@ -1619,7 +1619,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu indClaude = addIndividu(noIndividuClaude, (RegDate.get(1979,10)), "Rosat", "Claude", true);
@@ -1688,7 +1688,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu indClaude = addIndividu(noIndividuClaude, date(1954, 1, 1), "ZANOLARI", "Jean-Pierre", true);
@@ -1760,7 +1760,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu indJerome1 = addIndividu(noIndividuJerome1, date(1982, 7, 26), "Lathion", "Jérôme", true);
@@ -1996,7 +1996,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividuAlbert, date(1953, 4, 3), "Zweisteinen", "Albert", true);
@@ -2064,7 +2064,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividuAlbert, date(1953, 4, 3), "Zweisteinen", "Albert", true);
@@ -2154,7 +2154,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividuAlbert, date(1953, 4, 3), "Zweisteinen", "Albert", true);
@@ -2581,7 +2581,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
 		final long noIndividu = 1234;
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, date(1953, 1, 1), "Zora", "Larousse", true);
@@ -3151,7 +3151,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final long noIndividu = 1234;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu indMaya = addIndividu(noIndividu, date(1953, 4, 3), "Müller", "Maya", true);
@@ -3190,7 +3190,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu indAlex = addIndividu(noIndividu, date(1953, 4, 3), "OHLENSCHLÄGER", "Alex", true);
@@ -3228,7 +3228,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu indMaya = addIndividu(noIndividu, date(1953, 4, 3), "Schönenberg", "Peter", true);
@@ -3266,7 +3266,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu indMaya = addIndividu(noIndividu, date(1953, 4, 3), "STEVENSON", "Hugh", true);
@@ -3304,7 +3304,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu indMaya = addIndividu(noIndividu, date(1953, 4, 3), "RICHOZ", "Jean-Pierre", true);
@@ -3342,7 +3342,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu indMaya = addIndividu(noIndividu, date(1953, 4, 3), "Schönenberg", "Peter", true);
@@ -3380,7 +3380,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu indMaya = addIndividu(noIndividu, date(1953, 4, 3), "Schönenberg", "Peter", true);
@@ -3418,7 +3418,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu indMaya = addIndividu(noIndividu, date(1953, 4, 3), "Schönenberg", "Ülrich", true);
@@ -3456,7 +3456,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, date(1974, 5, 12), "Labeille", "Maya", false);
@@ -3505,7 +3505,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, date(1974, 5, 12), "Labeille", "Maya", false);
@@ -3573,7 +3573,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, date(1974, 5, 12), "Labeille", "Maya", false);
@@ -3867,7 +3867,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
 		// rien au civil
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 			}
@@ -3942,7 +3942,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		});
 
 		// rien au civil
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 			}
@@ -3991,7 +3991,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		});
 
 		// rien au civil
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 			}
@@ -4040,7 +4040,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		});
 
 		// rien au civil
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 			}
@@ -4105,7 +4105,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// rien au civil
@@ -4163,7 +4163,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// rien au civil

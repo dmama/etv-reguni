@@ -8,11 +8,11 @@ import ch.vd.unireg.cache.UniregCacheManager;
 import ch.vd.unireg.data.DataEventService;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
-import ch.vd.unireg.interfaces.civil.cache.ServiceCivilCache;
+import ch.vd.unireg.interfaces.civil.cache.IndividuConnectorCache;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.type.MotifFor;
@@ -49,7 +49,7 @@ public class CorrectionFiliationTest extends AbstractEvenementCivilInterneTest {
 		assertNotNull(uniregCacheManager);
 
 		// Initialisation du service civil avec un cache
-		final ServiceCivilCache cache = new ServiceCivilCache();
+		final IndividuConnectorCache cache = new IndividuConnectorCache();
 		cache.setCacheManager(cacheManager);
 		cache.setCacheName("serviceCivil");
 		cache.setUniregCacheManager(uniregCacheManager);
@@ -66,7 +66,7 @@ public class CorrectionFiliationTest extends AbstractEvenementCivilInterneTest {
 			final RegDate datesNaissanceEnfants = date(1975, 3, 2);
 
 			// Création de l'individu
-			cache.setTarget(new MockServiceCivil() {
+			cache.setTarget(new MockIndividuConnector() {
 				@Override
 				protected void init() {
 					final MockIndividu enfant = addIndividu(jeanNoInd, datesNaissanceEnfants, "Jacquouille", "Jean", true);
@@ -147,7 +147,7 @@ public class CorrectionFiliationTest extends AbstractEvenementCivilInterneTest {
 		}
 	}
 
-	private static void assertNomIndividu(String nom, String prenom, ServiceCivilCache cache, final long noIndividu) {
+	private static void assertNomIndividu(String nom, String prenom, IndividuConnectorCache cache, final long noIndividu) {
 		final Individu individu = cache.getIndividu(noIndividu, AttributeIndividu.PARENTS); // on demande toujours la même part que pour le traitement de l'événement, pour éviter des effers de bord au niveau du cache
 		assertNotNull(individu);
 		assertEquals(prenom, individu.getPrenomUsuel());

@@ -21,7 +21,7 @@ import ch.vd.unireg.evenement.civil.interne.arrivee.ArriveePrincipale;
 import ch.vd.unireg.evenement.civil.interne.mariage.Mariage;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
@@ -50,7 +50,7 @@ public class EvenementCivilInterneTest extends WithoutSpringTest {
 
 		final MockTiersDAO tiersDAO = new MockTiersDAO();
 		final ServiceInfrastructureService infrastructureService = new ServiceInfrastructureImpl(new DefaultMockServiceInfrastructureService(), tiersDAO);
-		final ServiceCivilService serviceCivil = new ServiceCivilImpl(infrastructureService, new MockServiceCivil() {
+		final ServiceCivilService serviceCivil = new ServiceCivilImpl(infrastructureService, new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividuPrincipal, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -103,7 +103,7 @@ public class EvenementCivilInterneTest extends WithoutSpringTest {
 
 		final MockTiersDAO tiersDAO = new MockTiersDAO();
 		final ServiceInfrastructureService infrastructureService = new ServiceInfrastructureImpl(new DefaultMockServiceInfrastructureService(), tiersDAO);
-		final ServiceCivilService serviceCivil = new ServiceCivilImpl(infrastructureService, new MockServiceCivil() {
+		final ServiceCivilService serviceCivil = new ServiceCivilImpl(infrastructureService, new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndMonsieur, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);

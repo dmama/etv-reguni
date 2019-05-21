@@ -25,7 +25,7 @@ import ch.vd.unireg.cache.UniregCacheInterface;
 import ch.vd.unireg.cache.UniregCacheManager;
 import ch.vd.unireg.data.CivilDataEventListener;
 import ch.vd.unireg.data.CivilDataEventService;
-import ch.vd.unireg.interfaces.civil.ServiceCivilException;
+import ch.vd.unireg.interfaces.civil.IndividuConnectorException;
 import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseException;
 import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseRaw;
 import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseWrapper;
@@ -314,7 +314,7 @@ public class ServiceEntrepriseCache implements ServiceEntrepriseRaw, UniregCache
 	}
 
 	@Override
-	public void ping() throws ServiceCivilException {
+	public void ping() throws IndividuConnectorException {
 		target.ping();
 	}
 

@@ -7,9 +7,12 @@ import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 
-public interface ServiceCivilRaw {
+/**
+ * Connecteur pour accéder aux données civiles des individus (= personnes physiques connues aux contrôle des habitants des communes vaudoises).
+ */
+public interface IndividuConnector {
 
-	String SERVICE_NAME = "ServiceCivil";
+	String SERVICE_NAME = "IndividuConnector";
 
 	/**
 	 * Retourne l'individu identifié par le numéro en paramètre avec son historique complet.
@@ -26,9 +29,9 @@ public interface ServiceCivilRaw {
 	 * @param noIndividu le numéro technique de l'individu.
 	 * @param parties    les parties optionnelles devant être renseignées
 	 * @return l'individu populé avec les données valides jusqu'à l'année spécifiée; ou <b>null</b> si l'individu n'existe pas.
-	 * @throws ServiceCivilException en cas d'erreur lors de la récupération de l'individu.
+	 * @throws IndividuConnectorException en cas d'erreur lors de la récupération de l'individu.
 	 */
-	Individu getIndividu(long noIndividu, AttributeIndividu... parties) throws ServiceCivilException;
+	Individu getIndividu(long noIndividu, AttributeIndividu... parties) throws IndividuConnectorException;
 
 	/**
 	 * Retourne l'individu concerné par l'événement civil dont l'identifiant est donné en paramètre avec son historique complet.
@@ -45,9 +48,9 @@ public interface ServiceCivilRaw {
 	 * @param evtId le numéro technique de l'individu.
 	 * @param parties    les parties optionnelles devant être renseignées
 	 * @return l'individu populé avec les données valides jusqu'à l'année spécifiée; ou <b>null</b> si l'individu n'existe pas.
-	 * @throws ServiceCivilException en cas d'erreur lors de la récupération de l'individu.
+	 * @throws IndividuConnectorException en cas d'erreur lors de la récupération de l'individu.
 	 */
-	Individu getIndividuByEvent(long evtId, AttributeIndividu... parties) throws ServiceCivilException;
+	Individu getIndividuByEvent(long evtId, AttributeIndividu... parties) throws IndividuConnectorException;
 
 	/**
 	 * Retourne un lot d'individu avec les parties spécifiées.
@@ -57,9 +60,9 @@ public interface ServiceCivilRaw {
 	 * @param nosIndividus les numéros d'individus demandés
 	 * @param parties      les parties optionnelles devant être renseignées
 	 * @return la liste des individus trouvés, ou <b>null</b> si le service n'est pas capable de charger les individus par lots.
-	 * @throws ServiceCivilException en cas d'erreur lors de la récupération d'un ou plusieurs individus.
+	 * @throws IndividuConnectorException en cas d'erreur lors de la récupération d'un ou plusieurs individus.
 	 */
-	List<Individu> getIndividus(Collection<Long> nosIndividus, AttributeIndividu... parties) throws ServiceCivilException;
+	List<Individu> getIndividus(Collection<Long> nosIndividus, AttributeIndividu... parties) throws IndividuConnectorException;
 
 	/**
 	 * Renvoie un individu correspondant à l'événement donné
@@ -71,14 +74,14 @@ public interface ServiceCivilRaw {
 	IndividuApresEvenement getIndividuAfterEvent(long eventId);
 
 	/**
-	 * Méthode qui permet de tester que le service civil répond bien. Cette méthode est insensible aux caches.
+	 * Méthode qui permet de tester que le connecteur des individus répond bien. Cette méthode est insensible aux caches.
 	 *
-	 * @throws ServiceCivilException en cas de non-fonctionnement du service civil
+	 * @throws IndividuConnectorException en cas de non-fonctionnement du connecteur des individus
 	 */
-	void ping() throws ServiceCivilException;
+	void ping() throws IndividuConnectorException;
 
 	/**
-	 * @return <b>vrai</b> si l'implémentation courante du service civil possède un cache et que ce cache est susceptible d'être chauffé avec un appel à getIndividus().
+	 * @return <b>vrai</b> si l'implémentation courante du connecteur des individus possède un cache et que ce cache est susceptible d'être chauffé avec un appel à getIndividus().
 	 */
 	boolean isWarmable();
 }

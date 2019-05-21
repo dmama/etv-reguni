@@ -2,28 +2,28 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="serviceCivilRcPers" class="ch.vd.unireg.interfaces.civil.rcpers.ServiceCivilRCPers">
+	<bean id="individuConnectorRCPers" class="ch.vd.unireg.interfaces.civil.rcpers.IndividuConnectorRCPers">
 		<property name="client" ref="rcPersClient" />
 		<property name="infraService" ref="serviceInfrastructureRaw"/>
 	</bean>
 
-	<bean id="serviceCivilServiceTracing" class="ch.vd.unireg.interfaces.civil.ServiceCivilTracing">
-		<property name="target" ref="serviceCivilRcPers" />
+	<bean id="individuConnectorTracing" class="ch.vd.unireg.interfaces.civil.IndividuConnectorTracing">
+		<property name="target" ref="individuConnectorRCPers" />
 		<property name="statsService" ref="statsService" />
 	</bean>
 
-	<bean id="serviceCivilServiceCache" class="ch.vd.unireg.interfaces.civil.cache.ServiceCivilPersistentCache">
-		<property name="target" ref="serviceCivilServiceTracing" />
+	<bean id="individuConnectorCache" class="ch.vd.unireg.interfaces.civil.cache.IndividuConnectorPersistentCache">
+		<property name="target" ref="individuConnectorTracing" />
 		<property name="cache" ref="civilBerkeleyCache" />
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
 		<property name="dataEventService" ref="dataEventService" />
 	</bean>
 
-	<bean id="serviceCivilEndPoint" class="ch.vd.unireg.interfaces.civil.ServiceCivilEndPoint">
-		<property name="target" ref="serviceCivilServiceCache" />
+	<bean id="individuConnectorEndPoint" class="ch.vd.unireg.interfaces.civil.IndividuConnectorEndPoint">
+		<property name="target" ref="individuConnectorCache" />
 	</bean>
 
-	<alias alias="serviceCivilRaw" name="serviceCivilEndPoint"/>
+	<alias alias="individuConnector" name="individuConnectorEndPoint"/>
 
 </beans>

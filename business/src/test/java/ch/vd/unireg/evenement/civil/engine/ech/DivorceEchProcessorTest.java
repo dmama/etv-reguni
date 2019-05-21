@@ -9,9 +9,9 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchErreur;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
@@ -42,7 +42,7 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		final RegDate dateMariage = date(2005, 5, 5);
 		final RegDate dateDivorce = date(2008, 11, 23);
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu monsieur = addIndividu(noMonsieur, date(1923, 2, 12), "Crispus", "Santacorpus", true);
@@ -100,7 +100,7 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 
 		// création de 2 individus mariés dans le civil, madame "sait" qu'elle est marié avec monsieur.
 		// Monsieur ne sait pas avec qui il est marié (c'est un cas normal d'apres l'équipe Rcpers)
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu monsieur = addIndividu(noMonsieur, date(1923, 2, 12), "Crispus", "Santacorpus", true);
@@ -137,7 +137,7 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		doModificationIndividu(noMonsieur, new IndividuModification() {
 			@Override
 			public void modifyIndividu(MockIndividu individu) {
-				MockServiceCivil.divorceIndividu(individu, dateDivorce);
+				MockIndividuConnector.divorceIndividu(individu, dateDivorce);
 			}
 		});
 
@@ -151,7 +151,7 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		doModificationIndividu(noMadame, new IndividuModification() {
 			@Override
 			public void modifyIndividu(MockIndividu individu) {
-				MockServiceCivil.divorceIndividu(individu, dateDivorce);
+				MockIndividuConnector.divorceIndividu(individu, dateDivorce);
 			}
 		});
 
@@ -192,7 +192,7 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 
 		// création de 2 individus mariés dans le civil, madame "sait" qu'elle est marié avec monsieur.
 		// Monsieur ne sait pas avec qui il est marié (c'est un cas normal d'apres l'équipe Rcpers)
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu monsieur = addIndividu(noMonsieur, date(1923, 2, 12), "Crispus", "Santacorpus", true);
@@ -226,7 +226,7 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		doModificationIndividu(noMonsieur, new IndividuModification() {
 			@Override
 			public void modifyIndividu(MockIndividu individu) {
-				MockServiceCivil.divorceIndividu(individu, dateDivorce);
+				MockIndividuConnector.divorceIndividu(individu, dateDivorce);
 			}
 		});
 
@@ -249,7 +249,7 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		doModificationIndividu(noMadame, new IndividuModification() {
 			@Override
 			public void modifyIndividu(MockIndividu individu) {
-				MockServiceCivil.divorceIndividu(individu, dateDivorce);
+				MockIndividuConnector.divorceIndividu(individu, dateDivorce);
 			}
 		});
 
@@ -291,7 +291,7 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		final RegDate dateMariage = date(2005, 5, 5);
 		final RegDate dateDivorce = date(2008, 11, 23);
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu madame = addIndividu(noMadame, date(1974, 8, 1), "Lisette", "Bouton", false);
@@ -359,7 +359,7 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 
 		// création de 2 individus mariés dans le civil, madame "sait" qu'elle est marié avec monsieur.
 		// Monsieur ne sait pas avec qui il est marié (c'est un cas normal d'apres l'équipe Rcpers)
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu monsieur = addIndividu(noMonsieur, date(1923, 2, 12), "Crispus", "Santacorpus", true);
@@ -398,7 +398,7 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		doModificationIndividu(noMonsieur, new IndividuModification() {
 			@Override
 			public void modifyIndividu(MockIndividu individu) {
-				MockServiceCivil.divorceIndividu(individu, dateDivorce);
+				MockIndividuConnector.divorceIndividu(individu, dateDivorce);
 			}
 		});
 
@@ -435,7 +435,7 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		final RegDate dateMariage = date(2005, 5, 5);
 		final RegDate dateDivorce = date(2008, 11, 23);
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu monsieur = addIndividu(noMonsieur, date(1923, 2, 12), "Crispus", "Santacorpus", true);
@@ -491,7 +491,7 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		final RegDate dateDivorce = date(2008, 11, 23);
 		final RegDate dateDebutDecision = date(2009, 11, 23);
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu monsieur = addIndividu(noMonsieur, date(1923, 2, 12), "Crispus", "Santacorpus", true);
@@ -545,7 +545,7 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		final RegDate dateMariage = date(2005, 5, 5);
 		final RegDate dateDivorce = date(2008, 11, 23);
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu monsieur = addIndividu(noMonsieur, date(1923, 2, 12), "Crispus", "Santacorpus", true);
@@ -608,7 +608,7 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		}
 		final Ids ids = new Ids();
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu monsieur = addIndividu(noMonsieur, date(1923, 2, 12), "Crispus", "Santacorpus", true);

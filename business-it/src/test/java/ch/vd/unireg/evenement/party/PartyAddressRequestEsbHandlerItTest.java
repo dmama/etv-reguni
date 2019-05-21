@@ -9,7 +9,7 @@ import ch.vd.technical.esb.EsbMessage;
 import ch.vd.unireg.common.BusinessItTest;
 import ch.vd.unireg.evenement.EvenementHelper;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.service.mock.ProxyServiceCivil;
@@ -279,7 +279,7 @@ public class PartyAddressRequestEsbHandlerItTest extends PartyRequestEsbHandlerV
 
 		final long noInd = 12345L;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noInd, date(1976, 5, 12), "Dffru", "Rhoo", true);
@@ -320,7 +320,7 @@ public class PartyAddressRequestEsbHandlerItTest extends PartyRequestEsbHandlerV
 
 		final long noInd = 12345L;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noInd, date(1976, 5, 12), "Dffru", "Rhoo", true);

@@ -26,9 +26,9 @@ import ch.vd.unireg.declaration.EtatDeclarationRetournee;
 import ch.vd.unireg.declaration.ModeleDocument;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
 import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockEntrepriseCivile;
@@ -117,7 +117,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 		super.onSetUp();
 		service = getBean(PartyWebService.class, "partyService3Impl");
 		login = new UserLogin("iamtestuser", 22);
-		serviceCivil.setUp(new DefaultMockServiceCivil());
+		serviceCivil.setUp(new DefaultMockIndividuConnector());
 	}
 
 	/**
@@ -330,7 +330,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 		final long noIndividuTiia = 339619;
 		final long noIndividuSylvie = 339618;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu tiia = addIndividu(noIndividuTiia, date(1989, 12, 21), "Tauxe", "Tiia", false);
@@ -1174,7 +1174,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 
 		final long noInd = 123456L;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu ind = addIndividu(noInd, date(1977, 3, 21), "Félix", "Talog", true);
@@ -2256,7 +2256,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 
 		final long noInd = 13432;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noInd, date(1983, 3, 31), "Gourt", "Eva", Sexe.FEMININ);
@@ -2294,7 +2294,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 
 		final long noInd = 13432;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noInd, date(1983, 3, 31), "Gourt", "Eva", Sexe.FEMININ);
@@ -2515,7 +2515,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 		final long noIndividu = 2387432376L;
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "de Montaigne", "Michel", Sexe.MASCULIN);
@@ -2555,7 +2555,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 		final RegDate dateNaissanceFiston = date(1975, 10, 22);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu papa = addIndividu(noIndPapa, date(1950, 8, 26), "Smith", "John Senior", Sexe.MASCULIN);

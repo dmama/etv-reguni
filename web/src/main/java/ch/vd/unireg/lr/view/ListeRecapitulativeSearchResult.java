@@ -14,7 +14,7 @@ import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.Annulable;
 import ch.vd.unireg.declaration.DeclarationImpotSource;
 import ch.vd.unireg.declaration.EtatDeclaration;
-import ch.vd.unireg.interfaces.civil.ServiceCivilException;
+import ch.vd.unireg.interfaces.civil.IndividuConnectorException;
 import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseException;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.type.CategorieImpotSource;
@@ -68,7 +68,7 @@ public class ListeRecapitulativeSearchResult implements Annulable {
 			LOGGER.error("Exception levée à la récupération du nom associé au débiteur " + dpi.getNumero(), e);
 			return Pair.of(null, "Erreur lors de l'appel au service civil des entreprises (" + e.getMessage() + ")");
 		}
-		catch (ServiceCivilException e) {
+		catch (IndividuConnectorException e) {
 			LOGGER.error("Exception levée à la récupération du nom associé au débiteur " + dpi.getNumero(), e);
 			return Pair.of(null, "Erreur lors de l'appel au service civil des personnes (" + e.getMessage() + ")");
 		}

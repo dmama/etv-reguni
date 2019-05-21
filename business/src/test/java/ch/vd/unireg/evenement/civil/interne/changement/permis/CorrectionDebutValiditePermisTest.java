@@ -9,7 +9,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -35,7 +35,7 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		final RegDate datePermis = RegDate.get().addYears(-1);
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Granger", "Hermione", false);
@@ -60,7 +60,7 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		final RegDate datePermis = RegDate.get().addYears(-1);
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Granger", "Hermione", false);
@@ -90,7 +90,7 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		final RegDate datePermis = RegDate.get().addYears(-1);
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Granger", "Hermione", false);
@@ -121,7 +121,7 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		final RegDate datePermis = RegDate.get().addYears(-1);
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Granger", "Hermione", false);
@@ -152,7 +152,7 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		final RegDate datePermis = RegDate.get().addYears(-1);
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Granger", "Hermione", false);
@@ -183,7 +183,7 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		final RegDate datePermis = RegDate.get().addYears(-1);
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Granger", "Hermione", false);
@@ -215,7 +215,7 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		final RegDate datePermis = RegDate.get().addYears(-1);
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Granger", "Hermione", false);
@@ -248,7 +248,7 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		final RegDate datePermis = RegDate.get().addYears(-1);
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Granger", "Hermione", false);
@@ -285,7 +285,7 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		final RegDate datePermis = RegDate.get().addYears(-1);
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu mme = addIndividu(noIndividuMme, dateNaissance, "Granger", "Hermione", false);
@@ -325,7 +325,7 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		final RegDate datePermis = RegDate.get().addYears(-1);
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu mme = addIndividu(noIndividuMme, dateNaissance, "Granger", "Hermione", false);
@@ -364,7 +364,7 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		final RegDate datePermis = RegDate.get().addYears(-1);
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final RegDate dateNaissanceMajeur = dateNaissance.addYears(-3);
@@ -402,7 +402,7 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		final RegDate datePermis = RegDate.get().addYears(-1);
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Granger", "Hermione", false);
@@ -432,7 +432,7 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		final RegDate datePermis = RegDate.get().addYears(-1);
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Granger", "Hermione", false);
@@ -463,7 +463,7 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		final RegDate datePermis = RegDate.get().addYears(-1);
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Granger", "Hermione", false);

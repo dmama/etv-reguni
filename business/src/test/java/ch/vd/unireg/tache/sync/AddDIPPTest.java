@@ -15,7 +15,7 @@ import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
 import ch.vd.unireg.declaration.QuestionnaireSNCDAO;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
@@ -89,7 +89,7 @@ public class AddDIPPTest extends BusinessTest {
 	public void testDateEcheanceDebutAnneeSuivanteTresPresDeLaLimite() throws Exception {
 
 		// service civil vide...
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 			}
@@ -168,7 +168,7 @@ public class AddDIPPTest extends BusinessTest {
 	public void testDateEcheanceDebutAnneeSuivanteAssezLoinDeLaLimite() throws Exception {
 
 		// service civil vide...
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 			}
@@ -240,7 +240,7 @@ public class AddDIPPTest extends BusinessTest {
 	public void testDateEcheanceMilieuAnneeSuivante() throws Exception {
 
 		// service civil vide...
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 			}
@@ -317,7 +317,7 @@ public class AddDIPPTest extends BusinessTest {
 	public void testDateEcheanceResultanteParTypeContribuable() throws Exception {
 
 		// service civil vide...
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 			}
@@ -449,7 +449,7 @@ public class AddDIPPTest extends BusinessTest {
 	public void testLimiteDateEcheanceParTypeContribuable() throws Exception {
 
 		// service civil vide...
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 			}

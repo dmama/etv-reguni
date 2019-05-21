@@ -19,9 +19,9 @@ import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchErreur;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockCanton;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -88,7 +88,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		final RegDate dateArrivee = date(2011, 10, 31);
 
 		// le p'tit nouveau
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				final RegDate dateNaissance = date(1956, 4, 23);
@@ -143,7 +143,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		final RegDate dateArrivee = date(2011, 10, 1);
 
 		// la personne civil
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				final RegDate dateNaissance = date(1987, 2, 4);
@@ -204,7 +204,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		final RegDate dateMariage = date(2001, 10, 1);
 		
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final RegDate naissanceLui = date(1970, 3, 12);
@@ -328,7 +328,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		final RegDate dateMariage = date(2016, 6, 10);
 
 		// mise en place civile (seule l'arrivée de Monsieur est disponible à cet instant)
-		final MockServiceCivil mockServiceCivil = new MockServiceCivil() {
+		final MockIndividuConnector mockIndividuConnector = new MockIndividuConnector() {
 			@Override
 			protected void init() {
 
@@ -348,7 +348,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				adrLui.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_CANTON, MockCanton.Geneve.getNoOFS(), null));
 			}
 		};
-		serviceCivil.setUp(mockServiceCivil);
+		serviceCivil.setUp(mockIndividuConnector);
 
 		// le ménage existait avant leurs arrivées en raison d'un immeuble à Lausanne
 		doInNewTransactionAndSession(status -> {
@@ -403,11 +403,11 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 
 		// saisie différée du permis C et de l'arrivée de madame dans le service civil
 		{
-			final MockIndividu elle = mockServiceCivil.getIndividu(noElle);
+			final MockIndividu elle = mockIndividuConnector.getIndividu(noElle);
 			assertNotNull(elle);
-			mockServiceCivil.addPermis(elle, TypePermis.ETABLISSEMENT, dateArrivee, null, false);
+			mockIndividuConnector.addPermis(elle, TypePermis.ETABLISSEMENT, dateArrivee, null, false);
 
-			final MockAdresse adrElle = mockServiceCivil.addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateArrivee, null);
+			final MockAdresse adrElle = mockIndividuConnector.addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateArrivee, null);
 			adrElle.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_CANTON, MockCanton.Geneve.getNoOFS(), null));
 		}
 
@@ -478,7 +478,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		final Ids ids = new Ids();
 
 		// mise en place civile (seule l'arrivée de Monsieur est disponible à cet instant)
-		final MockServiceCivil mockServiceCivil = new MockServiceCivil() {
+		final MockIndividuConnector mockIndividuConnector = new MockIndividuConnector() {
 			@Override
 			protected void init() {
 
@@ -498,7 +498,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				adrLui.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_CANTON, MockCanton.Geneve.getNoOFS(), null));
 			}
 		};
-		serviceCivil.setUp(mockServiceCivil);
+		serviceCivil.setUp(mockIndividuConnector);
 
 		// le ménage existait avant leurs arrivées en raison d'un immeuble à Lausanne
 		doInNewTransactionAndSession(status -> {
@@ -556,11 +556,11 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 
 		// saisie différée du permis C et de l'arrivée de madame dans le service civil
 		{
-			final MockIndividu elle = mockServiceCivil.getIndividu(noElle);
+			final MockIndividu elle = mockIndividuConnector.getIndividu(noElle);
 			assertNotNull(elle);
-			mockServiceCivil.addPermis(elle, TypePermis.ETABLISSEMENT, dateArriveeMadame, null, false);
+			mockIndividuConnector.addPermis(elle, TypePermis.ETABLISSEMENT, dateArriveeMadame, null, false);
 
-			final MockAdresse adrElle = mockServiceCivil.addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateArriveeMadame, null);
+			final MockAdresse adrElle = mockIndividuConnector.addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateArriveeMadame, null);
 			adrElle.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_CANTON, MockCanton.Geneve.getNoOFS(), null));
 		}
 
@@ -611,7 +611,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		final RegDate dateMariage = date(2001, 10, 1);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final RegDate naissanceLui = date(1970, 3, 12);
@@ -690,7 +690,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		final RegDate dateMariage = date(2001, 10, 1);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final RegDate naissanceLui = date(1970, 3, 12);
@@ -788,7 +788,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 
 		// adresses de monsieur : Bussigny puis Moudon le 01.10.2017
 		// adresses de madame : France puis Moudon le 05.09.2017
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu lui = addIndividu(noMonsieur, naissanceMonsieur, "Tartempion", "François", true);
@@ -923,7 +923,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		setWantIndexationTiers(true);
 
 		// adresses de madame : Lausanne puis Renens le 27.05.2015
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu elle = addIndividu(noMadame, naissanceMadame, "Tartempion", "Françoise", false);
@@ -999,7 +999,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		final RegDate dateMariage = date(2001, 10, 1);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final RegDate naissanceLui = date(1970, 3, 12);
@@ -1108,7 +1108,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final RegDate naissanceLui = date(1970, 3, 12);
@@ -1223,7 +1223,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final RegDate naissanceLui = date(1970, 3, 12);
@@ -1357,7 +1357,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		final RegDate dateArrivee = date(2011, 10, 31);
 
 		// le p'tit nouveau
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				final RegDate dateNaissance = date(1956, 4, 23);
@@ -1404,7 +1404,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		final RegDate dateArrivee = date(2011, 10, 31);
 
 		// le p'tit nouveau
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				final RegDate dateNaissance = date(1956, 4, 23);
@@ -1455,7 +1455,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		final Long noInd = 324543L;
 		final RegDate dateArrivee = date(2000, 1, 1);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu ind = addIndividu(noInd, date(1965, 3, 12), "Bolomey", "Brian", true);
@@ -1510,7 +1510,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			setWantIndexationTiers(true);
 
 			// le p'tit nouveau
-			serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 				@Override
 				protected void init() {
 					final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Chollet", "Ignacio", true);
@@ -1597,7 +1597,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			setWantIndexationTiers(true);
 
 			// Les deux membres arrivent sur Vaud
-			serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 				@Override
 				protected void init() {
 					final MockIndividu ignacio = addIndividu(noIndividuIgnacio, dateNaissanceIgnacio, "Dubois", "Ignacio", true);
@@ -1682,7 +1682,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			setWantIndexationTiers(true);
 
 			// le p'tit nouveau
-			serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 				@Override
 				protected void init() {
 					final MockIndividu ind = addIndividu(noIndividu, null, "", "Ignacio", true);
@@ -1750,7 +1750,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			setWantIndexationTiers(true);
 
 			// le p'tit nouveau
-			serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 				@Override
 				protected void init() {
 					final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Bocktaels", "Jérémie Daniel Gabriel", true);
@@ -1817,7 +1817,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			setWantIndexationTiers(true);
 
 			// le p'tit nouveau
-			serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 				@Override
 				protected void init() {
 					final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Bocktaels", "Jérémie Daniel Gabriel", true);
@@ -1884,7 +1884,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			setWantIndexationTiers(true);
 
 			// le p'tit nouveau
-			serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 				@Override
 				protected void init() {
 					final MockIndividu ind = addIndividu(noIndividu, null, "", "Ignacio", true);
@@ -1964,7 +1964,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			setWantIndexationTiers(true);
 
 			// le p'tit nouveau
-			serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 				@Override
 				protected void init() {
 					final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Chollet", "Ignacio", true);
@@ -2043,7 +2043,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			setWantIndexationTiers(true);
 
 			// le p'tit nouveau
-			serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 				@Override
 				protected void init() {
 					final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Chollet", "Ignacio", true);
@@ -2112,7 +2112,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			setWantIndexationTiers(true);
 
 			// le p'tit nouveau
-			serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 				@Override
 				protected void init() {
 					final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Chollet", "Ignacio", true);
@@ -2188,7 +2188,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			setWantIndexationTiers(true);
 
 			// Le civil
-			serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 				@Override
 				protected void init() {
 
@@ -2301,7 +2301,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 
 
 		// mise en place civile Madame
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final RegDate naissanceElle = date(1971, 6, 21);
@@ -2357,7 +2357,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 
 
 		// mise en place civile Monsieur
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 
@@ -2423,7 +2423,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		final RegDate dateArrivee = date(2012, 5, 5);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final RegDate dateNaissance = date(1980, 10, 25);
@@ -2506,7 +2506,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		final Ids ids = new Ids();
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final RegDate naissanceLui = date(1970, 3, 12);
@@ -2590,7 +2590,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		final RegDate dateArrivee = date(2012, 5, 5);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final RegDate dateNaissance = date(1980, 10, 25);
@@ -2663,7 +2663,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		final RegDate dateNaissance = RegDate.get().addYears(-70);      // à changer quand l'âge de la retraite atteindra 70 ans...
 		final RegDate dateArrivee = RegDate.get().addDays(-20);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Boyington", "Gregory", Sexe.MASCULIN);
@@ -2718,7 +2718,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		final RegDate dateNaissanceElle = RegDate.get().addYears(-50);
 		final RegDate dateArrivee = RegDate.get().addDays(-20);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu lui = addIndividu(noIndividuLui, dateNaissanceLui, "Boyington", "Gregory", Sexe.MASCULIN);
@@ -2783,7 +2783,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		final RegDate dateNaissance = RegDate.get().addYears(-50);
 		final RegDate dateArrivee = RegDate.get().addDays(-20);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu lui = addIndividu(noIndividuLui, dateNaissance, "Boyington", "Gregory", Sexe.MASCULIN);
@@ -2854,7 +2854,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		final RegDate dateArrivee = date(2013, 5, 12);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu lui = addIndividu(noIndividuLui, date(1971, 11, 7), "Tabernacle", "John", Sexe.MASCULIN);
@@ -2934,7 +2934,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		final RegDate dateArrivee = RegDate.get().addYears(-2);     // comme ça l'enfant reste mineur et on ne lui crée pas de for
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu papa = addIndividu(indPapa, null, "Chollet", "Ignacio", Sexe.MASCULIN);
@@ -3118,7 +3118,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		final Ids ids = new Ids();
 
 		// la personne civil
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				final RegDate dateNaissance = date(1987, 2, 4);
@@ -3186,7 +3186,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		final Ids ids = new Ids();
 
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu lui = addIndividu(noIndividuLui, dateNaissance, "Boyington", "Gregory", Sexe.MASCULIN);
@@ -3258,7 +3258,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		final Ids ids = new Ids();
 
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu lui = addIndividu(noIndividuLui, dateNaissance, "Boyington", "Gregory", Sexe.MASCULIN);
@@ -3331,7 +3331,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		final RegDate dateArrivee = date(2016, 4, 6);
 
 		// mise en place civile (on connaissait la personne avant)
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Rastapopoulos", "Magdalena", Sexe.FEMININ);
@@ -3451,7 +3451,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		Assert.assertTrue("Il ne devrait pas y avoir plus de 2 ans entre les deux dates", dateDepart.addYears(2).isAfter(dateArrivee));
 
 		// mise en place civile (on connaissait la personne avant)
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Rastapopoulos", "Magdalena", Sexe.FEMININ);
@@ -3571,7 +3571,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		Assert.assertTrue("Il ne devrait pas y avoir plus de 2 ans entre les deux dates", dateDepart.addYears(2).isAfter(dateArrivee));
 
 		// mise en place civile (on connaissait la personne avant)
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Rastapopoulos", "Magdalena", Sexe.FEMININ);
@@ -3675,7 +3675,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		Assert.assertTrue("Il devrait y avoir plus de 2 ans entre les deux dates", dateDepart.addYears(2).isBefore(dateArrivee));
 
 		// mise en place civile (on connaissait la personne avant)
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Rastapopoulos", "Magdalena", Sexe.FEMININ);
@@ -3778,7 +3778,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		final RegDate dateArrivee = date(2016, 4, 6);
 
 		// mise en place civile (on connaissait la personne avant)
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Rastapopoulos", "Magdalena", Sexe.FEMININ);
@@ -3901,7 +3901,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		Assert.assertTrue("Il ne devrait pas y avoir plus de 2 ans entre les deux dates", dateDepart.addYears(2).isAfter(dateArrivee));
 
 		// mise en place civile (on connaissait la personne avant)
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Rastapopoulos", "Magdalena", Sexe.FEMININ);
@@ -4024,7 +4024,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		Assert.assertTrue("Il ne devrait pas y avoir plus de 2 ans entre les deux dates", dateDepart.addYears(2).isAfter(dateArrivee));
 
 		// mise en place civile (on connaissait la personne avant)
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Rastapopoulos", "Magdalena", Sexe.FEMININ);
@@ -4131,7 +4131,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		Assert.assertTrue("Il devrait y avoir plus de 2 ans entre les deux dates", dateDepart.addYears(2).isBefore(dateArrivee));
 
 		// mise en place civile (on connaissait la personne avant)
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Rastapopoulos", "Magdalena", Sexe.FEMININ);
@@ -4236,7 +4236,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		final RegDate dateArrivee = date(2014, 2, 7);
 
 		// mise en place civile (on connaissait la personne avant)
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Rastapopoulos", "Magdalena", Sexe.FEMININ);

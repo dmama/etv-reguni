@@ -10,9 +10,9 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.HistoriqueCommune;
 import ch.vd.unireg.common.DonneesCivilesException;
 import ch.vd.unireg.common.NomPrenom;
-import ch.vd.unireg.interfaces.civil.ServiceCivilException;
-import ch.vd.unireg.interfaces.civil.ServiceCivilRaw;
-import ch.vd.unireg.interfaces.civil.ServiceCivilServiceWrapper;
+import ch.vd.unireg.interfaces.civil.IndividuConnector;
+import ch.vd.unireg.interfaces.civil.IndividuConnectorException;
+import ch.vd.unireg.interfaces.civil.IndividuConnectorWrapper;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.Individu;
@@ -31,9 +31,9 @@ import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
  * Proxy du service civil à enregistrer dans l'application context et permettant à chaque test unitaire de spécifier précisemment l'instance
  * du service civil à utiliser.
  */
-public class ProxyServiceCivil implements ServiceCivilService, ServiceCivilServiceWrapper {
+public class ProxyServiceCivil implements ServiceCivilService, IndividuConnectorWrapper {
 
-	private ServiceCivilRaw target;
+	private IndividuConnector target;
 	private final ServiceCivilImpl service;
 
 	public ProxyServiceCivil() {
@@ -49,7 +49,7 @@ public class ProxyServiceCivil implements ServiceCivilService, ServiceCivilServi
 		this.service.setInfraService(infraService);
 	}
 
-	public void setUp(ServiceCivilRaw target) {
+	public void setUp(IndividuConnector target) {
 		this.target = target;
 		this.service.setTarget(target);
 	}
@@ -67,7 +67,7 @@ public class ProxyServiceCivil implements ServiceCivilService, ServiceCivilServi
 	}
 
 	@Override
-	public Individu getIndividu(long noIndividu, @Nullable RegDate date, AttributeIndividu... parties) throws ServiceCivilException {
+	public Individu getIndividu(long noIndividu, @Nullable RegDate date, AttributeIndividu... parties) throws IndividuConnectorException {
 		assertTargetNotNull();
 		return service.getIndividu(noIndividu, date, parties);
 	}
@@ -98,7 +98,7 @@ public class ProxyServiceCivil implements ServiceCivilService, ServiceCivilServi
 	}
 
 	@Override
-	public List<Individu> getIndividus(Collection<Long> nosIndividus, RegDate date, AttributeIndividu... parties) throws ServiceCivilException {
+	public List<Individu> getIndividus(Collection<Long> nosIndividus, RegDate date, AttributeIndividu... parties) throws IndividuConnectorException {
 		assertTargetNotNull();
 		return service.getIndividus(nosIndividus, date, parties);
 	}
@@ -110,7 +110,7 @@ public class ProxyServiceCivil implements ServiceCivilService, ServiceCivilServi
 	}
 
 	@Override
-	public Individu getIndividuByEvent(long eventId, @Nullable RegDate date, AttributeIndividu... parties) throws ServiceCivilException {
+	public Individu getIndividuByEvent(long eventId, @Nullable RegDate date, AttributeIndividu... parties) throws IndividuConnectorException {
 		assertTargetNotNull();
 		return service.getIndividuByEvent(eventId, date, parties);
 	}
@@ -170,14 +170,14 @@ public class ProxyServiceCivil implements ServiceCivilService, ServiceCivilServi
 	}
 
 	@Override
-	public ServiceCivilRaw getTarget() {
+	public IndividuConnector getTarget() {
 		return target;
 	}
 
 	@Override
-	public ServiceCivilRaw getUltimateTarget() {
-		if (target instanceof ServiceCivilServiceWrapper) {
-			return ((ServiceCivilServiceWrapper) target).getUltimateTarget();
+	public IndividuConnector getUltimateTarget() {
+		if (target instanceof IndividuConnectorWrapper) {
+			return ((IndividuConnectorWrapper) target).getUltimateTarget();
 		}
 		else {
 			return target;

@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.metier.assujettissement.TypeAssujettissement;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
@@ -20,7 +20,7 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		final long noInd = 1244;
 
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noInd, date(2005, 3, 12), "RuppertPeriode", "Jeroma", Sexe.FEMININ);
@@ -56,7 +56,7 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		}
 		final Ids ids = new Ids();
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertPeriode", "Jeroma", Sexe.FEMININ);
@@ -98,7 +98,7 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		}
 		final Ids ids = new Ids();
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertPeriode", "Jeroma", Sexe.FEMININ);
@@ -142,7 +142,7 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		}
 		final Ids ids = new Ids();
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertPeriode", "Jeroma", Sexe.FEMININ);
@@ -189,7 +189,7 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		}
 		final Ids ids = new Ids();
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertPeriode", "Jeroma", Sexe.FEMININ);
@@ -237,7 +237,7 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		}
 		final Ids ids = new Ids();
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertPeriode", "Jeroma", Sexe.FEMININ);
@@ -285,7 +285,7 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		}
 		final Ids ids = new Ids();
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertPeriode", "Jeroma", Sexe.FEMININ);
@@ -338,7 +338,7 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		}
 		final Ids ids = new Ids();
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertPeriode", "Jeroma", Sexe.FEMININ);
@@ -394,7 +394,7 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		}
 		final Ids ids = new Ids();
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertPeriode", "Jeroma", Sexe.FEMININ);
@@ -452,7 +452,7 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		}
 		final Ids ids = new Ids();
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertPeriode", "Jeroma", Sexe.FEMININ);
@@ -504,7 +504,7 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		}
 		final Ids ids = new Ids();
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertPeriode", "Jeroma", Sexe.FEMININ);

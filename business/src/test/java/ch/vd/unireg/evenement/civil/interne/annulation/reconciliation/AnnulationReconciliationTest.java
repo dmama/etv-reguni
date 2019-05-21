@@ -8,7 +8,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.unireg.evenement.civil.interne.MessageCollector;
 import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.ForFiscal;
@@ -41,7 +41,7 @@ public class AnnulationReconciliationTest extends AbstractEvenementCivilInterneT
 		final long noIndividu = 12345;
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil());
+		serviceCivil.setUp(new DefaultMockIndividuConnector());
 
 		// mise en place fiscale
 		doInNewTransactionAndSession(status -> {
@@ -128,7 +128,7 @@ public class AnnulationReconciliationTest extends AbstractEvenementCivilInterneT
 		final long noIndividuConjoint = 23456; // béa
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil());
+		serviceCivil.setUp(new DefaultMockIndividuConnector());
 
 		// mise en place fiscale
 		doInNewTransactionAndSession(status -> {
@@ -231,7 +231,7 @@ public class AnnulationReconciliationTest extends AbstractEvenementCivilInterneT
 		final long noIndividu = 6789;
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil());
+		serviceCivil.setUp(new DefaultMockIndividuConnector());
 
 		// mise en place fiscale
 		doInNewTransactionAndSession(status -> {

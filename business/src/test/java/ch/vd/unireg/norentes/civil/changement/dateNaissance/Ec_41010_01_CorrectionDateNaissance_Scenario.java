@@ -7,7 +7,7 @@ import org.junit.Assert;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.indexer.tiers.TiersIndexedData;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
@@ -55,7 +55,7 @@ public class Ec_41010_01_CorrectionDateNaissance_Scenario extends EvenementCivil
 
 	@Override
 	protected void initServiceCivil() {
-		serviceCivilService.setUp(new MockServiceCivil() {
+		serviceCivilService.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu momo = addIndividu(54321, dateNaissanceOriginale, "Durant", "Maurice", true);

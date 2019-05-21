@@ -6,9 +6,9 @@
 	(dont les beans de remoting ci-dessous) dans le DispatcherServlet -->
     <bean class="org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter"/>
 
-	<bean name="serviceCivilRawExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
-		<property name="service" ref="serviceCivilRaw" />
-		<property name="serviceInterface" value="ch.vd.unireg.interfaces.civil.ServiceCivilRaw" />
+	<bean name="individuConnectorExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
+		<property name="service" ref="individuConnector" />
+		<property name="serviceInterface" value="ch.vd.unireg.interfaces.civil.IndividuConnector" />
  	</bean>
 
 	<bean name="serviceEntrepriseRawExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
@@ -40,7 +40,7 @@
 		<property name="urlMap">
 			<map>
 				<!-- Mapping des beans de remoting -->
-				<entry key="/serviceCivil.remoting" value-ref="serviceCivilRawExporter" />
+				<entry key="/individuConnector.remoting" value-ref="individuConnectorExporter" />
 				<entry key="/serviceUpi.remoting" value-ref="serviceUpiRawExporter" />
 				<entry key="/serviceInfra.remoting" value-ref="serviceInfraRawExporter" />
 				<entry key="/dataEventService.remoting" value-ref="dataEventServiceExporter" />

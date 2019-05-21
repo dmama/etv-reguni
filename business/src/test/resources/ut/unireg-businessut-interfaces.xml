@@ -7,7 +7,7 @@
 		<property name="tiersDAO" ref="tiersDAO"/>
 	</bean>
 
-	<!-- Bean client ServiceCivil MOCK -->
+	<!-- Bean client IndividuConnector MOCK -->
 	<bean id="serviceCivilServiceMock" class="ch.vd.unireg.interfaces.service.mock.ProxyServiceCivil">
 		<property name="infraService" ref="serviceInfrastructureService"/>
 	</bean>

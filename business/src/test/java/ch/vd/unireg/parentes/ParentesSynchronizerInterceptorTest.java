@@ -7,7 +7,7 @@ import org.junit.Test;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.RapportEntreTiers;
 import ch.vd.unireg.type.Sexe;
@@ -27,7 +27,7 @@ public class ParentesSynchronizerInterceptorTest extends BusinessTest {
 		final RegDate dateNaissanceFifille = date(1978, 6, 2);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu papa = addIndividu(noIndPapa, null, "Chollet", "Ignacio", Sexe.MASCULIN);

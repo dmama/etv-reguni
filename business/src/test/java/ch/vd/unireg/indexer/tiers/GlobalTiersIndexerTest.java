@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessTest;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.TiersCriteria;
 import ch.vd.unireg.type.Sexe;
@@ -198,7 +198,7 @@ public class GlobalTiersIndexerTest extends BusinessTest {
 	@Test
 	public void testIndexAllDatabaseFull() throws Exception {
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				// vide

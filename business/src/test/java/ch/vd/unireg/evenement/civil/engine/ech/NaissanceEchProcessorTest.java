@@ -13,7 +13,7 @@ import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchErreur;
 import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
 import ch.vd.unireg.interfaces.civil.data.RelationVersIndividuImpl;
 import ch.vd.unireg.interfaces.civil.data.TypeRelationVersIndividu;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
@@ -34,7 +34,7 @@ public class NaissanceEchProcessorTest extends AbstractEvenementCivilEchProcesso
 		final RegDate dateNaissance = RegDate.get().addMonths(-1);
 
 		// le nouveau né apparaît au civil
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, dateNaissance, "Toubo", "Toupeti", true);
@@ -80,7 +80,7 @@ public class NaissanceEchProcessorTest extends AbstractEvenementCivilEchProcesso
 		final RegDate dateNaissance = RegDate.get().addMonths(-1);
 
 		// le nouveau né apparaît au civil
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, dateNaissance, "Toubo", "Toupeti", true);
@@ -159,7 +159,7 @@ public class NaissanceEchProcessorTest extends AbstractEvenementCivilEchProcesso
 		final RegDate dateNaissance = RegDate.get().addMonths(-1);
 
 		// le nouveau né apparaît au civil
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Toubo", "Toupeti", true);
@@ -229,7 +229,7 @@ public class NaissanceEchProcessorTest extends AbstractEvenementCivilEchProcesso
 		final RegDate dateNaissance = RegDate.get().addMonths(-1);
 
 		// le nouveau né apparaît au civil
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Toubo", "Toupeti", true);
@@ -291,7 +291,7 @@ public class NaissanceEchProcessorTest extends AbstractEvenementCivilEchProcesso
 		final RegDate dateNaissance = RegDate.get().addMonths(-1);
 
 		// le nouveau né apparaît au civil
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu bebe = addIndividu(noIndividu, dateNaissance, "Toubo", "Toupeti", true);
@@ -337,7 +337,7 @@ public class NaissanceEchProcessorTest extends AbstractEvenementCivilEchProcesso
 		final RegDate dateNaissance = RegDate.get().addMonths(-1);
 
 		// le nouveau né apparaît au civil
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu maman = addIndividu(noIndividuMere, null, "Toubo", "Amandine", Sexe.FEMININ);

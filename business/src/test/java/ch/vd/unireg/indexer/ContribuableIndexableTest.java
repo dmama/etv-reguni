@@ -30,7 +30,7 @@ import ch.vd.unireg.indexer.tiers.TiersIndexable;
 import ch.vd.unireg.indexer.tiers.TiersIndexableData;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
 import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockEntrepriseCivile;
@@ -95,7 +95,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 	public void onSetUp() throws Exception {
 
 		serviceCivil = new ProxyServiceCivil(serviceInfra);
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 
@@ -919,7 +919,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		final long noIndividu = 4378546L;
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, null, "Beretta", "Tim", Sexe.MASCULIN);

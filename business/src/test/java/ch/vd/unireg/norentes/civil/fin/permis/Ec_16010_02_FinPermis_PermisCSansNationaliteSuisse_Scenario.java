@@ -3,14 +3,14 @@ package ch.vd.unireg.norentes.civil.fin.permis;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockPermis;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.unireg.norentes.annotation.Check;
 import ch.vd.unireg.norentes.annotation.Etape;
 import ch.vd.unireg.norentes.common.EvenementCivilScenario;
@@ -57,7 +57,7 @@ public class Ec_16010_02_FinPermis_PermisCSansNationaliteSuisse_Scenario extends
 	private final RegDate dateFinPermisC = RegDate.get(2008, 10, 10);
 	private final MockCommune communePermis = MockCommune.VillarsSousYens;
 
-	private final class MyMockServiceCivil extends DefaultMockServiceCivil {
+	private final class MyMockIndividuConnector extends DefaultMockIndividuConnector {
 
 		@Override
 		protected void init() {
@@ -77,11 +77,11 @@ public class Ec_16010_02_FinPermis_PermisCSansNationaliteSuisse_Scenario extends
 		}
 	}
 
-	private MyMockServiceCivil mockServiceCivil;
+	private MyMockIndividuConnector mockServiceCivil;
 
 	@Override
 	protected void initServiceCivil() {
-		mockServiceCivil = new MyMockServiceCivil();
+		mockServiceCivil = new MyMockIndividuConnector();
 		serviceCivilService.setUp(mockServiceCivil);
 	}
 

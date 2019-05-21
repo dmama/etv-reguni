@@ -12,7 +12,7 @@ import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.unireg.declaration.ModeleDocument;
 import ch.vd.unireg.declaration.PeriodeFiscale;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.tiers.NatureTiers;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -50,7 +50,7 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 	public void testCtbInconnu() throws Exception {
 
 		// service civil vide
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 			}
@@ -79,7 +79,7 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 	public void testCodeSegmentInvalide() throws Exception {
 
 		// service civil vide
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 			}
@@ -108,7 +108,7 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 	public void testTiersNonContribuable() throws Exception {
 
 		// service civil vide
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 			}
@@ -142,7 +142,7 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 	public void testContribuableSansDeclaration() throws Exception {
 
 		// service civil vide
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 			}
@@ -175,7 +175,7 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 	public void testContribuableDejaBonSegment() throws Exception {
 
 		// service civil vide
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 			}
@@ -220,7 +220,7 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 	public void testContribuablePremiereFoisSegment() throws Exception {
 
 		// service civil vide
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 			}
@@ -265,7 +265,7 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 	public void testContribuableChangementSegment() throws Exception {
 
 		// service civil vide
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 			}
@@ -310,7 +310,7 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 	public void testContribuableToutesDeclarationsAnnulees() throws Exception {
 
 		// service civil vide
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 			}
@@ -347,7 +347,7 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 	public void testContribuableAvecDeclarationAnnuleeEtAutreNonAnnulee() throws Exception {
 
 		// service civil vide
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 			}

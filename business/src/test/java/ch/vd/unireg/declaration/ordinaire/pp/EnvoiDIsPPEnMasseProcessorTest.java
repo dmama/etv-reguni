@@ -42,9 +42,9 @@ import ch.vd.unireg.declaration.ordinaire.pp.AbstractEnvoiDIsPPResults.IgnoreTyp
 import ch.vd.unireg.declaration.ordinaire.pp.EnvoiDIsPPEnMasseProcessor.DeclarationsCache;
 import ch.vd.unireg.hibernate.interceptor.ModificationInterceptor;
 import ch.vd.unireg.hibernate.interceptor.ModificationSubInterceptor;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -104,7 +104,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		adresseService = getBean(AdresseService.class, "adresseService");
 		final TicketService ticketService = getBean(TicketService.class, "ticketService");
 
-		serviceCivil.setUp(new DefaultMockServiceCivil());
+		serviceCivil.setUp(new DefaultMockIndividuConnector());
 
 		modificationInterceptor = getBean(ModificationInterceptor.class, "modificationInterceptor");
 		validationService = getBean(ValidationService.class, "validationService");
@@ -1552,7 +1552,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		final RegDate dateDepartHC = date(annee, 12, 1);
 
 		// mise en place civile... rien du tout
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 			}
@@ -1643,7 +1643,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		final int annee = 2014;
 
 		// initialisation des données civiles
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind1 = addIndividu(noIndividu1, null, "Dugland", "Aristide", Sexe.MASCULIN);
@@ -1769,7 +1769,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		final int annee = 2014;
 
 		// initialisation des données civiles
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind1 = addIndividu(noIndividu1, null, "Dugland", "Aristide", Sexe.MASCULIN);

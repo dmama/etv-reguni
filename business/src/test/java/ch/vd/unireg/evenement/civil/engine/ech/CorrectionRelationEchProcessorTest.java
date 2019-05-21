@@ -12,7 +12,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchErreur;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.MenageCommun;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -56,7 +56,7 @@ public class CorrectionRelationEchProcessorTest extends AbstractEvenementCivilEc
 		final RegDate dateMariage = date(2004, 12, 6);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu lui = addIndividu(noLui, date(1980, 10, 25), "Bouille", "Simon", Sexe.MASCULIN);
@@ -118,7 +118,7 @@ public class CorrectionRelationEchProcessorTest extends AbstractEvenementCivilEc
 		doModificationIndividu(noEnfant3, new IndividuModification() {
 			@Override
 			public void modifyIndividu(MockIndividu individu) {
-				MockServiceCivil.addLienVersParent(individu, serviceCivil.getIndividu(noLui, null), date(2007, 2, 1), null);
+				MockIndividuConnector.addLienVersParent(individu, serviceCivil.getIndividu(noLui, null), date(2007, 2, 1), null);
 			}
 		});
 
@@ -185,7 +185,7 @@ public class CorrectionRelationEchProcessorTest extends AbstractEvenementCivilEc
 		final RegDate dateMariage = date(2004, 12, 6);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu lui = addIndividu(noLui, date(1980, 10, 25), "Bouille", "Simon", Sexe.MASCULIN);
@@ -270,7 +270,7 @@ public class CorrectionRelationEchProcessorTest extends AbstractEvenementCivilEc
 		final RegDate dateSeparation = date(2011, 6, 12);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu lui = addIndividu(noLui, date(1980, 10, 25), "Bouille", "Simon", Sexe.MASCULIN);
@@ -333,7 +333,7 @@ public class CorrectionRelationEchProcessorTest extends AbstractEvenementCivilEc
 		final RegDate dateMariage = date(2004, 12, 6);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu lui = addIndividu(noLui, date(1980, 10, 25), "Bouille", "Simon", Sexe.MASCULIN);
@@ -390,7 +390,7 @@ public class CorrectionRelationEchProcessorTest extends AbstractEvenementCivilEc
 		final RegDate dateMariage = date(2004, 12, 6);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu lui = addIndividu(noLui, date(1980, 10, 25), "Bouille", "Simon", Sexe.MASCULIN);
@@ -446,7 +446,7 @@ public class CorrectionRelationEchProcessorTest extends AbstractEvenementCivilEc
 		final RegDate dateMariage = date(2004, 12, 6);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu lui = addIndividu(noLui, date(1980, 10, 25), "Bouille", "Simon", Sexe.MASCULIN);
@@ -494,7 +494,7 @@ public class CorrectionRelationEchProcessorTest extends AbstractEvenementCivilEc
 		final RegDate dateMariage = date(2004, 12, 6);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu lui = addIndividu(noLui, date(1980, 10, 25), "Bouille", "Simon", Sexe.MASCULIN);

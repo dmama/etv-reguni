@@ -10,7 +10,7 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.unireg.common.BusinessItTest;
-import ch.vd.unireg.interfaces.civil.ServiceCivilRaw;
+import ch.vd.unireg.interfaces.civil.IndividuConnector;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.EtatCivilList;
@@ -45,7 +45,7 @@ public class ServiceCivilRcPersTest extends BusinessItTest {
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		final ServiceCivilRaw raw = getBean(ServiceCivilRaw.class, "serviceCivilRcPers");
+		final IndividuConnector raw = getBean(IndividuConnector.class, "individuConnectorRCPers");
 		final ServiceInfrastructureService infraService = getBean(ServiceInfrastructureService.class, "serviceInfrastructureService");
 		service = new ServiceCivilImpl(infraService, raw);
 	}

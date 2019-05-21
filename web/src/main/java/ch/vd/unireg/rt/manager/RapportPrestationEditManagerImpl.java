@@ -26,7 +26,7 @@ import ch.vd.unireg.common.TiersNotFoundException;
 import ch.vd.unireg.general.manager.TiersGeneralManager;
 import ch.vd.unireg.general.view.TiersGeneralView;
 import ch.vd.unireg.hibernate.HibernateTemplate;
-import ch.vd.unireg.interfaces.civil.ServiceCivilException;
+import ch.vd.unireg.interfaces.civil.IndividuConnectorException;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
 import ch.vd.unireg.message.MessageHelper;
@@ -357,7 +357,7 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 					}
 				}
 			}
-			catch (ServiceCivilException e) {
+			catch (IndividuConnectorException e) {
 				LOGGER.debug("Impossible de charger le lot d'individus [" + batch + "], on continue un-par-un. L'erreur est : " + e.getMessage());
 				// on recommence, un-par-un
 				for (Long numero : batch) {
@@ -374,7 +374,7 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 							}
 						}
 					}
-					catch (ServiceCivilException ex) {
+					catch (IndividuConnectorException ex) {
 						LOGGER.warn("Impossible de charger l'individu [" + numero + "]. L'erreur est : " + ex.getMessage(), ex);
 						// on affiche le message d'erreur directement dans la page, pour éviter qu'il soit perdu
 						final List<RapportsPrestationView.Rapport> rl = rapportsByNumeroIndividu.get(numero);

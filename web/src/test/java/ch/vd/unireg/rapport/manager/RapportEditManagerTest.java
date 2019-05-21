@@ -15,7 +15,7 @@ import ch.vd.unireg.evenement.fiscal.EvenementFiscal;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalDAO;
 import ch.vd.unireg.evenement.fiscal.registrefoncier.EvenementFiscalCommunaute;
 import ch.vd.unireg.general.view.TiersGeneralView;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.rapport.SensRapportEntreTiers;
@@ -74,7 +74,7 @@ public class RapportEditManagerTest extends WebTest {
 
 		// Crée deux tiers habitant dans le canton
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndRepresentant, date(1957, 5, 23), "Lavanchy", "Simon", true);
@@ -131,7 +131,7 @@ public class RapportEditManagerTest extends WebTest {
 
 		// Crée deux tiers habitant dans le canton
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndRepresentant, date(1957, 5, 23), "Lavanchy", "Simon", true);
@@ -187,7 +187,7 @@ public class RapportEditManagerTest extends WebTest {
 
 		// Crée un tiers habitant dans le canton et un autre non-habitant
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndRepresentant, date(1957, 5, 23), "Lavanchy", "Simon", true);
@@ -229,7 +229,7 @@ public class RapportEditManagerTest extends WebTest {
 
 		// Crée deux tiers habitant dans le canton
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndSubstituant, date(1957, 5, 23), "Lavanchy", "Simon", true);

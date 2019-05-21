@@ -20,8 +20,8 @@ import ch.vd.unireg.declaration.ModeleDocument;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
 import ch.vd.unireg.declaration.ordinaire.pp.DeterminationDIsPPAEmettreProcessor.ExistenceResults;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -1499,7 +1499,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 	public void testCodeSegmentation() throws Exception {
 
 		// service civil vide
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 			}
@@ -1589,7 +1589,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		final RegDate vente = date(annee, 11, 26);
 
 		// service civil vide
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// rien du tout...

@@ -20,7 +20,7 @@ import ch.vd.unireg.evenement.common.view.ErreurEvenementCivilView;
 import ch.vd.unireg.evenement.regpp.view.EvenementCivilRegPPCriteriaView;
 import ch.vd.unireg.evenement.regpp.view.EvenementCivilRegPPDetailView;
 import ch.vd.unireg.evenement.regpp.view.EvenementCivilRegPPElementListeView;
-import ch.vd.unireg.interfaces.civil.ServiceCivilException;
+import ch.vd.unireg.interfaces.civil.IndividuConnectorException;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.IndividuNotFoundException;
@@ -79,7 +79,7 @@ public class EvenementCivilRegPPManagerImpl extends EvenementCivilManagerImpl im
 				retrieveTiersAssocieConjoint(evt.getId(), conjoint , evtView);
 			}
 		}
-		catch (ServiceCivilException e) {
+		catch (IndividuConnectorException e) {
 			evtView.setIndividuError(e.getMessage());
 		}
 
@@ -153,7 +153,7 @@ public class EvenementCivilRegPPManagerImpl extends EvenementCivilManagerImpl im
 						evtRegPPElementListeView.setNumeroCTB(habitantPrincipal.getNumero());
 					}
 				}
-				catch (ServiceCivilException e) {
+				catch (IndividuConnectorException e) {
 					LOGGER.warn("Impossible de reconstruire le couple du contribuable " + habitantPrincipal.getNumero(), e);
 					evtRegPPElementListeView.setNumeroCTB(habitantPrincipal.getNumero());
 				}
@@ -178,7 +178,7 @@ public class EvenementCivilRegPPManagerImpl extends EvenementCivilManagerImpl im
 			LOGGER.warn("Impossible d'afficher toutes les données de l'événement civil n°" + evt.getId(), e);
 			evtRegPPElementListeView.setNom1("<erreur: individu introuvable>");
 		}
-		catch (ServiceCivilException e) {
+		catch (IndividuConnectorException e) {
 			// [SIFISC-7485] il ne faut plas planter l'écran si RCPers revoie une erreur...
 			LOGGER.warn("Impossible d'afficher toutes les données de l'événement civil n°" + evt.getId(), e);
 			evtRegPPElementListeView.setNom1("<erreur: individu inaccessible dans le registre civil>");

@@ -64,7 +64,7 @@ import ch.vd.unireg.general.view.TiersGeneralView;
 import ch.vd.unireg.iban.IbanValidator;
 import ch.vd.unireg.individu.IndividuView;
 import ch.vd.unireg.individu.WebCivilService;
-import ch.vd.unireg.interfaces.civil.ServiceCivilException;
+import ch.vd.unireg.interfaces.civil.IndividuConnectorException;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseException;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
@@ -457,7 +457,7 @@ public class TiersManager implements MessageSourceAware {
 				final List<String> nomCourrier = adresseService.getNomCourrier(ctb, null, false);
 				rapportPrestationView.setNomCourrier(nomCourrier);
 			}
-			catch (IndividuNotFoundException | ServiceCivilException e) {
+			catch (IndividuNotFoundException | IndividuConnectorException e) {
 				LOGGER.error("Impossible d'obtenir les informations civiles du contribuable " + ctb.getNumero(), e);
 			}
 			rapportPrestationView.setNumero(ctb.getNumero());

@@ -16,8 +16,8 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BatchIterator;
 import ch.vd.unireg.common.StandardBatchIterator;
 import ch.vd.unireg.common.XmlUtils;
-import ch.vd.unireg.interfaces.civil.ServiceCivilException;
-import ch.vd.unireg.interfaces.civil.ServiceCivilRaw;
+import ch.vd.unireg.interfaces.civil.IndividuConnector;
+import ch.vd.unireg.interfaces.civil.IndividuConnectorException;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
@@ -27,9 +27,12 @@ import ch.vd.unireg.type.ActionEvenementCivilEch;
 import ch.vd.unireg.type.TypeEvenementCivilEch;
 import ch.vd.unireg.wsclient.rcpers.RcPersClient;
 
-public class ServiceCivilRCPers implements ServiceCivilRaw {
+/**
+ * Implémentation du connecteur qui utilise le WS v5 de RCPers.
+ */
+public class IndividuConnectorRCPers implements IndividuConnector {
 
-//	private static final Logger LOGGER = LoggerFactory.getLogger(ServiceCivilRCPers.class);
+//	private static final Logger LOGGER = LoggerFactory.getLogger(IndividuConnectorRCPers.class);
 
 	private RcPersClient client;
 	private ServiceInfrastructureRaw infraService;
@@ -47,7 +50,7 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 	}
 
 	@Override
-	public Individu getIndividu(long noIndividu, AttributeIndividu... parties) throws ServiceCivilException {
+	public Individu getIndividu(long noIndividu, AttributeIndividu... parties) throws IndividuConnectorException {
 
 		// on récupère la personne
 		final ListOfPersons list = getPersonsSafely(Collections.singletonList(noIndividu), null, true);
@@ -56,7 +59,7 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 		}
 
 		if (list.getNumberOfResults().intValue() > 1) {
-			throw new ServiceCivilException("Plusieurs individus trouvés avec le même numéro d'individu = " + noIndividu);
+			throw new IndividuConnectorException("Plusieurs individus trouvés avec le même numéro d'individu = " + noIndividu);
 		}
 
 		final Person person = extractPerson(list.getListOfResults().getResult().get(0));
@@ -78,7 +81,7 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 	}
 
 	@Override
-	public Individu getIndividuByEvent(long evtId, AttributeIndividu... parties) throws ServiceCivilException {
+	public Individu getIndividuByEvent(long evtId, AttributeIndividu... parties) throws IndividuConnectorException {
 
 		// on récupère la personne
 		final ListOfPersons list = getPersonFromEventSafely(evtId, true);
@@ -87,7 +90,7 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 		}
 
 		if (list.getNumberOfResults().intValue() > 1) {
-			throw new ServiceCivilException("Plusieurs individus trouvés d'après le même numéro d'événement = " + evtId);
+			throw new IndividuConnectorException("Plusieurs individus trouvés d'après le même numéro d'événement = " + evtId);
 		}
 
 		final Person person = extractPerson(list.getListOfResults().getResult().get(0));
@@ -116,10 +119,10 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 	 *
 	 * @param result le résultat retourné par RcPers
 	 * @return une personne; ou <b>null</b> si la personne n'existe pas.
-	 * @throws ServiceCivilException si RcPers à retourné un code d'erreur qui correspond à une erreur chez eux.
+	 * @throws IndividuConnectorException si RcPers à retourné un code d'erreur qui correspond à une erreur chez eux.
 	 */
 	@Nullable
-	private static Person extractPerson(ListOfPersons.ListOfResults.Result result) throws ServiceCivilException {
+	private static Person extractPerson(ListOfPersons.ListOfResults.Result result) throws IndividuConnectorException {
 
 		// [SIFISC-6685] on détecte les cas où on ne reçoit rien parce qu'il y a un bug dans RcPers
 		final Error notReturnedPersonError = result.getNotReturnedPersonReason();
@@ -131,7 +134,7 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 				return null; // le seul cas où la personne n'est pas retournée parce qu'elle n'existe simplement pas
 			}
 			else {
-				throw new ServiceCivilException("RcPers a retourné le code d'erreur " + code + " (" + notReturnedPersonError.getMessage() + ") sur l'appel à l'individu = " + category + "/" + noIndividu);
+				throw new IndividuConnectorException("RcPers a retourné le code d'erreur " + code + " (" + notReturnedPersonError.getMessage() + ") sur l'appel à l'individu = " + category + "/" + noIndividu);
 			}
 		}
 
@@ -150,7 +153,7 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 	}
 
 	@Override
-	public List<Individu> getIndividus(Collection<Long> nosIndividus, AttributeIndividu... parties) throws ServiceCivilException {
+	public List<Individu> getIndividus(Collection<Long> nosIndividus, AttributeIndividu... parties) throws IndividuConnectorException {
 
 		// on récupère les personnes
 		final ListOfPersons list = getPersonsSafely(nosIndividus, null, true);
@@ -196,7 +199,7 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 			return list;
 		}
 		catch (Exception e) {
-			throw new ServiceCivilException(e);
+			throw new IndividuConnectorException(e);
 		}
 	}
 
@@ -205,7 +208,7 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 			return client.getPersonByEvent(evtId, null, withHistory);
 		}
 		catch (Exception e) {
-			throw new ServiceCivilException(e);
+			throw new IndividuConnectorException(e);
 		}
 	}
 
@@ -226,18 +229,18 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 			return null;
 		}
 		catch (Exception e) {
-			throw new ServiceCivilException(e);
+			throw new IndividuConnectorException(e);
 		}
 	}
 
 	@Override
-	public void ping() throws ServiceCivilException {
+	public void ping() throws IndividuConnectorException {
 		final Individu individu = getIndividu(611836); // Francis Perroset
 		if (individu == null) {
-			throw new ServiceCivilException("L'individu n°611836 est introuvable");
+			throw new IndividuConnectorException("L'individu n°611836 est introuvable");
 		}
 		if (individu.getNoTechnique() != 611836) {
-			throw new ServiceCivilException("Demandé l'individu n°611836, reçu l'individu n°" + individu.getNoTechnique());
+			throw new IndividuConnectorException("Demandé l'individu n°611836, reçu l'individu n°" + individu.getNoTechnique());
 		}
 	}
 

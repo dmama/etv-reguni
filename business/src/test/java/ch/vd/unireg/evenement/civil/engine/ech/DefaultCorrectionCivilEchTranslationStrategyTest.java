@@ -11,7 +11,7 @@ import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchErreur;
 import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -69,7 +69,7 @@ public class DefaultCorrectionCivilEchTranslationStrategyTest extends AbstractEv
 		final long idEvtCorrection = 4326478256242L;
 		final RegDate dateEvt = RegDate.get();
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
@@ -122,7 +122,7 @@ public class DefaultCorrectionCivilEchTranslationStrategyTest extends AbstractEv
 		final long idEvtCorrection = 4326478256242L;
 		final RegDate dateEvt = RegDate.get();
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
@@ -184,7 +184,7 @@ public class DefaultCorrectionCivilEchTranslationStrategyTest extends AbstractEv
 		final long idEvtCorrection = 4326478256242L;
 		final RegDate dateEvt = RegDate.get();
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Michel", true);
@@ -239,7 +239,7 @@ public class DefaultCorrectionCivilEchTranslationStrategyTest extends AbstractEv
 		final long idEvtCorrection = 4326478256242L;
 		final RegDate dateEvt = RegDate.get();
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
@@ -302,7 +302,7 @@ public class DefaultCorrectionCivilEchTranslationStrategyTest extends AbstractEv
 		final long idEvtCorrection = 4326478256242L;
 		final RegDate dateEvt = RegDate.get();
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
@@ -365,7 +365,7 @@ public class DefaultCorrectionCivilEchTranslationStrategyTest extends AbstractEv
 		final long idEvtCorrection = 4326478256242L;
 		final RegDate dateEvt = RegDate.get();
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
@@ -428,7 +428,7 @@ public class DefaultCorrectionCivilEchTranslationStrategyTest extends AbstractEv
 		final long idEvtCorrection = 4326478256242L;
 		final RegDate dateEvt = RegDate.get();
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
@@ -492,7 +492,7 @@ public class DefaultCorrectionCivilEchTranslationStrategyTest extends AbstractEv
 		final long idEvtCorrection = 4326478256242L;
 		final RegDate dateEvt = RegDate.get();
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
@@ -557,7 +557,7 @@ public class DefaultCorrectionCivilEchTranslationStrategyTest extends AbstractEv
 		final RegDate dateEvt = RegDate.get();
 		final RegDate dateMariage = date(1955, 12, 1);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
@@ -622,7 +622,7 @@ public class DefaultCorrectionCivilEchTranslationStrategyTest extends AbstractEv
 		final RegDate dateEvt = RegDate.get();
 		final RegDate dateMariage = date(1955, 12, 1);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
@@ -688,7 +688,7 @@ public class DefaultCorrectionCivilEchTranslationStrategyTest extends AbstractEv
 		final long idEvtCorrection = 4326478256242L;
 		final RegDate dateEvt = RegDate.get();
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
@@ -748,7 +748,7 @@ public class DefaultCorrectionCivilEchTranslationStrategyTest extends AbstractEv
 		final RegDate dateEvtOrig = RegDate.get();
 		final RegDate dateEvtCorrection = dateEvtOrig.addDays(-2);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
@@ -817,7 +817,7 @@ public class DefaultCorrectionCivilEchTranslationStrategyTest extends AbstractEv
 		final long idEvtCorrection = 4326478256242L;
 		final RegDate dateEvt = RegDate.get();
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
@@ -877,7 +877,7 @@ public class DefaultCorrectionCivilEchTranslationStrategyTest extends AbstractEv
 		final long idEvtCorrection = 4326478256242L;
 		final RegDate dateEvt = RegDate.get();
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
@@ -932,7 +932,7 @@ public class DefaultCorrectionCivilEchTranslationStrategyTest extends AbstractEv
 		final long idEvtDoubleCorrection = 45454548545L;
 		final RegDate dateEvt = RegDate.get();
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
@@ -1041,7 +1041,7 @@ public class DefaultCorrectionCivilEchTranslationStrategyTest extends AbstractEv
 		final long idEvtDoubleCorrection = 45454548545L;
 		final RegDate dateEvt = RegDate.get();
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
@@ -1132,7 +1132,7 @@ public class DefaultCorrectionCivilEchTranslationStrategyTest extends AbstractEv
 		final RegDate dateEvtOrig = RegDate.get();
 		final RegDate dateEvtCorrection = dateEvtOrig.addDays(-2);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
@@ -1198,7 +1198,7 @@ public class DefaultCorrectionCivilEchTranslationStrategyTest extends AbstractEv
 		final RegDate dateEvtOrig = RegDate.get();
 		final RegDate dateEvtCorrection = dateEvtOrig.addDays(-2);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, date(1930, 4, 1), "Zweisteinen", "Robert", true);

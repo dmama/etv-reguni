@@ -7,9 +7,9 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
 import ch.vd.unireg.common.BusinessTest;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
@@ -55,7 +55,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		final long noIndDepense = 6341427L;
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ord = addIndividu(noIndOrdinaire, date(1965, 2, 21), "Ordinaire", "Toto", true);
@@ -218,7 +218,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		final long noIndDepense = 6341427L;
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ord = addIndividu(noIndOrdinaire, date(1965, 2, 21), "Ordinaire", "Toto", true);
@@ -272,7 +272,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		final long noIndDepense = 6341427L;
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ord = addIndividu(noIndOrdinaire, date(1965, 2, 21), "Ordinaire", "Toto", true);
@@ -435,7 +435,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	public void testRevenuSourceContribuableSourcierPur() throws Exception {
 		final long noInd = 6341423L;
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu i = addIndividu(noInd, date(1965, 2, 21), "Tartempion", "Toto", true);
@@ -484,7 +484,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 
 		final long noInd = 6341423L;
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noInd, date(1965, 2, 21), "Tartempion", "Toto", true);
@@ -516,7 +516,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 
 		final long noInd = 6341423L;
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noInd, date(1965, 2, 21), "Tartempion", "Toto", true);
@@ -548,7 +548,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 
 		final long noInd = 6341423L;
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noInd, date(1965, 2, 21), "Tartempion", "Toto", true);
@@ -593,7 +593,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 
 		final long noInd = 6341423L;
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noInd, date(1965, 2, 21), "Tartempion", "Toto", true);
@@ -625,7 +625,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 
 		final long noInd = 6341423L;
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noInd, date(1965, 2, 21), "Tartempion", "Toto", true);
@@ -653,7 +653,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 
 		final long noInd = 6341423L;
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noInd, date(1965, 2, 21), "Tartempion", "Toto", true);
@@ -679,7 +679,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	@Test
 	public void testRevenuHorsCanton() throws Exception {
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 			}
@@ -722,7 +722,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	@Test
 	public void testFortuneHorsCanton() throws Exception {
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 			}
@@ -756,7 +756,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	@Test
 	public void testRevenuHorsCantonVenteDernierImmeubleDansPeriode() throws Exception {
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 			}
@@ -799,7 +799,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	@Test
 	public void testFortuneHorsCantonVenteDernierImmeubleDansPeriode() throws Exception {
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 			}
@@ -829,7 +829,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	@Test
 	public void testRevenuHorsSuisse() throws Exception {
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 			}
@@ -872,7 +872,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	@Test
 	public void testFortuneHorsSuisse() throws Exception {
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 			}
@@ -919,7 +919,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		final long noIndToto = 6341423L;
 		final long noIndTata = 6341424L;
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu toto = addIndividu(noIndToto, date(1965, 2, 21), "Tartempion", "Toto", true);
@@ -988,7 +988,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		final long noIndToto = 6341423L;
 		final long noIndTata = 6341424L;
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu toto = addIndividu(noIndToto, date(1965, 2, 21), "Tartempion", "Toto", true);
@@ -1058,7 +1058,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		final long noIndToto = 6341423L;
 		final long noIndTata = 6341424L;
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu toto = addIndividu(noIndToto, date(1965, 2, 21), "Tartempion", "Toto", true);
@@ -1158,7 +1158,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		final long noIndToto = 6341423L;
 		final long noIndTata = 6341424L;
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu toto = addIndividu(noIndToto, date(1965, 2, 21), "Tartempion", "Toto", true);
@@ -1259,7 +1259,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		final long noIndToto = 6341423L;
 		final long noIndTata = 6341424L;
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu toto = addIndividu(noIndToto, date(1965, 2, 21), "Tartempion", "Toto", true);
@@ -1351,7 +1351,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		final long noIndToto = 6341423L;
 		final long noIndTata = 6341424L;
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu toto = addIndividu(noIndToto, date(1965, 2, 21), "Tartempion", "Toto", true);
@@ -1431,7 +1431,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		final long noIndToto = 6341423L;
 		final long noIndTata = 6341424L;
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu toto = addIndividu(noIndToto, date(1965, 2, 21), "Tartempion", "Toto", true);
@@ -1517,7 +1517,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		final long noIndToto = 6341423L;
 		final long noIndTata = 6341424L;
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu toto = addIndividu(noIndToto, date(1965, 2, 21), "Tartempion", "Toto", true);
@@ -1603,7 +1603,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 
 		final long noInd = 6341423L;
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noInd, date(1965, 2, 21), "Tartempion", "Toto", true);
@@ -1639,7 +1639,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 
 		final long noInd = 6341423L;
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noInd, date(1965, 2, 21), "Tartempion", "Toto", true);
@@ -1674,7 +1674,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	public void testRevenuOrdinaireContribuablePassageSourceVersOrdinaire() throws Exception {
 		final long noInd = 6341423L;
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu i = addIndividu(noInd, date(1965, 2, 21), "Tartempion", "Toto", true);
@@ -1722,7 +1722,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	public void testRevenuSourcePureContribuablePassageSourceVersOrdinaire() throws Exception {
 		final long noInd = 6341423L;
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu i = addIndividu(noInd, date(1965, 2, 21), "Tartempion", "Toto", true);
@@ -1770,7 +1770,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	public void testFortuneContribuablePassageSourceVersOrdinaire() throws Exception {
 		final long noInd = 6341423L;
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu i = addIndividu(noInd, date(1965, 2, 21), "Tartempion", "Toto", true);
@@ -1819,7 +1819,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	public void testRevenuOrdinaireContribuableSourcePartiHC() throws Exception {
 		final long noInd = 6341423L;
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu i = addIndividu(noInd, date(1965, 2, 21), "Tartempion", "Toto", true);
@@ -1848,7 +1848,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	public void testRevenuSourcePureContribuableSourcePartiHC() throws Exception {
 		final long noInd = 6341423L;
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu i = addIndividu(noInd, date(1965, 2, 21), "Tartempion", "Toto", true);
@@ -1915,7 +1915,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	public void testFortuneContribuableSourcePartiHC() throws Exception {
 		final long noInd = 6341423L;
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu i = addIndividu(noInd, date(1965, 2, 21), "Tartempion", "Toto", true);
@@ -1944,7 +1944,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	public void testRevenuOrdinaireTouchAndGo() throws Exception {
 		final long noInd = 6341423L;
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu i = addIndividu(noInd, date(1965, 2, 21), "Tartempion", "Toto", true);
@@ -2012,7 +2012,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	public void testRevenuSourcePureTouchAndGo() throws Exception {
 		final long noInd = 6341423L;
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu i = addIndividu(noInd, date(1965, 2, 21), "Tartempion", "Toto", true);
@@ -2042,7 +2042,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	public void testFortuneTouchAndGo() throws Exception {
 		final long noInd = 6341423L;
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu i = addIndividu(noInd, date(1965, 2, 21), "Tartempion", "Toto", true);
@@ -2092,7 +2092,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	public void testRevenuOrdinaireCtbHorsSuisseImmeubleQuiArriveDansLeCanton() throws Exception {
 		final long noInd = 6341423L;
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu i = addIndividu(noInd, date(1965, 2, 21), "Tartempion", "Toto", true);
@@ -2141,7 +2141,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	public void testRevenuSourcePureCtbHorsSuisseImmeubleQuiArriveDansLeCanton() throws Exception {
 		final long noInd = 6341423L;
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu i = addIndividu(noInd, date(1965, 2, 21), "Tartempion", "Toto", true);
@@ -2171,7 +2171,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	public void testFortuneCtbHorsSuisseImmeubleQuiArriveDansLeCanton() throws Exception {
 		final long noInd = 6341423L;
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu i = addIndividu(noInd, date(1965, 2, 21), "Tartempion", "Toto", true);
@@ -2221,7 +2221,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	public void testRevenuOrdinaireDiplomateEtrangerAvecImmeubleVaudois() throws Exception {
 		final long noInd = 6341423L;
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu i = addIndividu(noInd, date(1965, 2, 21), "Tartempion", "Toto", true);
@@ -2269,7 +2269,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	public void testRevenuSourcePureDiplomateEtrangerAvecImmeubleVaudois() throws Exception {
 		final long noInd = 6341423L;
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu i = addIndividu(noInd, date(1965, 2, 21), "Tartempion", "Toto", true);
@@ -2297,7 +2297,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	public void testFortuneDiplomateEtrangerAvecImmeubleVaudois() throws Exception {
 		final long noInd = 6341423L;
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu i = addIndividu(noInd, date(1965, 2, 21), "Tartempion", "Toto", true);
@@ -2353,7 +2353,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		final RegDate dateMariage = date(2011, 11, 7);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, date(1975, 5, 2), "Petitjean", "Raimond", Sexe.MASCULIN);
@@ -2409,7 +2409,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		final RegDate dateSeparation = date(2011, 8, 7);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, date(1975, 5, 2), "Petitjean", "Raimond", Sexe.MASCULIN);

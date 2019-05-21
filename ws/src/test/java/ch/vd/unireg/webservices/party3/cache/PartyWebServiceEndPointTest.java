@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.WebserviceTest;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.service.mock.DefaultMockServiceSecurite;
 import ch.vd.unireg.interfaces.service.mock.MockServiceSecuriteService;
 import ch.vd.unireg.security.Role;
@@ -94,7 +94,7 @@ public class PartyWebServiceEndPointTest extends WebserviceTest {
 	public void testGetBatchTiersRequestWithIdNull() throws Exception {
 
 		serviceSecurite.setUp(new DefaultMockServiceSecurite());
-		serviceCivil.setUp(new DefaultMockServiceCivil());
+		serviceCivil.setUp(new DefaultMockIndividuConnector());
 
 		class Ids {
 			long a;
