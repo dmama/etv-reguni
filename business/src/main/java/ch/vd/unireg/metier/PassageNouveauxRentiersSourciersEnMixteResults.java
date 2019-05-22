@@ -9,7 +9,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.validation.ValidationException;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.JobResults;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.tiers.TiersService;
 
 public class PassageNouveauxRentiersSourciersEnMixteResults extends JobResults<Long, PassageNouveauxRentiersSourciersEnMixteResults> {
@@ -118,7 +118,7 @@ public class PassageNouveauxRentiersSourciersEnMixteResults extends JobResults<L
 		if (e instanceof ValidationException) {
 			sourciersEnErreurs.add(new Erreur(element, ErreurType.VALIDATION_APRES_OUVERTURE, e.getMessage()));
 		}
-		else if (e instanceof ServiceInfrastructureException) {
+		else if (e instanceof InfrastructureException) {
 			sourciersEnErreurs.add(new Erreur(element, ErreurType.INFRA_EXCEPTION, e.getMessage()));
 		}
 		else if (e instanceof ConstraintViolationException) {
@@ -143,7 +143,7 @@ public class PassageNouveauxRentiersSourciersEnMixteResults extends JobResults<L
 	}
 
 	public void addUnknownException(Long numeroSourcier, Exception e) {
-		if (e instanceof ServiceInfrastructureException) {
+		if (e instanceof InfrastructureException) {
 			sourciersEnErreurs.add(new Erreur(numeroSourcier, ErreurType.INFRA_EXCEPTION, e.getMessage()));
 		}
 		else if (e instanceof ConstraintViolationException) {

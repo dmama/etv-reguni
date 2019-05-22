@@ -3,7 +3,7 @@ package ch.vd.unireg.interfaces.infra.mock;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.data.TypeAffranchissement;
 
@@ -14,7 +14,7 @@ public class MockPays extends MockEntityOFS implements Pays {
 	// Les états souverains
 	//
 
-	public static final MockPays Suisse = new MockPays(ServiceInfrastructureRaw.noOfsSuisse, "Suisse", "CH", "CH", "CHE", TypeAffranchissement.SUISSE);
+	public static final MockPays Suisse = new MockPays(InfrastructureConnector.noOfsSuisse, "Suisse", "CH", "CH", "CHE", TypeAffranchissement.SUISSE);
 	public static final MockPays Albanie = new MockPays(8201, "Albanie", "AL", "AL", "ALB", TypeAffranchissement.EUROPE);
 	public static final MockPays Danemark = new MockPays(8206, "Danemark", "DK", "DK", "DNK", TypeAffranchissement.EUROPE);
 	public static final MockPays Allemagne = new MockPays(8207, "Allemagne", "DE", "DE", "DEU", TypeAffranchissement.EUROPE);
@@ -42,8 +42,8 @@ public class MockPays extends MockEntityOFS implements Pays {
 	// -> dans Ref-INF, leur code de zone tariffaire postale est toujours "MONDE"... donc on fait pareil ici...
 	//
 
-	public static final MockPays PaysInconnu = new MockPays(ServiceInfrastructureRaw.noPaysInconnu, "PaysInconnu", "INC", null, null, TypeAffranchissement.MONDE);
-	public static final MockPays Apatridie = new MockPays(ServiceInfrastructureRaw.noPaysApatride, "Apatridie", "---", true, null, null, ServiceInfrastructureRaw.noPaysApatride, TypeAffranchissement.MONDE);     // <-- à n'utiliser que pour les nationalités!
+	public static final MockPays PaysInconnu = new MockPays(InfrastructureConnector.noPaysInconnu, "PaysInconnu", "INC", null, null, TypeAffranchissement.MONDE);
+	public static final MockPays Apatridie = new MockPays(InfrastructureConnector.noPaysApatride, "Apatridie", "---", true, null, null, InfrastructureConnector.noPaysApatride, TypeAffranchissement.MONDE);     // <-- à n'utiliser que pour les nationalités!
 	public static final MockPays RDA = new MockPays(8208, "République démocratique allemande", "", false, null, null, TypeAffranchissement.MONDE);
 
 	private static final DateRange ETERNITY = new DateRangeHelper.Range(null, null);
@@ -63,7 +63,7 @@ public class MockPays extends MockEntityOFS implements Pays {
 		this.valide = true;
 		this.ofsEtatSouverain = numeroOFS;
 		this.validityRange = ETERNITY;
-		DefaultMockServiceInfrastructureService.addPays(this);
+		DefaultMockInfrastructureConnector.addPays(this);
 	}
 
 	public MockPays(int numeroOFS, String nom, String sigleOFS, String codeIso2, String codeIso3, TypeAffranchissement typeAffranchissement) {
@@ -74,7 +74,7 @@ public class MockPays extends MockEntityOFS implements Pays {
 		this.valide = true;
 		this.ofsEtatSouverain = numeroOFS;
 		this.validityRange = ETERNITY;
-		DefaultMockServiceInfrastructureService.addPays(this);
+		DefaultMockInfrastructureConnector.addPays(this);
 	}
 
 	public MockPays(int numeroOFS, String nom, String sigleOFS, boolean valide, String codeIso2, String codeIso3, TypeAffranchissement typeAffranchissement) {
@@ -85,7 +85,7 @@ public class MockPays extends MockEntityOFS implements Pays {
 		this.ofsEtatSouverain = numeroOFS;
 		this.typeAffranchissement = typeAffranchissement;
 		this.validityRange = ETERNITY;
-		DefaultMockServiceInfrastructureService.addPays(this);
+		DefaultMockInfrastructureConnector.addPays(this);
 	}
 
 	public MockPays(int numeroOFS, String nom, String sigleOFS, boolean valide, String codeIso2, String codeIso3, TypeAffranchissement typeAffranchissement, RegDate dateDebut, RegDate dateFin) {
@@ -96,7 +96,7 @@ public class MockPays extends MockEntityOFS implements Pays {
 		this.ofsEtatSouverain = numeroOFS;
 		this.typeAffranchissement = typeAffranchissement;
 		this.validityRange = new DateRangeHelper.Range(dateDebut, dateFin);
-		DefaultMockServiceInfrastructureService.addPays(this);
+		DefaultMockInfrastructureConnector.addPays(this);
 	}
 
 	/**
@@ -110,12 +110,12 @@ public class MockPays extends MockEntityOFS implements Pays {
 		this.ofsEtatSouverain = ofsEtatSouverainParent;
 		this.typeAffranchissement = typeAffranchissement;
 		this.validityRange = ETERNITY;
-		DefaultMockServiceInfrastructureService.addPays(this);
+		DefaultMockInfrastructureConnector.addPays(this);
 	}
 
 	@Override
 	public boolean isSuisse() {
-		return getNoOFS() == ServiceInfrastructureRaw.noOfsSuisse;
+		return getNoOFS() == InfrastructureConnector.noOfsSuisse;
 	}
 
 	@Override

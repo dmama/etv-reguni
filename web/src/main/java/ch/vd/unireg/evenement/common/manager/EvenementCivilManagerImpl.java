@@ -19,7 +19,7 @@ import ch.vd.unireg.evenement.common.view.TiersAssocieView;
 import ch.vd.unireg.individu.IndividuView;
 import ch.vd.unireg.individu.WebCivilService;
 import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
@@ -94,7 +94,7 @@ abstract public class EvenementCivilManagerImpl implements MessageSourceAware {
 		return localiteOuPays;
 	}
 
-	protected TiersAssocieView createTiersAssocieView(ContribuableImpositionPersonnesPhysiques ctb) throws AdresseException, ServiceInfrastructureException {
+	protected TiersAssocieView createTiersAssocieView(ContribuableImpositionPersonnesPhysiques ctb) throws AdresseException, InfrastructureException {
 		final TiersAssocieView tiersAssocie = new TiersAssocieView();
 		tiersAssocie.setNumero(ctb.getNumero());
 		final List<String> nomCourrier = adresseService.getNomCourrier(ctb, null, false);

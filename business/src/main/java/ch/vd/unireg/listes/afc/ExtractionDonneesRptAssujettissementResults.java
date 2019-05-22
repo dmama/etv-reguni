@@ -10,7 +10,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.declaration.ForsList;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.metier.assujettissement.Assujettissement;
 import ch.vd.unireg.metier.assujettissement.AssujettissementException;
@@ -53,7 +53,7 @@ public abstract class ExtractionDonneesRptAssujettissementResults extends Extrac
 	protected abstract String filterAssujettissements(Contribuable ctb, List<Assujettissement> listeAFiltrer);
 
 	@Override
-	protected List<InfoPeriodeImposition> buildInfoPeriodes(DecompositionForsAnneeComplete decomposition) throws ServiceInfrastructureException, CoupleInvalideException, AssujettissementException, ContribuableIgnoreException {
+	protected List<InfoPeriodeImposition> buildInfoPeriodes(DecompositionForsAnneeComplete decomposition) throws InfrastructureException, CoupleInvalideException, AssujettissementException, ContribuableIgnoreException {
 
 		final Contribuable ctb = decomposition.contribuable;
 		final List<Assujettissement> assujettissements = assujettissementService.determine(ctb, decomposition.annee);

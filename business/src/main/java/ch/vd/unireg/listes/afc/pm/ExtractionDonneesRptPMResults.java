@@ -16,12 +16,12 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.FiscalDateHelper;
 import ch.vd.unireg.common.ListesResults;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.metier.assujettissement.AssujettissementException;
 import ch.vd.unireg.metier.assujettissement.PeriodeImposition;
@@ -490,7 +490,7 @@ public class ExtractionDonneesRptPMResults extends ListesResults<ExtractionDonne
 	private final List<InfoCtbAvecDecisionACI> listeCtbsDecisionACI = new LinkedList<>();
 
 	@Override
-	public final void addContribuable(Contribuable ctb) throws ServiceInfrastructureException {
+	public final void addContribuable(Contribuable ctb) throws InfrastructureException {
 		++nbContribuablesAnalyses;
 		final Entreprise entreprise = (Entreprise) ctb;
 		//Verification de présence de décision ACI

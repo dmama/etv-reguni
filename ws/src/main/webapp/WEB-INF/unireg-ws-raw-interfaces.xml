@@ -73,27 +73,27 @@
 
 	<!-- Service infra -->
 
-	<bean id="serviceInfraRemote" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
-		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/serviceInfra.remoting" />
-		<property name="serviceInterface" value="ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw" />
+	<bean id="infrastructureConnectorRemote" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
+		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/infraConnector.remoting" />
+		<property name="serviceInterface" value="ch.vd.unireg.interfaces.infra.InfrastructureConnector" />
 		<property name="executor" ref="nexusHttpRequestExecutor" />
 	</bean>
 
-	<bean id="serviceInfrastructureTracing" class="ch.vd.unireg.interfaces.infra.ServiceInfrastructureTracing">
-		<property name="target" ref="serviceInfraRemote" />
+	<bean id="infrastructureConnectorTracing" class="ch.vd.unireg.interfaces.infra.InfrastructureConnectorTracing">
+		<property name="target" ref="infrastructureConnectorRemote" />
 		<property name="statsService" ref="statsService" />
 	</bean>
 
-	<bean id="serviceInfrastructureCache" class="ch.vd.unireg.interfaces.infra.cache.ServiceInfrastructureCache">
-		<property name="target" ref="serviceInfrastructureTracing" />
+	<bean id="infrastructureConnectorCache" class="ch.vd.unireg.interfaces.infra.cache.InfrastructureConnectorCache">
+		<property name="target" ref="infrastructureConnectorTracing" />
 		<property name="cacheManager" ref="ehCacheManager" />
-		<property name="cacheName" value="serviceInfra" />
-		<property name="shortLivedCacheName" value="serviceInfraShortLived" />
+		<property name="cacheName" value="infraConnector" />
+		<property name="shortLivedCacheName" value="infraConnectorShortLived" />
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
 	</bean>
 
-	<alias alias="serviceInfrastructureRaw" name="serviceInfrastructureCache"/>
+	<alias alias="infrastructureConnector" name="infrastructureConnectorCache"/>
 
 	<!-- Service REF-SEC -->
 

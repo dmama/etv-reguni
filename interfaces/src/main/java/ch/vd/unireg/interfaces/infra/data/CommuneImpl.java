@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.infrastructure.model.rest.CommuneSimple;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.XmlUtils;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 
 public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable {
 
@@ -46,7 +46,7 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 		this.dateFin = XmlUtils.xmlcal2regdate(target.getDateFinValidite());
 		this.sigleCanton = target.getSigleCanton();
 		this.noOfsCommuneMere = target.getNumTechMere();
-		this.vaudoise = ServiceInfrastructureRaw.SIGLE_CANTON_VD.equals(sigleCanton);
+		this.vaudoise = InfrastructureConnector.SIGLE_CANTON_VD.equals(sigleCanton);
 		this.fraction = target.isFraction();
 		this.principale = target.isPrincipale();
 		this.codeDistrict = null;
@@ -59,7 +59,7 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 		this.dateFin = XmlUtils.xmlcal2regdate(target.getDateFinValidite());
 		this.sigleCanton = target.getSigleCanton();
 		this.noOfsCommuneMere = target.isEstUneFractionDeCommune() ? link2OfsId(target.getCommuneFaitiereLink()) : -1;
-		this.vaudoise = ServiceInfrastructureRaw.SIGLE_CANTON_VD.equals(sigleCanton);
+		this.vaudoise = InfrastructureConnector.SIGLE_CANTON_VD.equals(sigleCanton);
 		this.fraction = target.isEstUneFractionDeCommune();
 		this.principale = target.isEstUneCommuneFaitiere();
 		this.codeDistrict = link2OfsId(target.getDistrictFiscalLink());

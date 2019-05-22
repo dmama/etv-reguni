@@ -25,7 +25,7 @@ import ch.vd.unireg.interfaces.civil.data.Origine;
 import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.unireg.interfaces.civil.data.PermisList;
 import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 import ch.vd.unireg.metier.piis.PeriodeImpositionImpotSource;
 import ch.vd.unireg.metier.piis.PeriodeImpositionImpotSourceServiceException;
 import ch.vd.unireg.registrefoncier.DroitRF;
@@ -123,8 +123,8 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 			to.setBirthName(personne.getNomNaissance());
 			if (personne.getNumeroOfsNationalite() != null) {
 				final int ofs = personne.getNumeroOfsNationalite();
-				final Nationality.Swiss swiss = ofs == ServiceInfrastructureRaw.noOfsSuisse ? new Nationality.Swiss() : null;
-				final Nationality.Stateless stateless = ofs == ServiceInfrastructureRaw.noPaysApatride ? new Nationality.Stateless() : null;
+				final Nationality.Swiss swiss = ofs == InfrastructureConnector.noOfsSuisse ? new Nationality.Swiss() : null;
+				final Nationality.Stateless stateless = ofs == InfrastructureConnector.noPaysApatride ? new Nationality.Stateless() : null;
 				final Integer foreignCountry = swiss == null && stateless == null ? ofs : null;
 				to.getNationalities().add(new Nationality(null, null, swiss, stateless, foreignCountry, null));
 			}
@@ -181,8 +181,8 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 			if (individu.getNationalites() != null && !individu.getNationalites().isEmpty()) {
 				for (Nationalite nat : individu.getNationalites()) {
 					final int ofs = nat.getPays().getNoOFS();
-					final Nationality.Swiss swiss = ofs == ServiceInfrastructureRaw.noOfsSuisse ? new Nationality.Swiss() : null;
-					final Nationality.Stateless stateless = ofs == ServiceInfrastructureRaw.noPaysApatride ? new Nationality.Stateless() : null;
+					final Nationality.Swiss swiss = ofs == InfrastructureConnector.noOfsSuisse ? new Nationality.Swiss() : null;
+					final Nationality.Stateless stateless = ofs == InfrastructureConnector.noPaysApatride ? new Nationality.Stateless() : null;
 					final Integer foreignCountry = swiss == null && stateless == null ? ofs : null;
 					to.getNationalities().add(new Nationality(DataHelper.coreToXMLv2(nat.getDateDebut()),
 					                                          DataHelper.coreToXMLv2(nat.getDateFin()),

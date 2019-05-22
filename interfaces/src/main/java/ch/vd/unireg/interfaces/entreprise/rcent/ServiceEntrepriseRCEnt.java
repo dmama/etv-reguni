@@ -33,7 +33,7 @@ import ch.vd.unireg.interfaces.entreprise.data.EntrepriseCivileEvent;
 import ch.vd.unireg.interfaces.entreprise.data.EntrepriseConstants;
 import ch.vd.unireg.interfaces.entreprise.rcent.adapter.model.OrganisationEvent;
 import ch.vd.unireg.interfaces.entreprise.rcent.adapter.service.RCEntAdapter;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 import ch.vd.unireg.wsclient.rcent.RcEntClient;
 import ch.vd.unireg.wsclient.rcent.RcEntClientException;
 
@@ -41,10 +41,10 @@ public class ServiceEntrepriseRCEnt implements ServiceEntrepriseRaw {
 
 	private final RcEntClient client;
 	private final RCEntAdapter adapter;
-	private final ServiceInfrastructureRaw infraService;
+	private final InfrastructureConnector infraService;
 	public static final Logger LOGGER = LoggerFactory.getLogger(ServiceEntrepriseRCEnt.class);
 
-	public ServiceEntrepriseRCEnt(RCEntAdapter adapter, RcEntClient client, ServiceInfrastructureRaw infraService) {
+	public ServiceEntrepriseRCEnt(RCEntAdapter adapter, RcEntClient client, InfrastructureConnector infraService) {
 		this.adapter = adapter;
 		this.client = client;
 		this.infraService = infraService;

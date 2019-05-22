@@ -22,7 +22,7 @@ import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.unireg.interfaces.civil.data.IndividuRCPers;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 import ch.vd.unireg.type.ActionEvenementCivilEch;
 import ch.vd.unireg.type.TypeEvenementCivilEch;
 import ch.vd.unireg.wsclient.rcpers.RcPersClient;
@@ -35,7 +35,7 @@ public class IndividuConnectorRCPers implements IndividuConnector {
 //	private static final Logger LOGGER = LoggerFactory.getLogger(IndividuConnectorRCPers.class);
 
 	private RcPersClient client;
-	private ServiceInfrastructureRaw infraService;
+	private InfrastructureConnector infraConnector;
 
 	private static final int NB_PARAMS_MAX_PAR_GET = 100;
 	private static final Integer NOT_FOUND_PERSON = 4; // voir le fichier http://subversion.etat-de-vaud.ch/SVN_ACI/registre/rcpers/trunk/06-Deploiement/ManuelsTechniques/TEC-ServicesEchangesDonnees-3-0.doc
@@ -45,8 +45,8 @@ public class IndividuConnectorRCPers implements IndividuConnector {
 		this.client = client;
 	}
 
-	public void setInfraService(ServiceInfrastructureRaw infraService) {
-		this.infraService = infraService;
+	public void setInfraConnector(InfrastructureConnector infraConnector) {
+		this.infraConnector = infraConnector;
 	}
 
 	@Override
@@ -68,7 +68,7 @@ public class IndividuConnectorRCPers implements IndividuConnector {
 		}
 
 		// on peut maintenant construire l'individu
-		final Individu individu = IndividuRCPers.get(person, true, infraService);
+		final Individu individu = IndividuRCPers.get(person, true, infraConnector);
 		if (individu != null) {
 			long actual = individu.getNoTechnique();
 			if (noIndividu != actual) {
@@ -102,7 +102,7 @@ public class IndividuConnectorRCPers implements IndividuConnector {
 		final long noIndividu = IndividuRCPers.getNoIndividu(person);
 
 		// on peut maintenant construire l'individu
-		final Individu individu = IndividuRCPers.get(person, true, infraService);
+		final Individu individu = IndividuRCPers.get(person, true, infraConnector);
 		if (individu != null) {
 			long actual = individu.getNoTechnique();
 			if (noIndividu != actual) {
@@ -172,7 +172,7 @@ public class IndividuConnectorRCPers implements IndividuConnector {
 		// on peut maintenant construire les individus
 		final List<Individu> individus = new ArrayList<>(nosIndividus.size());
 		for (Person person : persons) {
-			final Individu individu = IndividuRCPers.get(person, true, infraService);
+			final Individu individu = IndividuRCPers.get(person, true, infraConnector);
 			individus.add(individu);
 		}
 
@@ -218,7 +218,7 @@ public class IndividuConnectorRCPers implements IndividuConnector {
 			final Event ref = client.getEvent(eventId);
 			if (ref != null) {
 				final Person personAfterEvent = ref.getPersonAfterEvent();
-				final Individu individu = IndividuRCPers.get(personAfterEvent, false, infraService);
+				final Individu individu = IndividuRCPers.get(personAfterEvent, false, infraConnector);
 				final EventIdentification idtf = ref.getIdentification();
 				final Long refMessageId = idtf.getReferenceMessageId();
 				final RegDate dateEvt = XmlUtils.xmlcal2regdate(idtf.getEventDate());

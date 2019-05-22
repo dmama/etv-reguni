@@ -11,24 +11,24 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.evd0001.v5.Contact;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
-import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
+import ch.vd.unireg.interfaces.infra.mock.DefaultMockInfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.unireg.common.WithoutSpringTest;
-import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.type.TexteCasePostale;
 
 public class AdresseRCPersTest extends WithoutSpringTest {
 
-	private ServiceInfrastructureRaw infraService;
+	private InfrastructureConnector infraService;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		infraService = new DefaultMockServiceInfrastructureService();
+		infraService = new DefaultMockInfrastructureConnector();
 	}
 
 	@Test

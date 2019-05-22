@@ -67,7 +67,7 @@ import ch.vd.unireg.individu.WebCivilService;
 import ch.vd.unireg.interfaces.civil.IndividuConnectorException;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseException;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.EntiteOFS;
 import ch.vd.unireg.interfaces.infra.data.Logiciel;
@@ -1123,9 +1123,9 @@ public class TiersManager implements MessageSourceAware {
 	 * [UNIREG-3153] Résoud les adresses fiscales et met-à-disposition la liste des vues sur ces adresses. Cette méthode gère gracieusement les exceptions dans la résolution des adresses.
 	 *
 	 * @param callback un méthode de callback qui met-à-disposition les adresses et qui reçoit les vues des adresses en retour (ou le cas échéant, les messages d'erreur).
-	 * @throws ServiceInfrastructureException en cas de problème sur le service infrastructure
+	 * @throws InfrastructureException en cas de problème sur le service infrastructure
 	 */
-	protected void resolveAdressesHisto(AdressesResolverCallback callback) throws ServiceInfrastructureException {
+	protected void resolveAdressesHisto(AdressesResolverCallback callback) throws InfrastructureException {
 
 		try {
 			List<AdresseView> adresses = new ArrayList<>();
@@ -1168,7 +1168,7 @@ public class TiersManager implements MessageSourceAware {
 	/**
 	 * Renseigne la liste des adresses actives sur le form backing object. En cas d'erreur dans la résolution des adresses, les adresses en erreur et le message de l'erreur sont renseignés en lieu et place.
 	 */
-	protected void setAdressesActives(final TiersEditView tiersEditView, final Tiers tiers) throws ServiceInfrastructureException {
+	protected void setAdressesActives(final TiersEditView tiersEditView, final Tiers tiers) throws InfrastructureException {
 
 		resolveAdressesHisto(new AdressesResolverCallback() {
 			@Override
@@ -1195,7 +1195,7 @@ public class TiersManager implements MessageSourceAware {
 	/**
 	 * Renseigne la liste des adresses fiscales Non calculees modifiables sur le form backing object.
 	 */
-	protected void setAdressesFiscalesModifiables(final TiersEditView tiersEditView, final Tiers tiers) throws ServiceInfrastructureException {
+	protected void setAdressesFiscalesModifiables(final TiersEditView tiersEditView, final Tiers tiers) throws InfrastructureException {
 
 		resolveAdressesHisto(new AdressesResolverCallback() {
 			@Override
@@ -1220,7 +1220,7 @@ public class TiersManager implements MessageSourceAware {
 	/**
 	 * Rempli la collection des adressesView avec les adresses fiscales historiques du type spécifié.
 	 */
-	protected void fillAdressesView(List<AdresseView> adressesView, final AdressesFiscalesHisto adressesFiscalHisto, TypeAdresseTiers type) throws ServiceInfrastructureException {
+	protected void fillAdressesView(List<AdresseView> adressesView, final AdressesFiscalesHisto adressesFiscalHisto, TypeAdresseTiers type) throws InfrastructureException {
 
 		final Collection<AdresseGenerique> adresses = adressesFiscalHisto.ofType(type);
 		if (adresses == null) {
@@ -1293,7 +1293,7 @@ public class TiersManager implements MessageSourceAware {
 		try {
 			return serviceInfrastructureService.estDansLeCanton(adresse);
 		}
-		catch (ServiceInfrastructureException e) {
+		catch (InfrastructureException e) {
 			LOGGER.error("Impossible de déterminer le canton de l'adresse : " + adresse, e);
 			return false;
 		}

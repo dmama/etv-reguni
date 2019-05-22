@@ -17,7 +17,7 @@ import ch.vd.unireg.declaration.DeclarationImpotSource;
 import ch.vd.unireg.declaration.DelaiDeclaration;
 import ch.vd.unireg.declaration.view.DelaiDocumentFiscalView;
 import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
-import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
+import ch.vd.unireg.interfaces.infra.mock.DefaultMockInfrastructureConnector;
 import ch.vd.unireg.interfaces.service.mock.ProxyServiceInfrastructureService;
 import ch.vd.unireg.message.MessageHelper;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
@@ -70,7 +70,7 @@ public class ListeRecapitulativeDetailViewTest {
 		lr.setDelaisDeclaration(delaiDeclarationSet);
 
 		ProxyServiceInfrastructureService infraService = new ProxyServiceInfrastructureService();
-		infraService.setUp(new DefaultMockServiceInfrastructureService() {
+		infraService.setUp(new DefaultMockInfrastructureConnector() {
 			@Override
 			public String getUrl(ApplicationFiscale application, @Nullable Map<String, String> parametres) {
 				return "toto";

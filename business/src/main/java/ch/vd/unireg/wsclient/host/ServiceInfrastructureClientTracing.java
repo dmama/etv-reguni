@@ -13,11 +13,11 @@ import ch.vd.infrastructure.model.rest.TypeCollectivite;
 import ch.vd.infrastructure.model.rest.TypeCommunicationPourTier;
 import ch.vd.infrastructure.registre.common.model.rest.InstitutionFinanciere;
 import ch.vd.infrastructure.registre.common.model.rest.ListeInstitutionsFinancieres;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.wsclient.host.interfaces.ServiceInfrastructureClient;
-import ch.vd.unireg.wsclient.host.interfaces.ServiceInfrastructureClientException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.stats.ServiceTracing;
 import ch.vd.unireg.stats.StatsService;
+import ch.vd.unireg.wsclient.host.interfaces.ServiceInfrastructureClient;
+import ch.vd.unireg.wsclient.host.interfaces.ServiceInfrastructureClientException;
 
 public class ServiceInfrastructureClientTracing implements ServiceInfrastructureClient, InitializingBean, DisposableBean {
 
@@ -54,13 +54,13 @@ public class ServiceInfrastructureClientTracing implements ServiceInfrastructure
 	}
 
 	@Override
-	public CollectiviteAdministrative getCollectivite(final int noColAdm) throws ServiceInfrastructureException {
+	public CollectiviteAdministrative getCollectivite(final int noColAdm) throws InfrastructureException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
 			return target.getCollectivite(noColAdm);
 		}
-		catch (ServiceInfrastructureException e) {
+		catch (InfrastructureException e) {
 			t = e;
 			throw e;
 		}
@@ -80,7 +80,7 @@ public class ServiceInfrastructureClientTracing implements ServiceInfrastructure
 		try {
 			return target.getRueByNumero(numero);
 		}
-		catch (ServiceInfrastructureException e) {
+		catch (InfrastructureException e) {
 			t = e;
 			throw e;
 		}
@@ -100,7 +100,7 @@ public class ServiceInfrastructureClientTracing implements ServiceInfrastructure
 		try {
 			return target.getCollectivite(sigle);
 		}
-		catch (ServiceInfrastructureException e) {
+		catch (InfrastructureException e) {
 			t = e;
 			throw e;
 		}
@@ -120,7 +120,7 @@ public class ServiceInfrastructureClientTracing implements ServiceInfrastructure
 		try {
 			return target.getCollectivitesAdministratives(canton);
 		}
-		catch (ServiceInfrastructureException e) {
+		catch (InfrastructureException e) {
 			t = e;
 			throw e;
 		}
@@ -140,7 +140,7 @@ public class ServiceInfrastructureClientTracing implements ServiceInfrastructure
 		try {
 			return target.getCollectivitesAdministratives(types);
 		}
-		catch (ServiceInfrastructureException e) {
+		catch (InfrastructureException e) {
 			t = e;
 			throw e;
 		}
@@ -160,7 +160,7 @@ public class ServiceInfrastructureClientTracing implements ServiceInfrastructure
 		try {
 			return target.getCollectivitesAdministrativesPourTypeCommunication(typeCommunication);
 		}
-		catch (ServiceInfrastructureException e) {
+		catch (InfrastructureException e) {
 			t = e;
 			throw e;
 		}
@@ -180,7 +180,7 @@ public class ServiceInfrastructureClientTracing implements ServiceInfrastructure
 		try {
 			return target.getOidDeCommune(noOfsCommune);
 		}
-		catch (ServiceInfrastructureException e) {
+		catch (InfrastructureException e) {
 			t = e;
 			throw e;
 		}
@@ -200,7 +200,7 @@ public class ServiceInfrastructureClientTracing implements ServiceInfrastructure
 		try {
 			return target.getTypesCollectivites();
 		}
-		catch (ServiceInfrastructureException e) {
+		catch (InfrastructureException e) {
 			t = e;
 			throw e;
 		}
@@ -217,7 +217,7 @@ public class ServiceInfrastructureClientTracing implements ServiceInfrastructure
 		try {
 			return target.getInstitutionFinanciere(id);
 		}
-		catch (ServiceInfrastructureException e) {
+		catch (InfrastructureException e) {
 			t = e;
 			throw e;
 		}
@@ -234,7 +234,7 @@ public class ServiceInfrastructureClientTracing implements ServiceInfrastructure
 		try {
 			return target.getInstitutionsFinancieres(noClearing);
 		}
-		catch (ServiceInfrastructureException e) {
+		catch (InfrastructureException e) {
 			t = e;
 			throw e;
 		}

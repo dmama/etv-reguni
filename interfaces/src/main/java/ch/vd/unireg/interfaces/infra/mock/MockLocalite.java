@@ -107,7 +107,7 @@ public class MockLocalite implements Localite {
 		this.dateDebut = null;
 		this.dateFin = null;
 
-		DefaultMockServiceInfrastructureService.addLocalite(this);
+		DefaultMockInfrastructureConnector.addLocalite(this);
 	}
 
 	public MockLocalite(Integer noOrdre, Integer nPA, Integer complementNPA, String nomAbrege, String nomComplet, MockCommune commune) {
@@ -122,7 +122,7 @@ public class MockLocalite implements Localite {
 		this.dateDebut = null;
 		this.dateFin = null;
 
-		DefaultMockServiceInfrastructureService.addLocalite(this);
+		DefaultMockInfrastructureConnector.addLocalite(this);
 	}
 
 	@Override

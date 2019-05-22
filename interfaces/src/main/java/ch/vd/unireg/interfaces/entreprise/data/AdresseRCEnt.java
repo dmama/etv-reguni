@@ -13,7 +13,7 @@ import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseException;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 
 public abstract class AdresseRCEnt<T extends AdresseRCEnt<T>> implements Serializable, Adresse, DateRangeLimitable<T> {
 
@@ -118,7 +118,7 @@ public abstract class AdresseRCEnt<T extends AdresseRCEnt<T>> implements Seriali
     private static Integer initNoOfsPays(Country country) {
 
         if (country == null) {
-            return ServiceInfrastructureRaw.noOfsSuisse;
+            return InfrastructureConnector.noOfsSuisse;
         }
 
         if (country.getCountryId() != null) {
@@ -128,7 +128,7 @@ public abstract class AdresseRCEnt<T extends AdresseRCEnt<T>> implements Seriali
         final String countryCode = country.getCountryIdISO2();
         if ("CH".equals(countryCode)) {
             // short path : 90% des adresses sont en Suisse
-            return ServiceInfrastructureRaw.noOfsSuisse;
+            return InfrastructureConnector.noOfsSuisse;
         }
 
         return null;

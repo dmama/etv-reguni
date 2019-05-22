@@ -8,9 +8,8 @@ import org.apache.commons.lang3.mutable.Mutable;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.common.pagination.ParamPagination;
 import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.common.pagination.ParamPagination;
 import ch.vd.unireg.evenement.identification.contribuable.CriteresEntreprise;
 import ch.vd.unireg.evenement.identification.contribuable.CriteresPersonne;
 import ch.vd.unireg.evenement.identification.contribuable.Erreur;
@@ -19,6 +18,7 @@ import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribu
 import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuableCriteria;
 import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuableEtatFilter;
 import ch.vd.unireg.evenement.identification.contribuable.TypeDemande;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.PersonnePhysique;
 
@@ -94,7 +94,7 @@ public interface IdentificationContribuableService {
 	/**
 	 * Retourn le nom complet du canton emetteur du message
 	 */
-	String getNomCantonFromEmetteurId(String emetteurId) throws ServiceInfrastructureException;
+	String getNomCantonFromEmetteurId(String emetteurId) throws InfrastructureException;
 
 	/**
 	 * Retourne le nom d'un utilisateur traitant en fonction de sa nature

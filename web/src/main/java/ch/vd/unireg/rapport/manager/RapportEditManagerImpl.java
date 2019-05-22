@@ -21,7 +21,7 @@ import ch.vd.unireg.declaration.snc.liens.associes.LienAssociesEtSNCException;
 import ch.vd.unireg.declaration.snc.liens.associes.LienAssociesSNCService;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
 import ch.vd.unireg.general.view.TiersGeneralView;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.rapport.SensRapportEntreTiers;
 import ch.vd.unireg.rapport.TypeRapportEntreTiersWeb;
 import ch.vd.unireg.rapport.view.RapportView;
@@ -399,7 +399,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public TiersEditView getView(Long numero) throws AdresseException, ServiceInfrastructureException {
+	public TiersEditView getView(Long numero) throws AdresseException, InfrastructureException {
 		TiersEditView tiersEditView = new TiersEditView();
 		if (numero == null) {
 			return null;
@@ -432,7 +432,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public TiersEditView getRapportsPrestationView(Long numero, WebParamPagination webParamPagination, boolean rapportsPrestationHisto) throws AdresseException, ServiceInfrastructureException {
+	public TiersEditView getRapportsPrestationView(Long numero, WebParamPagination webParamPagination, boolean rapportsPrestationHisto) throws AdresseException, InfrastructureException {
 		TiersEditView tiersEditView = new TiersEditView();
 		if (numero == null) {
 			return null;

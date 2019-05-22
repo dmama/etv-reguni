@@ -50,7 +50,7 @@ import ch.vd.unireg.evenement.docsortant.EvenementDocumentSortantService;
 import ch.vd.unireg.evenement.fiscal.MockEvenementFiscalService;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
@@ -606,7 +606,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 		final Ids ids = new Ids();
 
 		doInNewTransactionAndSession(status -> {
-			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 			final PersonnePhysique pp = addNonHabitant("Arnold", "Stäpäld", date(1978, 9, 23), Sexe.MASCULIN);
 			final PeriodeFiscale periode = addPeriodeFiscale(2010);
 			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
@@ -655,7 +655,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 			final PersonnePhysique pp = addNonHabitant("Arnold", "Duchemin", date(1970, 4, 12), Sexe.MASCULIN);
 			addForPrincipal(pp, debutAnneeDerniere, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 
-			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 			final PeriodeFiscale pfAnneeDerniere = addPeriodeFiscale(anneeDerniere);
 			final PeriodeFiscale pfAnneeCourante = addPeriodeFiscale(anneeCourante);
 			final ModeleDocument modeleAnneeDerniere = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pfAnneeDerniere);
@@ -707,7 +707,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 			addForSecondaire(pp, date(2006, 12, 20), MotifFor.ACHAT_IMMOBILIER, date(2009, 12, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.Cully, MotifRattachement.IMMEUBLE_PRIVE);
 			ids.ppId = pp.getNumero();
 
-			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 			ids.oidCedi = cedi.getId();
 			return null;
 		});
@@ -800,7 +800,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 			addForPrincipal(pp, dateOuvertureFor, MotifFor.MAJORITE, MockCommune.Cossonay);
 			final PeriodeFiscale pf = addPeriodeFiscale(annee);
 			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
-			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 			final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, md);
 			di.setNumeroOfsForGestion(MockCommune.Cossonay.getNoOFS());
 			addEtatDeclarationEmise(di, RegDate.get());

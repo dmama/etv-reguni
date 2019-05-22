@@ -19,7 +19,7 @@ import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.type.CategorieEtranger;
@@ -82,7 +82,7 @@ public class ObtentionPermis extends ObtentionPermisCOuNationaliteSuisse {
 				this.numeroOfsCommunePrincipale = 0;
 			}
 		}
-		catch (ServiceInfrastructureException e) {
+		catch (InfrastructureException e) {
 			throw new EvenementCivilException("Echec de résolution de l'adresse principale.", e);
 		}
 	}

@@ -24,7 +24,7 @@ import ch.vd.unireg.editique.EditiqueException;
 import ch.vd.unireg.editique.EditiquePrefixeHelper;
 import ch.vd.unireg.editique.TypeDocumentEditique;
 import ch.vd.unireg.editique.ZoneAffranchissementEditique;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.tiers.CollectiviteAdministrative;
@@ -80,7 +80,7 @@ public class ImpressionBordereauMouvementDossierHelperImpl extends EditiqueAbstr
 		}
 	}
 
-	private BordereauEnvoiDocument.BordereauEnvoi remplitSpecifiqueBordereauEnvoi(BordereauMouvementDossier bordereau) throws ServiceInfrastructureException {
+	private BordereauEnvoiDocument.BordereauEnvoi remplitSpecifiqueBordereauEnvoi(BordereauMouvementDossier bordereau) throws InfrastructureException {
 
 		final BordereauEnvoiDocument.BordereauEnvoi bordereauEnvoi = BordereauEnvoiDocument.Factory.newInstance().addNewBordereauEnvoi();
 
@@ -194,7 +194,7 @@ public class ImpressionBordereauMouvementDossierHelperImpl extends EditiqueAbstr
 	/**
 	 * Remplit la partie entête du document
 	 */
-	private InfoEnteteDocumentDocument1.InfoEnteteDocument remplitEnteteDocument(ImpressionBordereauMouvementDossierHelperParams params) throws ServiceInfrastructureException, AdresseException {
+	private InfoEnteteDocumentDocument1.InfoEnteteDocument remplitEnteteDocument(ImpressionBordereauMouvementDossierHelperParams params) throws InfrastructureException, AdresseException {
 		final InfoEnteteDocumentDocument1.InfoEnteteDocument infoEnteteDocument = InfoEnteteDocumentDocument1.Factory.newInstance().addNewInfoEnteteDocument();
 		infoEnteteDocument.setPrefixe(EditiquePrefixeHelper.buildPrefixeEnteteDocument(getTypeDocumentEditique()));
 

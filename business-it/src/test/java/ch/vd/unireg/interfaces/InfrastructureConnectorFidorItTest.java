@@ -15,7 +15,7 @@ import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
-import ch.vd.unireg.interfaces.infra.fidor.ServiceInfrastructureFidor;
+import ch.vd.unireg.interfaces.infra.fidor.InfrastructureConnectorFidor;
 import ch.vd.unireg.webservice.fidor.v5.FidorClientImpl;
 import ch.vd.unireg.wsclient.WebClientPool;
 
@@ -24,9 +24,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-public class ServiceInfrastructureFidorItTest extends BusinessItTest {
+public class InfrastructureConnectorFidorItTest extends BusinessItTest {
 
-	private ServiceInfrastructureFidor fidorService;
+	private InfrastructureConnectorFidor fidorService;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -44,7 +44,7 @@ public class ServiceInfrastructureFidorItTest extends BusinessItTest {
 		final FidorClientImpl fidorClient = new FidorClientImpl();
 		fidorClient.setWcPool(fidorPool);
 
-		fidorService = new ServiceInfrastructureFidor();
+		fidorService = new InfrastructureConnectorFidor();
 		fidorService.setFidorClient(fidorClient);
 		fidorService.setUniregCacheManager(Mockito.mock(UniregCacheManager.class));
 		fidorService.setRegimesFiscauxBlacklist("");

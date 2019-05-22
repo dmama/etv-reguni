@@ -35,14 +35,14 @@ import ch.vd.unireg.stats.StatsService;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, InitializingBean, DisposableBean {
+public class InfrastructureConnectorTracing implements InfrastructureConnector, InitializingBean, DisposableBean {
 
-	private ServiceInfrastructureRaw target;
+	private InfrastructureConnector target;
 	private StatsService statsService;
 
-	private final ServiceTracing tracing = new ServiceTracing(ServiceInfrastructureRaw.SERVICE_NAME);
+	private final ServiceTracing tracing = new ServiceTracing(InfrastructureConnector.SERVICE_NAME);
 
-	public void setTarget(ServiceInfrastructureRaw target) {
+	public void setTarget(InfrastructureConnector target) {
 		this.target = target;
 	}
 
@@ -51,7 +51,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	}
 
 	@Override
-	public List<Canton> getAllCantons() throws ServiceInfrastructureException {
+	public List<Canton> getAllCantons() throws InfrastructureException {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();
@@ -70,7 +70,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	}
 
 	@Override
-	public CollectiviteAdministrative getCollectivite(final int noColAdm) throws ServiceInfrastructureException {
+	public CollectiviteAdministrative getCollectivite(final int noColAdm) throws InfrastructureException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
@@ -86,7 +86,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	}
 
 	@Override
-	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws ServiceInfrastructureException {
+	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws InfrastructureException {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();
@@ -105,7 +105,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	}
 
 	@Override
-	public List<CollectiviteAdministrative> getCollectivitesAdministratives(final List<TypeCollectivite> typesCollectivite) throws ServiceInfrastructureException {
+	public List<CollectiviteAdministrative> getCollectivitesAdministratives(final List<TypeCollectivite> typesCollectivite) throws InfrastructureException {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();
@@ -124,7 +124,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	}
 
 	@Override
-	public Integer getNoOfsCommuneByEgid(final int egid, final RegDate date) throws ServiceInfrastructureException {
+	public Integer getNoOfsCommuneByEgid(final int egid, final RegDate date) throws InfrastructureException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
@@ -140,7 +140,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	}
 
 	@Override
-	public Commune getCommuneByLocalite(final Localite localite) throws ServiceInfrastructureException {
+	public Commune getCommuneByLocalite(final Localite localite) throws InfrastructureException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
@@ -157,7 +157,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 
 	@Nullable
 	@Override
-	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, boolean includeFaitieres, boolean includeFractions, @Nullable RegDate date) throws ServiceInfrastructureException {
+	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, boolean includeFaitieres, boolean includeFractions, @Nullable RegDate date) throws InfrastructureException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
@@ -173,7 +173,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	}
 
 	@Override
-	public List<Commune> getCommuneHistoByNumeroOfs(final int noOfsCommune) throws ServiceInfrastructureException {
+	public List<Commune> getCommuneHistoByNumeroOfs(final int noOfsCommune) throws InfrastructureException {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();
@@ -192,7 +192,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	}
 
 	@Override
-	public List<Commune> getCommunes() throws ServiceInfrastructureException {
+	public List<Commune> getCommunes() throws InfrastructureException {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();
@@ -211,7 +211,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	}
 
 	@Override
-	public List<Commune> getListeCommunes(final Canton canton) throws ServiceInfrastructureException {
+	public List<Commune> getListeCommunes(final Canton canton) throws InfrastructureException {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();
@@ -230,7 +230,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	}
 
 	@Override
-	public List<Commune> getCommunesVD() throws ServiceInfrastructureException {
+	public List<Commune> getCommunesVD() throws InfrastructureException {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();
@@ -249,7 +249,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	}
 
 	@Override
-	public List<Commune> getListeCommunesFaitieres() throws ServiceInfrastructureException {
+	public List<Commune> getListeCommunesFaitieres() throws InfrastructureException {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();
@@ -268,7 +268,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	}
 
 	@Override
-	public List<Localite> getLocalitesByONRP(final int onrp) throws ServiceInfrastructureException {
+	public List<Localite> getLocalitesByONRP(final int onrp) throws InfrastructureException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
@@ -284,7 +284,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	}
 
 	@Override
-	public Localite getLocaliteByONRP(int onrp, RegDate dateReference) throws ServiceInfrastructureException {
+	public Localite getLocaliteByONRP(int onrp, RegDate dateReference) throws InfrastructureException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
@@ -300,7 +300,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	}
 
 	@Override
-	public List<Localite> getLocalites() throws ServiceInfrastructureException {
+	public List<Localite> getLocalites() throws InfrastructureException {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();
@@ -319,7 +319,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	}
 
 	@Override
-	public List<OfficeImpot> getOfficesImpot() throws ServiceInfrastructureException {
+	public List<OfficeImpot> getOfficesImpot() throws InfrastructureException {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();
@@ -338,7 +338,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	}
 
 	@Override
-	public List<Pays> getPays() throws ServiceInfrastructureException {
+	public List<Pays> getPays() throws InfrastructureException {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();
@@ -357,7 +357,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	}
 
 	@Override
-	public List<Pays> getPaysHisto(final int numeroOFS) throws ServiceInfrastructureException {
+	public List<Pays> getPaysHisto(final int numeroOFS) throws InfrastructureException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
@@ -373,7 +373,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	}
 
 	@Override
-	public Pays getPays(final int numeroOFS, @Nullable final RegDate date) throws ServiceInfrastructureException {
+	public Pays getPays(final int numeroOFS, @Nullable final RegDate date) throws InfrastructureException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
@@ -389,7 +389,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	}
 
 	@Override
-	public Pays getPays(@NotNull final String codePays, @Nullable final RegDate date) throws ServiceInfrastructureException {
+	public Pays getPays(@NotNull final String codePays, @Nullable final RegDate date) throws InfrastructureException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
@@ -405,7 +405,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	}
 
 	@Override
-	public Rue getRueByNumero(final int numero, final RegDate date) throws ServiceInfrastructureException {
+	public Rue getRueByNumero(final int numero, final RegDate date) throws InfrastructureException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
@@ -421,7 +421,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	}
 
 	@Override
-	public List<Rue> getRues(final Localite localite) throws ServiceInfrastructureException {
+	public List<Rue> getRues(final Localite localite) throws InfrastructureException {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();
@@ -440,7 +440,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	}
 
 	@Override
-	public List<Rue> getRuesHisto(final int numero) throws ServiceInfrastructureException {
+	public List<Rue> getRuesHisto(final int numero) throws InfrastructureException {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();
@@ -461,19 +461,19 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (statsService != null) {
-			statsService.registerService(ServiceInfrastructureRaw.SERVICE_NAME, tracing);
+			statsService.registerService(InfrastructureConnector.SERVICE_NAME, tracing);
 		}
 	}
 
 	@Override
 	public void destroy() throws Exception {
 		if (statsService != null) {
-			statsService.unregisterService(ServiceInfrastructureRaw.SERVICE_NAME);
+			statsService.unregisterService(InfrastructureConnector.SERVICE_NAME);
 		}
 	}
 
 	@Override
-	public List<Localite> getLocalitesByNPA(final int npa, final RegDate dateReference) throws ServiceInfrastructureException {
+	public List<Localite> getLocalitesByNPA(final int npa, final RegDate dateReference) throws InfrastructureException {
 		Throwable t = null;
 		final long time = tracing.start();
 		int items = 0;
@@ -518,7 +518,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	}
 
 	@Override
-	public Logiciel getLogiciel(final Long idLogiciel) throws ServiceInfrastructureException {
+	public Logiciel getLogiciel(final Long idLogiciel) throws InfrastructureException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
@@ -534,7 +534,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	}
 
 	@Override
-	public List<Logiciel> getTousLesLogiciels() throws ServiceInfrastructureException {
+	public List<Logiciel> getTousLesLogiciels() throws InfrastructureException {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();
@@ -635,7 +635,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	}
 
 	@Override
-	public void ping() throws ServiceInfrastructureException {
+	public void ping() throws InfrastructureException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {

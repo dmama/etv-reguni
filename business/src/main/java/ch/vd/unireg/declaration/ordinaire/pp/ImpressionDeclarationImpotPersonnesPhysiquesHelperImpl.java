@@ -57,7 +57,7 @@ import ch.vd.unireg.editique.LegacyEditiqueHelper;
 import ch.vd.unireg.editique.ModeleFeuilleDocumentEditique;
 import ch.vd.unireg.editique.TypeDocumentEditique;
 import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.situationfamille.SituationFamilleService;
@@ -181,7 +181,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends Edit
 	/**
 	 * Alimente l'entête du document
 	 */
-	protected InfoEnteteDocument remplitEnteteDocument(InformationsDocumentAdapter informationDocument) throws AdresseException, ServiceInfrastructureException {
+	protected InfoEnteteDocument remplitEnteteDocument(InformationsDocumentAdapter informationDocument) throws AdresseException, InfrastructureException {
 		InfoEnteteDocument infoEnteteDocument = InfoEnteteDocumentDocument1.Factory.newInstance().addNewInfoEnteteDocument();
 
 		final TypeDocument typeDoc = informationDocument.getTypeDocument();
@@ -208,11 +208,11 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends Edit
 	 *
 	 * @param infoEnteteDocument l'entête du document XML dont il faut compléter les informations
 	 * @return les informations de l'expéditeur
-	 * @throws ServiceInfrastructureException en cas de problème avec le service infrastructure
+	 * @throws InfrastructureException en cas de problème avec le service infrastructure
 	 * @throws AdresseException               en cas de problème avec les adresses
 	 */
 
-	private Expediteur remplitExpediteur(InformationsDocumentAdapter informationDocument, InfoEnteteDocument infoEnteteDocument) throws AdresseException, ServiceInfrastructureException {
+	private Expediteur remplitExpediteur(InformationsDocumentAdapter informationDocument, InfoEnteteDocument infoEnteteDocument) throws AdresseException, InfrastructureException {
 		//
 		// Expediteur
 		//
@@ -538,7 +538,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends Edit
 		try {
 			cedi = infraService.getCEDI();
 		}
-		catch (ServiceInfrastructureException e) {
+		catch (InfrastructureException e) {
 			throw new EditiqueException(e);
 		}
 
@@ -739,7 +739,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends Edit
 					infoDI.setDESCOM(commune.getNomOfficiel());
 				}
 			}
-			catch (ServiceInfrastructureException e) {
+			catch (InfrastructureException e) {
 				throw new EditiqueException(e);
 			}
 		}

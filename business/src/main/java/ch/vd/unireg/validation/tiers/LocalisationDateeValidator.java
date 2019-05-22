@@ -18,7 +18,7 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.shared.validation.ValidationResults;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.EntiteOFS;
 import ch.vd.unireg.interfaces.infra.data.Pays;
@@ -245,7 +245,7 @@ public abstract class LocalisationDateeValidator<T extends LocalisationDatee> ex
 					}
 				}
 			}
-			catch (ServiceInfrastructureException e) {
+			catch (InfrastructureException e) {
 				errors.add(new Error(String.format("Impossible de vérifier la validité de la commune pour %s", entityDisplayString), e));
 			}
 		}
@@ -262,7 +262,7 @@ public abstract class LocalisationDateeValidator<T extends LocalisationDatee> ex
 					errors.add(new Error(String.format("%s %s est sur un pays (%s, %d) qui n'est pas un état souverain, mais un territoire", entityCategoryName, entityDisplayString, pays.getNomCourt(), pays.getNoOFS())));
 				}
 			}
-			catch (ServiceInfrastructureException e) {
+			catch (InfrastructureException e) {
 				errors.add(new Error(String.format("Impossible de vérifier la validité du pays pour %s", entityDisplayString), e));
 			}
 		}

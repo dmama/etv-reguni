@@ -233,7 +233,7 @@ public class MockCommune extends MockEntityOFS implements Commune {
 		this.sigleCanton = sigleCanton;
 		this.district = district;
 
-		DefaultMockServiceInfrastructureService.addCommune(this);
+		DefaultMockInfrastructureConnector.addCommune(this);
 	}
 
 	@Override

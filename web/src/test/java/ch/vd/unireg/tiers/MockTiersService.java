@@ -34,7 +34,7 @@ import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.entreprise.data.DateRanged;
 import ch.vd.unireg.interfaces.entreprise.data.EntrepriseCivile;
 import ch.vd.unireg.interfaces.entreprise.data.EtablissementCivil;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.metier.assujettissement.Assujettissement;
 import ch.vd.unireg.metier.bouclement.ExerciceCommercial;
@@ -303,7 +303,7 @@ public class MockTiersService implements TiersService {
 	}
 
 	@Override
-	public String getLocalisationAsString(LocalizedDateRange localisation) throws ServiceInfrastructureException, ObjectNotFoundException {
+	public String getLocalisationAsString(LocalizedDateRange localisation) throws InfrastructureException, ObjectNotFoundException {
 		return null;
 	}
 

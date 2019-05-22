@@ -40,7 +40,7 @@ import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -668,7 +668,7 @@ public class TacheServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		doInNewTransaction(status -> {
-			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 			ids.oidCedi = cedi.getId();
 
 			PeriodeFiscale pf2003 = pfDAO.getPeriodeFiscaleByYear(2003);
@@ -1787,7 +1787,7 @@ public class TacheServiceTest extends BusinessTest {
 		 * Un contribuable domicilié au Danemark et qui possède un immeuble depuis 2000 à Cossonay
 		 */
 		doInNewTransaction(status -> {
-			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 			ids.oidCedi = cedi.getId();
 
 			final PersonnePhysique simon = addHabitant(100000);
@@ -2792,7 +2792,7 @@ public class TacheServiceTest extends BusinessTest {
 
 		final int anneePrecedente = RegDate.get().year() - 1;
 
-		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 		assertNotNull(cedi);
 
 		// Contribuable arrivé de hors-Suisse dans l'année
@@ -2815,7 +2815,7 @@ public class TacheServiceTest extends BusinessTest {
 
 		final int anneePrecedente = RegDate.get().year() - 1;
 
-		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 		assertNotNull(cedi);
 
 		// Contribuable arrivé de hors-Suisse dans l'année
@@ -2843,7 +2843,7 @@ public class TacheServiceTest extends BusinessTest {
 
 		final int anneePrecedente = RegDate.get().year() - 1;
 
-		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 		assertNotNull(cedi);
 
 		// Contribuable arrivé non-assujetti
@@ -2940,7 +2940,7 @@ public class TacheServiceTest extends BusinessTest {
 
 		final int anneePrecedente = RegDate.get().year() - 1;
 
-		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 		assertNotNull(cedi);
 
 		// Contribuable arrivé de hors-Suisse dans l'année
@@ -2971,7 +2971,7 @@ public class TacheServiceTest extends BusinessTest {
 		final int anneeCourante = RegDate.get().year();
 		final int anneePrecedente = anneeCourante - 1;
 
-		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 		assertNotNull(cedi);
 
 		// Contribuable arrivé de hors-Suisse dans l'année
@@ -3025,7 +3025,7 @@ public class TacheServiceTest extends BusinessTest {
 
 		final int anneePrecedente = RegDate.get().year() - 1;
 
-		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 		assertNotNull(cedi);
 
 		// Contribuable non-assujetti
@@ -3051,7 +3051,7 @@ public class TacheServiceTest extends BusinessTest {
 
 		final int anneePrecedente = RegDate.get().year() - 1;
 
-		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 		assertNotNull(cedi);
 
 		// Contribuable non-assujetti
@@ -3163,7 +3163,7 @@ public class TacheServiceTest extends BusinessTest {
 
 		final int anneePrecedente = RegDate.get().year() - 1;
 
-		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 		assertNotNull(cedi);
 
 		// Contribuable non-assujetti
@@ -3330,7 +3330,7 @@ public class TacheServiceTest extends BusinessTest {
 		final int anneeAvant = anneeCourante - 1;
 		final int anneeAvantAvant = anneeCourante - 2;
 
-		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 		assertNotNull(cedi);
 
 		class Ids {
@@ -3455,7 +3455,7 @@ public class TacheServiceTest extends BusinessTest {
 
 		final int anneeCourante = RegDate.get().year();
 
-		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 		assertNotNull(cedi);
 
 		class Ids {
@@ -3664,7 +3664,7 @@ public class TacheServiceTest extends BusinessTest {
 			}
 
 			// les deux tâches
-			final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
+			final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noACI);
 			assertNotNull(aci);
 			addTacheAnnulDI(TypeEtatTache.EN_INSTANCE, date(2008, 7, 1), declaration2008, pp, aci);
 			addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 7, 1), date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pp,

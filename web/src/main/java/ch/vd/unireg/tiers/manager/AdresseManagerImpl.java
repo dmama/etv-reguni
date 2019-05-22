@@ -25,7 +25,7 @@ import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.common.TiersNotFoundException;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.common.CasePostale;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.data.Rue;
@@ -469,7 +469,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 			final Rue rue;
 			rue = getServiceInfrastructureService().getRueByNumero(numeroRue);
 			if (rue == null) {
-				throw new ServiceInfrastructureException("La rue avec l'estrid=[" + numeroRue + "] n'existe pas dans le service d'infrastructure.");
+				throw new InfrastructureException("La rue avec l'estrid=[" + numeroRue + "] n'existe pas dans le service d'infrastructure.");
 			}
 			noLocalite = rue.getNoLocalite();
 		}
@@ -643,7 +643,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public TiersEditView getView(Long numero) throws AdresseException, ServiceInfrastructureException{
+	public TiersEditView getView(Long numero) throws AdresseException, InfrastructureException {
 
 		if ( numero == null) {
 			return null;

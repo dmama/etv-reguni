@@ -27,7 +27,7 @@ import ch.vd.unireg.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.unireg.hibernate.HibernateTemplate;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.metier.assujettissement.Assujettissement;
@@ -164,7 +164,7 @@ public class ProduireStatsDIsProcessor {
 	/**
 	 * @return l'id de l'office d'impôt responsable de la DI spécifiée.
 	 */
-	private int getOID(DeclarationImpotOrdinairePP di) throws ServiceInfrastructureException {
+	private int getOID(DeclarationImpotOrdinairePP di) throws InfrastructureException {
 		int oid = 0;
 		final Integer noCommune = di.getNumeroOfsForGestion();
 		if (noCommune != null) {

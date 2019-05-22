@@ -5,12 +5,12 @@ import java.util.List;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.common.pagination.ParamPagination;
 import ch.vd.unireg.common.pagination.ParamSorting;
 import ch.vd.unireg.editique.EditiqueException;
 import ch.vd.unireg.editique.EditiqueResultat;
 import ch.vd.unireg.extraction.ExtractionJob;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.mouvement.EtatMouvementDossier;
 import ch.vd.unireg.mouvement.MouvementDossierCriteria;
 import ch.vd.unireg.mouvement.view.BordereauEnvoiReceptionView;
@@ -34,7 +34,7 @@ public interface MouvementMasseManager extends AbstractMouvementManager {
 	 * @return Liste paginée de mouvements (jamais null si la view n'est pas nulle)
 	 */
 	@Transactional(readOnly = true)
-	List<MouvementDetailView> find(MouvementMasseCriteriaView view, Integer noCollAdmInitiatrice, ParamPagination paramPagination, MutableInt total) throws ServiceInfrastructureException;
+	List<MouvementDetailView> find(MouvementMasseCriteriaView view, Integer noCollAdmInitiatrice, ParamPagination paramPagination, MutableInt total) throws InfrastructureException;
 
 	/**
 	 * Demande l'export de la liste retournée par les critères donné
@@ -52,7 +52,7 @@ public interface MouvementMasseManager extends AbstractMouvementManager {
 	 * @return liste des mouvements trouvés, ou null si rien trouvé
 	 */
 	@Transactional(readOnly = true)
-	List<MouvementDetailView> find(MouvementDossierCriteria criteria) throws ServiceInfrastructureException;
+	List<MouvementDetailView> find(MouvementDossierCriteria criteria) throws InfrastructureException;
 
 	/**
 	 * Met le mouvement donné par son ID dans l'état donné
@@ -98,7 +98,7 @@ public interface MouvementMasseManager extends AbstractMouvementManager {
 	 * @return Détails du bordereau d'envoi
 	 */
 	@Transactional(readOnly = true)
-	BordereauEnvoiReceptionView getBordereauPourReception(long idBordereau)throws ServiceInfrastructureException;
+	BordereauEnvoiReceptionView getBordereauPourReception(long idBordereau)throws InfrastructureException;
 
 	/**
 	 * Génère les mouvements de réception associés aux mouvements d'envois donnés et passe
@@ -113,5 +113,5 @@ public interface MouvementMasseManager extends AbstractMouvementManager {
 	 * @param view view à rafraîchir
 	 */
 	@Transactional(readOnly = true)
-	void refreshView(BordereauEnvoiReceptionView view) throws ServiceInfrastructureException;
+	void refreshView(BordereauEnvoiReceptionView view) throws InfrastructureException;
 }

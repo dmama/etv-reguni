@@ -15,7 +15,7 @@ import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.AutoCloseableContainer;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TemporaryFile;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
@@ -92,7 +92,7 @@ public class PdfRolesOIDsRapport extends PdfRolesRapport<ProduireRolesOIDsResult
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private void writeTousOid(ProduireRolesOIDsResults[] results, Date dateGeneration, StatusManager status, PdfWriter writer) throws ServiceInfrastructureException, DocumentException {
+	private void writeTousOid(ProduireRolesOIDsResults[] results, Date dateGeneration, StatusManager status, PdfWriter writer) throws InfrastructureException, DocumentException {
 
 		// une nouvelle page à chaque OID
 		for (ProduireRolesOIDsResults res : results) {
@@ -103,7 +103,7 @@ public class PdfRolesOIDsRapport extends PdfRolesRapport<ProduireRolesOIDsResult
 		}
 	}
 
-	private void writePageOid(final ProduireRolesOIDsResults results, final Date dateGeneration, StatusManager status, PdfWriter writer, String prefixeNomsFichiersNonTraites) throws ServiceInfrastructureException, DocumentException {
+	private void writePageOid(final ProduireRolesOIDsResults results, final Date dateGeneration, StatusManager status, PdfWriter writer, String prefixeNomsFichiersNonTraites) throws InfrastructureException, DocumentException {
 
 		addEnteteUnireg();
 
@@ -183,7 +183,7 @@ public class PdfRolesOIDsRapport extends PdfRolesRapport<ProduireRolesOIDsResult
 		writeResultatsOid(results, status, writer);
 	}
 
-	private List<Integer> getListeCommunesDansOid(List<Commune> communes, int noColOID) throws ServiceInfrastructureException {
+	private List<Integer> getListeCommunesDansOid(List<Commune> communes, int noColOID) throws InfrastructureException {
 		final List<Integer> ofsCommunesDansOID = new ArrayList<>(communes.size());
 		for (Commune commune : communes) {
 			final OfficeImpot office = getInfraService().getOfficeImpotDeCommune(commune.getNoOFS());
@@ -194,7 +194,7 @@ public class PdfRolesOIDsRapport extends PdfRolesRapport<ProduireRolesOIDsResult
 		return ofsCommunesDansOID;
 	}
 
-	private void writeResultatsOid(ProduireRolesOIDsResults results, StatusManager status, PdfWriter writer) throws ServiceInfrastructureException, DocumentException {
+	private void writeResultatsOid(ProduireRolesOIDsResults results, StatusManager status, PdfWriter writer) throws InfrastructureException, DocumentException {
 
 		final List<Commune> communes = getListeCommunes(results.getNoOfsCommunesTraitees(), results.annee, false);
 		final Map<Integer, String> nomsCommunes = buildNomsCommunes(communes);

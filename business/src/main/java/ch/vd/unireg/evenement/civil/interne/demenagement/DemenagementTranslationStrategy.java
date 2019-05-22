@@ -15,7 +15,7 @@ import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.unireg.evenement.civil.interne.arrivee.ArriveePrincipale;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.model.AdressesCiviles;
 
@@ -201,7 +201,7 @@ public class DemenagementTranslationStrategy implements EvenementCivilTranslatio
 
 			return new Communes(communeAvant, communeApres);
 		}
-		catch (DonneesCivilesException | ServiceInfrastructureException e) {
+		catch (DonneesCivilesException | InfrastructureException e) {
 			throw new EvenementCivilException(e);
 		}
 	}
@@ -225,7 +225,7 @@ public class DemenagementTranslationStrategy implements EvenementCivilTranslatio
 			}
 			return false;
 		}
-		catch (DonneesCivilesException | ServiceInfrastructureException e) {
+		catch (DonneesCivilesException | InfrastructureException e) {
 			throw new EvenementCivilException(e);
 		}
 	}
@@ -313,7 +313,7 @@ public class DemenagementTranslationStrategy implements EvenementCivilTranslatio
 			}
 			return false;
 		}
-		catch (DonneesCivilesException | ServiceInfrastructureException e) {
+		catch (DonneesCivilesException | InfrastructureException e) {
 			throw new EvenementCivilException(e);
 		}
 	}

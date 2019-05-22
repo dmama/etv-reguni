@@ -4,9 +4,9 @@ import java.util.List;
 
 import noNamespace.FichierImpressionDocument;
 
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.editique.EditiqueException;
 import ch.vd.unireg.editique.TypeDocumentEditique;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.tiers.Contribuable;
 
 public interface ImpressionNouveauxDossiersHelper {
@@ -16,7 +16,7 @@ public interface ImpressionNouveauxDossiersHelper {
 	 *
 	 * @param contribuables
 	 * @return
-	 * @throws ServiceInfrastructureException
+	 * @throws InfrastructureException
 	 */
 	FichierImpressionDocument remplitNouveauDossier(List<Contribuable> contribuables) throws EditiqueException ;
 

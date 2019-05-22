@@ -32,7 +32,7 @@ import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.model.AdressesCiviles;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
@@ -965,7 +965,7 @@ public class ArriveePrincipale extends Arrivee {
 
 			return commune == null ? null : Pair.of(commune, dateDebutFor);
 		}
-		catch (ServiceInfrastructureException | DonneesCivilesException e) {
+		catch (InfrastructureException | DonneesCivilesException e) {
 			throw new EvenementCivilException(e.getMessage(), e);
 		}
 	}
@@ -977,7 +977,7 @@ public class ArriveePrincipale extends Arrivee {
 	 * @param pp   personne physique concernée
 	 * @return commune de l'adresse de domicile, à la date donnée, de la personne physique donnée
 	 */
-	private Commune getCommuneDomicile(RegDate date, PersonnePhysique pp) throws DonneesCivilesException, ServiceInfrastructureException {
+	private Commune getCommuneDomicile(RegDate date, PersonnePhysique pp) throws DonneesCivilesException, InfrastructureException {
 		final Commune commune;
 		if (pp != null && pp.getNumeroIndividu() != null && pp.getNumeroIndividu() > 0) {
 			final AdressesCiviles adresseDomicile = context.getServiceCivil().getAdresses(pp.getNumeroIndividu(), date, false);

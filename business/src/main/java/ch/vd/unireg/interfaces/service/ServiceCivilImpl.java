@@ -27,7 +27,7 @@ import ch.vd.unireg.interfaces.civil.data.Origine;
 import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
 import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.model.AdressesCiviles;
 import ch.vd.unireg.interfaces.model.AdressesCivilesHisto;
@@ -256,7 +256,7 @@ public class ServiceCivilImpl implements ServiceCivilService, IndividuConnectorW
 	 * @return une liste des communes de domiciles fréquentées
 	 */
 	@Override
-	public List<HistoriqueCommune> getCommunesDomicileHisto(RegDate date, long noIndividu, boolean strict, boolean seulementVaud) throws DonneesCivilesException, ServiceInfrastructureException {
+	public List<HistoriqueCommune> getCommunesDomicileHisto(RegDate date, long noIndividu, boolean strict, boolean seulementVaud) throws DonneesCivilesException, InfrastructureException {
 		final AdressesCivilesHisto histo = getAdressesHisto(noIndividu, strict);
 		if (histo == null) {
 			throw new IndividuNotFoundException(noIndividu);

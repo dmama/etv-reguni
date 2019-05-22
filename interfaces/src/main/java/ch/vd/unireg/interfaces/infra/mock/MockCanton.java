@@ -15,6 +15,6 @@ public class MockCanton extends MockEntityOFS implements Canton {
 
 	public MockCanton(int noOFS, @NotNull String sigleOFS, @NotNull String nom) {
 		super(noOFS, sigleOFS, nom, nom);
-		DefaultMockServiceInfrastructureService.addCanton(this);
+		DefaultMockInfrastructureConnector.addCanton(this);
 	}
 }

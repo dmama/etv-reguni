@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.adresse.AdressesResolutionException;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.FormatNumeroHelper;
@@ -28,6 +27,7 @@ import ch.vd.unireg.identification.contribuable.view.IdentificationContribuableL
 import ch.vd.unireg.identification.contribuable.view.IdentificationMessagesResultView;
 import ch.vd.unireg.indexer.messageidentification.GlobalMessageIdentificationSearcher;
 import ch.vd.unireg.indexer.messageidentification.MessageIdentificationIndexedData;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 
 public class IdentificationMessagesListManagerImpl implements IdentificationMessagesListManager {
 
@@ -75,12 +75,12 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	 * @param typeDemande
 	 * @return
 	 * @throws AdressesResolutionException
-	 * @throws ServiceInfrastructureException
+	 * @throws InfrastructureException
 	 */
 	@Override
 	@Transactional(readOnly = true)
 	public List<IdentificationMessagesResultView> find(IdentificationContribuableCriteria bean, WebParamPagination pagination,
-	                                                   IdentificationContribuableEtatFilter filter, TypeDemande... typeDemande) throws AdressesResolutionException, ServiceInfrastructureException {
+	                                                   IdentificationContribuableEtatFilter filter, TypeDemande... typeDemande) throws AdressesResolutionException, InfrastructureException {
 
 		final List<MessageIdentificationIndexedData> results = searcher.search(bean, typeDemande, filter, pagination);
 		final List<IdentificationMessagesResultView> view = new ArrayList<>(results.size());
@@ -98,12 +98,12 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	 * @param typeDemande
 	 * @return
 	 * @throws AdressesResolutionException
-	 * @throws ServiceInfrastructureException
+	 * @throws InfrastructureException
 	 */
 	@Override
 	@Transactional(readOnly = true)
 	public List<IdentificationMessagesResultView> findEncoursSeul(IdentificationContribuableCriteria bean, WebParamPagination pagination, TypeDemande... typeDemande)
-			throws AdressesResolutionException, ServiceInfrastructureException {
+			throws AdressesResolutionException, InfrastructureException {
 
 		bean.setEtatMessage(Etat.A_TRAITER_MANUELLEMENT);
 		return find(bean, pagination, IdentificationContribuableEtatFilter.SEULEMENT_A_TRAITER_MANUELLEMENT, typeDemande);
@@ -142,7 +142,7 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	 * Suspendre l'identification des messages
 	 *
 	 * @param identificationContribuableListCriteria
-	 * @throws ServiceInfrastructureException
+	 * @throws InfrastructureException
 	 * @throws EditiqueException
 	 */
 	@Override
@@ -170,7 +170,7 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	 *
 	 *
 	 * @param identificationContribuableListCriteria
-	 * @throws ServiceInfrastructureException
+	 * @throws InfrastructureException
 	 * @throws EditiqueException
 	 */
 	@Override
@@ -196,7 +196,7 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	 * Soumettre l'identification des messages
 	 *
 	 * @param identificationContribuableListCriteria
-	 * @throws ServiceInfrastructureException
+	 * @throws InfrastructureException
 	 * @throws EditiqueException
 	 */
 	@Override
@@ -211,7 +211,7 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 		}
 	}
 
-	private IdentificationMessagesResultView buildView(MessageIdentificationIndexedData data) throws ServiceInfrastructureException {
+	private IdentificationMessagesResultView buildView(MessageIdentificationIndexedData data) throws InfrastructureException {
 		final IdentificationMessagesResultView view = new IdentificationMessagesResultView();
 		view.setId(data.getId());
 		view.setAnnule(data.isAnnule());

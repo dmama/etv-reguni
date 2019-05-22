@@ -18,7 +18,7 @@ import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.unireg.interfaces.civil.data.Origine;
 import ch.vd.unireg.interfaces.civil.data.Permis;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.model.AdressesCiviles;
 import ch.vd.unireg.interfaces.model.AdressesCivilesHisto;
 
@@ -62,10 +62,10 @@ public interface ServiceCivilService {
 	 * @return une liste des communes de domiciles fréquentées depuis la date de référence
 	 * @throws ch.vd.unireg.common.DonneesCivilesException
 	 *          en cas d'erreur dans les données civiles
-	 * @throws ch.vd.unireg.interfaces.infra.ServiceInfrastructureException
+	 * @throws InfrastructureException
 	 *          en cas d'erreur dans les données d'infrastructure
 	 */
-	List<HistoriqueCommune> getCommunesDomicileHisto(RegDate depuis, long noIndividu, boolean strict, boolean seulementVaud) throws DonneesCivilesException, ServiceInfrastructureException;
+	List<HistoriqueCommune> getCommunesDomicileHisto(RegDate depuis, long noIndividu, boolean strict, boolean seulementVaud) throws DonneesCivilesException, InfrastructureException;
 
 	/**
 	 * Retourne l'individu, valide <b>jusqu'à</b> l'année en paramètre, identifié par le numéro en paramètre.

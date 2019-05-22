@@ -17,7 +17,7 @@ import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -200,7 +200,7 @@ public class TiersService2Test extends BusinessTest {
 				final MockIndividu individu = addIndividu(noIndividu, date(1968, 5, 12), "Li", "Kim", Sexe.MASCULIN);
 				{
 					final MockAdresse adr = addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.LeSentier.GrandRue, null, date(2000, 1, 1), date(2006, 7, 31));
-					adr.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, ServiceInfrastructureRaw.noPaysInconnu, null));
+					adr.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, InfrastructureConnector.noPaysInconnu, null));
 					adr.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Lonay.getNoOFS(), null));
 				}
 				{
@@ -260,7 +260,7 @@ public class TiersService2Test extends BusinessTest {
 				final MockIndividu individu = addIndividu(noIndividu, date(1968, 5, 12), "Li", "Kim", Sexe.MASCULIN);
 				{
 					final MockAdresse adr = addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Lonay.CheminDuRechoz, null, date(2006, 8, 1), date(2007, 5, 31));
-					adr.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, ServiceInfrastructureRaw.noPaysInconnu, null));
+					adr.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, InfrastructureConnector.noPaysInconnu, null));
 					adr.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.BourgEnLavaux.getNoOFS(), null));          // n'existe pas en 2007 !!
 				}
 				{

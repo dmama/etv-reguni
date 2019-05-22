@@ -18,7 +18,7 @@ import ch.vd.unireg.common.WebTestSpring3;
 import ch.vd.unireg.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
-import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
+import ch.vd.unireg.interfaces.infra.mock.DefaultMockInfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
@@ -51,7 +51,7 @@ public class TiersImportControllerTest extends WebTestSpring3 {
 		globalTiersSearcher = getBean(GlobalTiersSearcher.class, "globalTiersSearcher");
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 
-		serviceInfra.setUp(new DefaultMockServiceInfrastructureService() {
+		serviceInfra.setUp(new DefaultMockInfrastructureConnector() {
 			@Override
 			protected void init() {
 				super.init();

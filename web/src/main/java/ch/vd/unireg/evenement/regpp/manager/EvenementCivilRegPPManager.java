@@ -2,7 +2,6 @@ package ch.vd.unireg.evenement.regpp.manager;
 
 import java.util.List;
 
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdressesResolutionException;
 import ch.vd.unireg.common.pagination.ParamPagination;
@@ -10,6 +9,7 @@ import ch.vd.unireg.evenement.civil.EvenementCivilCriteria;
 import ch.vd.unireg.evenement.regpp.view.EvenementCivilRegPPCriteriaView;
 import ch.vd.unireg.evenement.regpp.view.EvenementCivilRegPPDetailView;
 import ch.vd.unireg.evenement.regpp.view.EvenementCivilRegPPElementListeView;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.type.TypeEvenementCivil;
 
 /**
@@ -26,9 +26,9 @@ public interface EvenementCivilRegPPManager {
 	 * @return la structure EvenementCivilRegPPDetailView correspondant à l'id
 	 *
 	 * @throws AdressesResolutionException ...
-	 * @throws ch.vd.unireg.interfaces.infra.ServiceInfrastructureException ...
+	 * @throws InfrastructureException ...
 	 */
-	EvenementCivilRegPPDetailView get(Long id) throws AdresseException, ServiceInfrastructureException;
+	EvenementCivilRegPPDetailView get(Long id) throws AdresseException, InfrastructureException;
 
 	/**
 	 * Traite un evenement civil designe par l'id

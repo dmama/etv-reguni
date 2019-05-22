@@ -10,7 +10,7 @@ import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
@@ -96,7 +96,7 @@ public class ProduireStatsCtbsProcessorTest extends BusinessTest {
 		Assert.assertEquals(1, results.stats.size());
 		final Map.Entry<StatistiquesCtbs.Key, StatistiquesCtbs.Value> entry = results.stats.entrySet().iterator().next();
 		Assert.assertNotNull(entry);
-		Assert.assertEquals(new StatistiquesCtbs.Key(ServiceInfrastructureRaw.noOIPM, MockCommune.Echallens, StatistiquesCtbs.TypeContribuable.VAUDOIS_ORDINAIRE), entry.getKey());
+		Assert.assertEquals(new StatistiquesCtbs.Key(InfrastructureConnector.noOIPM, MockCommune.Echallens, StatistiquesCtbs.TypeContribuable.VAUDOIS_ORDINAIRE), entry.getKey());
 		Assert.assertEquals(1, entry.getValue().nombre);
 	}
 
@@ -235,7 +235,7 @@ public class ProduireStatsCtbsProcessorTest extends BusinessTest {
 //		Assert.assertEquals(1, results.stats.size());
 //		final Map.Entry<StatistiquesCtbs.Key, StatistiquesCtbs.Value> entry = results.stats.entrySet().iterator().next();
 //		Assert.assertNotNull(entry);
-//		Assert.assertEquals(new StatistiquesCtbs.Key(ServiceInfrastructureRaw.noOIPM, MockCommune.Echallens, StatistiquesCtbs.TypeContribuable.VAUDOIS_ORDINAIRE), entry.getKey());
+//		Assert.assertEquals(new StatistiquesCtbs.Key(InfrastructureConnector.noOIPM, MockCommune.Echallens, StatistiquesCtbs.TypeContribuable.VAUDOIS_ORDINAIRE), entry.getKey());
 //		Assert.assertEquals(1, entry.getValue().nombre);
 //	}
 }

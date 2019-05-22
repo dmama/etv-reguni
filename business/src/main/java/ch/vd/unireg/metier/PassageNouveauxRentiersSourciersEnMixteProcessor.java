@@ -27,7 +27,7 @@ import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.interfaces.civil.IndividuConnectorException;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.parametrage.ParametreAppService;
 import ch.vd.unireg.tiers.Contribuable;
@@ -325,7 +325,7 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 		try {
 			estDomicilieSurVaud = serviceInfra.estDansLeCanton(adresseDomicile);
 		}
-		catch (ServiceInfrastructureException e) {
+		catch (InfrastructureException e) {
 			LOGGER.error("Impossible de determiner si l'adresse du contribuable [" + ctb.getNumero() + "] est sur le canton" , e);
 			throw new PassageNouveauxRentiersSourciersEnMixteException(ctb, PassageNouveauxRentiersSourciersEnMixteResults.ErreurType.INFRA_EXCEPTION, e);
 		}

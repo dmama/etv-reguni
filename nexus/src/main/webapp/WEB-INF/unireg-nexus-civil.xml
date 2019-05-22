@@ -4,7 +4,7 @@
 
 	<bean id="individuConnectorRCPers" class="ch.vd.unireg.interfaces.civil.rcpers.IndividuConnectorRCPers">
 		<property name="client" ref="rcPersClient" />
-		<property name="infraService" ref="serviceInfrastructureRaw"/>
+		<property name="infraConnector" ref="infrastructureConnector"/>
 	</bean>
 
 	<bean id="individuConnectorTracing" class="ch.vd.unireg.interfaces.civil.IndividuConnectorTracing">

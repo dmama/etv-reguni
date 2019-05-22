@@ -2,9 +2,6 @@ package ch.vd.unireg.evenement.civil.interne.changement.adresseNotification;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.evenement.civil.EvenementCivilWarningCollector;
@@ -13,6 +10,9 @@ import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.model.AdressesCiviles;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
@@ -88,7 +88,7 @@ public class CorrectionAdresse extends ModificationAdresseBase {
 			final AdressesCiviles adresses = context.getAdresseService().getAdressesCiviles(pp, date, false);
 			return context.getServiceInfra().getCommuneByAdresse(adresses.principale, date);
 		}
-		catch (ServiceInfrastructureException e) {
+		catch (InfrastructureException e) {
 			final String msg = String.format("Impossible de trouver la commune de l'adresse principale au %s de l'individu %d", RegDateHelper.dateToDisplayString(date), pp.getNumeroIndividu());
 			throw new EvenementCivilException(msg, e);
 		}

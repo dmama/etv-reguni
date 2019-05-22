@@ -8,8 +8,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
 import ch.vd.unireg.interfaces.infra.data.Canton;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
@@ -25,126 +25,126 @@ import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 
-public class NotImplementedServiceInfrastructure implements ServiceInfrastructureRaw {
+public class NotImplementedInfrastructureConnector implements InfrastructureConnector {
 
 	@Override
-	public List<Pays> getPays() throws ServiceInfrastructureException {
+	public List<Pays> getPays() throws InfrastructureException {
 		throw new NotImplementedException("");
 	}
 
 	@Override
-	public List<Pays> getPaysHisto(int numeroOFS) throws ServiceInfrastructureException {
+	public List<Pays> getPaysHisto(int numeroOFS) throws InfrastructureException {
 		throw new NotImplementedException("");
 	}
 
 	@Override
-	public Pays getPays(int numeroOFS, @Nullable RegDate date) throws ServiceInfrastructureException {
+	public Pays getPays(int numeroOFS, @Nullable RegDate date) throws InfrastructureException {
 		throw new NotImplementedException("");
 	}
 
 	@Override
-	public Pays getPays(@NotNull String codePays, @Nullable RegDate date) throws ServiceInfrastructureException {
+	public Pays getPays(@NotNull String codePays, @Nullable RegDate date) throws InfrastructureException {
 		throw new NotImplementedException("");
 	}
 
 	@Override
-	public CollectiviteAdministrative getCollectivite(int noColAdm) throws ServiceInfrastructureException {
+	public CollectiviteAdministrative getCollectivite(int noColAdm) throws InfrastructureException {
 		throw new NotImplementedException("");
 	}
 
 	@Override
-	public List<Canton> getAllCantons() throws ServiceInfrastructureException {
+	public List<Canton> getAllCantons() throws InfrastructureException {
 		throw new NotImplementedException("");
 	}
 
 	@Override
-	public List<Commune> getListeCommunes(Canton canton) throws ServiceInfrastructureException {
+	public List<Commune> getListeCommunes(Canton canton) throws InfrastructureException {
 		throw new NotImplementedException("");
 	}
 
 	@Override
-	public List<Commune> getCommunesVD() throws ServiceInfrastructureException {
+	public List<Commune> getCommunesVD() throws InfrastructureException {
 		throw new NotImplementedException("");
 	}
 
 	@Override
-	public List<Commune> getListeCommunesFaitieres() throws ServiceInfrastructureException {
+	public List<Commune> getListeCommunesFaitieres() throws InfrastructureException {
 		throw new NotImplementedException("");
 	}
 
 	@Override
-	public List<Commune> getCommunes() throws ServiceInfrastructureException {
+	public List<Commune> getCommunes() throws InfrastructureException {
 		throw new NotImplementedException("");
 	}
 
 	@Override
-	public List<Localite> getLocalites() throws ServiceInfrastructureException {
+	public List<Localite> getLocalites() throws InfrastructureException {
 		throw new NotImplementedException("");
 	}
 
 	@Override
-	public List<Localite> getLocalitesByONRP(int onrp) throws ServiceInfrastructureException {
+	public List<Localite> getLocalitesByONRP(int onrp) throws InfrastructureException {
 		throw new NotImplementedException("");
 	}
 
 	@Override
-	public Localite getLocaliteByONRP(int onrp, RegDate dateReference) throws ServiceInfrastructureException {
+	public Localite getLocaliteByONRP(int onrp, RegDate dateReference) throws InfrastructureException {
 		throw new NotImplementedException("");
 	}
 
 	@Override
-	public List<Rue> getRues(Localite localite) throws ServiceInfrastructureException {
+	public List<Rue> getRues(Localite localite) throws InfrastructureException {
 		throw new NotImplementedException("");
 	}
 
 	@Override
-	public List<Rue> getRuesHisto(int numero) throws ServiceInfrastructureException {
+	public List<Rue> getRuesHisto(int numero) throws InfrastructureException {
 		throw new NotImplementedException("");
 	}
 
 	@Override
-	public Rue getRueByNumero(int numero, RegDate date) throws ServiceInfrastructureException {
+	public Rue getRueByNumero(int numero, RegDate date) throws InfrastructureException {
 		throw new NotImplementedException("");
 	}
 
 	@Override
-	public List<Commune> getCommuneHistoByNumeroOfs(int noOfsCommune) throws ServiceInfrastructureException {
+	public List<Commune> getCommuneHistoByNumeroOfs(int noOfsCommune) throws InfrastructureException {
 		throw new NotImplementedException("");
 	}
 
 	@Override
-	public Integer getNoOfsCommuneByEgid(int egid, RegDate date) throws ServiceInfrastructureException {
+	public Integer getNoOfsCommuneByEgid(int egid, RegDate date) throws InfrastructureException {
 		throw new NotImplementedException("");
 	}
 
 	@Override
-	public Commune getCommuneByLocalite(Localite localite) throws ServiceInfrastructureException {
+	public Commune getCommuneByLocalite(Localite localite) throws InfrastructureException {
 		throw new NotImplementedException("");
 	}
 
 	@Nullable
 	@Override
-	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, boolean includeFaitieres, boolean includeFractions, @Nullable RegDate date) throws ServiceInfrastructureException {
+	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, boolean includeFaitieres, boolean includeFractions, @Nullable RegDate date) throws InfrastructureException {
 		throw new NotImplementedException("");
 	}
 
 	@Override
-	public List<OfficeImpot> getOfficesImpot() throws ServiceInfrastructureException {
+	public List<OfficeImpot> getOfficesImpot() throws InfrastructureException {
 		throw new NotImplementedException("");
 	}
 
 	@Override
-	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws ServiceInfrastructureException {
+	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws InfrastructureException {
 		throw new NotImplementedException("");
 	}
 
 	@Override
-	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<TypeCollectivite> typesCollectivite) throws ServiceInfrastructureException {
+	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<TypeCollectivite> typesCollectivite) throws InfrastructureException {
 		throw new NotImplementedException("");
 	}
 
 	@Override
-	public List<Localite> getLocalitesByNPA(int npa, RegDate dateReference) throws ServiceInfrastructureException {
+	public List<Localite> getLocalitesByNPA(int npa, RegDate dateReference) throws InfrastructureException {
 		throw new NotImplementedException("");
 	}
 
@@ -189,7 +189,7 @@ public class NotImplementedServiceInfrastructure implements ServiceInfrastructur
 	}
 
 	@Override
-	public void ping() throws ServiceInfrastructureException {
+	public void ping() throws InfrastructureException {
 		throw new NotImplementedException("");
 	}
 }

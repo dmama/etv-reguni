@@ -32,9 +32,9 @@ import ch.vd.unireg.common.WithoutSpringTest;
 import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
 import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
+import ch.vd.unireg.interfaces.infra.mock.DefaultMockInfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -52,7 +52,7 @@ import static org.junit.Assert.fail;
 
 public class IndividuRCPersTest extends WithoutSpringTest {
 
-	private ServiceInfrastructureRaw infraService = new DefaultMockServiceInfrastructureService();
+	private InfrastructureConnector infraService = new DefaultMockInfrastructureConnector();
 
 	@Test
 	public void testGetCelibataire() throws Exception {
@@ -1127,7 +1127,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 			assertEquals(TypeAdresseCivil.COURRIER, adr.getTypeAdresse());
 			assertEquals(depart.getOneDayAfter(), adr.getDateDebut());
 			assertNull(adr.getDateFin());
-			assertEquals((Integer) ServiceInfrastructureRaw.noPaysInconnu, adr.getNoOfsPays());
+			assertEquals((Integer) InfrastructureConnector.noPaysInconnu, adr.getNoOfsPays());
 		}
 	}
 
@@ -1157,7 +1157,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 			final Localisation goesTo = adr.getLocalisationSuivante();
 			assertNotNull(goesTo);
 			assertEquals(LocalisationType.HORS_SUISSE, goesTo.getType());
-			assertEquals((Integer) ServiceInfrastructureRaw.noPaysInconnu, goesTo.getNoOfs());
+			assertEquals((Integer) InfrastructureConnector.noPaysInconnu, goesTo.getNoOfs());
 			assertNull(goesTo.getAdresseCourrier());
 		}
 
@@ -1168,7 +1168,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 			assertEquals(TypeAdresseCivil.COURRIER, adr.getTypeAdresse());
 			assertEquals(depart.getOneDayAfter(), adr.getDateDebut());
 			assertNull(adr.getDateFin());
-			assertEquals((Integer) ServiceInfrastructureRaw.noPaysInconnu, adr.getNoOfsPays());
+			assertEquals((Integer) InfrastructureConnector.noPaysInconnu, adr.getNoOfsPays());
 		}
 	}
 
@@ -1314,7 +1314,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 			assertEquals(TypeAdresseCivil.COURRIER, adr.getTypeAdresse());
 			assertEquals(depart.getOneDayAfter(), adr.getDateDebut());
 			assertNull(adr.getDateFin());
-			assertEquals((Integer) ServiceInfrastructureRaw.noOfsSuisse, adr.getNoOfsPays());
+			assertEquals((Integer) InfrastructureConnector.noOfsSuisse, adr.getNoOfsPays());
 		}
 	}
 
@@ -1441,7 +1441,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 			assertEquals(TypeAdresseCivil.COURRIER, adr.getTypeAdresse());
 			assertEquals(depart.getOneDayAfter(), adr.getDateDebut());
 			assertEquals(nouvelleArrivee.getOneDayBefore(), adr.getDateFin());
-			assertEquals((Integer) ServiceInfrastructureRaw.noPaysInconnu, adr.getNoOfsPays());
+			assertEquals((Integer) InfrastructureConnector.noPaysInconnu, adr.getNoOfsPays());
 		}
 
 		// adresse principale explicitement donnée
@@ -1490,7 +1490,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 			assertEquals(TypeAdresseCivil.COURRIER, adr.getTypeAdresse());
 			assertEquals(depart.getOneDayAfter(), adr.getDateDebut());
 			assertNull(adr.getDateFin());
-			assertEquals((Integer) ServiceInfrastructureRaw.noPaysInconnu, adr.getNoOfsPays());
+			assertEquals((Integer) InfrastructureConnector.noPaysInconnu, adr.getNoOfsPays());
 		}
 
 		// adresse secondaire explicitement donnée
@@ -1619,7 +1619,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 				assertNull(adr.getLocalisationPrecedente());
 				assertNotNull(adr.getLocalisationSuivante());
 				assertEquals(LocalisationType.HORS_SUISSE, adr.getLocalisationSuivante().getType());
-				assertEquals((Integer) ServiceInfrastructureRaw.noPaysInconnu, adr.getLocalisationSuivante().getNoOfs());
+				assertEquals((Integer) InfrastructureConnector.noPaysInconnu, adr.getLocalisationSuivante().getNoOfs());
 			}
 		}
 	}

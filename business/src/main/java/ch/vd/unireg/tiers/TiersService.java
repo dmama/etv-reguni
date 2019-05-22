@@ -32,7 +32,7 @@ import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.entreprise.data.DateRanged;
 import ch.vd.unireg.interfaces.entreprise.data.EntrepriseCivile;
 import ch.vd.unireg.interfaces.entreprise.data.EtablissementCivil;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.metier.MetierServiceException;
 import ch.vd.unireg.metier.assujettissement.Assujettissement;
@@ -502,10 +502,10 @@ public interface TiersService {
 	 *
 	 * @param localisation une localisation
 	 * @return la représentation String de la localisation spécifiée.
-	 * @throws ServiceInfrastructureException en cas d'erreur à l'appel du service infrastructure
+	 * @throws InfrastructureException en cas d'erreur à l'appel du service infrastructure
 	 * @throws ObjectNotFoundException        si le numéro Ofs de la localisation est inconnu.
 	 */
-	String getLocalisationAsString(LocalizedDateRange localisation) throws ServiceInfrastructureException, ObjectNotFoundException;
+	String getLocalisationAsString(LocalizedDateRange localisation) throws InfrastructureException, ObjectNotFoundException;
 
 	/**
 	 * Indique si le lien entre la SNC et l'associé existe à la date indiquée

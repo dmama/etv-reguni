@@ -33,7 +33,7 @@
 	</bean>
 
 	<bean id="serviceInfraChecker" class="ch.vd.unireg.checker.ServiceInfraChecker">
-		<property name="serviceInfraRaw" ref="serviceInfrastructureTracing" />
+		<property name="infraConnector" ref="infrastructureConnectorTracing" />
 	</bean>
 
 </beans>

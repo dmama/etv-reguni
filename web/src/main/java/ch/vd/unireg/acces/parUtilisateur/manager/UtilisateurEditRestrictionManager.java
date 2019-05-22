@@ -11,7 +11,7 @@ import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdressesResolutionException;
 import ch.vd.unireg.common.pagination.WebParamPagination;
 import ch.vd.unireg.extraction.ExtractionJob;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.security.DroitAccesException;
 
 public interface UtilisateurEditRestrictionManager {
@@ -20,13 +20,13 @@ public interface UtilisateurEditRestrictionManager {
      * Alimente la vue du controller
      */
     @Transactional(readOnly = true)
-    UtilisateurEditRestrictionView get(@NotNull String visaOperateur, WebParamPagination pagination) throws ServiceInfrastructureException, AdresseException;
+    UtilisateurEditRestrictionView get(@NotNull String visaOperateur, WebParamPagination pagination) throws InfrastructureException, AdresseException;
 
     /**
      * Alimente la vue RecapPersonneUtilisateurView
      */
     @Transactional(readOnly = true)
-    RecapPersonneUtilisateurView get(Long numeroTiers, String visaOperateur) throws ServiceInfrastructureException, AdressesResolutionException;
+    RecapPersonneUtilisateurView get(Long numeroTiers, String visaOperateur) throws InfrastructureException, AdressesResolutionException;
 
     /**
      * Annule une liste de restrictions

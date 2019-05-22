@@ -38,7 +38,7 @@ import ch.vd.unireg.editique.LegacyEditiqueHelper;
 import ch.vd.unireg.editique.TypeDocumentEditique;
 import ch.vd.unireg.editique.impl.ExpediteurNillableValuesFiller;
 import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
@@ -195,7 +195,7 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperImpl ext
 				CollectiviteAdministrative collectiviteAdministrative = null;
 				try {
 					collectiviteAdministrative = serviceInfrastructureService.getCollectivite(oid);
-				} catch (ServiceInfrastructureException e) {
+				} catch (InfrastructureException e) {
 					LOGGER.warn("Impossible de retrouver la collectivité administrative " + oid, e);
 				}
 
@@ -208,7 +208,7 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperImpl ext
 							try {
 								localite = serviceInfrastructureService.getLocaliteByONRP(onrp, null);
 							}
-							catch (ServiceInfrastructureException e) {
+							catch (InfrastructureException e) {
 								LOGGER.warn("Impossible de retrouver la localité dont l'onrp est " + onrp, e);
 							}
 						}

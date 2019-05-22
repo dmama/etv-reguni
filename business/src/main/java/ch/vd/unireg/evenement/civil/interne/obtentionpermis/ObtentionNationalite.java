@@ -7,10 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
-import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
@@ -18,6 +14,10 @@ import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.unireg.evenement.civil.interne.HandleStatus;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.type.TypeEvenementCivil;
 
@@ -55,7 +55,7 @@ public abstract class ObtentionNationalite extends ObtentionPermisCOuNationalite
 			final Commune communePrincipale = context.getServiceInfra().getCommuneByAdresse(getAdressePrincipale(), date);
 			this.numeroOfsCommunePrincipale = communePrincipale == null ? 0 : communePrincipale.getNoOFS();
 		}
-		catch (ServiceInfrastructureException e) {
+		catch (InfrastructureException e) {
 			throw new EvenementCivilException(e);
 		}
 	}

@@ -66,7 +66,7 @@ import ch.vd.unireg.indexer.IndexerException;
 import ch.vd.unireg.indexer.TooManyResultsIndexerException;
 import ch.vd.unireg.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.unireg.indexer.tiers.TiersIndexedData;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Canton;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Localite;
@@ -985,11 +985,11 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	 *
 	 * @param message
 	 * @param personne
-	 * @throws ServiceInfrastructureException
+	 * @throws InfrastructureException
 	 */
 
 	private void verifierEtMettreAJourContribuable(IdentificationContribuable message, PersonnePhysique personne)
-			throws ServiceInfrastructureException {
+			throws InfrastructureException {
 		if (!personne.isHabitantVD() && REPARTITION_INTERCANTONALE.equals(message.getDemande().getTypeMessage())
 				&& isAdresseFromCantonEmetteur(message)) {
 			CriteresPersonne criteres = message.getDemande().getPersonne();
@@ -1006,9 +1006,9 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	 *
 	 * @param message
 	 * @return
-	 * @throws ServiceInfrastructureException
+	 * @throws InfrastructureException
 	 */
-	protected boolean isAdresseFromCantonEmetteur(IdentificationContribuable message) throws ServiceInfrastructureException {
+	protected boolean isAdresseFromCantonEmetteur(IdentificationContribuable message) throws InfrastructureException {
 		final CriteresAdresse adresse = message.getDemande().getPersonne().getAdresse();
 		if (adresse != null) {
 			final String emetteur = message.getDemande().getEmetteurId();
@@ -1514,7 +1514,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 			try {
 				canton = infraService.getCantonBySigle(sigle);
 			}
-			catch (ServiceInfrastructureException e) {
+			catch (InfrastructureException e) {
 				// On n'a pas réussi à résoudre le canton,
 				// on renvoie l'emetteur id telquel
 				canton = null;

@@ -28,8 +28,8 @@ import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
-import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
+import ch.vd.unireg.interfaces.infra.mock.DefaultMockInfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
@@ -99,7 +99,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 		super.onSetUp();
 
-		serviceInfra.setUp(new DefaultMockServiceInfrastructureService());
+		serviceInfra.setUp(new DefaultMockInfrastructureConnector());
 		loadDatabase(DB_UNIT_DATA_FILE);
 		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
@@ -890,7 +890,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 				final MockIndividu ind = addIndividu(noIndividu, date(1956, 4, 30), "Talon", "Achille", true);
 				final MockAdresse adresse = addAdresse(ind, TypeAdresseCivil.SECONDAIRE, MockRue.Echallens.GrandRue, null, date(2000, 1, 1), dateDepart);
 				adresse.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Neuchatel.getNoOFS(), null));
-				adresse.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, ServiceInfrastructureRaw.noPaysInconnu, null));
+				adresse.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, InfrastructureConnector.noPaysInconnu, null));
 			}
 		});
 

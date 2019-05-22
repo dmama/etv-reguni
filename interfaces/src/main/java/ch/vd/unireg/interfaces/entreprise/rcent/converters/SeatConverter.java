@@ -7,15 +7,15 @@ import org.jetbrains.annotations.NotNull;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseException;
 import ch.vd.unireg.interfaces.entreprise.data.Domicile;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 public class SeatConverter extends RangedToRangeBaseConverter<Integer, Domicile> {
 
-	private final ServiceInfrastructureRaw infraService;
+	private final InfrastructureConnector infraService;
 
-	public SeatConverter(ServiceInfrastructureRaw infraService) {
+	public SeatConverter(InfrastructureConnector infraService) {
 		this.infraService = infraService;
 	}
 

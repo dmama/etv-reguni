@@ -16,7 +16,7 @@
 	<bean id="serviceEntrepriseRCEnt" class="ch.vd.unireg.interfaces.entreprise.rcent.ServiceEntrepriseRCEnt">
 		<constructor-arg ref="rcEntAdapter"/>
 		<constructor-arg ref="rcEntClient"/>
-		<constructor-arg ref="serviceInfrastructureRaw"/>
+		<constructor-arg ref="infrastructureConnector"/>
 	</bean>
 
 	<bean id="serviceEntrepriseTracing" class="ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseTracing">

@@ -40,7 +40,7 @@ public class MockOfficeImpot extends MockCollectiviteAdministrative implements O
 	}
 
 	/**
-	 * Crée un office d'impôt qui sera enregistré automatiquement dans le mock par défaut du service infrastructure.
+	 * Crée un office d'impôt qui sera enregistré automatiquement dans le mock par défaut du connecteur d'infrastructure.
 	 */
 	@SuppressWarnings({"JavaDoc"})
 	protected MockOfficeImpot(long noColAdm, Adresse adresse, String nomComplet1, String nomComplet2, String nomComplet3, String nomCourt, Integer identifiantDistrict, Integer identifiantRegion) {

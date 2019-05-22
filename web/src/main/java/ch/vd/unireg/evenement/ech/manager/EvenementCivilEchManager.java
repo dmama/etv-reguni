@@ -2,13 +2,13 @@ package ch.vd.unireg.evenement.ech.manager;
 
 import java.util.List;
 
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.common.pagination.ParamPagination;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
 import ch.vd.unireg.evenement.ech.view.EvenementCivilEchCriteriaView;
 import ch.vd.unireg.evenement.ech.view.EvenementCivilEchDetailView;
 import ch.vd.unireg.evenement.ech.view.EvenementCivilEchElementListeRechercheView;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 
 /**
  * Classe qui permet de collecter les informations nécessaires à l'affichage
@@ -24,9 +24,9 @@ public interface EvenementCivilEchManager {
 	 * @return la structure EvenementCivilRegPPDetailView correspondant à l'id
 	 *
 	 * @throws ch.vd.unireg.adresse.AdressesResolutionException ...
-	 * @throws ch.vd.unireg.interfaces.infra.ServiceInfrastructureException ...
+	 * @throws InfrastructureException ...
 	 */
-	EvenementCivilEchDetailView get(Long id) throws AdresseException, ServiceInfrastructureException;
+	EvenementCivilEchDetailView get(Long id) throws AdresseException, InfrastructureException;
 
 	/**
 	 * Recycle l'evenement civil designe par l'id

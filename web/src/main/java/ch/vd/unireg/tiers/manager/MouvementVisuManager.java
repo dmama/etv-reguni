@@ -2,7 +2,7 @@ package ch.vd.unireg.tiers.manager;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.mouvement.manager.AbstractMouvementManager;
 import ch.vd.unireg.mouvement.view.MouvementDetailView;
 
@@ -20,6 +20,6 @@ public interface MouvementVisuManager extends AbstractMouvementManager {
 	 * @return un objet MouvementDetailView
 	 */
 	@Transactional(readOnly = true)
-	MouvementDetailView get(Long numero) throws ServiceInfrastructureException;
+	MouvementDetailView get(Long numero) throws InfrastructureException;
 
 }

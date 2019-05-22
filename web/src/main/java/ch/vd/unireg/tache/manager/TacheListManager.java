@@ -10,7 +10,7 @@ import ch.vd.unireg.adresse.AdressesResolutionException;
 import ch.vd.unireg.common.pagination.ParamPagination;
 import ch.vd.unireg.editique.EditiqueException;
 import ch.vd.unireg.editique.EditiqueResultat;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.tache.view.ImpressionNouveauxDossiersView;
 import ch.vd.unireg.tache.view.NouveauDossierCriteriaView;
 import ch.vd.unireg.tache.view.NouveauDossierListView;
@@ -33,22 +33,22 @@ public interface TacheListManager {
 	 * @param tacheCriteria
 	 * @param paramPagination
 	 * @return
-	 * @throws ServiceInfrastructureException
+	 * @throws InfrastructureException
 	 * @throws AdressesResolutionException
 	 */
 	@Transactional(readOnly = true)
-	List<TacheListView> find(TacheCriteriaView tacheCriteria, ParamPagination paramPagination) throws ServiceInfrastructureException, AdressesResolutionException;
+	List<TacheListView> find(TacheCriteriaView tacheCriteria, ParamPagination paramPagination) throws InfrastructureException, AdressesResolutionException;
 
 	/**
 	 * Recherche des nouveaux dossiers suivant certains critères
 	 *
 	 * @param dossierCriteria
 	 * @return
-	 * @throws ServiceInfrastructureException
+	 * @throws InfrastructureException
 	 * @throws AdressesResolutionException
 	 */
 	@Transactional(readOnly = true)
-	List<NouveauDossierListView> find(NouveauDossierCriteriaView dossierCriteria) throws ServiceInfrastructureException, AdresseException;
+	List<NouveauDossierListView> find(NouveauDossierCriteriaView dossierCriteria) throws InfrastructureException, AdresseException;
 
 	/**
 	 * Recherche des nouveaux dossiers suivant certains critères
@@ -56,11 +56,11 @@ public interface TacheListManager {
 	 * @param dossierCriteria
 	 * @param paramPagination
 	 * @return
-	 * @throws ServiceInfrastructureException
+	 * @throws InfrastructureException
 	 * @throws AdressesResolutionException
 	 */
 	@Transactional(readOnly = true)
-	List<NouveauDossierListView> find(NouveauDossierCriteriaView dossierCriteria, ParamPagination paramPagination) throws ServiceInfrastructureException, AdresseException;
+	List<NouveauDossierListView> find(NouveauDossierCriteriaView dossierCriteria, ParamPagination paramPagination) throws InfrastructureException, AdresseException;
 
 	/**
 	 * Imprime les nouveaux dossiers
@@ -73,20 +73,20 @@ public interface TacheListManager {
 	 *
 	 * @param criterion
 	 * @return
-	 * @throws ServiceInfrastructureException
+	 * @throws InfrastructureException
 	 */
 	@Transactional(readOnly = true)
-	int count(TacheCriteriaView criterion) throws ServiceInfrastructureException ;
+	int count(TacheCriteriaView criterion) throws InfrastructureException;
 
 	/**
 	 * Retourne le nombre de nouveaux dossiers correspondant aux criteres
 	 *
 	 * @param nouveauDossierCriteriaView
 	 * @return
-	 * @throws ServiceInfrastructureException
+	 * @throws InfrastructureException
 	 */
 	@Transactional(readOnly = true)
-	int count(NouveauDossierCriteriaView nouveauDossierCriteriaView) throws ServiceInfrastructureException ;
+	int count(NouveauDossierCriteriaView nouveauDossierCriteriaView) throws InfrastructureException;
 
 	/**
 	 * Passe la tâche à l'état TRAITE

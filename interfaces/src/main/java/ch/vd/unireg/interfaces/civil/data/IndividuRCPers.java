@@ -47,7 +47,7 @@ import ch.vd.unireg.interfaces.civil.IndividuConnectorException;
 import ch.vd.unireg.interfaces.civil.mock.CollectionLimitator;
 import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
 import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.data.AdresseCourrierMinimale;
 import ch.vd.unireg.interfaces.infra.data.RangeChangingAdresseWrapper;
 import ch.vd.unireg.type.Sexe;
@@ -83,7 +83,7 @@ public class IndividuRCPers implements Individu, Serializable {
 	private final NomPrenom nomOfficielMere;
 	private final NomPrenom nomOfficielPere;
 
-	public static Individu get(Person target, boolean history, ServiceInfrastructureRaw infraService) {
+	public static Individu get(Person target, boolean history, InfrastructureConnector infraService) {
 		if (target == null) {
 			return null;
 		}
@@ -91,7 +91,7 @@ public class IndividuRCPers implements Individu, Serializable {
 		return new IndividuRCPers(target, history, infraService);
 	}
 
-	public IndividuRCPers(Person person, boolean history, ServiceInfrastructureRaw infraService) {
+	public IndividuRCPers(Person person, boolean history, InfrastructureConnector infraService) {
 		this.noTechnique = getNoIndividu(person);
 		this.statut = initStatut(person.getStatus());
 
@@ -366,11 +366,11 @@ public class IndividuRCPers implements Individu, Serializable {
 		return null;
 	}
 
-	protected static List<Nationalite> initNationalites(Nationality nationalite, ServiceInfrastructureRaw infraService) {
+	protected static List<Nationalite> initNationalites(Nationality nationalite, InfrastructureConnector infraService) {
 		return initNationalites(Collections.singletonList(nationalite), infraService);
 	}
 
-	protected static List<Nationalite> initNationalites(List<Nationality> nationalities, ServiceInfrastructureRaw infraService) {
+	protected static List<Nationalite> initNationalites(List<Nationality> nationalities, InfrastructureConnector infraService) {
 		if (nationalities == null || nationalities.size() == 0) {
 			return Collections.emptyList();
 		}
@@ -422,7 +422,7 @@ public class IndividuRCPers implements Individu, Serializable {
 		return new EtatCivilListRCPers(list);
 	}
 
-	protected static List<Adresse> initAdresses(@Nullable Contact currentContact, @Nullable List<Contact> contact, List<Residence> residence, @Nullable RegDate dateDeces, ServiceInfrastructureRaw infraService) {
+	protected static List<Adresse> initAdresses(@Nullable Contact currentContact, @Nullable List<Contact> contact, List<Residence> residence, @Nullable RegDate dateDeces, InfrastructureConnector infraService) {
 
 		final List<Adresse> adresses = new ArrayList<>();
 
@@ -555,17 +555,17 @@ public class IndividuRCPers implements Individu, Serializable {
 					}
 					else if (goesTo.getType() == LocalisationType.CANTON_VD || goesTo.getType() == LocalisationType.HORS_CANTON) {
 						// adresse en Suisse, dont on ne connait que la commune
-						fillingAddress = new AdresseCourrierMinimale(hole.getDateDebut(), hole.getDateFin(), goesTo.getNoOfs(), ServiceInfrastructureRaw.noOfsSuisse);
+						fillingAddress = new AdresseCourrierMinimale(hole.getDateDebut(), hole.getDateFin(), goesTo.getNoOfs(), InfrastructureConnector.noOfsSuisse);
 					}
 					else {
 						// adresse étrangère, dont on ne connait finalement que le pays (si une ville est donnée, alors une adresse courrier
 						// a déjà été créée dans le goesTo (voir AdresseRCPers))
 						final Integer noOfs = goesTo.getNoOfs();
-						fillingAddress = new AdresseCourrierMinimale(hole.getDateDebut(), hole.getDateFin(), null, noOfs != null ? noOfs : ServiceInfrastructureRaw.noPaysInconnu);
+						fillingAddress = new AdresseCourrierMinimale(hole.getDateDebut(), hole.getDateFin(), null, noOfs != null ? noOfs : InfrastructureConnector.noPaysInconnu);
 					}
 				}
 				else {
-					fillingAddress = new AdresseCourrierMinimale(hole.getDateDebut(), hole.getDateFin(), null, ServiceInfrastructureRaw.noPaysInconnu);
+					fillingAddress = new AdresseCourrierMinimale(hole.getDateDebut(), hole.getDateFin(), null, InfrastructureConnector.noPaysInconnu);
 				}
 				adresses.add(fillingAddress);
 			}

@@ -25,7 +25,7 @@ import ch.vd.unireg.interfaces.entreprise.rcent.converters.TypeOfLocationConvert
 import ch.vd.unireg.interfaces.entreprise.rcent.converters.UidRegisterDeregistrationReasonConverter;
 import ch.vd.unireg.interfaces.entreprise.rcent.converters.UidRegisterStatusConverter;
 import ch.vd.unireg.interfaces.entreprise.rcent.converters.UidRegisterTypeOfOrganisationConverter;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 
 public class RCEntEtablissementHelper {
 
@@ -44,7 +44,7 @@ public class RCEntEtablissementHelper {
 	private static final Predicate<Capital> CAPITAL_PREDICATE = new CapitalPredicate();
 	private static final BurRegistrationDataConverter BUR_REGISTRATION_DATA_CONVERTER = new BurRegistrationDataConverter();
 
-	public static EtablissementCivilRCEnt get(OrganisationLocation rcEntLocation, ServiceInfrastructureRaw infraService) {
+	public static EtablissementCivilRCEnt get(OrganisationLocation rcEntLocation, InfrastructureConnector infraService) {
 
 		final OrganisationLocation.RCEntRCData rc = rcEntLocation.getRc();
 		final OrganisationLocation.RCEntUIDData uid = rcEntLocation.getUid();

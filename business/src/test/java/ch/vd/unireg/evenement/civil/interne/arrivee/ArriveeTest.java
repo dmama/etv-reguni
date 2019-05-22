@@ -30,10 +30,10 @@ import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockBatiment;
 import ch.vd.unireg.interfaces.infra.mock.MockCanton;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockInfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.interfaces.infra.mock.MockServiceInfrastructureService;
 import ch.vd.unireg.interfaces.service.ServiceCivilImpl;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureImpl;
@@ -100,7 +100,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		final EvenementCivilRegPP evenement = new EvenementCivilRegPP(1L, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, EtatEvenementCivil.A_TRAITER, dateArrivee, numeroIndividu, 0L, 1234, null);
 
 		// Prend le mock infrastructure par défaut
-		ServiceInfrastructureService infrastructureService = new ServiceInfrastructureImpl(new MockServiceInfrastructureService() {
+		ServiceInfrastructureService infrastructureService = new ServiceInfrastructureImpl(new MockInfrastructureConnector() {
 			@Override
 			protected void init() {
 				// Pays

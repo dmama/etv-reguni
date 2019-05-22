@@ -21,8 +21,8 @@ import ch.vd.unireg.adresse.AdresseGenerique;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.common.AdresseAvecCommune;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
 import ch.vd.unireg.interfaces.infra.data.Canton;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
@@ -45,12 +45,12 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 
 	//private static final Logger LOGGER = LoggerFactory.getLogger(ServiceInfrastructureImpl.class);
 
-	private ServiceInfrastructureRaw rawService;
+	private InfrastructureConnector connector;
 	private TiersDAO tiersDAO;
 
 	/*
 	 * Note: on se permet de cacher la Suisse et le canton de Vaud à ce niveau, car il n'y a aucune chance que ces deux objets changent sans
-	 * une remise en compte majeure des institutions. Tout autre forme de caching doit être déléguée au ServiceInfrastructureCache.
+	 * une remise en compte majeure des institutions. Tout autre forme de caching doit être déléguée au InfrastructureConnectorCache.
 	 */
 	private Pays suisse;
 	private Canton vaud;
@@ -58,13 +58,13 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	public ServiceInfrastructureImpl() {
 	}
 
-	public ServiceInfrastructureImpl(ServiceInfrastructureRaw rawService, TiersDAO tiersDAO) {
-		this.rawService = rawService;
+	public ServiceInfrastructureImpl(InfrastructureConnector connector, TiersDAO tiersDAO) {
+		this.connector = connector;
 		this.tiersDAO = tiersDAO;
 	}
 
-	public void setRawService(ServiceInfrastructureRaw rawService) {
-		this.rawService = rawService;
+	public void setConnector(InfrastructureConnector connector) {
+		this.connector = connector;
 		this.suisse = null;
 		this.vaud = null;
 	}
@@ -74,7 +74,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	}
 
 	@Override
-	public Canton getCantonBySigle(String sigle) throws ServiceInfrastructureException {
+	public Canton getCantonBySigle(String sigle) throws InfrastructureException {
 		Canton canton = null;
 		for (Canton c : getAllCantons()) {
 			if (c.getSigleOFS().equals(sigle)) {
@@ -82,13 +82,13 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 			}
 		}
 		if (canton == null) {
-			throw new ServiceInfrastructureException("Le canton " + sigle + " n'existe pas");
+			throw new InfrastructureException("Le canton " + sigle + " n'existe pas");
 		}
 		return canton;
 	}
 
 	@Override
-	public List<Commune> getListeCommunesByOID(int oid) throws ServiceInfrastructureException {
+	public List<Commune> getListeCommunesByOID(int oid) throws InfrastructureException {
 		List<Commune> communes = new LinkedList<>();
 		for (Commune c : getCommunes()) {
 			if (c.isVaudoise()) {
@@ -102,7 +102,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	}
 
 	@Override
-	public List<Commune> getCommunesDeVaud() throws ServiceInfrastructureException {
+	public List<Commune> getCommunesDeVaud() throws InfrastructureException {
 		final List<Commune> list = new LinkedList<>();
 		for (Commune commune : getCommunes()) {
 			if (commune.isVaudoise()) {
@@ -113,7 +113,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	}
 
 	@Override
-	public List<Commune> getCommunesHorsCanton() throws ServiceInfrastructureException {
+	public List<Commune> getCommunesHorsCanton() throws InfrastructureException {
 		final List<Commune> list = new LinkedList<>();
 		for (Commune commune : getCommunes()) {
 			if (!commune.isVaudoise()) {
@@ -124,93 +124,93 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	}
 
 	@Override
-	public List<Commune> getCommunes() throws ServiceInfrastructureException {
-		return rawService.getCommunes();
+	public List<Commune> getCommunes() throws InfrastructureException {
+		return connector.getCommunes();
 	}
 
 	@Override
-	public List<Localite> getLocalites() throws ServiceInfrastructureException {
-		return rawService.getLocalites();
+	public List<Localite> getLocalites() throws InfrastructureException {
+		return connector.getLocalites();
 	}
 
 	@Override
-	public Localite getLocaliteByONRP(int onrp, RegDate dateReference) throws ServiceInfrastructureException {
-		return rawService.getLocaliteByONRP(onrp, dateReference);
+	public Localite getLocaliteByONRP(int onrp, RegDate dateReference) throws InfrastructureException {
+		return connector.getLocaliteByONRP(onrp, dateReference);
 	}
 
 	@Override
-	public List<Pays> getPays() throws ServiceInfrastructureException {
-		return rawService.getPays();
+	public List<Pays> getPays() throws InfrastructureException {
+		return connector.getPays();
 	}
 
 	@Override
-	public Pays getPays(int numeroOFS, @Nullable RegDate date) throws ServiceInfrastructureException {
-		return rawService.getPays(numeroOFS, date);
+	public Pays getPays(int numeroOFS, @Nullable RegDate date) throws InfrastructureException {
+		return connector.getPays(numeroOFS, date);
 	}
 
 	@Override
-	public Pays getPays(String codePays, @Nullable RegDate date) throws ServiceInfrastructureException {
-		return rawService.getPays(codePays, date);
+	public Pays getPays(String codePays, @Nullable RegDate date) throws InfrastructureException {
+		return connector.getPays(codePays, date);
 	}
 
 	@Override
-	public List<Pays> getPaysHisto(int numeroOFS) throws ServiceInfrastructureException {
-		return rawService.getPaysHisto(numeroOFS);
+	public List<Pays> getPaysHisto(int numeroOFS) throws InfrastructureException {
+		return connector.getPaysHisto(numeroOFS);
 	}
 
 	@Override
-	public CollectiviteAdministrative getCollectivite(int noColAdm) throws ServiceInfrastructureException {
-		return rawService.getCollectivite(noColAdm);
+	public CollectiviteAdministrative getCollectivite(int noColAdm) throws InfrastructureException {
+		return connector.getCollectivite(noColAdm);
 	}
 
 	@Override
-	public CollectiviteAdministrative getACI() throws ServiceInfrastructureException {
-		return rawService.getCollectivite(ServiceInfrastructureService.noACI);
+	public CollectiviteAdministrative getACI() throws InfrastructureException {
+		return connector.getCollectivite(ServiceInfrastructureService.noACI);
 	}
 
 	@Override
-	public CollectiviteAdministrative getACIImpotSource() throws ServiceInfrastructureException {
-		return rawService.getCollectivite(ServiceInfrastructureService.noACIImpotSource);
+	public CollectiviteAdministrative getACIImpotSource() throws InfrastructureException {
+		return connector.getCollectivite(ServiceInfrastructureService.noACIImpotSource);
 	}
 
 	@Override
-	public CollectiviteAdministrative getACIOIPM() throws ServiceInfrastructureException {
-		return rawService.getCollectivite(ServiceInfrastructureService.noOIPM);
+	public CollectiviteAdministrative getACIOIPM() throws InfrastructureException {
+		return connector.getCollectivite(ServiceInfrastructureService.noOIPM);
 	}
 
 	@Override
-	public CollectiviteAdministrative getCEDI() throws ServiceInfrastructureException {
-		return rawService.getCollectivite(ServiceInfrastructureService.noCEDI);
+	public CollectiviteAdministrative getCEDI() throws InfrastructureException {
+		return connector.getCollectivite(ServiceInfrastructureService.noCEDI);
 	}
 
 	@Override
-	public CollectiviteAdministrative getCAT() throws ServiceInfrastructureException {
-		return rawService.getCollectivite(ServiceInfrastructureService.noCAT);
+	public CollectiviteAdministrative getCAT() throws InfrastructureException {
+		return connector.getCollectivite(ServiceInfrastructureService.noCAT);
 	}
 
 	@Override
-	public CollectiviteAdministrative getRC() throws ServiceInfrastructureException {
-		return rawService.getCollectivite(ServiceInfrastructureService.noRC);
+	public CollectiviteAdministrative getRC() throws InfrastructureException {
+		return connector.getCollectivite(ServiceInfrastructureService.noRC);
 	}
 
 	@Override
 	public List<CollectiviteAdministrative> findCollectivitesAdministratives(List<Integer> codeCollectivites, boolean b) {
-		return rawService.findCollectivitesAdministratives(codeCollectivites, b);
+		return connector.findCollectivitesAdministratives(codeCollectivites, b);
 	}
 
 	@Override
-	public List<Canton> getAllCantons() throws ServiceInfrastructureException {
-		return rawService.getAllCantons();
+	public List<Canton> getAllCantons() throws InfrastructureException {
+		return connector.getAllCantons();
 	}
 
 	@Override
-	public List<Commune> getCommunesVD() throws ServiceInfrastructureException {
-		return rawService.getCommunesVD();
+	public List<Commune> getCommunesVD() throws InfrastructureException {
+		return connector.getCommunesVD();
 	}
 
 	@Override
-	public List<Commune> getListeCommunesFaitieres() throws ServiceInfrastructureException {
-		return rawService.getListeCommunesFaitieres();
+	public List<Commune> getListeCommunesFaitieres() throws InfrastructureException {
+		return connector.getListeCommunesFaitieres();
 	}
 
 	/**
@@ -242,18 +242,18 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	}
 
 	@Override
-	public List<Localite> getLocaliteByCommune(int commune) throws ServiceInfrastructureException {
-		return rawService.getLocalites().stream()  // cet appel est normalement caché
+	public List<Localite> getLocaliteByCommune(int commune) throws InfrastructureException {
+		return connector.getLocalites().stream()  // cet appel est normalement caché
 				.filter(loc -> loc.getNoCommune() != null && loc.getNoCommune() == commune)
 				.collect(Collectors.toList());
 	}
 
 	@Override
-	public List<Rue> getRues(Localite localite) throws ServiceInfrastructureException {
-		return rawService.getRues(localite);
+	public List<Rue> getRues(Localite localite) throws InfrastructureException {
+		return connector.getRues(localite);
 	}
 
-	private Commune getCommuneByLocaliteAdresse(Integer numeroOrdrePostal, RegDate date) throws ServiceInfrastructureException {
+	private Commune getCommuneByLocaliteAdresse(Integer numeroOrdrePostal, RegDate date) throws InfrastructureException {
 
 		// Recherche de la commune
 		final Commune commune;
@@ -265,7 +265,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 		else {
 			final Localite localite = getLocaliteByONRP(numeroOrdrePostal, date);
 			if (localite == null) {
-				throw new ServiceInfrastructureException("Aucune localité trouvée avec le numéro " + numeroOrdrePostal);
+				throw new InfrastructureException("Aucune localité trouvée avec le numéro " + numeroOrdrePostal);
 			}
 			commune = getCommuneByLocalite(localite);
 		}
@@ -280,9 +280,9 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	 * @param numeroOrdrePostal un numéro d'ordre postal
 	 * @param date              la date de référence
 	 * @return la commune qui correspond à l'adresse spécifiée; ou <b>null</b> si aucune commune n'a été trouvée.
-	 * @throws ServiceInfrastructureException en cas d'erreur
+	 * @throws InfrastructureException en cas d'erreur
 	 */
-	private Commune getCommuneByAdresse(AdresseAvecCommune adresse, Integer numeroOrdrePostal, RegDate date) throws ServiceInfrastructureException {
+	private Commune getCommuneByAdresse(AdresseAvecCommune adresse, Integer numeroOrdrePostal, RegDate date) throws InfrastructureException {
 		if (adresse == null) {
 			return null;
 		}
@@ -317,7 +317,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	}
 
 	@Override
-	public Commune getCommuneByAdresse(Adresse adresse, RegDate date) throws ServiceInfrastructureException {
+	public Commune getCommuneByAdresse(Adresse adresse, RegDate date) throws InfrastructureException {
 		if (adresse != null) {
 			return getCommuneByAdresse(adresse, adresse.getNumeroOrdrePostal(), date);
 		}
@@ -327,7 +327,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	}
 
 	@Override
-	public Commune getCommuneByAdresse(AdresseGenerique adresse, RegDate date) throws ServiceInfrastructureException {
+	public Commune getCommuneByAdresse(AdresseGenerique adresse, RegDate date) throws InfrastructureException {
 		if (adresse != null) {
 			return getCommuneByAdresse(adresse, adresse.getNumeroOrdrePostal(), date);
 		}
@@ -337,12 +337,12 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	}
 
 	@Override
-	public Integer getNoOfsCommuneByEgid(int egid, RegDate date) throws ServiceInfrastructureException {
-		return rawService.getNoOfsCommuneByEgid(egid, date);
+	public Integer getNoOfsCommuneByEgid(int egid, RegDate date) throws InfrastructureException {
+		return connector.getNoOfsCommuneByEgid(egid, date);
 	}
 
 	@Override
-	public final Commune getCommuneByEgid(int egid, RegDate date) throws ServiceInfrastructureException {
+	public final Commune getCommuneByEgid(int egid, RegDate date) throws InfrastructureException {
 
 		// un premier appel pour récupérer le numéro Ofs de la commune
 		final Integer noOfs = getNoOfsCommuneByEgid(egid, date);
@@ -355,7 +355,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	}
 
 	@Override
-	public Commune getCommuneFaitiere(Commune commune, RegDate dateReference) throws ServiceInfrastructureException {
+	public Commune getCommuneFaitiere(Commune commune, RegDate dateReference) throws InfrastructureException {
 		if (commune == null || !commune.isFraction()) {
 			return commune;
 		}
@@ -369,8 +369,8 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	}
 
 	@Override
-	public OfficeImpot getOfficeImpot(int noColAdm) throws ServiceInfrastructureException {
-		final CollectiviteAdministrative coll = rawService.getCollectivite(noColAdm);
+	public OfficeImpot getOfficeImpot(int noColAdm) throws InfrastructureException {
+		final CollectiviteAdministrative coll = connector.getCollectivite(noColAdm);
 		if (coll instanceof OfficeImpot) {
 			return (OfficeImpot) coll;
 		}
@@ -380,7 +380,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	}
 
 	@Override
-	public OfficeImpot getOfficeImpotDeCommune(int noCommune) throws ServiceInfrastructureException {
+	public OfficeImpot getOfficeImpotDeCommune(int noCommune) throws InfrastructureException {
 		final Commune commune = getCommuneByNumeroOfs(noCommune, RegDate.get());
 		final Integer codeDistrict = commune.getCodeDistrict();
 		final OfficeImpot oid;
@@ -390,7 +390,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 				oid = getOfficeImpot(collAdm.getNumeroCollectiviteAdministrative());
 			}
 			else {
-				throw new ServiceInfrastructureException("La collectivité administrative du district " + codeDistrict + " pour la commune " + noCommune + " manque à l'appel!");
+				throw new InfrastructureException("La collectivité administrative du district " + codeDistrict + " pour la commune " + noCommune + " manque à l'appel!");
 			}
 		}
 		else {
@@ -401,12 +401,12 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	}
 
 	@Override
-	public List<OfficeImpot> getOfficesImpot() throws ServiceInfrastructureException {
-		return rawService.getOfficesImpot();
+	public List<OfficeImpot> getOfficesImpot() throws InfrastructureException {
+		return connector.getOfficesImpot();
 	}
 
 	@Override
-	public List<Rue> getRues(Collection<Localite> localites) throws ServiceInfrastructureException {
+	public List<Rue> getRues(Collection<Localite> localites) throws InfrastructureException {
 		List<Rue> locRues = new LinkedList<>();
 		for (Localite localite : localites) {
 			locRues.addAll(getRues(localite));
@@ -415,8 +415,8 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	}
 
 	@Override
-	public Rue getRueByNumero(int numero) throws ServiceInfrastructureException {
-		final List<Rue> histo = rawService.getRuesHisto(numero);
+	public Rue getRueByNumero(int numero) throws InfrastructureException {
+		final List<Rue> histo = connector.getRuesHisto(numero);
 		if (histo != null && !histo.isEmpty()) {
 			final List<Rue> sorted = new ArrayList<>(histo);
 			sorted.sort(new DateRangeComparator<>(DateRangeComparator.CompareOrder.DESCENDING));
@@ -426,7 +426,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	}
 
 	@Override
-	public Pays getSuisse() throws ServiceInfrastructureException {
+	public Pays getSuisse() throws InfrastructureException {
 		if (suisse == null) {
 			suisse = getPays(ServiceInfrastructureService.noOfsSuisse, null);
 		}
@@ -434,7 +434,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	}
 
 	@Override
-	public Canton getVaud() throws ServiceInfrastructureException {
+	public Canton getVaud() throws InfrastructureException {
 		if (vaud == null) {
 			vaud = getCantonBySigle(ServiceInfrastructureService.SIGLE_CANTON_VD);
 		}
@@ -442,39 +442,39 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	}
 
 	@Override
-	public Canton getCantonByCommune(int noOfsCommune) throws ServiceInfrastructureException {
+	public Canton getCantonByCommune(int noOfsCommune) throws InfrastructureException {
 		final Commune commune = getCommuneByNumeroOfs(noOfsCommune, null);
 		if (commune == null) {
-			throw new ServiceInfrastructureException("La commune avec le numéro Ofs " + noOfsCommune + " n'existe pas");
+			throw new InfrastructureException("La commune avec le numéro Ofs " + noOfsCommune + " n'existe pas");
 		}
 		final String canton = commune.getSigleCanton();
 		return getCantonBySigle(canton);
 	}
 
 	@Override
-	public Commune getCommuneByNumeroOfs(int noCommune, @Nullable RegDate date) throws ServiceInfrastructureException {
+	public Commune getCommuneByNumeroOfs(int noCommune, @Nullable RegDate date) throws InfrastructureException {
 		final List<Commune> list = getCommuneHistoByNumeroOfs(noCommune);
 		return choisirCommune(list, date);
 	}
 
 	@Override
-	public List<Commune> getCommuneHistoByNumeroOfs(int noOfsCommune) throws ServiceInfrastructureException {
-		return rawService.getCommuneHistoByNumeroOfs(noOfsCommune);
+	public List<Commune> getCommuneHistoByNumeroOfs(int noOfsCommune) throws InfrastructureException {
+		return connector.getCommuneHistoByNumeroOfs(noOfsCommune);
 	}
 
 	@Override
-	public Commune getCommuneByLocalite(Localite localite) throws ServiceInfrastructureException {
-		return rawService.getCommuneByLocalite(localite);
+	public Commune getCommuneByLocalite(Localite localite) throws InfrastructureException {
+		return connector.getCommuneByLocalite(localite);
 	}
 
 	@Nullable
 	@Override
-	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, boolean includeFaitieres, boolean includeFractions, @Nullable RegDate date) throws ServiceInfrastructureException {
-		return rawService.findCommuneByNomOfficiel(nomOfficiel, includeFaitieres, includeFractions, date);
+	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, boolean includeFaitieres, boolean includeFractions, @Nullable RegDate date) throws InfrastructureException {
+		return connector.findCommuneByNomOfficiel(nomOfficiel, includeFaitieres, includeFractions, date);
 	}
 
 	@Override
-	public Canton getCanton(int cantonOFS) throws ServiceInfrastructureException {
+	public Canton getCanton(int cantonOFS) throws InfrastructureException {
 		Canton canton = null;
 		for (Canton c : getAllCantons()) {
 			if (c.getNoOFS() == cantonOFS) {
@@ -482,20 +482,20 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 			}
 		}
 		if (canton == null) {
-			throw new ServiceInfrastructureException("Le canton " + cantonOFS + " n'existe pas");
+			throw new InfrastructureException("Le canton " + cantonOFS + " n'existe pas");
 		}
 		return canton;
 	}
 
 	@Override
-	public boolean estDansLeCanton(final Rue rue) throws ServiceInfrastructureException {
+	public boolean estDansLeCanton(final Rue rue) throws InfrastructureException {
 		final Integer onrp = rue.getNoLocalite();
 		final Localite localite = getLocaliteByONRP(onrp, rue.getDateFin());
 		return estDansLeCanton(localite.getCommuneLocalite());
 	}
 
 	@Override
-	public boolean estDansLeCanton(final Commune commune) throws ServiceInfrastructureException {
+	public boolean estDansLeCanton(final Commune commune) throws InfrastructureException {
 		final String sigle = commune.getSigleCanton();
 		if (sigle == null || sigle.isEmpty()) {
 			final int noOfs = commune.getNoOFS();
@@ -508,7 +508,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	}
 
 	@Override
-	public boolean estDansLeCanton(AdresseGenerique adresse) throws ServiceInfrastructureException {
+	public boolean estDansLeCanton(AdresseGenerique adresse) throws InfrastructureException {
 
 		if (!estEnSuisse(adresse)) {
 			return false;
@@ -529,14 +529,14 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 		else {
 			final Rue rue = getRueByNumero(numero);
 			if (rue == null) {
-				throw new ServiceInfrastructureException("La rue avec l'estrid=[" + numero + "] n'existe pas dans le service d'infrastructure.");
+				throw new InfrastructureException("La rue avec l'estrid=[" + numero + "] n'existe pas dans le service d'infrastructure.");
 			}
 			return estDansLeCanton(rue);
 		}
 	}
 
 	@Override
-	public boolean estDansLeCanton(Adresse adresse) throws ServiceInfrastructureException {
+	public boolean estDansLeCanton(Adresse adresse) throws InfrastructureException {
 
 		if (!estEnSuisse(adresse)) {
 			return false;
@@ -551,32 +551,32 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 		else {
 			final Rue rue = getRueByNumero(numero);
 			if (rue == null) {
-				throw new ServiceInfrastructureException("La rue avec l'estrid=[" + numero + "] n'existe pas dans le service d'infrastructure.");
+				throw new InfrastructureException("La rue avec l'estrid=[" + numero + "] n'existe pas dans le service d'infrastructure.");
 			}
 			return estDansLeCanton(rue);
 		}
 	}
 
 	@Override
-	public boolean estEnSuisse(AdresseGenerique adresse) throws ServiceInfrastructureException {
+	public boolean estEnSuisse(AdresseGenerique adresse) throws InfrastructureException {
 		if (adresse == null) {
-			throw new ServiceInfrastructureException("L'adresse est nulle");
+			throw new InfrastructureException("L'adresse est nulle");
 		}
 		final Integer noOfsPays = adresse.getNoOfsPays();
 		return noOfsPays == null || noOfsPays == noOfsSuisse; // par défaut, un pays non-renseigné correspond à la Suisse
 	}
 
 	@Override
-	public boolean estEnSuisse(Adresse adresse) throws ServiceInfrastructureException {
+	public boolean estEnSuisse(Adresse adresse) throws InfrastructureException {
 		if (adresse == null) {
-			throw new ServiceInfrastructureException("L'adresse est nulle");
+			throw new InfrastructureException("L'adresse est nulle");
 		}
 		final Integer noOfsPays = adresse.getNoOfsPays();
 		return noOfsPays == null || noOfsPays == noOfsSuisse; // par défaut, un pays non-renseigné correspond à la Suisse
 	}
 
 	@Override
-	public Zone getZone(AdresseGenerique adresse) throws ServiceInfrastructureException {
+	public Zone getZone(AdresseGenerique adresse) throws InfrastructureException {
 
 		if (estEnSuisse(adresse)) {
 			if (estDansLeCanton(adresse)) {
@@ -592,43 +592,43 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	}
 
 	@Override
-	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws ServiceInfrastructureException {
-		return rawService.getCollectivitesAdministratives();
+	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws InfrastructureException {
+		return connector.getCollectivitesAdministratives();
 	}
 
 	@Override
-	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<TypeCollectivite> typesCollectivite) throws ServiceInfrastructureException {
-		return rawService.getCollectivitesAdministratives(typesCollectivite);
+	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<TypeCollectivite> typesCollectivite) throws InfrastructureException {
+		return connector.getCollectivitesAdministratives(typesCollectivite);
 	}
 
 	@Override
-	public Pays getPaysInconnu() throws ServiceInfrastructureException {
+	public Pays getPaysInconnu() throws InfrastructureException {
 		return getPays(ServiceInfrastructureService.noPaysInconnu, null);
 	}
 
 	@Override
-	public List<TypeRegimeFiscal> getRegimesFiscaux() throws ServiceInfrastructureException {
-		return rawService.getTousLesRegimesFiscaux();
+	public List<TypeRegimeFiscal> getRegimesFiscaux() throws InfrastructureException {
+		return connector.getTousLesRegimesFiscaux();
 	}
 
 	@Override
 	@Nullable
-	public TypeRegimeFiscal getRegimeFiscal(@NotNull String code) throws ServiceInfrastructureException {
+	public TypeRegimeFiscal getRegimeFiscal(@NotNull String code) throws InfrastructureException {
 		// TODO (msi) faut-il tenir compte des périodes de validité et retourner le régime courant ?
-		return rawService.getTousLesRegimesFiscaux().stream()
+		return connector.getTousLesRegimesFiscaux().stream()
 				.filter(r -> Objects.equals(r.getCode(), code))
 				.findFirst()
 				.orElse(null);
 	}
 
 	@Override
-	public List<GenreImpotMandataire> getGenresImpotMandataires() throws ServiceInfrastructureException {
-		return rawService.getTousLesGenresImpotMandataires();
+	public List<GenreImpotMandataire> getGenresImpotMandataires() throws InfrastructureException {
+		return connector.getTousLesGenresImpotMandataires();
 	}
 
 	@Override
-	public List<Localite> getLocalitesByNPA(int npa, RegDate dateReference) throws ServiceInfrastructureException {
-		return rawService.getLocalitesByNPA(npa, dateReference);
+	public List<Localite> getLocalitesByNPA(int npa, RegDate dateReference) throws InfrastructureException {
+		return connector.getLocalitesByNPA(npa, dateReference);
 	}
 
 	@Override
@@ -636,7 +636,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 		final Map<String, String> parameters = new HashMap<>(2);
 		parameters.put("NOCTB", String.valueOf(tiersId));
 		parameters.put("OID", String.valueOf(AuthenticationHelper.getCurrentOID()));
-		return rawService.getUrl(application, parameters);
+		return connector.getUrl(application, parameters);
 	}
 
 	@Override
@@ -648,22 +648,22 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 		parameters.put("CONTEXT", "DOC_UNIREG_PILOTE");
 		parameters.put("OID", String.valueOf(AuthenticationHelper.getCurrentOID()));
 		parameters.put("ID", cleDocument);
-		return rawService.getUrl(ApplicationFiscale.DPERM_DOCUMENT, parameters);
+		return connector.getUrl(ApplicationFiscale.DPERM_DOCUMENT, parameters);
 	}
 
 	@Override
 	public String getUrlBrutte(ApplicationFiscale application) {
-		return rawService.getUrl(application, null);
+		return connector.getUrl(application, null);
 	}
 
 	@Override
 	public Logiciel getLogiciel(Long idLogiciel) {
-		return rawService.getLogiciel(idLogiciel);
+		return connector.getLogiciel(idLogiciel);
 	}
 
 	@Override
 	public List<Logiciel> getTousLesLogiciels() {
-		return rawService.getTousLesLogiciels();
+		return connector.getTousLesLogiciels();
 	}
 
 	@Override

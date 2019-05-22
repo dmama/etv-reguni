@@ -41,9 +41,9 @@ import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
 import ch.vd.unireg.interfaces.civil.data.TypeRelationVersIndividu;
 import ch.vd.unireg.interfaces.civil.rcpers.IndividuConnectorRCPers;
 import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureTracing;
-import ch.vd.unireg.interfaces.infra.fidor.ServiceInfrastructureFidor;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnectorTracing;
+import ch.vd.unireg.interfaces.infra.fidor.InfrastructureConnectorFidor;
 import ch.vd.unireg.type.TypeAdresseCivil;
 import ch.vd.unireg.webservice.fidor.v5.FidorClientImpl;
 import ch.vd.unireg.wsclient.WebClientPool;
@@ -100,17 +100,17 @@ public class TableFillerWithCivilValues {
 		final FidorClientImpl fidorClient = new FidorClientImpl();
 		fidorClient.setWcPool(fidorPool);
 
-		final ServiceInfrastructureFidor infraServiceFiDor = new ServiceInfrastructureFidor();
+		final InfrastructureConnectorFidor infraServiceFiDor = new InfrastructureConnectorFidor();
 		infraServiceFiDor.setFidorClient(fidorClient);
 
-		final ServiceInfrastructureTracing infraServiceTracing = new ServiceInfrastructureTracing();
+		final InfrastructureConnectorTracing infraServiceTracing = new InfrastructureConnectorTracing();
 		infraServiceTracing.setTarget(infraServiceFiDor);
 
-		final ServiceInfrastructureRaw infraServiceCache = new ServiceInfraGetPaysSimpleCache(infraServiceTracing);
+		final InfrastructureConnector infraServiceCache = new InfraGetPaysSimpleCache(infraServiceTracing);
 
 		final IndividuConnectorRCPers donneesCivilesAccessorRCPers = new IndividuConnectorRCPers();
 		donneesCivilesAccessorRCPers.setClient(rcpersClient);
-		donneesCivilesAccessorRCPers.setInfraService(infraServiceCache);
+		donneesCivilesAccessorRCPers.setInfraConnector(infraServiceCache);
 
 		final IndividuConnectorTracing donneesCivilesAccessorTracing = new IndividuConnectorTracing();
 		donneesCivilesAccessorTracing.setTarget(donneesCivilesAccessorRCPers);
@@ -518,7 +518,7 @@ public class TableFillerWithCivilValues {
 		final Adresse contact = getCurrentAdresse(ind.getAdresses(), TypeAdresse.CONTACT);
 		if (contact != null) {
 			final Integer noOfsPays = contact.getNoOfsPays();
-			if (noOfsPays == null || ServiceInfrastructureRaw.noOfsSuisse == noOfsPays) {
+			if (noOfsPays == null || InfrastructureConnector.noOfsSuisse == noOfsPays) {
 				if (StringUtils.isNotBlank(contact.getNumeroPostal())) {
 					ps.setInt(9, Integer.parseInt(contact.getNumeroPostal()));
 				}
@@ -532,7 +532,7 @@ public class TableFillerWithCivilValues {
 					ps.setNull(10, Types.INTEGER);
 				}
 				ps.setNull(11, Types.NVARCHAR);
-				ps.setInt(12, ServiceInfrastructureRaw.noOfsSuisse);
+				ps.setInt(12, InfrastructureConnector.noOfsSuisse);
 			}
 			else {
 				ps.setNull(9, Types.INTEGER);
@@ -552,7 +552,7 @@ public class TableFillerWithCivilValues {
 		final Adresse residence = getCurrentAdresse(ind.getAdresses(), TypeAdresse.RESIDENCE);
 		if (residence != null) {
 			final Integer noOfsPays = residence.getNoOfsPays();
-			if (noOfsPays == null || ServiceInfrastructureRaw.noOfsSuisse == noOfsPays) {
+			if (noOfsPays == null || InfrastructureConnector.noOfsSuisse == noOfsPays) {
 				if (StringUtils.isNotBlank(residence.getNumeroPostal())) {
 					ps.setInt(13, Integer.parseInt(residence.getNumeroPostal()));
 				}
@@ -566,7 +566,7 @@ public class TableFillerWithCivilValues {
 					ps.setNull(14, Types.INTEGER);
 				}
 				ps.setNull(15, Types.NVARCHAR);
-				ps.setInt(16, ServiceInfrastructureRaw.noOfsSuisse);
+				ps.setInt(16, InfrastructureConnector.noOfsSuisse);
 			}
 			else {
 				ps.setNull(13, Types.INTEGER);

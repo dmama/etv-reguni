@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.common.pagination.ParamPagination;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
@@ -24,6 +23,7 @@ import ch.vd.unireg.evenement.ech.view.EvenementCivilEchCriteriaView;
 import ch.vd.unireg.evenement.ech.view.EvenementCivilEchDetailView;
 import ch.vd.unireg.evenement.ech.view.EvenementCivilEchElementListeRechercheView;
 import ch.vd.unireg.evenement.ech.view.EvenementCivilEchGrappeView;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.IndividuNotFoundException;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -56,7 +56,7 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 
 	@Override
     @Transactional(readOnly = true)
-	public EvenementCivilEchDetailView get(Long id) throws AdresseException, ServiceInfrastructureException {
+	public EvenementCivilEchDetailView get(Long id) throws AdresseException, InfrastructureException {
 		final EvenementCivilEch evt = evenementService.get(id);
 		if (evt == null) {
 			throw newObjectNotFoundException(id);

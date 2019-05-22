@@ -30,7 +30,7 @@ import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPPDAO;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPPErreur;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPPErreurFactory;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
@@ -210,7 +210,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 			try {
 				c = serviceInfrastructureService.getCommuneByNumeroOfs(numeroOFS, event.getDateEvenement());
 			}
-			catch (ServiceInfrastructureException e) {
+			catch (InfrastructureException e) {
 				LOGGER.error(e.getMessage(), e);
 				c = null;
 			}

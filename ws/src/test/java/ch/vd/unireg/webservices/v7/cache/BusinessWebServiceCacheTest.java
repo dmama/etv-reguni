@@ -50,7 +50,7 @@ import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
 import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
-import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
+import ch.vd.unireg.interfaces.infra.mock.DefaultMockInfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
@@ -181,7 +181,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		serviceInfra.setUp(new DefaultMockServiceInfrastructureService() {
+		serviceInfra.setUp(new DefaultMockInfrastructureConnector() {
 			@Override
 			public String getUrl(ApplicationFiscale application, @Nullable Map<String, String> parametres) {
 				if (application == ApplicationFiscale.CAPITASTRA) {

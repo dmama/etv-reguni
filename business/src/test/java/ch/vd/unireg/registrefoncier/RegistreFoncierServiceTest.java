@@ -34,7 +34,7 @@ import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
 import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
+import ch.vd.unireg.interfaces.infra.mock.DefaultMockInfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.registrefoncier.dao.AyantDroitRFDAO;
@@ -72,7 +72,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 		modeleCommunauteRFDAO = getBean(ModeleCommunauteRFDAO.class, "modeleCommunauteRFDAO");
 		evenementFiscalDAO = getBean(EvenementFiscalDAO.class, "evenementFiscalDAO");
 
-		serviceInfra.setUp(new DefaultMockServiceInfrastructureService() {
+		serviceInfra.setUp(new DefaultMockInfrastructureConnector() {
 			@Override
 			public String getUrl(ApplicationFiscale application, @Nullable Map<String, String> parametres) {
 				Assert.assertNull(parametres);

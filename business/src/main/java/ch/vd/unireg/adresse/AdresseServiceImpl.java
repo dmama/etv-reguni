@@ -36,7 +36,7 @@ import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.entreprise.data.EntrepriseCivile;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.model.AdressesCiviles;
@@ -2200,7 +2200,7 @@ public class AdresseServiceImpl implements AdresseService {
 				try {
 					commune = serviceInfra.getCommuneByAdresse(adresseGenerique, adresseGenerique.getDateDebut());
 				}
-				catch (ServiceInfrastructureException e) {
+				catch (InfrastructureException e) {
 					throw new AdresseDataException(e);
 				}
 				if (commune != null && commune.isVaudoise()) {

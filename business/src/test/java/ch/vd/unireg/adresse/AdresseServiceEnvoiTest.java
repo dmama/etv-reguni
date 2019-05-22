@@ -16,10 +16,10 @@ import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockCanton;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockInfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.interfaces.infra.mock.MockServiceInfrastructureService;
 import ch.vd.unireg.tiers.AppartenanceMenage;
 import ch.vd.unireg.tiers.CollectiviteAdministrative;
 import ch.vd.unireg.tiers.ContactImpotSource;
@@ -873,7 +873,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 
 		final int noTribunalCantonal = 42;      // pas utilisé par les collectivités enregistrées par défaut dans le Mock
 
-		serviceInfra.setUp(new MockServiceInfrastructureService() {
+		serviceInfra.setUp(new MockInfrastructureConnector() {
 			@Override
 			protected void init() {
 				pays.add(MockPays.Suisse);
@@ -1076,7 +1076,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdresseEnvoiDebiteurPrestationImposableAvecAdresseCourrierSurEntreprise() throws Exception {
 
-		serviceInfra.setUp(new MockServiceInfrastructureService() {
+		serviceInfra.setUp(new MockInfrastructureConnector() {
 			@Override
 			protected void init() {
 				pays.add(MockPays.Suisse);
@@ -1247,7 +1247,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 
 		final int noCollectivite = 1;
 
-		serviceInfra.setUp(new MockServiceInfrastructureService() {
+		serviceInfra.setUp(new MockInfrastructureConnector() {
 			@Override
 			protected void init() {
 				// Pays

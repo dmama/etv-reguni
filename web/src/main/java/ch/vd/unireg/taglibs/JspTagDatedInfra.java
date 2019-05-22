@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.util.HtmlUtils;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 
 /**
@@ -30,7 +30,7 @@ public abstract class JspTagDatedInfra<T> extends BodyTagSupport {
 	private EscapeMode escapeMode = EscapeMode.HTML;
 	private static ServiceInfrastructureService service; // static -> hack pour obtenir le service infrastructure initialisé par spring dans le context d'appels jsp
 
-	protected abstract T getInstance(ServiceInfrastructureService infraService, Integer noOfs, RegDate date) throws ServiceInfrastructureException;
+	protected abstract T getInstance(ServiceInfrastructureService infraService, Integer noOfs, RegDate date) throws InfrastructureException;
 
 	protected JspTagDatedInfra(Class<T> clazz) {
 		this.clazz = clazz;

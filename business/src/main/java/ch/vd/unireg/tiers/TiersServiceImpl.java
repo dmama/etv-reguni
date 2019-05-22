@@ -116,7 +116,7 @@ import ch.vd.unireg.interfaces.entreprise.data.EntrepriseHelper;
 import ch.vd.unireg.interfaces.entreprise.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
 import ch.vd.unireg.interfaces.entreprise.data.InscriptionRC;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
@@ -2354,7 +2354,7 @@ public class TiersServiceImpl implements TiersService {
 			final AdressesCiviles adresses = serviceCivilService.getAdresses(numeroIndividu, dateReference, false);
 			return isAdresseVaudoise(adresses.principale) || (!residencePrincipaleSeulement && hasAdresseVaudoise(adresses.secondaires));
 		}
-		catch (ServiceInfrastructureException e) {
+		catch (InfrastructureException e) {
 			// rien à faire...
 			LOGGER.warn("Impossible de déterminer la commune de l'adresse de domicile du tiers " + pp.getNumero(), e);
 		}
@@ -4330,7 +4330,7 @@ public class TiersServiceImpl implements TiersService {
                 oid = office.getNoColAdm();
             }
         }
-        catch (ServiceInfrastructureException e) {
+        catch (InfrastructureException e) {
             throw new RuntimeException("Impossible de déterminer l'office d'impôt de la commune avec le numéro Ofs = " + noOfsCommune, e);
         }
         return oid;
@@ -4630,7 +4630,7 @@ public class TiersServiceImpl implements TiersService {
 							    Commune c2 = serviceInfra.getCommuneByNumeroOfs(ofs2, o2.getDateFin());
 							    return c1.getNomOfficiel().compareTo(c2.getNomOfficiel());
 						    }
-						    catch (ServiceInfrastructureException e) {
+						    catch (InfrastructureException e) {
 							    LOGGER.warn("Impossible de trier les communes ofs=" + ofs1 + " et ofs=" + ofs2
 									                + " par nom, on trie sur le numéro Ofs à la place", e);
 							    return ofs1.compareTo(ofs2);
@@ -5168,7 +5168,7 @@ public class TiersServiceImpl implements TiersService {
                             raisonSociale.add(ligne3.trim());
                         }
                     }
-                } catch (ServiceInfrastructureException e) {
+                } catch (InfrastructureException e) {
                     throw new RuntimeException("Impossible d'accéder à la collectivité administrative " + ((CollectiviteAdministrative) referent).getNumeroCollectiviteAdministrative());
                 }
             } else {
@@ -5368,7 +5368,7 @@ public class TiersServiceImpl implements TiersService {
                     nom += ' ' + ligne3.trim();
                 }
             }
-        } catch (ServiceInfrastructureException e) {
+        } catch (InfrastructureException e) {
             throw new RuntimeException("Impossible d'accéder à la collectivité administrative " + collId);
         }
 
@@ -7420,7 +7420,7 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public String getLocalisationAsString(LocalizedDateRange localisation) throws ServiceInfrastructureException, ObjectNotFoundException {
+	public String getLocalisationAsString(LocalizedDateRange localisation) throws InfrastructureException, ObjectNotFoundException {
 
 		final String str;
 

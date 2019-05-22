@@ -22,11 +22,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.common.ControllerUtils;
 import ch.vd.unireg.common.Flash;
 import ch.vd.unireg.common.pagination.WebParamPagination;
 import ch.vd.unireg.extraction.ExtractionJob;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.mouvement.manager.MouvementMasseManager;
 import ch.vd.unireg.mouvement.view.MouvementDetailView;
 import ch.vd.unireg.mouvement.view.MouvementMasseCriteriaConsultationView;
@@ -222,7 +222,7 @@ public class MouvementMasseController {
 		return getCriteresRecherche(request, model, action, SEARCH_CRITERIA_CONSULTATION_CUSTOMIZER);
 	}
 
-	private MouvementMasseResultatRechercheView doFind(HttpServletRequest request, MouvementMasseCriteriaView view) throws ServiceInfrastructureException {
+	private MouvementMasseResultatRechercheView doFind(HttpServletRequest request, MouvementMasseCriteriaView view) throws InfrastructureException {
 		final WebParamPagination pagination = getParamPaginationFromRequest(request);
 		final MutableInt total = new MutableInt(0);
 		final Integer noCollAdmInitiatrice = MouvementDossierHelper.getNoCollAdmFiltree();

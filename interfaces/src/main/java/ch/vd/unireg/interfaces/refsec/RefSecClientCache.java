@@ -16,7 +16,7 @@ import ch.vd.unireg.cache.CacheStats;
 import ch.vd.unireg.cache.EhCacheStats;
 import ch.vd.unireg.cache.UniregCacheInterface;
 import ch.vd.unireg.cache.UniregCacheManager;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 import ch.vd.unireg.stats.StatsService;
 import ch.vd.unireg.wsclient.refsec.RefSecClient;
 import ch.vd.unireg.wsclient.refsec.RefSecClientException;
@@ -59,7 +59,7 @@ public class RefSecClientCache implements RefSecClient, UniregCacheInterface, In
 			throw new IllegalArgumentException("Le cache avec le nom [" + cacheName + "] est inconnu.");
 		}
 		if (statsService != null) {
-			statsService.registerCache(ServiceInfrastructureRaw.SERVICE_NAME, this);
+			statsService.registerCache(InfrastructureConnector.SERVICE_NAME, this);
 		}
 		uniregCacheManager.register(this);
 	}
@@ -67,7 +67,7 @@ public class RefSecClientCache implements RefSecClient, UniregCacheInterface, In
 	@Override
 	public void destroy() throws Exception {
 		if (statsService != null) {
-			statsService.unregisterCache(ServiceInfrastructureRaw.SERVICE_NAME);
+			statsService.unregisterCache(InfrastructureConnector.SERVICE_NAME);
 		}
 		uniregCacheManager.unregister(this);
 	}

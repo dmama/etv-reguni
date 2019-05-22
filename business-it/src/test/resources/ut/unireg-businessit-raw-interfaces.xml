@@ -6,7 +6,7 @@
 
 	<bean id="individuConnectorRCPers" class="ch.vd.unireg.interfaces.civil.rcpers.IndividuConnectorRCPers">
 		<property name="client" ref="rcPersClient" />
-		<property name="infraService" ref="serviceInfrastructureRaw"/>
+		<property name="infraConnector" ref="infrastructureConnector"/>
 	</bean>
 
 	<bean id="individuConnectorTracing" class="ch.vd.unireg.interfaces.civil.IndividuConnectorTracing">
@@ -31,7 +31,7 @@
 	<bean id="serviceEntrepriseRCEnt" class="ch.vd.unireg.interfaces.entreprise.rcent.ServiceEntrepriseRCEnt">
 		<constructor-arg ref="rcEntAdapter"/>
 		<constructor-arg ref="rcEntClientRaw"/>
-		<constructor-arg ref="serviceInfrastructureRaw"/>
+		<constructor-arg ref="infrastructureConnector"/>
 	</bean>
 
 	<bean id="serviceEntrepriseTracing" class="ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseTracing">
@@ -60,7 +60,7 @@
 
 	<bean id="serviceUpiRcPers" class="ch.vd.unireg.interfaces.upi.rcpers.ServiceUpiRCPers">
 		<property name="client" ref="rcPersClient"/>
-		<property name="infraService" ref="serviceInfrastructureRaw"/>
+		<property name="infraConnector" ref="infrastructureConnector"/>
 	</bean>
 
 	<bean id="serviceUpiTracing" class="ch.vd.unireg.interfaces.upi.ServiceUpiTracing">
@@ -73,35 +73,35 @@
 
 	<!-- Service infra -->
 
-	<bean id="serviceInfrastructureServiceHostRest" class="ch.vd.unireg.interfaces.infra.host.ServiceInfrastructureHostInterfacesRest">
+	<bean id="infrastructureConnectorHost" class="ch.vd.unireg.interfaces.infra.host.InfrastructureConnectorHostInterfaces">
 		<property name="client" ref="serviceInfrastructureClient" />
 	</bean>
 
-	<bean id="serviceInfrastructureFidor" class="ch.vd.unireg.interfaces.infra.fidor.ServiceInfrastructureFidor">
+	<bean id="infrastructureConnectorFidor" class="ch.vd.unireg.interfaces.infra.fidor.InfrastructureConnectorFidor">
 		<property name="fidorClient" ref="fidorClient" />
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="regimesFiscauxBlacklist" value=""/>
 	</bean>
 
-	<bean id="serviceInfrastructureMarshaller" class="ch.vd.unireg.interfaces.infra.ServiceInfrastructureMarshaller">
-		<property name="hostService" ref="serviceInfrastructureServiceHostRest" />
-		<property name="fidorService" ref="serviceInfrastructureFidor" />
+	<bean id="infrastructureConnectorMarshaller" class="ch.vd.unireg.interfaces.infra.InfrastructureConnectorMarshaller">
+		<property name="hostConnector" ref="infrastructureConnectorHost" />
+		<property name="fidorConnector" ref="infrastructureConnectorFidor" />
 	</bean>
 
-	<bean id="serviceInfrastructureTracing" class="ch.vd.unireg.interfaces.infra.ServiceInfrastructureTracing">
-		<property name="target" ref="serviceInfrastructureMarshaller" />
+	<bean id="infrastructureConnectorTracing" class="ch.vd.unireg.interfaces.infra.InfrastructureConnectorTracing">
+		<property name="target" ref="infrastructureConnectorMarshaller" />
 		<property name="statsService" ref="statsService" />
 	</bean>
 
-	<bean id="serviceInfrastructureCache" class="ch.vd.unireg.interfaces.infra.cache.ServiceInfrastructureCache">
-		<property name="target" ref="serviceInfrastructureTracing" />
+	<bean id="infrastructureConnectorCache" class="ch.vd.unireg.interfaces.infra.cache.InfrastructureConnectorCache">
+		<property name="target" ref="infrastructureConnectorTracing" />
 		<property name="cacheManager" ref="ehCacheManager" />
-		<property name="cacheName" value="serviceInfra" />
-		<property name="shortLivedCacheName" value="serviceInfraShortLived" />
+		<property name="cacheName" value="infraConnector" />
+		<property name="shortLivedCacheName" value="infraConnectorShortLived" />
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
 	</bean>
 
-	<alias alias="serviceInfrastructureRaw" name="serviceInfrastructureCache"/>
+	<alias alias="infrastructureConnector" name="infrastructureConnectorCache"/>
 
 </beans>

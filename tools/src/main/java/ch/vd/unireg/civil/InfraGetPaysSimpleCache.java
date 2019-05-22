@@ -11,8 +11,8 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
 import ch.vd.unireg.interfaces.infra.data.Canton;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
@@ -28,14 +28,14 @@ import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 
-public class ServiceInfraGetPaysSimpleCache implements ServiceInfrastructureRaw {
+public class InfraGetPaysSimpleCache implements InfrastructureConnector {
 
-	private final ServiceInfrastructureRaw target;
+	private final InfrastructureConnector target;
 	private final Map<KeyGetPaysByNoOfs, Pays> noOfsCache = Collections.synchronizedMap(new HashMap<KeyGetPaysByNoOfs, Pays>());
 	private final Map<KeyGetPaysByCodeIso, Pays> isoCache = Collections.synchronizedMap(new HashMap<KeyGetPaysByCodeIso, Pays>());
 	private final Map<KeyGetPaysHisto, List<Pays>> paysHistoCache = Collections.synchronizedMap(new HashMap<KeyGetPaysHisto, List<Pays>>());
 
-	public ServiceInfraGetPaysSimpleCache(ServiceInfrastructureRaw target) {
+	public InfraGetPaysSimpleCache(InfrastructureConnector target) {
 		this.target = target;
 	}
 
@@ -307,7 +307,7 @@ public class ServiceInfraGetPaysSimpleCache implements ServiceInfrastructureRaw 
 	}
 
 	@Override
-	public List<Pays> getPays() throws ServiceInfrastructureException {
+	public List<Pays> getPays() throws InfrastructureException {
 		return target.getPays();
 	}
 
@@ -334,13 +334,13 @@ public class ServiceInfraGetPaysSimpleCache implements ServiceInfrastructureRaw 
 	}
 
 	@Override
-	public List<Pays> getPaysHisto(int numeroOFS) throws ServiceInfrastructureException {
+	public List<Pays> getPaysHisto(int numeroOFS) throws InfrastructureException {
 		final KeyGetPaysHisto key = new KeyGetPaysHisto(numeroOFS);
 		return paysHistoCache.computeIfAbsent(key, k -> target.getPaysHisto(numeroOFS));
 	}
 
 	@Override
-	public Pays getPays(int numeroOFS, @Nullable RegDate date) throws ServiceInfrastructureException {
+	public Pays getPays(int numeroOFS, @Nullable RegDate date) throws InfrastructureException {
 		final KeyGetPaysByNoOfsAndDate lookupKey = new KeyGetPaysByNoOfsAndDate(numeroOFS, date);
 		Pays resultat = noOfsCache.get(lookupKey);
 		if (resultat == null) {
@@ -351,7 +351,7 @@ public class ServiceInfraGetPaysSimpleCache implements ServiceInfrastructureRaw 
 	}
 
 	@Override
-	public Pays getPays(@NotNull String codePays, @Nullable RegDate date) throws ServiceInfrastructureException {
+	public Pays getPays(@NotNull String codePays, @Nullable RegDate date) throws InfrastructureException {
 		final KeyGetPaysByCodeIsoAndDate lookupKey = new KeyGetPaysByCodeIsoAndDate(codePays, date);
 		Pays resultat = isoCache.get(lookupKey);
 		if (resultat == null) {
@@ -362,103 +362,103 @@ public class ServiceInfraGetPaysSimpleCache implements ServiceInfrastructureRaw 
 	}
 
 	@Override
-	public CollectiviteAdministrative getCollectivite(int noColAdm) throws ServiceInfrastructureException {
+	public CollectiviteAdministrative getCollectivite(int noColAdm) throws InfrastructureException {
 		return target.getCollectivite(noColAdm);
 	}
 
 	@Override
-	public List<Canton> getAllCantons() throws ServiceInfrastructureException {
+	public List<Canton> getAllCantons() throws InfrastructureException {
 		return target.getAllCantons();
 	}
 
 	@Override
-	public List<Commune> getListeCommunes(Canton canton) throws ServiceInfrastructureException {
+	public List<Commune> getListeCommunes(Canton canton) throws InfrastructureException {
 		return target.getListeCommunes(canton);
 	}
 
 	@Override
-	public List<Commune> getCommunesVD() throws ServiceInfrastructureException {
+	public List<Commune> getCommunesVD() throws InfrastructureException {
 		return target.getCommunesVD();
 	}
 
 	@Override
-	public List<Commune> getListeCommunesFaitieres() throws ServiceInfrastructureException {
+	public List<Commune> getListeCommunesFaitieres() throws InfrastructureException {
 		return target.getListeCommunesFaitieres();
 	}
 
 	@Override
-	public List<Commune> getCommunes() throws ServiceInfrastructureException {
+	public List<Commune> getCommunes() throws InfrastructureException {
 		return target.getCommunes();
 	}
 
 	@Override
-	public List<Localite> getLocalites() throws ServiceInfrastructureException {
+	public List<Localite> getLocalites() throws InfrastructureException {
 		return target.getLocalites();
 	}
 
 	@Override
-	public List<Localite> getLocalitesByONRP(int onrp) throws ServiceInfrastructureException {
+	public List<Localite> getLocalitesByONRP(int onrp) throws InfrastructureException {
 		return target.getLocalitesByONRP(onrp);
 	}
 
 	@Override
-	public Localite getLocaliteByONRP(int onrp, RegDate dateReference) throws ServiceInfrastructureException {
+	public Localite getLocaliteByONRP(int onrp, RegDate dateReference) throws InfrastructureException {
 		return target.getLocaliteByONRP(onrp, dateReference);
 	}
 
 	@Override
-	public List<Rue> getRues(Localite localite) throws ServiceInfrastructureException {
+	public List<Rue> getRues(Localite localite) throws InfrastructureException {
 		return target.getRues(localite);
 	}
 
 	@Override
-	public List<Rue> getRuesHisto(int numero) throws ServiceInfrastructureException {
+	public List<Rue> getRuesHisto(int numero) throws InfrastructureException {
 		return target.getRuesHisto(numero);
 	}
 
 	@Override
-	public Rue getRueByNumero(int numero, RegDate date) throws ServiceInfrastructureException {
+	public Rue getRueByNumero(int numero, RegDate date) throws InfrastructureException {
 		return target.getRueByNumero(numero, date);
 	}
 
 	@Override
-	public List<Commune> getCommuneHistoByNumeroOfs(int noOfsCommune) throws ServiceInfrastructureException {
+	public List<Commune> getCommuneHistoByNumeroOfs(int noOfsCommune) throws InfrastructureException {
 		return target.getCommuneHistoByNumeroOfs(noOfsCommune);
 	}
 
 	@Override
-	public Integer getNoOfsCommuneByEgid(int egid, RegDate date) throws ServiceInfrastructureException {
+	public Integer getNoOfsCommuneByEgid(int egid, RegDate date) throws InfrastructureException {
 		return target.getNoOfsCommuneByEgid(egid, date);
 	}
 
 	@Override
-	public Commune getCommuneByLocalite(Localite localite) throws ServiceInfrastructureException {
+	public Commune getCommuneByLocalite(Localite localite) throws InfrastructureException {
 		return target.getCommuneByLocalite(localite);
 	}
 
 	@Nullable
 	@Override
-	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, boolean includeFaitieres, boolean includeFractions, @Nullable RegDate date) throws ServiceInfrastructureException {
+	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, boolean includeFaitieres, boolean includeFractions, @Nullable RegDate date) throws InfrastructureException {
 		return target.findCommuneByNomOfficiel(nomOfficiel, includeFaitieres, includeFractions, date);
 	}
 
 	@Override
-	public List<OfficeImpot> getOfficesImpot() throws ServiceInfrastructureException {
+	public List<OfficeImpot> getOfficesImpot() throws InfrastructureException {
 		return target.getOfficesImpot();
 	}
 
 	@Override
-	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws ServiceInfrastructureException {
+	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws InfrastructureException {
 		return target.getCollectivitesAdministratives();
 	}
 
 	@Override
-	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<TypeCollectivite> typesCollectivite) throws ServiceInfrastructureException {
+	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<TypeCollectivite> typesCollectivite) throws InfrastructureException {
 		return target.getCollectivitesAdministratives(typesCollectivite);
 	}
 
 	@Override
-	public List<Localite> getLocalitesByNPA(int npa, RegDate dateReference) throws ServiceInfrastructureException {
+	public List<Localite> getLocalitesByNPA(int npa, RegDate dateReference) throws InfrastructureException {
 		return target.getLocalitesByNPA(npa, dateReference);
 	}
 
@@ -503,7 +503,7 @@ public class ServiceInfraGetPaysSimpleCache implements ServiceInfrastructureRaw 
 	}
 
 	@Override
-	public void ping() throws ServiceInfrastructureException {
+	public void ping() throws InfrastructureException {
 		target.ping();
 	}
 }

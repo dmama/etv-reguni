@@ -15,7 +15,7 @@ import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.upi.ServiceUpiException;
 import ch.vd.unireg.interfaces.upi.ServiceUpiRaw;
@@ -26,14 +26,14 @@ import ch.vd.unireg.wsclient.rcpers.RcPersClient;
 public class ServiceUpiRCPers implements ServiceUpiRaw {
 
 	private RcPersClient client;
-	private ServiceInfrastructureRaw infraService;
+	private InfrastructureConnector infraConnector;
 
 	public void setClient(RcPersClient client) {
 		this.client = client;
 	}
 
-	public void setInfraService(ServiceInfrastructureRaw infraService) {
-		this.infraService = infraService;
+	public void setInfraConnector(InfrastructureConnector infraConnector) {
+		this.infraConnector = infraConnector;
 	}
 
 	@Override
@@ -53,7 +53,7 @@ public class ServiceUpiRCPers implements ServiceUpiRaw {
 				return null;
 			}
 			else if (info.getAccepted() != null) {
-				return buildInfo(info.getAccepted(), infraService);
+				return buildInfo(info.getAccepted(), infraConnector);
 			}
 			else {
 				throw new ServiceUpiException("La réponse ne contient ni le champ 'accepted' ni le champ 'refused'...");
@@ -64,7 +64,7 @@ public class ServiceUpiRCPers implements ServiceUpiRaw {
 		}
 	}
 
-	private static UpiPersonInfo buildInfo(GetInfoPersonResponse.Accepted data, ServiceInfrastructureRaw infraService) {
+	private static UpiPersonInfo buildInfo(GetInfoPersonResponse.Accepted data, InfrastructureConnector infraService) {
 		final String avs = EchHelper.avs13FromEch(data.getLatestAhvvn());
 		final ValuesStoredUnderAhvvn stored = data.getValuesStoredUnderAhvvn();
 		final PersonInformation person = stored.getPerson();
@@ -94,28 +94,28 @@ public class ServiceUpiRCPers implements ServiceUpiRaw {
 
 		private final Pays pays;
 
-		public static NationaliteUpi get(PersonInformation.Nationality nationality, ServiceInfrastructureRaw infraService) {
+		public static NationaliteUpi get(PersonInformation.Nationality nationality, InfrastructureConnector infraService) {
 			if (nationality == null) {
 				return null;
 			}
 			return new NationaliteUpi(nationality, infraService);
 		}
 
-		private NationaliteUpi(PersonInformation.Nationality nat, ServiceInfrastructureRaw infraService) {
+		private NationaliteUpi(PersonInformation.Nationality nat, InfrastructureConnector infraService) {
 			this.pays = initPays(nat, infraService);
 		}
 
-		private static Pays initPays(PersonInformation.Nationality nationality, ServiceInfrastructureRaw infraService) {
+		private static Pays initPays(PersonInformation.Nationality nationality, InfrastructureConnector infraService) {
 			final Pays p;
 			final String status = nationality.getNationalityStatus();
 			switch (status) {
 			case "0":
 				// inconnu
-				p = infraService.getPays(ServiceInfrastructureRaw.noPaysInconnu, null);
+				p = infraService.getPays(InfrastructureConnector.noPaysInconnu, null);
 				break;
 			case "1":
 				// apatride
-				p = infraService.getPays(ServiceInfrastructureRaw.noPaysApatride, null);
+				p = infraService.getPays(InfrastructureConnector.noPaysApatride, null);
 				break;
 			case "2":
 				// ok

@@ -2,7 +2,7 @@ package ch.vd.unireg.tiers.manager;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.mouvement.MouvementDossier;
 import ch.vd.unireg.mouvement.manager.AbstractMouvementManagerImpl;
 import ch.vd.unireg.mouvement.view.MouvementDetailView;
@@ -20,11 +20,11 @@ public class MouvementVisuManagerImpl extends AbstractMouvementManagerImpl imple
 	 *
 	 * @param id
 	 * @return un objet MouvementDetailView
-	 * @throws ServiceInfrastructureException
+	 * @throws InfrastructureException
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public MouvementDetailView get(Long id) throws ServiceInfrastructureException {
+	public MouvementDetailView get(Long id) throws InfrastructureException {
 		final MouvementDossier mvt = getMouvementDossierDAO().get(id);
 		return getView(mvt, false);
 	}

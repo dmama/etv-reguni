@@ -16,7 +16,7 @@ import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.declaration.DeclarationImpotSource;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.editique.LegacyEditiqueHelper;
-import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
+import ch.vd.unireg.interfaces.infra.mock.DefaultMockInfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.type.CategorieImpotSource;
@@ -38,7 +38,7 @@ public class ImpressionListeRecapHelperTest extends BusinessTest {
 		final LegacyEditiqueHelper editiqueHelper = getBean(LegacyEditiqueHelper.class, "legacyEditiqueHelper");
 		impressionLRHelper = new ImpressionListeRecapHelperImpl();
 		impressionLRHelper.setLegacyEditiqueHelper(editiqueHelper);
-		serviceInfra.setUp(new DefaultMockServiceInfrastructureService());
+		serviceInfra.setUp(new DefaultMockInfrastructureConnector());
 	}
 
 	@Test

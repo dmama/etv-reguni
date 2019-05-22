@@ -4,19 +4,19 @@ package ch.vd.unireg.interfaces.infra;
 /**
  * Wrapper autour d'une exception venant du host de manière à la rendre 'run-time'.
  */
-public class ServiceInfrastructureException extends RuntimeException {
+public class InfrastructureException extends RuntimeException {
 
 	private static final long serialVersionUID = 4696534872517976997L;
 
-	public ServiceInfrastructureException(Throwable e) {
+	public InfrastructureException(Throwable e) {
 		super(e);
 	}
 
-	public ServiceInfrastructureException(String message) {
+	public InfrastructureException(String message) {
 		super(message);
 	}
 
-	public ServiceInfrastructureException(String string, Throwable e) {
+	public InfrastructureException(String string, Throwable e) {
 		super(string, e);
 	}
 }

@@ -35,7 +35,7 @@ import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
 import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockEntrepriseCivile;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
-import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
+import ch.vd.unireg.interfaces.infra.mock.DefaultMockInfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -140,7 +140,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		assujettissementService.setValidationService(new ValidationServiceImpl());
 		assujettissementService.afterPropertiesSet();
 
-		serviceInfra = new ServiceInfrastructureImpl(new DefaultMockServiceInfrastructureService(), tiersDAO);
+		serviceInfra = new ServiceInfrastructureImpl(new DefaultMockInfrastructureConnector(), tiersDAO);
 
 		regimeFiscalService = new RegimeFiscalServiceImpl();
 		regimeFiscalService.setServiceInfra(serviceInfra);

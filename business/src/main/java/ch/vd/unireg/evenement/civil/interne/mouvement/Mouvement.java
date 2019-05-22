@@ -3,11 +3,6 @@ package ch.vd.unireg.evenement.civil.interne.mouvement;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.data.EtatCivil;
-import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.common.DonneesCivilesException;
 import ch.vd.unireg.common.EtatCivilHelper;
 import ch.vd.unireg.evenement.civil.EvenementCivilErreurCollector;
@@ -20,6 +15,11 @@ import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterneAvecAdresses;
 import ch.vd.unireg.evenement.civil.interne.arrivee.Arrivee;
 import ch.vd.unireg.evenement.civil.interne.depart.Depart;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.interfaces.civil.data.EtatCivil;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.common.Adresse;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.model.AdressesCiviles;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
 
@@ -55,7 +55,7 @@ public abstract class Mouvement extends EvenementCivilInterneAvecAdresses {
 		try {
 			return context.getServiceInfra().getCommuneByAdresse(adresse, date);
 		}
-		catch (ServiceInfrastructureException e) {
+		catch (InfrastructureException e) {
 			throw new EvenementCivilException(e);
 		}
 	}

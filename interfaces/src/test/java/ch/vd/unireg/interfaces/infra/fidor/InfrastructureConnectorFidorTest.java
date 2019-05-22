@@ -17,19 +17,19 @@ import static ch.vd.unireg.common.WithoutSpringTest.assertEmpty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class ServiceInfrastructureFidorTest {
+public class InfrastructureConnectorFidorTest {
 
 	@Test
 	public void testParseRegimesFiscaux() {
-		assertEmpty(ServiceInfrastructureFidor.parseRegimesFiscaux(""));
-		assertEmpty(ServiceInfrastructureFidor.parseRegimesFiscaux(" "));
-		assertEmpty(ServiceInfrastructureFidor.parseRegimesFiscaux(","));
-		assertEquals(Collections.singleton("703"), ServiceInfrastructureFidor.parseRegimesFiscaux("703"));
-		assertEquals(Collections.singleton("703"), ServiceInfrastructureFidor.parseRegimesFiscaux("703 "));
-		assertEquals(Collections.singleton("703"), ServiceInfrastructureFidor.parseRegimesFiscaux("703,"));
-		assertEquals(new HashSet<>(Arrays.asList("703", "1000")), ServiceInfrastructureFidor.parseRegimesFiscaux("703,1000"));
-		assertEquals(new HashSet<>(Arrays.asList("703", "1000")), ServiceInfrastructureFidor.parseRegimesFiscaux("703, 1000"));
-		assertEquals(new HashSet<>(Arrays.asList("703", "1000")), ServiceInfrastructureFidor.parseRegimesFiscaux("703, 1000 "));
+		assertEmpty(InfrastructureConnectorFidor.parseRegimesFiscaux(""));
+		assertEmpty(InfrastructureConnectorFidor.parseRegimesFiscaux(" "));
+		assertEmpty(InfrastructureConnectorFidor.parseRegimesFiscaux(","));
+		assertEquals(Collections.singleton("703"), InfrastructureConnectorFidor.parseRegimesFiscaux("703"));
+		assertEquals(Collections.singleton("703"), InfrastructureConnectorFidor.parseRegimesFiscaux("703 "));
+		assertEquals(Collections.singleton("703"), InfrastructureConnectorFidor.parseRegimesFiscaux("703,"));
+		assertEquals(new HashSet<>(Arrays.asList("703", "1000")), InfrastructureConnectorFidor.parseRegimesFiscaux("703,1000"));
+		assertEquals(new HashSet<>(Arrays.asList("703", "1000")), InfrastructureConnectorFidor.parseRegimesFiscaux("703, 1000"));
+		assertEquals(new HashSet<>(Arrays.asList("703", "1000")), InfrastructureConnectorFidor.parseRegimesFiscaux("703, 1000 "));
 	}
 
 	/**
@@ -41,7 +41,7 @@ public class ServiceInfrastructureFidorTest {
 		final FidorClient client = Mockito.mock(FidorClient.class);
 		Mockito.when(client.getRegimesFiscaux()).thenReturn(Arrays.asList(newRegimeFiscal("70"),newRegimeFiscal("703"), newRegimeFiscal("1000")));
 
-		final ServiceInfrastructureFidor service = new ServiceInfrastructureFidor();
+		final InfrastructureConnectorFidor service = new InfrastructureConnectorFidor();
 		service.setFidorClient(client);
 		service.setRegimesFiscauxBlacklist("703");
 
@@ -62,7 +62,7 @@ public class ServiceInfrastructureFidorTest {
 		final FidorClient client = Mockito.mock(FidorClient.class);
 		Mockito.when(client.getRegimesFiscaux()).thenReturn(Arrays.asList(newRegimeFiscal("70"),newRegimeFiscal("703"), newRegimeFiscal("1000")));
 
-		final ServiceInfrastructureFidor service = new ServiceInfrastructureFidor();
+		final InfrastructureConnectorFidor service = new InfrastructureConnectorFidor();
 		service.setFidorClient(client);
 		service.setRegimesFiscauxBlacklist(""); // vide
 

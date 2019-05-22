@@ -30,8 +30,8 @@ import ch.vd.unireg.cache.KeyDumpableCache;
 import ch.vd.unireg.cache.KeyValueDumpableCache;
 import ch.vd.unireg.cache.UniregCacheInterface;
 import ch.vd.unireg.cache.UniregCacheManager;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
 import ch.vd.unireg.interfaces.infra.data.Canton;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
@@ -50,20 +50,20 @@ import ch.vd.unireg.stats.StatsService;
 import ch.vd.unireg.utils.LogLevel;
 
 @SuppressWarnings({"SimplifiableIfStatement"})
-public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, UniregCacheInterface, KeyDumpableCache, KeyValueDumpableCache, InitializingBean, DisposableBean {
+public class InfrastructureConnectorCache implements InfrastructureConnector, UniregCacheInterface, KeyDumpableCache, KeyValueDumpableCache, InitializingBean, DisposableBean {
 
-	//private static final Logger LOGGER = LoggerFactory.getLogger(ServiceInfrastructureCache.class);
+	//private static final Logger LOGGER = LoggerFactory.getLogger(InfrastructureConnectorCache.class);
 
 	private CacheManager cacheManager;
 	private String cacheName;
 	private String shortLivedCacheName;
-	private ServiceInfrastructureRaw target;
+	private InfrastructureConnector target;
 	private Ehcache cache;
 	private Ehcache shortLivedCache;
 	private UniregCacheManager uniregCacheManager;
 	private StatsService statsService;
 
-	public void setTarget(ServiceInfrastructureRaw target) {
+	public void setTarget(InfrastructureConnector target) {
 		this.target = target;
 	}
 
@@ -110,7 +110,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 	public void afterPropertiesSet() throws Exception {
 		initCache();
 		if (statsService != null) {
-			statsService.registerCache(ServiceInfrastructureRaw.SERVICE_NAME, this);
+			statsService.registerCache(InfrastructureConnector.SERVICE_NAME, this);
 		}
 		uniregCacheManager.register(this);
 	}
@@ -118,7 +118,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 	@Override
 	public void destroy() throws Exception {
 		if (statsService != null) {
-			statsService.unregisterCache(ServiceInfrastructureRaw.SERVICE_NAME);
+			statsService.unregisterCache(InfrastructureConnector.SERVICE_NAME);
 		}
 		uniregCacheManager.unregister(this);
 	}
@@ -147,7 +147,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<Canton> getAllCantons() throws ServiceInfrastructureException {
+	public List<Canton> getAllCantons() throws InfrastructureException {
 		final List<Canton> resultat;
 
 		final KeyGetAllCantons key = new KeyGetAllCantons();
@@ -199,7 +199,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 	}
 
 	@Override
-	public CollectiviteAdministrative getCollectivite(int noColAdm) throws ServiceInfrastructureException {
+	public CollectiviteAdministrative getCollectivite(int noColAdm) throws InfrastructureException {
 		final CollectiviteAdministrative resultat;
 
 		final KeyGetCollectivite key = new KeyGetCollectivite(noColAdm);
@@ -239,7 +239,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws ServiceInfrastructureException {
+	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws InfrastructureException {
 		final List<CollectiviteAdministrative> resultat;
 
 		final KeyGetCollectivitesAdministratives key = new KeyGetCollectivitesAdministratives();
@@ -288,7 +288,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<TypeCollectivite> typesCollectivite) throws ServiceInfrastructureException {
+	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<TypeCollectivite> typesCollectivite) throws InfrastructureException {
 		final List<CollectiviteAdministrative> resultat;
 
 		final KeyGetCollectivitesAdministrativesByTypes key = new KeyGetCollectivitesAdministrativesByTypes(typesCollectivite);
@@ -346,7 +346,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 	}
 
 	@Override
-	public Commune getCommuneByLocalite(Localite localite) throws ServiceInfrastructureException {
+	public Commune getCommuneByLocalite(Localite localite) throws InfrastructureException {
 		final Commune resultat;
 
 		final KeyGetCommuneByLocalite key = new KeyGetCommuneByLocalite(localite);
@@ -407,7 +407,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 	@Nullable
 	@Override
-	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, boolean includeFaitieres, boolean includeFractions, @Nullable RegDate date) throws ServiceInfrastructureException {
+	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, boolean includeFaitieres, boolean includeFractions, @Nullable RegDate date) throws InfrastructureException {
 
 		final Commune resultat;
 
@@ -455,7 +455,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 	@SuppressWarnings({"unchecked"})
 	@Override
-	public List<Commune> getCommuneHistoByNumeroOfs(int noOfsCommune) throws ServiceInfrastructureException {
+	public List<Commune> getCommuneHistoByNumeroOfs(int noOfsCommune) throws InfrastructureException {
 		final List<Commune> resultat;
 
 		final KeyGetCommuneHistoByNumeroOfs key = new KeyGetCommuneHistoByNumeroOfs(noOfsCommune);
@@ -504,7 +504,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 	}
 
 	@Override
-	public Integer getNoOfsCommuneByEgid(int egid, RegDate date) throws ServiceInfrastructureException {
+	public Integer getNoOfsCommuneByEgid(int egid, RegDate date) throws InfrastructureException {
 		final Integer resultat;
 
 		final KeyGetCommunesByEgid key = new KeyGetCommunesByEgid(egid, date);
@@ -544,7 +544,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<Commune> getCommunes() throws ServiceInfrastructureException {
+	public List<Commune> getCommunes() throws InfrastructureException {
 		final List<Commune> resultat;
 
 		final KeyGetCommunes key = new KeyGetCommunes();
@@ -597,7 +597,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<Commune> getListeCommunes(Canton canton) throws ServiceInfrastructureException {
+	public List<Commune> getListeCommunes(Canton canton) throws InfrastructureException {
 		final List<Commune> resultat;
 
 		final KeyGetListeCommunes key = new KeyGetListeCommunes(canton);
@@ -638,7 +638,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<Commune> getCommunesVD() throws ServiceInfrastructureException {
+	public List<Commune> getCommunesVD() throws InfrastructureException {
 		final List<Commune> resultat;
 
 		final KeyGetCommunesVD key = new KeyGetCommunesVD();
@@ -678,7 +678,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Commune> getListeCommunesFaitieres() throws ServiceInfrastructureException {
+	public List<Commune> getListeCommunesFaitieres() throws InfrastructureException {
 		final List<Commune> resultat;
 
 		final KeyGetListeCommunesFaitieres key = new KeyGetListeCommunesFaitieres();
@@ -725,7 +725,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 	}
 
 	@Override
-	public List<Localite> getLocalitesByONRP(int onrp) throws ServiceInfrastructureException {
+	public List<Localite> getLocalitesByONRP(int onrp) throws InfrastructureException {
 		final List<Localite> resultat;
 
 		final KeyGetLocalitesByONRP key = new KeyGetLocalitesByONRP(onrp);
@@ -768,7 +768,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 	}
 
 	@Override
-	public Localite getLocaliteByONRP(int onrp, RegDate dateReference) throws ServiceInfrastructureException {
+	public Localite getLocaliteByONRP(int onrp, RegDate dateReference) throws InfrastructureException {
 		final Localite resultat;
 
 		final KeyGetLocaliteByONRP key = new KeyGetLocaliteByONRP(onrp, dateReference);
@@ -808,7 +808,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<Localite> getLocalites() throws ServiceInfrastructureException {
+	public List<Localite> getLocalites() throws InfrastructureException {
 		final List<Localite> resultat;
 
 		final KeyGetLocalites key = new KeyGetLocalites();
@@ -848,7 +848,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<OfficeImpot> getOfficesImpot() throws ServiceInfrastructureException {
+	public List<OfficeImpot> getOfficesImpot() throws InfrastructureException {
 		final List<OfficeImpot> resultat;
 
 		final KeyGetOfficesImpot key = new KeyGetOfficesImpot();
@@ -888,7 +888,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<Pays> getPays() throws ServiceInfrastructureException {
+	public List<Pays> getPays() throws InfrastructureException {
 		final List<Pays> resultat;
 
 		final KeyGetPays key = new KeyGetPays();
@@ -934,7 +934,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 	}
 
 	@Override
-	public List<Pays> getPaysHisto(int numeroOFS) throws ServiceInfrastructureException {
+	public List<Pays> getPaysHisto(int numeroOFS) throws InfrastructureException {
 		final List<Pays> resultat;
 
 		final KeyGetPaysHisto key = new KeyGetPaysHisto(numeroOFS);
@@ -1050,7 +1050,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		private final RegDate date;
 
 		protected KeyGetPaysByDate(RegDate date) {
-			// la valeur nulle dans la recherche signifie "date du jour" (c'est un comportement connu du service infrastructure),
+			// la valeur nulle dans la recherche signifie "date du jour" (c'est un comportement connu du connecteur d'infrastructure),
 			// mais si on conserve "null" ici, et que la date de fin du pays est dans le futur, alors le cache ne sera pas efficace
 			// car "null" n'est dans aucun intervalle de temps fermé à droite.
 			this.date = (date != null ? date : RegDate.get());
@@ -1127,7 +1127,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 	}
 
 	@Override
-	public Pays getPays(int numeroOFS, @Nullable RegDate date) throws ServiceInfrastructureException {
+	public Pays getPays(int numeroOFS, @Nullable RegDate date) throws InfrastructureException {
 		final Pays resultat;
 
 		final KeyGetPaysByNoOfsAndDate lookupKey = new KeyGetPaysByNoOfsAndDate(numeroOFS, date);
@@ -1239,7 +1239,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 	}
 
 	@Override
-	public Pays getPays(@NotNull String codePays, @Nullable RegDate date) throws ServiceInfrastructureException {
+	public Pays getPays(@NotNull String codePays, @Nullable RegDate date) throws InfrastructureException {
 		final Pays resultat;
 		final KeyGetPaysByCodeIsoAndDate lookupKey = new KeyGetPaysByCodeIsoAndDate(codePays, date);
 		final Element element = cache.get(lookupKey);
@@ -1292,7 +1292,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 	}
 
 	@Override
-	public Rue getRueByNumero(int numero, RegDate date) throws ServiceInfrastructureException {
+	public Rue getRueByNumero(int numero, RegDate date) throws InfrastructureException {
 		final Rue resultat;
 
 		final KeyGetRueByNumeroEtDate key = new KeyGetRueByNumeroEtDate(numero, date);
@@ -1339,7 +1339,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Rue> getRuesHisto(int numero) throws ServiceInfrastructureException {
+	public List<Rue> getRuesHisto(int numero) throws InfrastructureException {
 		final List<Rue> resultat;
 
 		final KeyGetRuesHisto key = new KeyGetRuesHisto(numero);
@@ -1391,7 +1391,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<Rue> getRues(Localite localite) throws ServiceInfrastructureException {
+	public List<Rue> getRues(Localite localite) throws InfrastructureException {
 		final List<Rue> resultat;
 
 		final KeyGetRueByLocalite key = new KeyGetRueByLocalite(localite);
@@ -1412,7 +1412,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 	 */
 	@Override
 	public String getDescription() {
-		return "service infrastructure";
+		return "connecteur d'infrastructure";
 	}
 
 	/**
@@ -1436,7 +1436,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Localite> getLocalitesByNPA(int npa, RegDate dateReference) throws ServiceInfrastructureException {
+	public List<Localite> getLocalitesByNPA(int npa, RegDate dateReference) throws InfrastructureException {
 		return target.getLocalitesByNPA(npa, dateReference);
 	}
 
@@ -1477,7 +1477,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 	}
 
 	@Override
-	public Logiciel getLogiciel(Long idLogiciel) throws ServiceInfrastructureException {
+	public Logiciel getLogiciel(Long idLogiciel) throws InfrastructureException {
 		final Logiciel resultat;
 
 		final KeyGetLogiciel key = new KeyGetLogiciel(idLogiciel);
@@ -1513,7 +1513,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 	@Override
 	@SuppressWarnings({"unchecked"})
-	public List<Logiciel> getTousLesLogiciels() throws ServiceInfrastructureException {
+	public List<Logiciel> getTousLesLogiciels() throws InfrastructureException {
 		final List<Logiciel> resultat;
 
 		final KeyGetTousLesLogiciels key = new KeyGetTousLesLogiciels();
@@ -1740,7 +1740,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 	}
 
 	@Override
-	public void ping() throws ServiceInfrastructureException {
+	public void ping() throws InfrastructureException {
 		// on ne cache bien-sûr pas cet appel...
 		target.ping();
 	}

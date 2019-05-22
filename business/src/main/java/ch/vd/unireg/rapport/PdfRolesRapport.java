@@ -24,7 +24,7 @@ import ch.vd.unireg.common.CsvHelper;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.common.TemporaryFile;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.unireg.interfaces.infra.data.Pays;
@@ -107,7 +107,7 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 		try {
 			return infraService.getOfficeImpot(noColOID);
 		}
-		catch (ServiceInfrastructureException e) {
+		catch (InfrastructureException e) {
 			return null;
 		}
 	}
@@ -116,7 +116,7 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 		try {
 			return infraService.getCommuneByNumeroOfs(noOfsCommune, date);
 		}
-		catch (ServiceInfrastructureException e) {
+		catch (InfrastructureException e) {
 			return null;
 		}
 	}
@@ -125,7 +125,7 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 		try {
 			return infraService.getListeCommunesByOID(oid);
 		}
-		catch (ServiceInfrastructureException e) {
+		catch (InfrastructureException e) {
 			return null;
 		}
 	}

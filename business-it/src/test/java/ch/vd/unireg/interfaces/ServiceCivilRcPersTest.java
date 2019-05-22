@@ -23,7 +23,7 @@ import ch.vd.unireg.interfaces.civil.data.PermisList;
 import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.service.ServiceCivilImpl;
@@ -168,12 +168,12 @@ public class ServiceCivilRcPersTest extends BusinessItTest {
 		final Origine origine0 = originesList.get(0);
 		assertNotNull(origine0);
 		assertEquals("La Praz", origine0.getNomLieu());
-		assertEquals(ServiceInfrastructureRaw.SIGLE_CANTON_VD, origine0.getSigleCanton());
+		assertEquals(InfrastructureConnector.SIGLE_CANTON_VD, origine0.getSigleCanton());
 
 		final Origine origine1 = originesList.get(1);
 		assertNotNull(origine1);
 		assertEquals("Yvorne", origine1.getNomLieu());
-		assertEquals(ServiceInfrastructureRaw.SIGLE_CANTON_VD, origine1.getSigleCanton());
+		assertEquals(InfrastructureConnector.SIGLE_CANTON_VD, origine1.getSigleCanton());
 
 		// On vérifie la nationalité
 		final Collection<Nationalite> nationalites = individu.getNationalites();

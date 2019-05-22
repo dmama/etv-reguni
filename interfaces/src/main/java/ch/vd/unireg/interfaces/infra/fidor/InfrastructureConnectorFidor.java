@@ -36,8 +36,8 @@ import ch.vd.unireg.cache.CacheStats;
 import ch.vd.unireg.cache.SimpleCacheStats;
 import ch.vd.unireg.cache.UniregCacheInterface;
 import ch.vd.unireg.cache.UniregCacheManager;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
 import ch.vd.unireg.interfaces.infra.data.Canton;
 import ch.vd.unireg.interfaces.infra.data.CantonImpl;
@@ -70,11 +70,11 @@ import ch.vd.unireg.webservice.fidor.v5.FidorClientException;
 import static ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeImpl.SIGLE_OID;
 
 /**
- * Implémentation Fidor du service d'infrastructure [UNIREG-2187].
+ * Implémentation Fidor du connecteur d'infrastructure [UNIREG-2187].
  */
-public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, UniregCacheInterface, InitializingBean {
+public class InfrastructureConnectorFidor implements InfrastructureConnector, UniregCacheInterface, InitializingBean {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ServiceInfrastructureFidor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(InfrastructureConnectorFidor.class);
 
 	/**
 	 * Cache des URLs de Fidor
@@ -89,12 +89,12 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 	private UniregCacheManager uniregCacheManager;
 
 	/**
-	 * Implémentation cachée du service d'infrastructure, utilisée notamment pour résoudre les rues et les localités sur les adresses.
+	 * Implémentation cachée du connecteur d'infrastructure, utilisée notamment pour résoudre les rues et les localités sur les adresses.
 	 * <p/>
-	 * Attention : l'utilisation irréfléchie de ce service peut provoquer des récursions infinies !
+	 * Attention : l'utilisation irréfléchie de ce connecteur peut provoquer des récursions infinies !
 	 */
 	@Nullable
-	private ServiceInfrastructureRaw cachedServiceInfra;
+	private InfrastructureConnector cachedInfraConnector;
 
 	/**
 	 * [FISCPROJ-92] Liste des régimes fiscaux qu'il faut ignorer et qui ne doivent pas apparaître dans Unireg.
@@ -109,8 +109,8 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 		this.uniregCacheManager = uniregCacheManager;
 	}
 
-	public void setCachedServiceInfra(@Nullable ServiceInfrastructureRaw cachedServiceInfra) {
-		this.cachedServiceInfra = cachedServiceInfra;
+	public void setCachedInfraConnector(@Nullable InfrastructureConnector cachedInfraConnector) {
+		this.cachedInfraConnector = cachedInfraConnector;
 	}
 
 	public void setRegimesFiscauxBlacklist(String blackList) {
@@ -152,7 +152,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 	}
 
 	@Override
-	public List<Pays> getPays() throws ServiceInfrastructureException {
+	public List<Pays> getPays() throws InfrastructureException {
 		try {
 			final List<Country> list = fidorClient.getTousLesPays();
 			if (list == null || list.isEmpty()) {
@@ -167,12 +167,12 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 			}
 		}
 		catch (FidorClientException e) {
-			throw new ServiceInfrastructureException(e);
+			throw new InfrastructureException(e);
 		}
 	}
 
 	@Override
-	public List<Pays> getPaysHisto(int numeroOFS) throws ServiceInfrastructureException {
+	public List<Pays> getPaysHisto(int numeroOFS) throws InfrastructureException {
 		try {
 			final List<Country> list = fidorClient.getPaysHisto(numeroOFS);
 			if (list == null || list.isEmpty()) {
@@ -188,45 +188,45 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 			}
 		}
 		catch (FidorClientException e) {
-			throw new ServiceInfrastructureException(e);
+			throw new InfrastructureException(e);
 		}
 	}
 
 	@Override
-	public Pays getPays(int numeroOFS, @Nullable RegDate date) throws ServiceInfrastructureException {
+	public Pays getPays(int numeroOFS, @Nullable RegDate date) throws InfrastructureException {
 		try {
 			final Country p = fidorClient.getPaysDetail(numeroOFS, date);
 			return PaysImpl.get(p);
 		}
 		catch (FidorClientException e) {
-			throw new ServiceInfrastructureException(e);
+			throw new InfrastructureException(e);
 		}
 	}
 
 	@Override
-	public Pays getPays(@NotNull String codePays, @Nullable RegDate date) throws ServiceInfrastructureException {
+	public Pays getPays(@NotNull String codePays, @Nullable RegDate date) throws InfrastructureException {
 		try {
 			final Country p = fidorClient.getPaysDetail(codePays, date);
 			return PaysImpl.get(p);
 		}
 		catch (FidorClientException e) {
-			throw new ServiceInfrastructureException(e);
+			throw new InfrastructureException(e);
 		}
 	}
 
 	@Override
-	public CollectiviteAdministrative getCollectivite(int noColAdm) throws ServiceInfrastructureException {
+	public CollectiviteAdministrative getCollectivite(int noColAdm) throws InfrastructureException {
 		try {
 			final ch.vd.fidor.xml.colladm.v1.CollectiviteAdministrative collAdm = fidorClient.getCollectiviteAdministrative(noColAdm);
 			return getCollectiviteAdministrative(collAdm);
 		}
 		catch (FidorClientException e) {
-			throw new ServiceInfrastructureException(e);
+			throw new InfrastructureException(e);
 		}
 	}
 
 	@Override
-	public List<Canton> getAllCantons() throws ServiceInfrastructureException {
+	public List<Canton> getAllCantons() throws InfrastructureException {
 		try {
 			final List<ExtendedCanton> cantons = fidorClient.getTousLesCantons();
 			if (cantons != null && !cantons.isEmpty()) {
@@ -241,12 +241,12 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 			}
 		}
 		catch (FidorClientException e) {
-			throw new ServiceInfrastructureException(e);
+			throw new InfrastructureException(e);
 		}
 	}
 
 	@Override
-	public List<Commune> getListeCommunes(Canton canton) throws ServiceInfrastructureException {
+	public List<Commune> getListeCommunes(Canton canton) throws InfrastructureException {
 		try {
 			final List<CommuneFiscale> list = fidorClient.getCommunesParCanton(canton.getNoOFS(), null);
 			if (list == null || list.isEmpty()) {
@@ -260,12 +260,12 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 			return communes;
 		}
 		catch (FidorClientException e) {
-			throw new ServiceInfrastructureException(e);
+			throw new InfrastructureException(e);
 		}
 	}
 
 	@Override
-	public List<Commune> getCommunesVD() throws ServiceInfrastructureException {
+	public List<Commune> getCommunesVD() throws InfrastructureException {
 		try {
 			final List<CommuneFiscale> all = fidorClient.getToutesLesCommunes();
 			if (all == null || all.isEmpty()) {
@@ -274,19 +274,19 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 
 			final List<Commune> communes = new LinkedList<>();
 			for (CommuneFiscale commune : all) {
-				if (!commune.isEstUneCommuneFaitiere() && ServiceInfrastructureRaw.SIGLE_CANTON_VD.equals(commune.getSigleCanton())) {
+				if (!commune.isEstUneCommuneFaitiere() && InfrastructureConnector.SIGLE_CANTON_VD.equals(commune.getSigleCanton())) {
 					communes.add(CommuneImpl.get(commune));
 				}
 			}
 			return communes;
 		}
 		catch (FidorClientException e) {
-			throw new ServiceInfrastructureException(e);
+			throw new InfrastructureException(e);
 		}
 	}
 
 	@Override
-	public List<Commune> getListeCommunesFaitieres() throws ServiceInfrastructureException {
+	public List<Commune> getListeCommunesFaitieres() throws InfrastructureException {
 		try {
 			final List<CommuneFiscale> all = fidorClient.getToutesLesCommunes();
 			if (all == null || all.isEmpty()) {
@@ -299,12 +299,12 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 					.collect(Collectors.toList());
 		}
 		catch (FidorClientException e) {
-			throw new ServiceInfrastructureException(e);
+			throw new InfrastructureException(e);
 		}
 	}
 
 	@Override
-	public List<Commune> getCommunes() throws ServiceInfrastructureException {
+	public List<Commune> getCommunes() throws InfrastructureException {
 		try {
 			final List<CommuneFiscale> all = fidorClient.getToutesLesCommunes();
 			if (all == null || all.isEmpty()) {
@@ -318,7 +318,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 			return communes;
 		}
 		catch (FidorClientException e) {
-			throw new ServiceInfrastructureException(e);
+			throw new InfrastructureException(e);
 		}
 	}
 
@@ -336,7 +336,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 	}
 
 	@Override
-	public List<Localite> getLocalites() throws ServiceInfrastructureException {
+	public List<Localite> getLocalites() throws InfrastructureException {
 		try {
 			final List<PostalLocality> fidorLocalites = fidorClient.getLocalitesPostales(null, null, null, null, null);
 			if (fidorLocalites != null) {
@@ -350,16 +350,16 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 			return Collections.emptyList();
 		}
 		catch (FidorClientException e) {
-			throw new ServiceInfrastructureException(e);
+			throw new InfrastructureException(e);
 		}
 	}
 
 	@Override
-	public List<Localite> getLocalitesByONRP(int onrp) throws ServiceInfrastructureException {
+	public List<Localite> getLocalitesByONRP(int onrp) throws InfrastructureException {
 		try {
 			final List<PostalLocality> fidorLocalites = fidorClient.getLocalitesPostalesHisto(onrp);
 			if (fidorLocalites != null && !fidorLocalites.isEmpty()) {
-				final ServiceInfrastructureRaw serviceDelegate = cachedServiceInfra == null ? this : cachedServiceInfra;    // autant que possible, on essaie d'utiliser le cache des communes
+				final InfrastructureConnector serviceDelegate = cachedInfraConnector == null ? this : cachedInfraConnector;    // autant que possible, on essaie d'utiliser le cache des communes
 				final Map<Integer, List<Commune>> map = buildHistoMap(serviceDelegate.getCommunes());
 				final List<Localite> localites = new ArrayList<>(fidorLocalites.size());
 				for (PostalLocality fidorLocalite : fidorLocalites) {
@@ -373,7 +373,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 			}
 		}
 		catch (FidorClientException e) {
-			throw new ServiceInfrastructureException(e);
+			throw new InfrastructureException(e);
 		}
 	}
 
@@ -384,7 +384,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 					.collect(Collectors.toList());
 		}
 		catch (FidorClientException e) {
-			throw new ServiceInfrastructureException(e);
+			throw new InfrastructureException(e);
 		}
 	}
 
@@ -401,7 +401,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 	private final Warner warner = new Warner();
 
 	@Override
-	public Localite getLocaliteByONRP(int onrp, RegDate dateReference) throws ServiceInfrastructureException {
+	public Localite getLocaliteByONRP(int onrp, RegDate dateReference) throws InfrastructureException {
 		if (dateReference == null) {
 			dateReference = RegDate.get();
 		}
@@ -456,7 +456,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 	}
 
 	@Override
-	public List<Rue> getRues(Localite localite) throws ServiceInfrastructureException {
+	public List<Rue> getRues(Localite localite) throws InfrastructureException {
 		try {
 			final List<Street> streets = fidorClient.getRuesParNumeroOrdrePosteEtDate(localite.getNoOrdre(), localite.getDateFin());
 			if (streets != null && !streets.isEmpty()) {
@@ -471,12 +471,12 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 			}
 		}
 		catch (FidorClientException e) {
-			throw new ServiceInfrastructureException(e);
+			throw new InfrastructureException(e);
 		}
 	}
 
 	@Override
-	public List<Rue> getRuesHisto(int numero) throws ServiceInfrastructureException {
+	public List<Rue> getRuesHisto(int numero) throws InfrastructureException {
 		try {
 			final List<Street> streets = fidorClient.getRuesParEstrid(numero, null);
 			if (streets != null && !streets.isEmpty()) {
@@ -491,12 +491,12 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 			}
 		}
 		catch (FidorClientException e) {
-			throw new ServiceInfrastructureException(e);
+			throw new InfrastructureException(e);
 		}
 	}
 
 	@Override
-	public Rue getRueByNumero(int numero, RegDate date) throws ServiceInfrastructureException {
+	public Rue getRueByNumero(int numero, RegDate date) throws InfrastructureException {
 		try {
 			final RegDate refDate = date != null ? date : RegDate.get();
 			final List<Street> streets = fidorClient.getRuesParEstrid(numero, refDate);
@@ -506,15 +506,15 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 			if (streets.size() == 1) {
 				return RueImpl.get(streets.get(0));
 			}
-			throw new ServiceInfrastructureException("Plusieurs rues retournée par FiDoR à un appel par estrid (" + numero + ") et date (" + date + ")");
+			throw new InfrastructureException("Plusieurs rues retournée par FiDoR à un appel par estrid (" + numero + ") et date (" + date + ")");
 		}
 		catch (FidorClientException e) {
-			throw new ServiceInfrastructureException(e);
+			throw new InfrastructureException(e);
 		}
 	}
 
 	@Override
-	public List<Commune> getCommuneHistoByNumeroOfs(int noOfsCommune) throws ServiceInfrastructureException {
+	public List<Commune> getCommuneHistoByNumeroOfs(int noOfsCommune) throws InfrastructureException {
 		try {
 			final List<Commune> list = new ArrayList<>();
 			final List<CommuneFiscale> l = fidorClient.getCommunesParNoOFS(noOfsCommune);
@@ -526,12 +526,12 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 			return list;
 		}
 		catch (FidorClientException e) {
-			throw new ServiceInfrastructureException(e);
+			throw new InfrastructureException(e);
 		}
 	}
 
 	@Override
-	public Integer getNoOfsCommuneByEgid(int egid, RegDate date) throws ServiceInfrastructureException {
+	public Integer getNoOfsCommuneByEgid(int egid, RegDate date) throws InfrastructureException {
 
 		try {
 			final CommuneFiscale commune = fidorClient.getCommuneParBatiment(egid, date);
@@ -542,18 +542,18 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 			return commune.getNumeroOfs();
 		}
 		catch (FidorClientException e) {
-			throw new ServiceInfrastructureException(e);
+			throw new InfrastructureException(e);
 		}
 	}
 
 	@Override
-	public Commune getCommuneByLocalite(Localite localite) throws ServiceInfrastructureException {
+	public Commune getCommuneByLocalite(Localite localite) throws InfrastructureException {
 		return localite.getCommuneLocalite();
 	}
 
 	@Nullable
 	@Override
-	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, boolean includeFaitieres, boolean includeFractions, @Nullable RegDate date) throws ServiceInfrastructureException {
+	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, boolean includeFaitieres, boolean includeFractions, @Nullable RegDate date) throws InfrastructureException {
 		try {
 
 			final List<CommuneFiscale> communes = fidorClient.findCommuneByNomOfficiel(nomOfficiel, date);
@@ -567,7 +567,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 					.collect(Collectors.toList());
 
 			if (communesFiltrees.size() > 1) {
-				throw new ServiceInfrastructureException("Plusieurs communes (" + communesFiltrees.size() + ") avec le nom [" + nomOfficiel + "] ont été trouvées.");
+				throw new InfrastructureException("Plusieurs communes (" + communesFiltrees.size() + ") avec le nom [" + nomOfficiel + "] ont été trouvées.");
 			}
 
 			if (communesFiltrees.isEmpty()) {
@@ -577,7 +577,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 			return CommuneImpl.get(communesFiltrees.get(0));
 		}
 		catch (FidorClientException e) {
-			throw new ServiceInfrastructureException(e);
+			throw new InfrastructureException(e);
 		}
 	}
 
@@ -602,36 +602,36 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 	}
 
 	@Override
-	public List<OfficeImpot> getOfficesImpot() throws ServiceInfrastructureException {
+	public List<OfficeImpot> getOfficesImpot() throws InfrastructureException {
 		try {
 			return fidorClient.findCollectivitesAdministratives(null, null, Collections.singletonList(SIGLE_OID), null, false).stream()
-					.map(right -> new OfficeImpotImpl(right, cachedServiceInfra == null ? this : cachedServiceInfra))
+					.map(right -> new OfficeImpotImpl(right, cachedInfraConnector == null ? this : cachedInfraConnector))
 					.collect(Collectors.toList());
 		}
 		catch (FidorClientException e) {
-			throw new ServiceInfrastructureException(e);
+			throw new InfrastructureException(e);
 		}
 	}
 
 	@Nullable
 	protected CollectiviteAdministrative getCollectiviteAdministrative(ch.vd.fidor.xml.colladm.v1.CollectiviteAdministrative right) {
-		return CollectiviteAdministrativeImpl.get(right, cachedServiceInfra == null ? this : cachedServiceInfra);
+		return CollectiviteAdministrativeImpl.get(right, cachedInfraConnector == null ? this : cachedInfraConnector);
 	}
 
 	@Override
-	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws ServiceInfrastructureException {
+	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws InfrastructureException {
 		try {
 			return fidorClient.findCollectivitesAdministratives(null, null, null, null, false).stream()
 					.map(this::getCollectiviteAdministrative)
 					.collect(Collectors.toList());
 		}
 		catch (FidorClientException e) {
-			throw new ServiceInfrastructureException(e);
+			throw new InfrastructureException(e);
 		}
 	}
 
 	@Override
-	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<TypeCollectivite> typesCollectivite) throws ServiceInfrastructureException {
+	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<TypeCollectivite> typesCollectivite) throws InfrastructureException {
 		try {
 			final List<String> codes = typesCollectivite.stream()
 					.map(TypeCollectivite::getCode)
@@ -641,12 +641,12 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 					.collect(Collectors.toList());
 		}
 		catch (FidorClientException e) {
-			throw new ServiceInfrastructureException(e);
+			throw new InfrastructureException(e);
 		}
 	}
 
 	@Override
-	public List<Localite> getLocalitesByNPA(int npa, RegDate dateReference) throws ServiceInfrastructureException {
+	public List<Localite> getLocalitesByNPA(int npa, RegDate dateReference) throws InfrastructureException {
 		try {
 			final List<PostalLocality> postalLocalities = fidorClient.getLocalitesPostales(dateReference, npa, null, null, null);
 			if (postalLocalities != null && !postalLocalities.isEmpty()) {
@@ -662,7 +662,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 			}
 		}
 		catch (FidorClientException e) {
-			throw new ServiceInfrastructureException(e);
+			throw new InfrastructureException(e);
 		}
 	}
 
@@ -774,7 +774,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 	}
 
 	@Override
-	public Logiciel getLogiciel(Long id) throws ServiceInfrastructureException {
+	public Logiciel getLogiciel(Long id) throws InfrastructureException {
 		if (id == null) {
 			return null;
 		}
@@ -782,12 +782,12 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 			return LogicielImpl.get(fidorClient.getLogicielDetail(id));
 		}
 		catch (FidorClientException e) {
-			throw new ServiceInfrastructureException(e);
+			throw new InfrastructureException(e);
 		}
 	}
 
 	@Override
-	public List<Logiciel> getTousLesLogiciels() throws ServiceInfrastructureException {
+	public List<Logiciel> getTousLesLogiciels() throws InfrastructureException {
 		try {
 			final List<ch.vd.evd0012.v1.Logiciel> list = fidorClient.getTousLesLogiciels();
 			if (list == null || list.isEmpty()) {
@@ -802,7 +802,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 			}
 		}
 		catch (FidorClientException e) {
-			throw new ServiceInfrastructureException(e.getMessage(), e);
+			throw new InfrastructureException(e.getMessage(), e);
 		}
 	}
 
@@ -812,7 +812,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 			return DistrictImpl.get(fidorClient.getDistrict(code));
 		}
 		catch (FidorClientException e) {
-			throw new ServiceInfrastructureException(e);
+			throw new InfrastructureException(e);
 		}
 	}
 
@@ -822,7 +822,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 			return RegionImpl.get(fidorClient.getRegion(code));
 		}
 		catch (FidorClientException e) {
-			throw new ServiceInfrastructureException(e);
+			throw new InfrastructureException(e);
 		}
 	}
 
@@ -840,7 +840,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 			return Collections.unmodifiableList(regimes);
 		}
 		catch (FidorClientException e) {
-			throw new ServiceInfrastructureException(e);
+			throw new InfrastructureException(e);
 		}
 	}
 
@@ -859,17 +859,17 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 			return Collections.unmodifiableList(genres);
 		}
 		catch (FidorClientException e) {
-			throw new ServiceInfrastructureException(e);
+			throw new InfrastructureException(e);
 		}
 	}
 
 	@Override
-	public void ping() throws ServiceInfrastructureException {
+	public void ping() throws InfrastructureException {
 		try {
 			fidorClient.ping();
 		}
 		catch (Exception e) {
-			throw new ServiceInfrastructureException(e);
+			throw new InfrastructureException(e);
 		}
 	}
 }

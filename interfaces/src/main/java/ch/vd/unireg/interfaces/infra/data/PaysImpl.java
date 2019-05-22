@@ -5,8 +5,8 @@ import java.io.Serializable;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.common.XmlUtils;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 
 public class PaysImpl extends EntiteOFSImpl implements Pays, Serializable {
 
@@ -93,7 +93,7 @@ public class PaysImpl extends EntiteOFSImpl implements Pays, Serializable {
 	}
 
 	private static boolean isSuisse(int noOfs) {
-		return noOfs == ServiceInfrastructureRaw.noOfsSuisse;
+		return noOfs == InfrastructureConnector.noOfsSuisse;
 	}
 
 	@Override

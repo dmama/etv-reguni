@@ -37,7 +37,7 @@ import ch.vd.unireg.interfaces.entreprise.rcent.adapter.model.OrganisationFuncti
 import ch.vd.unireg.interfaces.entreprise.rcent.adapter.model.OrganisationLocation;
 import ch.vd.unireg.interfaces.entreprise.rcent.adapter.model.RCRegistrationData;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockServiceInfrastructureService;
+import ch.vd.unireg.interfaces.infra.mock.MockInfrastructureConnector;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 import static org.junit.Assert.assertEquals;
@@ -49,7 +49,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class RCEntEtablissementHelperTest extends WithoutSpringTest {
 
-	private final MockServiceInfrastructureService serviceInfra = new MockServiceInfrastructureService() {
+	private final MockInfrastructureConnector serviceInfra = new MockInfrastructureConnector() {
 		@Override
 		protected void init() {
 			add(MockCommune.Lausanne);

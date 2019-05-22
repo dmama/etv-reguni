@@ -10,7 +10,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.validation.ValidationException;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.JobResults;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.ModeImposition;
@@ -137,7 +137,7 @@ public class OuvertureForsResults extends JobResults<Long, OuvertureForsResults>
 	}
 
 	public void addUnknownException(PersonnePhysique h, Exception e) {
-		if (e instanceof ServiceInfrastructureException) {
+		if (e instanceof InfrastructureException) {
 			habitantEnErrors.add(new Erreur(h.getNumero(), null, ErreurType.INFRA_EXCEPTION, e.getMessage(), getNom(h.getNumero())));
 		}
 		else if (e instanceof ConstraintViolationException) {
@@ -160,7 +160,7 @@ public class OuvertureForsResults extends JobResults<Long, OuvertureForsResults>
 		if (e instanceof ValidationException) {
 			habitantEnErrors.add(new Erreur(habitantId, null, ErreurType.VALIDATION_APRES_OUVERTURE, e.getMessage(), getNom(habitantId)));
 		}
-		else if (e instanceof ServiceInfrastructureException) {
+		else if (e instanceof InfrastructureException) {
 			habitantEnErrors.add(new Erreur(habitantId, null, ErreurType.INFRA_EXCEPTION, e.getMessage(), getNom(habitantId)));
 		}
 		else if (e instanceof ConstraintViolationException) {

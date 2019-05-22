@@ -17,7 +17,7 @@ import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 import ch.vd.unireg.declaration.ModeleDocument;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.indexer.tiers.OfficeImpotHibernateInterceptor;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.mouvement.EnvoiDossier;
@@ -77,7 +77,7 @@ public class SuppressionOIDJobTest extends BusinessTest {
 
 	@Test
 	public void testSupprimerOIDBaseVide() throws Exception {
-		final SuppressionOIDResults results = job.supprimerOID(ServiceInfrastructureRaw.noACI, RegDate.get(), status);
+		final SuppressionOIDResults results = job.supprimerOID(InfrastructureConnector.noACI, RegDate.get(), status);
 		assertNotNull(results);
 		assertEquals(0, results.total);
 		assertEquals(0, results.traites.size());
@@ -92,7 +92,7 @@ public class SuppressionOIDJobTest extends BusinessTest {
 			return null;
 		});
 
-		final SuppressionOIDResults results = job.supprimerOID(ServiceInfrastructureRaw.noACI, RegDate.get(), status);
+		final SuppressionOIDResults results = job.supprimerOID(InfrastructureConnector.noACI, RegDate.get(), status);
 		assertNotNull(results);
 		assertEquals(0, results.total);
 		assertEquals(0, results.traites.size());

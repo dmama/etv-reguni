@@ -2,9 +2,9 @@ package ch.vd.unireg.acces.parDossier.manager;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.acces.parDossier.view.DossierEditRestrictionView;
 import ch.vd.unireg.acces.parDossier.view.DroitAccesView;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.security.DroitAccesException;
 
 /**
@@ -19,10 +19,10 @@ public interface DossierEditRestrictionManager {
 	 * Alimente la vue du controller
 	 * @param numeroTiers
 	 * @return
-	 * @throws ServiceInfrastructureException
+	 * @throws InfrastructureException
 	 */
 	@Transactional(readOnly = true)
-	DossierEditRestrictionView get(Long numeroTiers)  throws ServiceInfrastructureException;
+	DossierEditRestrictionView get(Long numeroTiers)  throws InfrastructureException;
 
 	/**
 	 * Persiste un droit d'acces

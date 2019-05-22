@@ -7,12 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.civil.ServiceInfraGetPaysSimpleCache;
+import ch.vd.unireg.civil.InfraGetPaysSimpleCache;
 import ch.vd.unireg.interfaces.civil.IndividuConnector;
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.unireg.interfaces.civil.rcpers.IndividuConnectorRCPers;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
-import ch.vd.unireg.interfaces.infra.fidor.ServiceInfrastructureFidor;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
+import ch.vd.unireg.interfaces.infra.fidor.InfrastructureConnectorFidor;
 import ch.vd.unireg.webservice.fidor.v5.FidorClientImpl;
 import ch.vd.unireg.wsclient.WebClientPool;
 import ch.vd.unireg.wsclient.rcpers.RcPersClientImpl;
@@ -75,14 +75,14 @@ public class EvenementCivilDataExtractor {
 		final FidorClientImpl fidorClient = new FidorClientImpl();
 		fidorClient.setWcPool(fidorPool);
 
-		final ServiceInfrastructureFidor infraServiceFiDor = new ServiceInfrastructureFidor();
+		final InfrastructureConnectorFidor infraServiceFiDor = new InfrastructureConnectorFidor();
 		infraServiceFiDor.setFidorClient(fidorClient);
 
-		final ServiceInfrastructureRaw infraServiceCache = new ServiceInfraGetPaysSimpleCache(infraServiceFiDor);
+		final InfrastructureConnector infraServiceCache = new InfraGetPaysSimpleCache(infraServiceFiDor);
 
 		final IndividuConnectorRCPers donneesCivilesAccessorRCPers = new IndividuConnectorRCPers();
 		donneesCivilesAccessorRCPers.setClient(rcpersClient);
-		donneesCivilesAccessorRCPers.setInfraService(infraServiceCache);
+		donneesCivilesAccessorRCPers.setInfraConnector(infraServiceCache);
 
 		return donneesCivilesAccessorRCPers;
 	}

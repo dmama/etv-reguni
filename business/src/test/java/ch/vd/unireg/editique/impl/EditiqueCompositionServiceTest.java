@@ -43,7 +43,7 @@ import ch.vd.unireg.efacture.ImpressionDocumentEfactureHelperImpl;
 import ch.vd.unireg.evenement.docsortant.EvenementDocumentSortantService;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
@@ -155,7 +155,7 @@ public class EditiqueCompositionServiceTest extends BusinessTest {
 			addForPrincipal(pp, dateOuvertureFor, MotifFor.MAJORITE, MockCommune.Cossonay);
 			final PeriodeFiscale pf = addPeriodeFiscale(annee);
 			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
-			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 			final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, md);
 			di.setNumeroOfsForGestion(MockCommune.Cossonay.getNoOFS());
 			addEtatDeclarationEmise(di, RegDate.get());
@@ -215,7 +215,7 @@ public class EditiqueCompositionServiceTest extends BusinessTest {
 			addForPrincipal(pp, dateOuvertureFor, MotifFor.MAJORITE, MockCommune.Cossonay);
 			final PeriodeFiscale pf = addPeriodeFiscale(annee);
 			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
-			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 			final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, md);
 			di.setNumeroOfsForGestion(MockCommune.Cossonay.getNoOFS());
 			addEtatDeclarationEmise(di, RegDate.get());

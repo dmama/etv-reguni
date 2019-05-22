@@ -15,7 +15,7 @@ import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.StringRenderer;
 import ch.vd.unireg.general.manager.TiersGeneralManager;
 import ch.vd.unireg.general.view.TiersGeneralView;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteException;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
@@ -64,7 +64,7 @@ public class DossierEditRestrictionManagerImpl implements DossierEditRestriction
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public DossierEditRestrictionView get(Long numeroTiers) throws ServiceInfrastructureException {
+	public DossierEditRestrictionView get(Long numeroTiers) throws InfrastructureException {
 
 		final DossierEditRestrictionView dossierEditRestrictionView = new DossierEditRestrictionView();
 		final Contribuable tiers = (Contribuable) tiersDAO.get(numeroTiers);

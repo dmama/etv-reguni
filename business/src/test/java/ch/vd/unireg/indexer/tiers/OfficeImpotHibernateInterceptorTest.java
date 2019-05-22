@@ -5,7 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
-import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
+import ch.vd.unireg.interfaces.infra.mock.DefaultMockInfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
@@ -45,7 +45,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 		tiersService = getBean(TiersService.class, "tiersService");
 
 		serviceCivil.setUp(new DefaultMockIndividuConnector());
-		serviceInfra.setUp(new DefaultMockServiceInfrastructureService());
+		serviceInfra.setUp(new DefaultMockInfrastructureConnector());
 
 		assertNotNull(oidLausanne);
 	}

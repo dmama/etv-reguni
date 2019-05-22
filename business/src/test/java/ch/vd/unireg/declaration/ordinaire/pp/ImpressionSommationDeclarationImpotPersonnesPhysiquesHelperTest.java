@@ -24,7 +24,7 @@ import ch.vd.unireg.etiquette.Etiquette;
 import ch.vd.unireg.etiquette.EtiquetteService;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
-import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
+import ch.vd.unireg.interfaces.infra.mock.DefaultMockInfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
@@ -69,7 +69,7 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest ext
 		tiersService = getBean(TiersService.class, "tiersService");
 		editiqueHelper =  getBean(LegacyEditiqueHelper.class, "legacyEditiqueHelper");
 		delaisService =  getBean(DelaisService.class, "delaisService");
-		serviceInfra.setUp(new DefaultMockServiceInfrastructureService());
+		serviceInfra.setUp(new DefaultMockInfrastructureConnector());
 		impressionSommationDIHelper = new ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperImpl(serviceInfra, adresseService, tiersService,  editiqueHelper, delaisService);
 		etiquetteService = getBean(EtiquetteService.class, "etiquetteService");
 

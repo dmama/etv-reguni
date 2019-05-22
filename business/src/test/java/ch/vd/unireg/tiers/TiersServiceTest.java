@@ -60,8 +60,8 @@ import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockEntrepriseCivile;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEtablissementCivilFactory;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
+import ch.vd.unireg.interfaces.infra.mock.DefaultMockInfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockBatiment;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
@@ -6830,10 +6830,10 @@ debut PF                                                                        
 	public void testMiseAJourFlagHabitantSurCommuneNonIdentifiable() throws Exception {
 
 		// service infrastructure piégé
-		serviceInfra.setUp(new DefaultMockServiceInfrastructureService() {
+		serviceInfra.setUp(new DefaultMockInfrastructureConnector() {
 			@Override
-			public Integer getNoOfsCommuneByEgid(int egid, RegDate date) throws ServiceInfrastructureException {
-				throw new ServiceInfrastructureException("Boom pour le test!!");
+			public Integer getNoOfsCommuneByEgid(int egid, RegDate date) throws InfrastructureException {
+				throw new InfrastructureException("Boom pour le test!!");
 			}
 		});
 

@@ -9,7 +9,7 @@ import ch.vd.unireg.evenement.entreprise.view.EvenementEntrepriseCriteriaView;
 import ch.vd.unireg.evenement.entreprise.view.EvenementEntrepriseDetailView;
 import ch.vd.unireg.evenement.entreprise.view.EvenementEntrepriseElementListeRechercheView;
 import ch.vd.unireg.evenement.entreprise.view.EvenementEntrepriseSummaryView;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.TiersException;
 
@@ -27,9 +27,9 @@ public interface EvenementEntrepriseManager {
 	 * @return la structure EvenementEntrepriseDetailView correspondant à l'id
 	 *
 	 * @throws ch.vd.unireg.adresse.AdressesResolutionException ...
-	 * @throws ServiceInfrastructureException ...
+	 * @throws InfrastructureException ...
 	 */
-	EvenementEntrepriseDetailView get(Long id) throws AdresseException, ServiceInfrastructureException;
+	EvenementEntrepriseDetailView get(Long id) throws AdresseException, InfrastructureException;
 
 	/**
 	 * Charge la structure EvenementEntrepriseSummaryView en fonction des informations de
@@ -39,9 +39,9 @@ public interface EvenementEntrepriseManager {
 	 * @return la structure EvenementEntrepriseSummaryView correspondant à l'id
 	 *
 	 * @throws ch.vd.unireg.adresse.AdressesResolutionException ...
-	 * @throws ServiceInfrastructureException ...
+	 * @throws InfrastructureException ...
 	 */
-	EvenementEntrepriseSummaryView getSummary(Long id) throws AdresseException, ServiceInfrastructureException;
+	EvenementEntrepriseSummaryView getSummary(Long id) throws AdresseException, InfrastructureException;
 
 	/**
 	 * Recycle l'evenement civil designe par l'id

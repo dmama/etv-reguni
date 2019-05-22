@@ -8,9 +8,9 @@ import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.type.TexteCasePostale;
 import ch.vd.unireg.type.TypeAdresseCivil;
 
-public class DefaultMockServiceInfrastructureService extends MockServiceInfrastructureService {
+public class DefaultMockInfrastructureConnector extends MockInfrastructureConnector {
 
-	protected static final MockServiceInfrastructureService staticInstance = new MockServiceInfrastructureService() {
+	protected static final MockInfrastructureConnector staticInstance = new MockInfrastructureConnector() {
 		// CHECKSTYLE:OFF
 		@Override
 		protected void init() {

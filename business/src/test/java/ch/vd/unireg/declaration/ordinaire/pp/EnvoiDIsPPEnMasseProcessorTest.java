@@ -45,7 +45,7 @@ import ch.vd.unireg.hibernate.interceptor.ModificationSubInterceptor;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
@@ -246,7 +246,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		doInNewTransaction(status -> {
-			final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
+			final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noACI);
 
 			ModeleDocument declarationComplete2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, addPeriodeFiscale(2007));
 			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2007);
@@ -288,7 +288,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		doInNewTransaction(status -> {
-			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 			ids.oidCedi = cedi.getId();
 
 			final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
@@ -557,7 +557,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 
 		doInNewTransaction(status -> {
 			final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
-			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 			ids.oidCedi = cedi.getId();
 
 			final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
@@ -668,7 +668,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 
 		doInNewTransaction(status -> {
 			final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
-			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 			ids.oidCedi = cedi.getId();
 
 			final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
@@ -750,7 +750,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 
 		doInNewTransaction(status -> {
 			final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
-			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 			ids.oidCedi = cedi.getId();
 
 			final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
@@ -804,7 +804,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 
 		doInNewTransaction(status -> {
 			final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
-			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 			ids.oidCedi = cedi.getId();
 
 			final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
@@ -1225,7 +1225,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 
 		doInNewTransaction(status -> {
 			final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
-			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 			ids.oidCedi = cedi.getId();
 
 			final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);

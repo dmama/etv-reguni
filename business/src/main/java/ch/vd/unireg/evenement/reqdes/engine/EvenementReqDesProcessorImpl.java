@@ -59,7 +59,7 @@ import ch.vd.unireg.common.LengthConstants;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.common.StringRenderer;
 import ch.vd.unireg.hibernate.HibernateTemplate;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Pays;
@@ -1473,7 +1473,7 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 					throw new EvenementReqDesException(String.format("Mise-à-jour impossible pour contribuable(s) avec commune de résidence vaudoise (%s/%d) à la date de l'acte.", commune.getNomOfficiel(), ofsCommune));
 				}
 			}
-			catch (ServiceInfrastructureException e) {
+			catch (InfrastructureException e) {
 				throw new EvenementReqDesException("Erreur du service infrastructure", e);
 			}
 		}

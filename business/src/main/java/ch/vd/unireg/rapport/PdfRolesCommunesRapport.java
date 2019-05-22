@@ -14,7 +14,7 @@ import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.AutoCloseableContainer;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TemporaryFile;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.role.before2016.InfoCommune;
@@ -125,7 +125,7 @@ public abstract class PdfRolesCommunesRapport<T extends ProduireRolesCommunesRes
 	/**
 	 * Boucle sur les communes et génération du rapport page par page
 	 */
-	private void writeCommuneParCommune(final T results, final Date dateGeneration, StatusManager status, PdfWriter writer) throws ServiceInfrastructureException, DocumentException {
+	private void writeCommuneParCommune(final T results, final Date dateGeneration, StatusManager status, PdfWriter writer) throws InfrastructureException, DocumentException {
 		final Map<Integer, ICOM> infosCommunes = getInfosCommunes(results);
 		final List<Commune> communes = getListeCommunes(infosCommunes.keySet(), results.annee, true);
 		final Map<Integer, String> nomsCommunes = buildNomsCommunes(communes);

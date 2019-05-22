@@ -14,10 +14,10 @@ import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockPermis;
 import ch.vd.unireg.interfaces.infra.mock.MockCanton;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockInfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.interfaces.infra.mock.MockServiceInfrastructureService;
 import ch.vd.unireg.interfaces.service.ServiceCivilImpl;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureImpl;
@@ -44,7 +44,7 @@ public class AnnulationPermisTest extends WithoutSpringTest {
 	final MockTiersDAO tiersDAO = new MockTiersDAO();
 
 	// Prend le mock infrastructure par défaut
-	ServiceInfrastructureService infrastructureService = new ServiceInfrastructureImpl(new MockServiceInfrastructureService() {
+	ServiceInfrastructureService infrastructureService = new ServiceInfrastructureImpl(new MockInfrastructureConnector() {
 		@Override
 		protected void init() {
 			// Pays

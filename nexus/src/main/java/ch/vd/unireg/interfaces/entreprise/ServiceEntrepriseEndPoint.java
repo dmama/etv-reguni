@@ -13,7 +13,7 @@ import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDEQuery;
 import ch.vd.unireg.interfaces.entreprise.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.entreprise.data.EntrepriseCivile;
 import ch.vd.unireg.interfaces.entreprise.data.EntrepriseCivileEvent;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.load.DetailedLoadMeter;
 import ch.vd.unireg.load.MethodCallDescriptor;
 import ch.vd.unireg.stats.DetailedLoadMonitorable;
@@ -107,7 +107,7 @@ public class ServiceEntrepriseEndPoint implements ServiceEntrepriseRaw, Detailed
 	}
 
 	@Override
-	public void ping() throws ServiceInfrastructureException {
+	public void ping() throws InfrastructureException {
 		loadMeter.start(new MethodCallDescriptor("ping"));
 		try {
 			target.ping();

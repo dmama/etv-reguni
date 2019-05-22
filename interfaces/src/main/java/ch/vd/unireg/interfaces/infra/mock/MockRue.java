@@ -200,7 +200,7 @@ public class MockRue implements Rue {
 		this.localiteSupplier = localiteSupplier;
 		this.designationCourrier = designationCourrier;
 		this.noRue = noTechniqueRue;
-		DefaultMockServiceInfrastructureService.addRue(this);
+		DefaultMockInfrastructureConnector.addRue(this);
 	}
 
 	@Override

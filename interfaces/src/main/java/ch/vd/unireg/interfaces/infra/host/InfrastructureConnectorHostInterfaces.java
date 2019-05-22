@@ -16,8 +16,8 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.common.XmlUtils;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
 import ch.vd.unireg.interfaces.infra.data.Canton;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
@@ -38,7 +38,7 @@ import ch.vd.unireg.wsclient.host.interfaces.ServiceInfrastructureClientExceptio
 /**
  * @author Baba NGOM
  */
-public class ServiceInfrastructureHostInterfacesRest implements ServiceInfrastructureRaw {
+public class InfrastructureConnectorHostInterfaces implements InfrastructureConnector {
 
 	//private static final Logger LOGGER = LoggerFactory.getLogger(ServiceInfrastructureHostInterfaces.class);
 
@@ -63,7 +63,7 @@ public class ServiceInfrastructureHostInterfacesRest implements ServiceInfrastru
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Canton> getAllCantons() throws ServiceInfrastructureException {
+	public List<Canton> getAllCantons() throws InfrastructureException {
 		throw new NotImplementedException("La méthode 'getAllCantons' ne doit pas être appelée sur le service host-interfaces.");
 	}
 
@@ -71,12 +71,12 @@ public class ServiceInfrastructureHostInterfacesRest implements ServiceInfrastru
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Commune> getListeCommunes(final Canton canton) throws ServiceInfrastructureException {
+	public List<Commune> getListeCommunes(final Canton canton) throws InfrastructureException {
 		throw new NotImplementedException("La méthode 'getListeCommunes' ne doit pas être appelée sur le service host-interfaces.");
 	}
 
 	@Override
-	public Integer getNoOfsCommuneByEgid(int egid, RegDate date) throws ServiceInfrastructureException {
+	public Integer getNoOfsCommuneByEgid(int egid, RegDate date) throws InfrastructureException {
 		throw new NotImplementedException("La méthode 'getCommuneByEgid' ne doit pas être appelée sur le service host-interfaces.");
 	}
 
@@ -85,12 +85,12 @@ public class ServiceInfrastructureHostInterfacesRest implements ServiceInfrastru
 	 */
 	@Override
 	@SuppressWarnings({"unchecked"})
-	public List<Commune> getCommunesVD() throws ServiceInfrastructureException {
+	public List<Commune> getCommunesVD() throws InfrastructureException {
 		throw new NotImplementedException("La méthode 'getCommunesVD' ne doit pas être appelée sur le service host-interfaces.");
 	}
 
 	@Override
-	public List<Commune> getListeCommunesFaitieres() throws ServiceInfrastructureException {
+	public List<Commune> getListeCommunesFaitieres() throws InfrastructureException {
 		throw new NotImplementedException("La méthode 'getListeCommunesFaitieres' ne doit pas être appelée sur le service host-interfaces.");
 	}
 
@@ -98,17 +98,17 @@ public class ServiceInfrastructureHostInterfacesRest implements ServiceInfrastru
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Commune> getCommunes() throws ServiceInfrastructureException {
+	public List<Commune> getCommunes() throws InfrastructureException {
 		throw new NotImplementedException("La méthode 'getCommunes' ne doit pas être appelée sur le service host-interfaces.");
 	}
 
 	@Override
-	public List<ch.vd.unireg.interfaces.infra.data.Localite> getLocalitesByNPA(int npa, RegDate dateReference) throws ServiceInfrastructureException {
+	public List<ch.vd.unireg.interfaces.infra.data.Localite> getLocalitesByNPA(int npa, RegDate dateReference) throws InfrastructureException {
 		throw new NotImplementedException("La méthode 'getLocaliteByNPA' ne doit pas être appelée sur le service host-interfaces.");
 	}
 
 	@Override
-	public List<Commune> getCommuneHistoByNumeroOfs(int noOfsCommune) throws ServiceInfrastructureException {
+	public List<Commune> getCommuneHistoByNumeroOfs(int noOfsCommune) throws InfrastructureException {
 		throw new NotImplementedException("La méthode 'getCommuneHistoByNumeroOfs' ne doit pas être appelée sur le service host-interfaces.");
 	}
 
@@ -116,22 +116,22 @@ public class ServiceInfrastructureHostInterfacesRest implements ServiceInfrastru
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Pays> getPays() throws ServiceInfrastructureException {
+	public List<Pays> getPays() throws InfrastructureException {
 		throw new NotImplementedException("La méthode 'getPays' ne doit pas être appelée sur le service host-interfaces.");
 	}
 
 	@Override
-	public List<Pays> getPaysHisto(int numeroOFS) throws ServiceInfrastructureException {
+	public List<Pays> getPaysHisto(int numeroOFS) throws InfrastructureException {
 		throw new NotImplementedException("La méthode 'getPaysHisto' ne doit pas être appelée sur le service host-interfaces.");
 	}
 
 	@Override
-	public Pays getPays(int numeroOFS, @Nullable RegDate date) throws ServiceInfrastructureException {
+	public Pays getPays(int numeroOFS, @Nullable RegDate date) throws InfrastructureException {
 		throw new NotImplementedException("La méthode 'getPays' ne doit pas être appelée sur le service host-interfaces.");
 	}
 
 	@Override
-	public Pays getPays(@NotNull String codePays, @Nullable RegDate date) throws ServiceInfrastructureException {
+	public Pays getPays(@NotNull String codePays, @Nullable RegDate date) throws InfrastructureException {
 		throw new NotImplementedException("La méthode 'getPays' ne doit pas être appelée sur le service host-interfaces.");
 	}
 
@@ -139,13 +139,13 @@ public class ServiceInfrastructureHostInterfacesRest implements ServiceInfrastru
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Commune getCommuneByLocalite(Localite localite) throws ServiceInfrastructureException {
+	public Commune getCommuneByLocalite(Localite localite) throws InfrastructureException {
 		throw new NotImplementedException("La méthode 'getCommuneByLocalite' ne doit pas être appelée sur le service host-interfaces.");
 	}
 
 	@Nullable
 	@Override
-	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, boolean includeFaitieres, boolean includeFractions, @Nullable RegDate date) throws ServiceInfrastructureException {
+	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, boolean includeFaitieres, boolean includeFractions, @Nullable RegDate date) throws InfrastructureException {
 		throw new NotImplementedException("La méthode 'findCommuneByNomOfficiel' ne doit pas être appelée sur le service host-interfaces.");
 	}
 
@@ -153,7 +153,7 @@ public class ServiceInfrastructureHostInterfacesRest implements ServiceInfrastru
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Localite> getLocalites() throws ServiceInfrastructureException {
+	public List<Localite> getLocalites() throws InfrastructureException {
 
 		throw new NotImplementedException("La méthode 'getLocalites' ne doit pas être appelée sur le service host-interfaces.");
 	}
@@ -162,12 +162,12 @@ public class ServiceInfrastructureHostInterfacesRest implements ServiceInfrastru
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Rue> getRues(Localite localite) throws ServiceInfrastructureException {
+	public List<Rue> getRues(Localite localite) throws InfrastructureException {
 		throw new NotImplementedException("La méthode 'getRues' ne doit pas être appelée sur le service host-interfaces.");
 	}
 
 	@Override
-	public List<Rue> getRuesHisto(int numero) throws ServiceInfrastructureException {
+	public List<Rue> getRuesHisto(int numero) throws InfrastructureException {
 		throw new NotImplementedException("La méthode 'getRuesHisto' ne doit pas être appelée sur le service host-interfaces.");
 	}
 
@@ -175,7 +175,7 @@ public class ServiceInfrastructureHostInterfacesRest implements ServiceInfrastru
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Rue getRueByNumero(int numero, RegDate date) throws ServiceInfrastructureException {
+	public Rue getRueByNumero(int numero, RegDate date) throws InfrastructureException {
 		throw new NotImplementedException("La méthode 'getRueByNumero' ne doit pas être appelée sur le service host-interfaces.");
 	}
 
@@ -183,12 +183,12 @@ public class ServiceInfrastructureHostInterfacesRest implements ServiceInfrastru
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Localite> getLocalitesByONRP(int numeroOrdre) throws ServiceInfrastructureException {
+	public List<Localite> getLocalitesByONRP(int numeroOrdre) throws InfrastructureException {
 		throw new NotImplementedException("La méthode 'getLocalitesByONRP' ne doit pas être appelée sur le service host-interfaces.");
 	}
 
 	@Override
-	public Localite getLocaliteByONRP(int onrp, RegDate dateReference) throws ServiceInfrastructureException {
+	public Localite getLocaliteByONRP(int onrp, RegDate dateReference) throws InfrastructureException {
 		throw new NotImplementedException("La méthode 'getLocaliteByONRP' ne doit pas être appelée sur le service host-interfaces.");
 	}
 
@@ -196,12 +196,12 @@ public class ServiceInfrastructureHostInterfacesRest implements ServiceInfrastru
 	 * {@inheritDoc}
 	 */
 	@Override
-	public CollectiviteAdministrative getCollectivite(int noColAdm) throws ServiceInfrastructureException {
+	public CollectiviteAdministrative getCollectivite(int noColAdm) throws InfrastructureException {
 		try {
 			return CollectiviteAdministrativeImpl.get(client.getCollectivite(noColAdm));
 		}
 		catch (ServiceInfrastructureClientException e) {
-			throw new ServiceInfrastructureException("Acces a la collectivite administrative", e);
+			throw new InfrastructureException("Acces a la collectivite administrative", e);
 		}
 	}
 
@@ -209,7 +209,7 @@ public class ServiceInfrastructureHostInterfacesRest implements ServiceInfrastru
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<OfficeImpot> getOfficesImpot() throws ServiceInfrastructureException {
+	public List<OfficeImpot> getOfficesImpot() throws InfrastructureException {
 
 		List<OfficeImpot> offices = new ArrayList<>();
 		try {
@@ -226,7 +226,7 @@ public class ServiceInfrastructureHostInterfacesRest implements ServiceInfrastru
 
 		}
 		catch (ServiceInfrastructureClientException e) {
-			throw new ServiceInfrastructureException("Acces aux collectivites administratives", e);
+			throw new InfrastructureException("Acces aux collectivites administratives", e);
 		}
 		return Collections.unmodifiableList(offices);
 	}
@@ -249,17 +249,17 @@ public class ServiceInfrastructureHostInterfacesRest implements ServiceInfrastru
 	 */
 	@Override
 	@SuppressWarnings({"unchecked"})
-	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws ServiceInfrastructureException {
+	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws InfrastructureException {
 
 		final List<CollectiviteAdministrative> collectivites = new ArrayList<>();
 		try {
-			final ListeCollectiviteAdministrative collectivitesAdministratives = client.getCollectivitesAdministratives(ServiceInfrastructureRaw.SIGLE_CANTON_VD);
+			final ListeCollectiviteAdministrative collectivitesAdministratives = client.getCollectivitesAdministratives(InfrastructureConnector.SIGLE_CANTON_VD);
 			for (ch.vd.infrastructure.model.rest.CollectiviteAdministrative c : collectivitesAdministratives.getCollectiviteAdministrative()) {
 				collectivites.add(CollectiviteAdministrativeImpl.get(c));
 			}
 		}
 		catch (ServiceInfrastructureClientException e) {
-			throw new ServiceInfrastructureException("Acces aux collectivites administratives", e);
+			throw new InfrastructureException("Acces aux collectivites administratives", e);
 		}
 		return Collections.unmodifiableList(collectivites);
 
@@ -271,7 +271,7 @@ public class ServiceInfrastructureHostInterfacesRest implements ServiceInfrastru
 	@Override
 	@SuppressWarnings({"unchecked"})
 	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<ch.vd.unireg.interfaces.infra.data.TypeCollectivite> typesCollectivite)
-			throws ServiceInfrastructureException {
+			throws InfrastructureException {
 
 		final List<CollectiviteAdministrative> collectivites = new ArrayList<>();
 		try {
@@ -290,7 +290,7 @@ public class ServiceInfrastructureHostInterfacesRest implements ServiceInfrastru
 			}
 		}
 		catch (ServiceInfrastructureClientException e) {
-			throw new ServiceInfrastructureException("Acces aux collectivites administratives", e);
+			throw new InfrastructureException("Acces aux collectivites administratives", e);
 		}
 		return Collections.unmodifiableList(collectivites);
 
@@ -302,12 +302,12 @@ public class ServiceInfrastructureHostInterfacesRest implements ServiceInfrastru
 	}
 
 	@Override
-	public Logiciel getLogiciel(Long idLogiciel) throws ServiceInfrastructureException {
+	public Logiciel getLogiciel(Long idLogiciel) throws InfrastructureException {
 		throw new NotImplementedException("La méthode 'getLogiciel' ne doit pas être appelée sur le service host-interfaces.");
 	}
 
 	@Override
-	public List<Logiciel> getTousLesLogiciels() throws ServiceInfrastructureException {
+	public List<Logiciel> getTousLesLogiciels() throws InfrastructureException {
 		throw new NotImplementedException("La méthode 'getTousLesLogiciels' ne doit pas être appelée sur le service host-interfaces.");
 	}
 
@@ -337,12 +337,12 @@ public class ServiceInfrastructureHostInterfacesRest implements ServiceInfrastru
 	}
 
 	@Override
-	public void ping() throws ServiceInfrastructureException {
+	public void ping() throws InfrastructureException {
 		try {
 			client.ping();
 		}
 		catch (Exception e) {
-			throw new ServiceInfrastructureException(e);
+			throw new InfrastructureException(e);
 		}
 	}
 }

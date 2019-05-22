@@ -9,7 +9,7 @@ import org.springframework.validation.Validator;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.common.LengthConstants;
 import ch.vd.unireg.iban.IbanValidator;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 import ch.vd.unireg.tiers.view.DateRangeViewValidator;
 import ch.vd.unireg.type.TypeMandat;
 
@@ -57,7 +57,7 @@ public class AddMandatViewValidator implements Validator {
 				}
 				else {
 					final String normalized = FormatNumeroHelper.removeSpaceAndDash(iban).toUpperCase();
-					if (!normalized.startsWith(ServiceInfrastructureRaw.SIGLE_SUISSE)) {
+					if (!normalized.startsWith(InfrastructureConnector.SIGLE_SUISSE)) {
 						errors.rejectValue("iban", "error.iban.etranger");
 					}
 				}

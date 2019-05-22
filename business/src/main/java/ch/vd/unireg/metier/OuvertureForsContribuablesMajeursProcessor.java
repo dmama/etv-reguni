@@ -35,7 +35,7 @@ import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.metier.OuvertureForsResults.ErreurType;
@@ -459,7 +459,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 				commune = null;
 			}
 		}
-		catch (ServiceInfrastructureException e) {
+		catch (InfrastructureException e) {
 			LOGGER.error("Impossible de récupérer la commune de l'habitant n° " + habitant.getNumero(), e);
 			throw new OuvertureForsErreurException(habitant, ErreurType.INFRA_EXCEPTION, e);
 		}

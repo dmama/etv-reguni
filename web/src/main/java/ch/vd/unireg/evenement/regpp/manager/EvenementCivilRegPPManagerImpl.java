@@ -21,7 +21,7 @@ import ch.vd.unireg.evenement.regpp.view.EvenementCivilRegPPCriteriaView;
 import ch.vd.unireg.evenement.regpp.view.EvenementCivilRegPPDetailView;
 import ch.vd.unireg.evenement.regpp.view.EvenementCivilRegPPElementListeView;
 import ch.vd.unireg.interfaces.civil.IndividuConnectorException;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.IndividuNotFoundException;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -54,7 +54,7 @@ public class EvenementCivilRegPPManagerImpl extends EvenementCivilManagerImpl im
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public EvenementCivilRegPPDetailView get(Long id) throws AdresseException, ServiceInfrastructureException {
+	public EvenementCivilRegPPDetailView get(Long id) throws AdresseException, InfrastructureException {
 
 		final EvenementCivilRegPPDetailView evtView = new EvenementCivilRegPPDetailView();
 

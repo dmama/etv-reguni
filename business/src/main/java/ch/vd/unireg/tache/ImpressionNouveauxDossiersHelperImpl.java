@@ -24,18 +24,18 @@ import org.apache.commons.lang3.StringUtils;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.common.NomPrenom;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdressesResolutionException;
 import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.editique.ConstantesEditique;
 import ch.vd.unireg.editique.EditiqueAbstractLegacyHelper;
 import ch.vd.unireg.editique.EditiqueException;
 import ch.vd.unireg.editique.EditiquePrefixeHelper;
 import ch.vd.unireg.editique.TypeDocumentEditique;
 import ch.vd.unireg.editique.ZoneAffranchissementEditique;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.situationfamille.SituationFamilleService;
 import ch.vd.unireg.tiers.Contribuable;
@@ -68,7 +68,7 @@ public class ImpressionNouveauxDossiersHelperImpl extends EditiqueAbstractLegacy
 	 * Remplit la partie spécifique de la fiche d'ouverture de dossier
 	 *
 	 * @param contribuable
-	 * @throws ServiceInfrastructureException
+	 * @throws InfrastructureException
 	 */
 	private FicheOuvertureDossier remplitSpecifiqueNouveauDossier(Contribuable contribuable) throws EditiqueException {
 
@@ -101,7 +101,7 @@ public class ImpressionNouveauxDossiersHelperImpl extends EditiqueAbstractLegacy
 		try {
 			commune = serviceInfrastructureService.getCommuneByNumeroOfs(numeroOfsAutoriteFiscale, forFiscalGestion.getDateFin());
 		}
-		catch (ServiceInfrastructureException e) {
+		catch (InfrastructureException e) {
 			commune = null;
 		}
 		if (commune == null) {
@@ -194,12 +194,12 @@ public class ImpressionNouveauxDossiersHelperImpl extends EditiqueAbstractLegacy
 	 *
 	 * @return
 	 * @throws AdressesResolutionException
-	 * @throws ServiceInfrastructureException
+	 * @throws InfrastructureException
 	 * @throws RemoteException
 	 * @throws AdressesResolutionException
-	 * @throws ServiceInfrastructureException
+	 * @throws InfrastructureException
 	 */
-	private InfoEnteteDocument remplitEnteteDocument(Contribuable contribuable) throws AdresseException, ServiceInfrastructureException {
+	private InfoEnteteDocument remplitEnteteDocument(Contribuable contribuable) throws AdresseException, InfrastructureException {
 		final InfoEnteteDocument infoEnteteDocument = InfoEnteteDocumentDocument1.Factory.newInstance().addNewInfoEnteteDocument();
 		infoEnteteDocument.setPrefixe(EditiquePrefixeHelper.buildPrefixeEnteteDocument(getTypeDocumentEditique()));
 
@@ -219,7 +219,7 @@ public class ImpressionNouveauxDossiersHelperImpl extends EditiqueAbstractLegacy
 	 * Alimente un objet Document pour l'impression des nouveaux dossiers
 	 *
 	 * @return
-	 * @throws ServiceInfrastructureException
+	 * @throws InfrastructureException
 	 */
 	@Override
 	public FichierImpressionDocument remplitNouveauDossier(List<Contribuable> contribuables) throws EditiqueException {

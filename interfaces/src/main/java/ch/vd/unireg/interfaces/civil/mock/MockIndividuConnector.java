@@ -89,7 +89,7 @@ public abstract class MockIndividuConnector implements IndividuConnector {
 	private final Map<Long, IndividuApresEvenement> evenementsMap = new HashMap<>();
 
 	/**
-	 * Constructeur qui permet d'injecter le service infrastructure ; appelle init()
+	 * Constructeur qui permet d'injecter le connecteur d'infrastructure ; appelle init()
 	 * pour l'initialisation des données
 	 */
 	public MockIndividuConnector() {

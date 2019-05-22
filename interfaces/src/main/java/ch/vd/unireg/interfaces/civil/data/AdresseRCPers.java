@@ -20,7 +20,7 @@ import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.interfaces.civil.IndividuConnectorException;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.common.CasePostale;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.type.TypeAdresseCivil;
 
@@ -48,36 +48,36 @@ public class AdresseRCPers implements Adresse, Serializable {
 	private final Localisation localisationPrecedente;
 	private final Localisation localisationSuivante;
 
-	public static Adresse get(Contact contact, ServiceInfrastructureRaw infraService) {
+	public static Adresse get(Contact contact, InfrastructureConnector infraService) {
 		if (contact == null) {
 			return null;
 		}
 		return new AdresseRCPers(contact, infraService);
 	}
 
-	private static AdresseRCPers get(AddressInformation addressInfo, ServiceInfrastructureRaw infraService) {
+	private static AdresseRCPers get(AddressInformation addressInfo, InfrastructureConnector infraService) {
 		if (addressInfo == null) {
 			return null;
 		}
 		return new AdresseRCPers(addressInfo, null, null, infraService);
 	}
 
-	public static AdresseRCPers get(Residence residence, @Nullable Residence next, @Nullable RegDate dateDeces, ServiceInfrastructureRaw infraService) {
+	public static AdresseRCPers get(Residence residence, @Nullable Residence next, @Nullable RegDate dateDeces, InfrastructureConnector infraService) {
 		if (residence == null) {
 			return null;
 		}
 		return new AdresseRCPers(residence, next, dateDeces, infraService);
 	}
 
-	public AdresseRCPers(Contact contact, ServiceInfrastructureRaw infraService) {
+	public AdresseRCPers(Contact contact, InfrastructureConnector infraService) {
 		this(contact.getContact(), XmlUtils.xmlcal2regdate(contact.getContactValidFrom()), XmlUtils.xmlcal2regdate(contact.getContactValidTill()), infraService);
 	}
 
-	public AdresseRCPers(MailAddress address, RegDate dateDebut, RegDate dateFin, ServiceInfrastructureRaw infraService) {
+	public AdresseRCPers(MailAddress address, RegDate dateDebut, RegDate dateFin, InfrastructureConnector infraService) {
 		this(address.getAddressInformation(), dateDebut, dateFin, infraService);
 	}
 
-	private AdresseRCPers(AddressInformation addressInfo, @Nullable RegDate dateDebut, @Nullable RegDate dateFin, ServiceInfrastructureRaw infraService) {
+	private AdresseRCPers(AddressInformation addressInfo, @Nullable RegDate dateDebut, @Nullable RegDate dateFin, InfrastructureConnector infraService) {
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
 		DateRangeHelper.assertValidRange(this.dateDebut, this.dateFin, IndividuConnectorException.class);
@@ -103,7 +103,7 @@ public class AdresseRCPers implements Adresse, Serializable {
 		this.localisationSuivante = null;
 	}
 
-	public AdresseRCPers(Residence residence, @Nullable Residence next, @Nullable RegDate dateDeces, ServiceInfrastructureRaw infraService) {
+	public AdresseRCPers(Residence residence, @Nullable Residence next, @Nullable RegDate dateDeces, InfrastructureConnector infraService) {
 		final DwellingAddress dwellingAddress = residence.getDwellingAddress();
 		final SwissAddressInformation addressInfo = dwellingAddress.getAddress();
 		final DwellingAddress.Dwelling dwelling = dwellingAddress.getDwelling();
@@ -119,7 +119,7 @@ public class AdresseRCPers implements Adresse, Serializable {
 		this.numeroOrdrePostal = addressInfo.getSwissZipCodeId();
 		this.numeroPostal = String.valueOf(addressInfo.getSwissZipCode());
 		this.numeroPostalComplementaire = addressInfo.getSwissZipCodeAddOn();
-		this.noOfsPays = ServiceInfrastructureRaw.noOfsSuisse; // par définition, RcPers ne retourne que des adresses de domicile dans le canton de Vaud, donc en Suisse.
+		this.noOfsPays = InfrastructureConnector.noOfsSuisse; // par définition, RcPers ne retourne que des adresses de domicile dans le canton de Vaud, donc en Suisse.
 		this.rue = addressInfo.getStreet();
 
 		// [SIFISC-13878] on prend en compte la deuxième ligne de complément si la première est vide
@@ -231,7 +231,7 @@ public class AdresseRCPers implements Adresse, Serializable {
 				XmlUtils.xmlcal2regdate(current.getArrivalDate()) == XmlUtils.xmlcal2regdate(next.getArrivalDate());
 	}
 
-	protected static Localisation initLocalisation(RegDate date, Destination location, ServiceInfrastructureRaw infraService) {
+	protected static Localisation initLocalisation(RegDate date, Destination location, InfrastructureConnector infraService) {
 
 		if (location == null) {
 			return null;
@@ -240,7 +240,7 @@ public class AdresseRCPers implements Adresse, Serializable {
 		Adresse adresseCourrier = AdresseRCPers.get(location.getMailAddress(), infraService);
 
 		if (location.getUnknown() != null) {
-			return new Localisation(LocalisationType.HORS_SUISSE, ServiceInfrastructureRaw.noPaysInconnu, adresseCourrier);
+			return new Localisation(LocalisationType.HORS_SUISSE, InfrastructureConnector.noPaysInconnu, adresseCourrier);
 		}
 
 		final Destination.ForeignCountry foreignCountry = location.getForeignCountry();
@@ -250,7 +250,7 @@ public class AdresseRCPers implements Adresse, Serializable {
 			// [SIFISC-977] attention, ce pays peut n'être qu'un territoire et pas un état souverain !
 			// si c'est le cas, passer à l'état souverain (c'est ce qui nous intéresse pour les fors)
 			final Pays pays = infraService.getPays(countryId, date);
-			final int ofsEtatSouverain = pays != null ? pays.getNoOfsEtatSouverain() : ServiceInfrastructureRaw.noPaysInconnu;
+			final int ofsEtatSouverain = pays != null ? pays.getNoOfsEtatSouverain() : InfrastructureConnector.noPaysInconnu;
 
 			if (adresseCourrier == null && StringUtils.isNotBlank(foreignCountry.getTown())) {
 				// on essaie très fort de mettre quelque chose dans l'adresse
@@ -281,11 +281,11 @@ public class AdresseRCPers implements Adresse, Serializable {
 		return addressInfo.getForeignZipCode();
 	}
 
-	private static int initNoOfsPays(RegDate date, String countryCode, ServiceInfrastructureRaw infraService) {
+	private static int initNoOfsPays(RegDate date, String countryCode, InfrastructureConnector infraService) {
 
 		if ("CH".equals(countryCode)) {
 			// short path : 90% des adresses sont en Suisse
-			return ServiceInfrastructureRaw.noOfsSuisse;
+			return InfrastructureConnector.noOfsSuisse;
 		}
 
 		final Pays pays = infraService.getPays(countryCode, date);
