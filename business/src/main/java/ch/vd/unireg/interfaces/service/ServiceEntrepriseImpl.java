@@ -14,8 +14,8 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.common.DonneesCivilesException;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseException;
-import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseRaw;
+import ch.vd.unireg.interfaces.entreprise.EntrepriseConnector;
+import ch.vd.unireg.interfaces.entreprise.EntrepriseConnectorException;
 import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDE;
 import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDEQuery;
 import ch.vd.unireg.interfaces.entreprise.data.BaseAnnonceIDE;
@@ -29,7 +29,7 @@ import ch.vd.unireg.interfaces.model.AdressesCivilesHisto;
 
 public class ServiceEntrepriseImpl implements ServiceEntreprise {
 
-	private ServiceEntrepriseRaw target;
+	private EntrepriseConnector connector;
 
 	private ServiceInfrastructureService serviceInfra;
 
@@ -39,13 +39,13 @@ public class ServiceEntrepriseImpl implements ServiceEntreprise {
 		this.serviceInfra = serviceInfra;
 	}
 
-	public ServiceEntrepriseImpl(ServiceEntrepriseRaw target, ServiceInfrastructureService serviceInfra) {
+	public ServiceEntrepriseImpl(EntrepriseConnector connector, ServiceInfrastructureService serviceInfra) {
 		this.serviceInfra = serviceInfra;
-		this.target = target;
+		this.connector = connector;
 	}
 
-	public void setTarget(ServiceEntrepriseRaw target) {
-		this.target = target;
+	public void setConnector(EntrepriseConnector connector) {
+		this.connector = connector;
 	}
 
 	public void setServiceInfra(ServiceInfrastructureService serviceInfra) {
@@ -53,27 +53,27 @@ public class ServiceEntrepriseImpl implements ServiceEntreprise {
 	}
 
 	@Override
-	public EntrepriseCivile getEntrepriseHistory(long noEntreprise) throws ServiceEntrepriseException {
-		return target.getEntrepriseHistory(noEntreprise);
+	public EntrepriseCivile getEntrepriseHistory(long noEntreprise) throws EntrepriseConnectorException {
+		return connector.getEntrepriseHistory(noEntreprise);
 	}
 
 	@Override
-	public Map<Long, EntrepriseCivileEvent> getEntrepriseEvent(long noEvenement) throws ServiceEntrepriseException {
-		return target.getEntrepriseEvent(noEvenement);
+	public Map<Long, EntrepriseCivileEvent> getEntrepriseEvent(long noEvenement) throws EntrepriseConnectorException {
+		return connector.getEntrepriseEvent(noEvenement);
 	}
 
 	@Override
-	public ServiceEntrepriseRaw.Identifiers getEntrepriseIdsByNoIde(String noide) throws ServiceEntrepriseException {
-		return target.getEntrepriseByNoIde(noide);
+	public EntrepriseConnector.Identifiers getEntrepriseIdsByNoIde(String noide) throws EntrepriseConnectorException {
+		return connector.getEntrepriseByNoIde(noide);
 	}
 
 	@Override
-	public Long getNoEntrepriseCivileFromNoEtablissementCivil(Long noEtablissement) throws ServiceEntrepriseException {
-		return target.getNoEntrepriseFromNoEtablissement(noEtablissement);
+	public Long getNoEntrepriseCivileFromNoEtablissementCivil(Long noEtablissement) throws EntrepriseConnectorException {
+		return connector.getNoEntrepriseFromNoEtablissement(noEtablissement);
 	}
 
 	@Override
-	public AdressesCivilesHisto getAdressesEntrepriseHisto(long noEntrepriseCivile) throws ServiceEntrepriseException {
+	public AdressesCivilesHisto getAdressesEntrepriseHisto(long noEntrepriseCivile) throws EntrepriseConnectorException {
 		final EntrepriseCivile entrepriseCivile = getEntrepriseHistory(noEntrepriseCivile);
 		if (entrepriseCivile == null) {
 			return null;
@@ -95,14 +95,14 @@ public class ServiceEntrepriseImpl implements ServiceEntreprise {
 			resultat.finish(false);
 		}
 		catch (DonneesCivilesException e) {
-			throw new ServiceEntrepriseException(e);
+			throw new EntrepriseConnectorException(e);
 		}
 		return resultat;
 	}
 
 	@Nullable
 	@Override
-	public AdressesCivilesHisto getAdressesEtablissementCivilHisto(long noEtablissementCivil) throws ServiceEntrepriseException {
+	public AdressesCivilesHisto getAdressesEtablissementCivilHisto(long noEtablissementCivil) throws EntrepriseConnectorException {
 		final EtablissementCivil etablissement = getEntrepriseHistory(getNoEntrepriseCivileFromNoEtablissementCivil(noEtablissementCivil)).getEtablissementForNo(noEtablissementCivil);
 		if (etablissement == null) {
 			return null;
@@ -114,27 +114,27 @@ public class ServiceEntrepriseImpl implements ServiceEntreprise {
 
 	@Nullable
 	@Override
-	public AnnonceIDE getAnnonceIDE(long numero, @NotNull String userId) throws ServiceEntrepriseException {
-		final Page<AnnonceIDE> annoncesIDE = target.findAnnoncesIDE(new AnnonceIDEQuery(numero, userId), null, 0, 10);
+	public AnnonceIDE getAnnonceIDE(long numero, @NotNull String userId) throws EntrepriseConnectorException {
+		final Page<AnnonceIDE> annoncesIDE = connector.findAnnoncesIDE(new AnnonceIDEQuery(numero, userId), null, 0, 10);
 		final List<AnnonceIDE> content = annoncesIDE.getContent();
 		if (content.size() == 0) {
 			return null;
 		}
 		if (content.size() > 1) {
-			throw new ServiceEntrepriseException("La recherche de l'annonce par son id (" + String.valueOf(numero) + ") a renvoyé plusieurs résultats!");
+			throw new EntrepriseConnectorException("La recherche de l'annonce par son id (" + String.valueOf(numero) + ") a renvoyé plusieurs résultats!");
 		}
 		return content.get(0);
 	}
 
 	@NotNull
 	@Override
-	public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws ServiceEntrepriseException {
-		return target.findAnnoncesIDE(query, order, pageNumber, resultsPerPage);
+	public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws EntrepriseConnectorException {
+		return connector.findAnnoncesIDE(query, order, pageNumber, resultsPerPage);
 	}
 
 	@Override
-	public BaseAnnonceIDE.Statut validerAnnonceIDE(BaseAnnonceIDE annonceIDE) throws ServiceEntrepriseException {
-		return target.validerAnnonceIDE(annonceIDE);
+	public BaseAnnonceIDE.Statut validerAnnonceIDE(BaseAnnonceIDE annonceIDE) throws EntrepriseConnectorException {
+		return connector.validerAnnonceIDE(annonceIDE);
 	}
 
 	@Override

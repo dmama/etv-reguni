@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.common.WebserviceTest;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -94,7 +94,7 @@ public class PartyWebServicePMTest extends WebserviceTest {
 	@Test
 	public void testSetBlocageRemboursementAutomatiquePMConnueDansUnireg() throws Exception {
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(MockEntrepriseFactory.NESTLE);
@@ -139,7 +139,7 @@ public class PartyWebServicePMTest extends WebserviceTest {
 	@Test
 	public void testGetAdresseEnvoiPersonneMorale() throws Exception {
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(MockEntrepriseFactory.BCV);
@@ -187,7 +187,7 @@ public class PartyWebServicePMTest extends WebserviceTest {
 	@Test
 	public void testGetForFiscauxPMVaudoise() throws Exception {
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(MockEntrepriseFactory.BCV);
@@ -228,7 +228,7 @@ public class PartyWebServicePMTest extends WebserviceTest {
 	@Test
 	public void testGetForFiscauxPMHorsCanton() throws Exception {
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(MockEntrepriseFactory.BANQUE_COOP);
@@ -302,7 +302,7 @@ public class PartyWebServicePMTest extends WebserviceTest {
 	@Test
 	public void testGetBatchPartyRequestAvecMelangePersonnesPhysiquesEtMorales() throws Exception {
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(MockEntrepriseFactory.BCV);

@@ -26,32 +26,32 @@
 	<alias alias="individuConnector" name="individuConnectorCache"/>
 
 
-	<!-- Service Entreprise -->
+	<!-- Connecteur des entreprises -->
 
-	<bean id="serviceEntrepriseRCEnt" class="ch.vd.unireg.interfaces.entreprise.rcent.ServiceEntrepriseRCEnt">
+	<bean id="entrepriseConnectorRCEnt" class="ch.vd.unireg.interfaces.entreprise.rcent.EntrepriseConnectorRCEnt">
 		<constructor-arg ref="rcEntAdapter"/>
 		<constructor-arg ref="rcEntClientRaw"/>
 		<constructor-arg ref="infrastructureConnector"/>
 	</bean>
 
-	<bean id="serviceEntrepriseTracing" class="ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseTracing">
-		<property name="target" ref="serviceEntrepriseRCEnt" />
+	<bean id="entrepriseConnectorTracing" class="ch.vd.unireg.interfaces.entreprise.EntrepriseConnectorTracing">
+		<property name="target" ref="entrepriseConnectorRCEnt" />
 		<property name="statsService" ref="statsService" />
 	</bean>
 
-	<bean id="serviceEntrepriseCache" class="ch.vd.unireg.interfaces.entreprise.cache.ServiceEntrepriseCache">
-		<property name="target" ref="serviceEntrepriseTracing" />
+	<bean id="entrepriseConnectorCache" class="ch.vd.unireg.interfaces.entreprise.cache.EntrepriseConnectorCache">
+		<property name="target" ref="entrepriseConnectorTracing" />
 		<property name="cacheManager" ref="ehCacheManager" />
-		<property name="cacheName" value="serviceEntreprise" />
+		<property name="cacheName" value="entrepriseConnector" />
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
 		<property name="dataEventService" ref="dataEventService" />
 	</bean>
 
-	<alias alias="serviceEntrepriseRaw" name="serviceEntrepriseCache"/>
+	<alias alias="entrepriseConnector" name="entrepriseConnectorCache"/>
 
 	<bean id="serviceEntreprise" class="ch.vd.unireg.interfaces.service.ServiceEntrepriseImpl">
-		<property name="target" ref="serviceEntrepriseRaw"/>
+		<property name="connector" ref="entrepriseConnector"/>
 	</bean>
 	<alias name="serviceEntreprise" alias="serviceEntreprise"/>
 

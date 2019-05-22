@@ -9,7 +9,7 @@ import org.springframework.core.io.Resource;
 import ch.vd.unireg.common.XmlUtils;
 
 /**
- * Classe utilitaire aidant au chargement du schema xml du service entreprise RCEnt.
+ * Classe utilitaire aidant au chargement du schema des XMLs de RCEnt.
  */
 public class RCEntSchemaHelper {
 

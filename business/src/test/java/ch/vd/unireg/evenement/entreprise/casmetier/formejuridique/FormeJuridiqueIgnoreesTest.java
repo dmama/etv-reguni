@@ -9,7 +9,7 @@ import ch.vd.unireg.evenement.entreprise.engine.AbstractEvenementEntrepriseCivil
 import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
 import ch.vd.unireg.interfaces.entreprise.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.entreprise.data.TypeEntrepriseRegistreIDE;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockEntrepriseCivile;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -44,7 +44,7 @@ public class FormeJuridiqueIgnoreesTest extends AbstractEvenementEntrepriseCivil
 		final Long noEntrepriseCivile = 101202100L;
 		final Long noEtablissement = noEntrepriseCivile + 1000000;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				MockEntrepriseCivile entreprise =
@@ -89,7 +89,7 @@ public class FormeJuridiqueIgnoreesTest extends AbstractEvenementEntrepriseCivil
 		final Long noEntrepriseCivile = 101202100L;
 		final Long noEtablissement = noEntrepriseCivile + 1000000;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				MockEntrepriseCivile entreprise =

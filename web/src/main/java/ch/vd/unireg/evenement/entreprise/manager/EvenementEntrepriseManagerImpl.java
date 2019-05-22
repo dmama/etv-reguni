@@ -33,7 +33,7 @@ import ch.vd.unireg.evenement.entreprise.view.EvenementEntrepriseCriteriaView;
 import ch.vd.unireg.evenement.entreprise.view.EvenementEntrepriseDetailView;
 import ch.vd.unireg.evenement.entreprise.view.EvenementEntrepriseElementListeRechercheView;
 import ch.vd.unireg.evenement.entreprise.view.EvenementEntrepriseSummaryView;
-import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseException;
+import ch.vd.unireg.interfaces.entreprise.EntrepriseConnectorException;
 import ch.vd.unireg.interfaces.entreprise.data.EntrepriseCivile;
 import ch.vd.unireg.interfaces.entreprise.data.EntrepriseCivileEvent;
 import ch.vd.unireg.interfaces.infra.InfrastructureException;
@@ -352,7 +352,7 @@ public class EvenementEntrepriseManagerImpl implements EvenementEntrepriseManage
 			view.setRecyclable(evaluateRecyclable(evt.getId(), list));
 			view.setForcable(evaluateForcable(evt.getEtat(), view.isRecyclable()));
 		}
-		catch (ServiceEntrepriseException e) {
+		catch (EntrepriseConnectorException e) {
 			LOGGER.warn("Impossible d'afficher toutes les données de l'événement entreprise " + evt.toString(), e);
 			view.setNom("<erreur: entreprise civile introuvable>");
 		}
@@ -386,7 +386,7 @@ public class EvenementEntrepriseManagerImpl implements EvenementEntrepriseManage
 				try {
 					tiersAssocie = createTiersAssocieView(entreprise);
 				}
-				catch (ServiceEntrepriseException e) {
+				catch (EntrepriseConnectorException e) {
 					tiersAssocie = createTiersAssocieViewSansCivil(entreprise);
 				}
 				evtView.setTiersAssocie(tiersAssocie);

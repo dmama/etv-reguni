@@ -14,7 +14,9 @@ import ch.vd.unireg.interfaces.entreprise.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.entreprise.data.EntrepriseCivile;
 import ch.vd.unireg.interfaces.entreprise.data.EntrepriseCivileEvent;
 
-public interface ServiceEntrepriseRaw {
+public interface EntrepriseConnector {
+
+	String SERVICE_NAME = "EntrepriseConnector";
 
 	/**
 	 * Container des identifiants d'une entreprise et de l'un de ses établissements civils
@@ -33,32 +35,30 @@ public interface ServiceEntrepriseRaw {
 		}
 	}
 
-	String SERVICE_NAME = "ServiceEntreprise";
-
 	/**
 	 * Recherche tous les états d'une entreprise.
 	 *
 	 * @param noEntreprise Identifiant cantonal de l'entreprise
 	 * @return les données retournées par RCEnt
-	 * @throws ServiceEntrepriseException
+	 * @throws EntrepriseConnectorException
 	 */
-	EntrepriseCivile getEntrepriseHistory(long noEntreprise) throws ServiceEntrepriseException;
+	EntrepriseCivile getEntrepriseHistory(long noEntreprise) throws EntrepriseConnectorException;
 
 	/**
 	 * Obtenir un numéro d'entreprise à partir d'un numéro d'établissement civil.
 	 *
 	 * @param noEtablissementCivil Identifiant cantonal de l'établissement civil.
 	 * @return L'identifiant cantonal de l'entreprise détenant l'établissement civil.
-	 * @throws ServiceEntrepriseException
+	 * @throws EntrepriseConnectorException
 	 */
-	Long getNoEntrepriseFromNoEtablissement(Long noEtablissementCivil) throws ServiceEntrepriseException;
+	Long getNoEntrepriseFromNoEtablissement(Long noEtablissementCivil) throws EntrepriseConnectorException;
 
 	/**
 	 * @param noide numéro IDE (sous la forme sans point ni tiret)
 	 * @return les identifiants de l'entreprise et de son établissement civil qui correspondent à ce numéro IDE
-	 * @throws ServiceEntrepriseException en cas de souci quelque part
+	 * @throws EntrepriseConnectorException en cas de souci quelque part
 	 */
-	Identifiers getEntrepriseByNoIde(String noide) throws ServiceEntrepriseException;
+	Identifiers getEntrepriseByNoIde(String noide) throws EntrepriseConnectorException;
 
 	/**
 	 * Recherche les données de l'événement, en particulier des états avant et après pour chaque entreprise touchée.
@@ -68,9 +68,9 @@ public interface ServiceEntrepriseRaw {
 	 *
 	 * @param noEvenement Identifiant de l'événement entreprise
 	 * @return les données de l'événement sous forme de map indexée par no cantonal.
-	 * @throws ServiceEntrepriseException
+	 * @throws EntrepriseConnectorException
 	 */
-	Map<Long, EntrepriseCivileEvent> getEntrepriseEvent(long noEvenement) throws ServiceEntrepriseException;
+	Map<Long, EntrepriseCivileEvent> getEntrepriseEvent(long noEvenement) throws EntrepriseConnectorException;
 
 
 	/**
@@ -81,7 +81,7 @@ public interface ServiceEntrepriseRaw {
 	 * @param modele le modèle de l'annonce.
 	 * @return le statut résultant avec les erreurs éventuelles ajouté par le registre civil.
 	 */
-	BaseAnnonceIDE.Statut validerAnnonceIDE(BaseAnnonceIDE modele) throws ServiceEntrepriseException;
+	BaseAnnonceIDE.Statut validerAnnonceIDE(BaseAnnonceIDE modele) throws EntrepriseConnectorException;
 
 	/**
 	 * Recherche des demandes d'annonces à l'IDE.
@@ -93,12 +93,12 @@ public interface ServiceEntrepriseRaw {
 	 * @return une page avec les annonces correspondantes
 	 */
 	@NotNull
-	Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws ServiceEntrepriseException;
+	Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws EntrepriseConnectorException;
 
 	/**
-	 * Méthode qui permet de tester que le service entreprise répond bien. Cette méthode est insensible aux caches.
+	 * Méthode qui permet de tester que le connecteur des entreprises répond bien. Cette méthode est insensible aux caches.
 	 *
-	 * @throws ServiceEntrepriseException en cas de non-fonctionnement du service entreprise
+	 * @throws EntrepriseConnectorException en cas de non-fonctionnement du connecteur des entreprises
 	 */
-	void ping() throws ServiceEntrepriseException;
+	void ping() throws EntrepriseConnectorException;
 }

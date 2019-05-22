@@ -23,7 +23,7 @@ import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.common.StringRenderer;
 import ch.vd.unireg.interfaces.common.CasePostale;
-import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseException;
+import ch.vd.unireg.interfaces.entreprise.EntrepriseConnectorException;
 import ch.vd.unireg.interfaces.entreprise.data.AdresseAnnonceIDERCEnt;
 import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDEEnvoyee;
 import ch.vd.unireg.interfaces.entreprise.data.BaseAnnonceIDE;
@@ -542,7 +542,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 				audit.error(message);
 				throw new ServiceIDEException(message);
 			}
-		} catch (ServiceEntrepriseException e) {
+		} catch (EntrepriseConnectorException e) {
 			final String message = "Un problème est survenu lors de la validation du prototype de l'annonce: " + e.getMessage();
 			audit.error(message);
 			throw new ServiceIDEException(message, e);

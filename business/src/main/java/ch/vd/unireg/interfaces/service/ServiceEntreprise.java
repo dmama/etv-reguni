@@ -8,8 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseException;
-import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseRaw;
+import ch.vd.unireg.interfaces.entreprise.EntrepriseConnector;
+import ch.vd.unireg.interfaces.entreprise.EntrepriseConnectorException;
 import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDE;
 import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDEQuery;
 import ch.vd.unireg.interfaces.entreprise.data.BaseAnnonceIDE;
@@ -27,9 +27,9 @@ public interface ServiceEntreprise {
 	 *
 	 * @param noEntreprise Identifiant cantonal de l'entreprise
 	 * @return les données retournées par RCEnt
-	 * @throws ServiceEntrepriseException
+	 * @throws EntrepriseConnectorException
 	 */
-	EntrepriseCivile getEntrepriseHistory(long noEntreprise) throws ServiceEntrepriseException;
+	EntrepriseCivile getEntrepriseHistory(long noEntreprise) throws EntrepriseConnectorException;
 
 	/**
 	 * Recherche les données de l'événement, en particulier des états avant et après pour chaque entreprise touchée.
@@ -39,40 +39,40 @@ public interface ServiceEntreprise {
 	 *
 	 * @param noEvenement Identifiant de l'événement entreprise
 	 * @return les données de l'événement sous forme de map indexée par no cantonal.
-	 * @throws ServiceEntrepriseException
+	 * @throws EntrepriseConnectorException
 	 */
-	Map<Long, EntrepriseCivileEvent> getEntrepriseEvent(long noEvenement) throws ServiceEntrepriseException;
+	Map<Long, EntrepriseCivileEvent> getEntrepriseEvent(long noEvenement) throws EntrepriseConnectorException;
 
 	/**
 	 * @param noide numéro IDE (sous la forme sans point ni tiret)
 	 * @return les identifiants de l'entreprise et de son établissement civil qui correspondent à ce numéro IDE
-	 * @throws ServiceEntrepriseException en cas de souci quelque part
+	 * @throws EntrepriseConnectorException en cas de souci quelque part
 	 */
-	ServiceEntrepriseRaw.Identifiers getEntrepriseIdsByNoIde(String noide) throws ServiceEntrepriseException;
+	EntrepriseConnector.Identifiers getEntrepriseIdsByNoIde(String noide) throws EntrepriseConnectorException;
 
 	/**
 	 * Obtenir un numéro d'entreprise à partir d'un numéro d'établissement civil.
 	 *
 	 * @param noEtablissement Identifiant cantonal de l'établissement civil.
 	 * @return L'identifiant cantonal de l'entreprise détenant l'établissement civil.
-	 * @throws ServiceEntrepriseException
+	 * @throws EntrepriseConnectorException
 	 */
-	Long getNoEntrepriseCivileFromNoEtablissementCivil(Long noEtablissement) throws ServiceEntrepriseException;
+	Long getNoEntrepriseCivileFromNoEtablissementCivil(Long noEtablissement) throws EntrepriseConnectorException;
 
 	/**
 	 * @param noEntrepriseCivile l'identifiant cantonal d'une entreprise
 	 * @return l'historique des adresses de cette entreprise
-	 * @throws ServiceEntrepriseException en cas de souci
+	 * @throws EntrepriseConnectorException en cas de souci
 	 */
-	AdressesCivilesHisto getAdressesEntrepriseHisto(long noEntrepriseCivile) throws ServiceEntrepriseException;
+	AdressesCivilesHisto getAdressesEntrepriseHisto(long noEntrepriseCivile) throws EntrepriseConnectorException;
 
 	/**
 	 * @param noEtablissementCivil l'identifiant cantonal d'un établissement civil
 	 * @return l'historique des adresses de cet établissement civil; ou <b>null</b> si l'établissement civil n'existe pas.
-	 * @throws ServiceEntrepriseException en cas de souci
+	 * @throws EntrepriseConnectorException en cas de souci
 	 */
 	@Nullable
-	AdressesCivilesHisto getAdressesEtablissementCivilHisto(long noEtablissementCivil) throws ServiceEntrepriseException;
+	AdressesCivilesHisto getAdressesEtablissementCivilHisto(long noEtablissementCivil) throws EntrepriseConnectorException;
 
 	/**
 	 * Obtenir le contenu et le statut d'une annonce à l'IDE. findAnnoncesIDE() est utilisé en arrière plan avec le paramètre userId=<userId>.
@@ -85,10 +85,10 @@ public interface ServiceEntreprise {
 	 * @param numero le numéro de l'annonce recherchée
 	 * @param userId l'identifiant IAM de l'utilisateur, ou <code>null</code> pour une annonce émise par Unireg.
 	 * @return l'annonce à l'IDE, ou null si RCEnt ne connait pas d'annonce pour ce numéro.
-	 * @throws ServiceEntrepriseException en cas de problème d'accès ou de cohérence des données retournées.
+	 * @throws EntrepriseConnectorException en cas de problème d'accès ou de cohérence des données retournées.
 	 */
 	@Nullable
-	AnnonceIDE getAnnonceIDE(long numero, @NotNull String userId) throws ServiceEntrepriseException;
+	AnnonceIDE getAnnonceIDE(long numero, @NotNull String userId) throws EntrepriseConnectorException;
 
 	/**
 	 * Recherche des demandes d'annonces à l'IDE.
@@ -100,14 +100,14 @@ public interface ServiceEntreprise {
 	 * @return une page avec les annonces correspondantes
 	 */
 	@NotNull
-	Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws ServiceEntrepriseException;
+	Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws EntrepriseConnectorException;
 
 	/**
 	 * Demander la validation d'une annonce à l'IDE par le registre civil avant l'envoi.
 	 * @param annonceIDE l'annonce candidate
 	 * @return le statut résultant contenant les éventuelles erreurs rapportées par le service civil.
 	 */
-	BaseAnnonceIDE.Statut validerAnnonceIDE(BaseAnnonceIDE annonceIDE) throws ServiceEntrepriseException;
+	BaseAnnonceIDE.Statut validerAnnonceIDE(BaseAnnonceIDE annonceIDE) throws EntrepriseConnectorException;
 
 	@NotNull
 	String createEntrepriseDescription(EntrepriseCivile entrepriseCivile, RegDate date);

@@ -18,8 +18,8 @@ import ch.vd.unireg.cache.UniregCacheManagerImpl;
 import ch.vd.unireg.common.WithoutSpringTest;
 import ch.vd.unireg.data.CivilDataEventListener;
 import ch.vd.unireg.data.CivilDataEventService;
-import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseException;
-import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseRaw;
+import ch.vd.unireg.interfaces.entreprise.EntrepriseConnector;
+import ch.vd.unireg.interfaces.entreprise.EntrepriseConnectorException;
 import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDE;
 import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDEQuery;
 import ch.vd.unireg.interfaces.entreprise.data.BaseAnnonceIDE;
@@ -29,7 +29,7 @@ import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
 import ch.vd.unireg.interfaces.entreprise.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.entreprise.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.entreprise.data.TypeEntrepriseRegistreIDE;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.stats.MockStatsService;
@@ -37,10 +37,10 @@ import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 import static org.junit.Assert.assertEquals;
 
-public class ServiceEntrepriseCacheTest extends WithoutSpringTest {
+public class EntrepriseConnectorCacheTest extends WithoutSpringTest {
 
-	private CallCounterServiceEntreprise target;
-	private ServiceEntrepriseCache cache;
+	private CallCounterEntrepriseConnector target;
+	private EntrepriseConnectorCache cache;
 
 	private final CivilDataEventService dataEventService = new CivilDataEventService() {
 		@Override
@@ -60,49 +60,49 @@ public class ServiceEntrepriseCacheTest extends WithoutSpringTest {
 		}
 	};
 
-	private class CallCounterServiceEntreprise implements ServiceEntrepriseRaw {
+	private class CallCounterEntrepriseConnector implements EntrepriseConnector {
 
 		private int historyCounter = 0;
-		private final ServiceEntrepriseRaw target;
+		private final EntrepriseConnector target;
 
-		public CallCounterServiceEntreprise(ServiceEntrepriseRaw target) {
+		public CallCounterEntrepriseConnector(EntrepriseConnector target) {
 			this.target = target;
 		}
 
 		@Override
-		public EntrepriseCivile getEntrepriseHistory(long noEntreprise) throws ServiceEntrepriseException {
+		public EntrepriseCivile getEntrepriseHistory(long noEntreprise) throws EntrepriseConnectorException {
 			historyCounter++;
 			return target.getEntrepriseHistory(noEntreprise);
 		}
 
 		@Override
-		public Long getNoEntrepriseFromNoEtablissement(Long noEtablissementCivil) throws ServiceEntrepriseException {
+		public Long getNoEntrepriseFromNoEtablissement(Long noEtablissementCivil) throws EntrepriseConnectorException {
 			return target.getNoEntrepriseFromNoEtablissement(noEtablissementCivil);
 		}
 
 		@Override
-		public Identifiers getEntrepriseByNoIde(String noide) throws ServiceEntrepriseException {
+		public Identifiers getEntrepriseByNoIde(String noide) throws EntrepriseConnectorException {
 			return target.getEntrepriseByNoIde(noide);
 		}
 
 		@Override
-		public Map<Long, EntrepriseCivileEvent> getEntrepriseEvent(long noEvenement) throws ServiceEntrepriseException {
+		public Map<Long, EntrepriseCivileEvent> getEntrepriseEvent(long noEvenement) throws EntrepriseConnectorException {
 			return target.getEntrepriseEvent(noEvenement);
 		}
 
 		@Override
-		public BaseAnnonceIDE.Statut validerAnnonceIDE(BaseAnnonceIDE modele) throws ServiceEntrepriseException {
+		public BaseAnnonceIDE.Statut validerAnnonceIDE(BaseAnnonceIDE modele) throws EntrepriseConnectorException {
 			return target.validerAnnonceIDE(modele);
 		}
 
 		@NotNull
 		@Override
-		public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws ServiceEntrepriseException {
+		public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws EntrepriseConnectorException {
 			return target.findAnnoncesIDE(query, order, pageNumber, resultsPerPage);
 		}
 
 		@Override
-		public void ping() throws ServiceEntrepriseException {
+		public void ping() throws EntrepriseConnectorException {
 			target.ping();
 		}
 	}
@@ -110,7 +110,7 @@ public class ServiceEntrepriseCacheTest extends WithoutSpringTest {
 	@Before
 	public void setup() throws Exception {
 
-		target = new CallCounterServiceEntreprise(new MockServiceEntreprise() {
+		target = new CallCounterEntrepriseConnector(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				 addEntreprise(
@@ -127,9 +127,9 @@ public class ServiceEntrepriseCacheTest extends WithoutSpringTest {
 		final CacheManager manager = CacheManager.create(ResourceUtils.getFile("classpath:ut/ehcache.xml").getPath());
 		manager.clearAll(); // Manager is a singleton, and may exist already
 
-		cache = new ServiceEntrepriseCache();
+		cache = new EntrepriseConnectorCache();
 		cache.setCacheManager(manager);
-		cache.setCacheName("serviceEntreprise");
+		cache.setCacheName("entrepriseConnector");
 		cache.setUniregCacheManager(new UniregCacheManagerImpl());
 		cache.setStatsService(new MockStatsService());
 		cache.setTarget(target);

@@ -9,7 +9,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -46,7 +46,7 @@ public class ProduireStatsCtbsProcessorTest extends BusinessTest {
 	public void testExtractionEntreprise() throws Exception {
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// rien

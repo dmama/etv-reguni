@@ -39,7 +39,7 @@ import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
 import ch.vd.unireg.interfaces.entreprise.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.entreprise.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.entreprise.data.TypeEntrepriseRegistreIDE;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockEntrepriseCivile;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockEtablissementCivil;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
@@ -123,7 +123,7 @@ public class MetierServicePMTest extends BusinessTest {
 		MockEtablissementCivilFactory.addEtablissement(noEtablissement2, entrepriseCivile, date(2003, 10, 5), null, nomEtablissement2, FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 		                                               MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2003, 10, 1), StatusRegistreIDE.DEFINITIF, TypeEntrepriseRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(entrepriseCivile);
@@ -201,7 +201,7 @@ public class MetierServicePMTest extends BusinessTest {
 		final MockEtablissementCivil etablissementPrincipal = (MockEtablissementCivil) entrepriseCivile.getEtablissementPrincipal(dateCreation).getPayload();
 		etablissementPrincipal.changeNom(dateChangementNom, nouveauNom);
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(entrepriseCivile);
@@ -259,7 +259,7 @@ public class MetierServicePMTest extends BusinessTest {
 		MockEtablissementCivilFactory.addEtablissement(noEtablissement2, entrepriseCivile, date(2003, 10, 5), null, nomEtablissement2, FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 		                                               MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2003, 10, 1), StatusRegistreIDE.DEFINITIF, TypeEntrepriseRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(entrepriseCivile);
@@ -348,7 +348,7 @@ public class MetierServicePMTest extends BusinessTest {
 		MockEtablissementCivilFactory.addEtablissement(noEtablissement2, entrepriseCivile, date(2003, 10, 5), null, nomEtablissement2, FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 		                                               MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2003, 10, 1), StatusRegistreIDE.DEFINITIF, TypeEntrepriseRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(entrepriseCivile);
@@ -1256,7 +1256,7 @@ public class MetierServicePMTest extends BusinessTest {
 		final RegDate dateDemenagement = date(2010, 6, 23);
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final MockEntrepriseCivile ent = addEntreprise(noCantonalEntreprise);
@@ -1380,7 +1380,7 @@ public class MetierServicePMTest extends BusinessTest {
 		final RegDate dateDemenagement = date(2010, 6, 23);
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final MockEntrepriseCivile ent = addEntreprise(noCantonalEntreprise);

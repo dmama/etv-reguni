@@ -16,7 +16,7 @@ import ch.vd.unireg.documentfiscal.DelaiAutreDocumentFiscal;
 import ch.vd.unireg.foncier.DegrevementICI;
 import ch.vd.unireg.foncier.DemandeDegrevementICI;
 import ch.vd.unireg.foncier.ExonerationIFONC;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.regimefiscal.RegimeFiscalService;
 import ch.vd.unireg.registrefoncier.BienFondsRF;
@@ -271,7 +271,7 @@ public class CorporationStrategyTest extends BusinessTest {
 		final RegDate dateDebutRegimeFiscal = date(1994, 1, 1);
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// non, rien...

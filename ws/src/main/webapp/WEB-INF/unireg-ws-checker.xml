@@ -36,7 +36,7 @@
 	</bean>
 
 	<bean id="serviceEntrepriseChecker" class="ch.vd.unireg.checker.ServiceEntrepriseChecker">
-		<property name="serviceEntrepriseRaw" ref="serviceEntrepriseTracing" />
+		<property name="entrepriseConnector" ref="entrepriseConnectorTracing" />
 	</bean>
 
 	<bean id="serviceInfraChecker" class="ch.vd.unireg.checker.ServiceInfraChecker">

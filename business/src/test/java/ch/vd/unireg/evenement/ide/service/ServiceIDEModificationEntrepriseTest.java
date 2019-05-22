@@ -21,7 +21,7 @@ import ch.vd.unireg.interfaces.entreprise.data.StatutAnnonce;
 import ch.vd.unireg.interfaces.entreprise.data.TypeAnnonce;
 import ch.vd.unireg.interfaces.entreprise.data.TypeEntrepriseRegistreIDE;
 import ch.vd.unireg.interfaces.entreprise.data.TypeEtablissementCivil;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.interfaces.entreprise.rcent.RCEntAnnonceIDEHelper;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -78,7 +78,7 @@ public class ServiceIDEModificationEntrepriseTest extends AbstractServiceIDEServ
 			return entreprise.getNumero();
 		});
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 
@@ -218,7 +218,7 @@ public class ServiceIDEModificationEntrepriseTest extends AbstractServiceIDEServ
 			return entreprise.getNumero();
 		});
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 

@@ -44,7 +44,7 @@ import ch.vd.unireg.indexer.tiers.TopList;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockNationalite;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
@@ -4337,7 +4337,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testIdentificationEntrepriseParIde() throws Exception {
 
 		// mise en place des PM
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(MockEntrepriseFactory.BANQUE_COOP);
@@ -4379,7 +4379,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testIdentificationEntrepriseParIdeInconnu() throws Exception {
 
 		// mise en place des PM
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(MockEntrepriseFactory.BANQUE_COOP);
@@ -4421,7 +4421,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testIdentificationEntrepriseParIdeAvecNomNonConforme() throws Exception {
 
 		// mise en place des PM
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(MockEntrepriseFactory.BANQUE_COOP);
@@ -4464,7 +4464,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testIdentificationEntrepriseParRaisonSociale() throws Exception {
 
 		// mise en place des PM
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(MockEntrepriseFactory.BANQUE_COOP);
@@ -4506,7 +4506,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testIdentificationEntrepriseParRaisonSocialeAvecIdeNonConforme() throws Exception {
 
 		// mise en place des PM
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(MockEntrepriseFactory.BANQUE_COOP);
@@ -4548,7 +4548,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testIdentificationEntrepriseParRaisonSocialeAvecMotsCles() throws Exception {
 
 		// mise en place des PM
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(MockEntrepriseFactory.BANQUE_COOP);
@@ -4589,7 +4589,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testIdentificationEntrepriseParRaisonSocialeAvecFrancisationNecessaire() throws Exception {
 
 		// mise en place des PM
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(MockEntrepriseFactory.BANQUE_COOP);
@@ -4633,7 +4633,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testIdentificationEntrepriseParRaisonSocialeEtNPA() throws Exception {
 
 		// mise en place des PM
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(MockEntrepriseFactory.BANQUE_COOP);

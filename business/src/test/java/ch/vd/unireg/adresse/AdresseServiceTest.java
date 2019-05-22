@@ -17,7 +17,7 @@ import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockEntrepriseCivile;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
@@ -3523,7 +3523,7 @@ public class AdresseServiceTest extends BusinessTest {
 		/*
 		 * Crée les données du mock service PM
 		 */
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final MockEntrepriseCivile ent = MockEntrepriseFactory.createSimpleEntrepriseRC(noEntrepriseCivile, noEntrepriseCivile + 1001, "Ma Petite Entreprise", date(1970, 7, 1), null,
@@ -6440,7 +6440,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 		final long noTiers = 10536395;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(MockEntrepriseFactory.KPMG);
@@ -6560,7 +6560,7 @@ public class AdresseServiceTest extends BusinessTest {
 		final long noTiers = 10033975;
 		final long noIndividu = 330581;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(MockEntrepriseFactory.CURIA_TREUHAND);

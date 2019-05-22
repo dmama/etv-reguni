@@ -4,7 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.unireg.common.BusinessTest;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.tiers.Entreprise;
@@ -18,7 +18,7 @@ public class BusinessHelperTest extends BusinessTest {
 	public void testGetDebtorName() throws Exception {
 
 		// une PM
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(MockEntrepriseFactory.BANQUE_COOP);

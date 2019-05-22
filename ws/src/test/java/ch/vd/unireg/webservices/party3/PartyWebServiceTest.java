@@ -30,7 +30,7 @@ import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockEntrepriseCivile;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -1300,7 +1300,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 
 		final long noPM = 20151L;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final MockEntrepriseCivile ent = MockEntrepriseFactory.createSimpleEntrepriseRC(noPM, noPM + 1011, "Fiduciaire Galper S.A.", date(1993, 7, 23), null,
@@ -1729,7 +1729,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 
 		final long idEntrepriseCivile = 12345L;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final MockEntrepriseCivile ent = MockEntrepriseFactory.createSimpleEntrepriseRC(idEntrepriseCivile, idEntrepriseCivile + 1011, "Biscottes Duchmole", date(1990, 4, 5), null,

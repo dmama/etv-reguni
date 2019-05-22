@@ -6,7 +6,7 @@ import org.junit.Test;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.evenement.entreprise.EvenementEntreprise;
 import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.type.EtatEvenementEntreprise;
@@ -33,7 +33,7 @@ public class TraitementManuelProcessorTest extends AbstractEvenementEntrepriseCi
 		// Mise en place service mock
 		final Long noEntrepriseCivile = 101202100L;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(

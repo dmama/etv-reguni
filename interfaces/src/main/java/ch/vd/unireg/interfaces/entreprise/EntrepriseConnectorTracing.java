@@ -24,14 +24,14 @@ import ch.vd.unireg.stats.StatsService;
  * Implémentation qui permet de comptabiliser le temps passé dans les appels du service.
  *
  */
-public class ServiceEntrepriseTracing implements ServiceEntrepriseRaw, InitializingBean, DisposableBean {
+public class EntrepriseConnectorTracing implements EntrepriseConnector, InitializingBean, DisposableBean {
 
-	private ServiceEntrepriseRaw target;
+	private EntrepriseConnector target;
 	private StatsService statsService;
 
 	private final ServiceTracing tracing = new ServiceTracing(SERVICE_NAME);
 
-	public void setTarget(ServiceEntrepriseRaw target) {
+	public void setTarget(EntrepriseConnector target) {
 		this.target = target;
 	}
 
@@ -55,7 +55,7 @@ public class ServiceEntrepriseTracing implements ServiceEntrepriseRaw, Initializ
 	}
 
 	@Override
-	public EntrepriseCivile getEntrepriseHistory(final long noEntreprise) throws ServiceEntrepriseException {
+	public EntrepriseCivile getEntrepriseHistory(final long noEntreprise) throws EntrepriseConnectorException {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();
@@ -76,7 +76,7 @@ public class ServiceEntrepriseTracing implements ServiceEntrepriseRaw, Initializ
 	}
 
 	@Override
-	public Long getNoEntrepriseFromNoEtablissement(final Long noEtablissementCivil) throws ServiceEntrepriseException {
+	public Long getNoEntrepriseFromNoEtablissement(final Long noEtablissementCivil) throws EntrepriseConnectorException {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();
@@ -97,7 +97,7 @@ public class ServiceEntrepriseTracing implements ServiceEntrepriseRaw, Initializ
 	}
 
 	@Override
-	public Identifiers getEntrepriseByNoIde(final String noide) throws ServiceEntrepriseException {
+	public Identifiers getEntrepriseByNoIde(final String noide) throws EntrepriseConnectorException {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();
@@ -118,7 +118,7 @@ public class ServiceEntrepriseTracing implements ServiceEntrepriseRaw, Initializ
 	}
 
 	@Override
-	public Map<Long, EntrepriseCivileEvent> getEntrepriseEvent(final long noEvenement) throws ServiceEntrepriseException {
+	public Map<Long, EntrepriseCivileEvent> getEntrepriseEvent(final long noEvenement) throws EntrepriseConnectorException {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();
@@ -140,7 +140,7 @@ public class ServiceEntrepriseTracing implements ServiceEntrepriseRaw, Initializ
 
 	@NotNull
 	@Override
-	public Page<AnnonceIDE> findAnnoncesIDE(@NotNull final AnnonceIDEQuery query, @Nullable final Sort.Order order, final int pageNumber, final int resultsPerPage) throws ServiceEntrepriseException {
+	public Page<AnnonceIDE> findAnnoncesIDE(@NotNull final AnnonceIDEQuery query, @Nullable final Sort.Order order, final int pageNumber, final int resultsPerPage) throws EntrepriseConnectorException {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();
@@ -180,7 +180,7 @@ public class ServiceEntrepriseTracing implements ServiceEntrepriseRaw, Initializ
 	}
 
 	@Override
-	public void ping() throws ServiceEntrepriseException {
+	public void ping() throws EntrepriseConnectorException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {

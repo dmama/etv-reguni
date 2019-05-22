@@ -22,7 +22,7 @@
 	<!-- Service Entreprise -->
 
 	<bean id="serviceEntreprise" class="ch.vd.unireg.interfaces.service.ServiceEntrepriseImpl">
-		<property name="target" ref="serviceEntrepriseRaw"/>
+		<property name="connector" ref="entrepriseConnector"/>
 		<property name="serviceInfra" ref="serviceInfrastructureService"/>
 	</bean>
 

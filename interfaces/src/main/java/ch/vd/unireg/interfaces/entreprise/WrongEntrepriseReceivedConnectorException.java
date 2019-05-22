@@ -3,7 +3,7 @@ package ch.vd.unireg.interfaces.entreprise;
 /**
  * Exception lancée par le service d'entreprise quand une entreprise a été demandée mais une autre reçue...
  */
-public class WrongEntrepriseReceivedException extends ServiceEntrepriseException {
+public class WrongEntrepriseReceivedConnectorException extends EntrepriseConnectorException {
 
 	private static final long serialVersionUID = 7863428115633247946L;
 
@@ -18,7 +18,7 @@ public class WrongEntrepriseReceivedException extends ServiceEntrepriseException
 		                     receivedId);
 	}
 
-	public WrongEntrepriseReceivedException(long askedForId, long receivedId) {
+	public WrongEntrepriseReceivedConnectorException(long askedForId, long receivedId) {
 		super(buildMessage(askedForId, receivedId));
 		this.askedForId = askedForId;
 		this.receivedId = receivedId;

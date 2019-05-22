@@ -12,7 +12,7 @@ import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer.Mode;
 import ch.vd.unireg.indexer.tiers.TiersIndexedData;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.interfaces.infra.mock.DefaultMockInfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
@@ -45,7 +45,7 @@ public class DatabaseIndexerJobTest extends BusinessTest {
 
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(MockEntrepriseFactory.NESTLE);

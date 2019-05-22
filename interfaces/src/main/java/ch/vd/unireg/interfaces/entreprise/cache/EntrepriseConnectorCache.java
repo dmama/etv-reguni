@@ -26,9 +26,9 @@ import ch.vd.unireg.cache.UniregCacheManager;
 import ch.vd.unireg.data.CivilDataEventListener;
 import ch.vd.unireg.data.CivilDataEventService;
 import ch.vd.unireg.interfaces.civil.IndividuConnectorException;
-import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseException;
-import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseRaw;
-import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseWrapper;
+import ch.vd.unireg.interfaces.entreprise.EntrepriseConnector;
+import ch.vd.unireg.interfaces.entreprise.EntrepriseConnectorException;
+import ch.vd.unireg.interfaces.entreprise.EntrepriseConnectorWrapper;
 import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDE;
 import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDEQuery;
 import ch.vd.unireg.interfaces.entreprise.data.BaseAnnonceIDE;
@@ -37,19 +37,19 @@ import ch.vd.unireg.interfaces.entreprise.data.EntrepriseCivileEvent;
 import ch.vd.unireg.stats.StatsService;
 import ch.vd.unireg.utils.LogLevel;
 
-public class ServiceEntrepriseCache implements ServiceEntrepriseRaw, UniregCacheInterface, KeyDumpableCache, CivilDataEventListener, InitializingBean, DisposableBean, ServiceEntrepriseWrapper {
+public class EntrepriseConnectorCache implements EntrepriseConnector, UniregCacheInterface, KeyDumpableCache, CivilDataEventListener, InitializingBean, DisposableBean, EntrepriseConnectorWrapper {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ServiceEntrepriseCache.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EntrepriseConnectorCache.class);
 
 	private CacheManager cacheManager;
 	private String cacheName;
-	private ServiceEntrepriseRaw target;
+	private EntrepriseConnector target;
 	private Ehcache cache;
 	private UniregCacheManager uniregCacheManager;
 	private StatsService statsService;
 	private CivilDataEventService dataEventService;
 
-	public void setTarget(ServiceEntrepriseRaw target) {
+	public void setTarget(EntrepriseConnector target) {
 		this.target = target;
 	}
 
@@ -118,7 +118,7 @@ public class ServiceEntrepriseCache implements ServiceEntrepriseRaw, UniregCache
 	 */
 	@Override
 	public String getDescription() {
-		return "service entreprise";
+		return "connecteur des entreprises";
 	}
 
 	/**
@@ -138,14 +138,14 @@ public class ServiceEntrepriseCache implements ServiceEntrepriseRaw, UniregCache
 	}
 
 	@Override
-	public ServiceEntrepriseRaw getTarget() {
+	public EntrepriseConnector getTarget() {
 		return target;
 	}
 
 	@Override
-	public ServiceEntrepriseRaw getUltimateTarget() {
-		if (target instanceof ServiceEntrepriseWrapper) {
-			return ((ServiceEntrepriseWrapper) target).getUltimateTarget();
+	public EntrepriseConnector getUltimateTarget() {
+		if (target instanceof EntrepriseConnectorWrapper) {
+			return ((EntrepriseConnectorWrapper) target).getUltimateTarget();
 		}
 		else {
 			return target;
@@ -223,7 +223,7 @@ public class ServiceEntrepriseCache implements ServiceEntrepriseRaw, UniregCache
 	 * {@inheritDoc}
 	 */
 	@Override
-	public EntrepriseCivile getEntrepriseHistory(final long noEntreprise) throws ServiceEntrepriseException {
+	public EntrepriseCivile getEntrepriseHistory(final long noEntreprise) throws EntrepriseConnectorException {
 
 		final GetEntrepriseHistoryKey key = new GetEntrepriseHistoryKey(noEntreprise);
 		final Element element = cache.get(key);
@@ -238,7 +238,7 @@ public class ServiceEntrepriseCache implements ServiceEntrepriseRaw, UniregCache
 	}
 
 	@Override
-	public Long getNoEntrepriseFromNoEtablissement(Long noEtablissementCivil) throws ServiceEntrepriseException {
+	public Long getNoEntrepriseFromNoEtablissement(Long noEtablissementCivil) throws EntrepriseConnectorException {
 		final GetNoEntrepriseFromNoEtablissementKey key = new GetNoEntrepriseFromNoEtablissementKey(noEtablissementCivil);
 		final Element element = cache.get(key);
 		if (element == null) {
@@ -283,7 +283,7 @@ public class ServiceEntrepriseCache implements ServiceEntrepriseRaw, UniregCache
 	}
 
 	@Override
-	public Identifiers getEntrepriseByNoIde(String noide) throws ServiceEntrepriseException {
+	public Identifiers getEntrepriseByNoIde(String noide) throws EntrepriseConnectorException {
 		final GetEntrepriseByNoIdeKey key = new GetEntrepriseByNoIdeKey(noide);
 		final Element element = cache.get(key);
 		if (element == null) {
@@ -297,13 +297,13 @@ public class ServiceEntrepriseCache implements ServiceEntrepriseRaw, UniregCache
 	}
 
 	@Override
-	public Map<Long, EntrepriseCivileEvent> getEntrepriseEvent(long noEvenement) throws ServiceEntrepriseException {
+	public Map<Long, EntrepriseCivileEvent> getEntrepriseEvent(long noEvenement) throws EntrepriseConnectorException {
 		return target.getEntrepriseEvent(noEvenement);
 	}
 
 	@NotNull
 	@Override
-	public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws ServiceEntrepriseException {
+	public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws EntrepriseConnectorException {
 		// pas de cache sur les recherches
 		return target.findAnnoncesIDE(query, order, pageNumber, resultsPerPage);
 	}

@@ -19,18 +19,18 @@ import ch.vd.unireg.load.MethodCallDescriptor;
 import ch.vd.unireg.stats.DetailedLoadMonitorable;
 import ch.vd.unireg.stats.LoadDetail;
 
-public class ServiceEntrepriseEndPoint implements ServiceEntrepriseRaw, DetailedLoadMonitorable {
+public class EntrepriseConnectorEndPoint implements EntrepriseConnector, DetailedLoadMonitorable {
 
-	private ServiceEntrepriseRaw target;
+	private EntrepriseConnector target;
 
 	private final DetailedLoadMeter<MethodCallDescriptor> loadMeter = new DetailedLoadMeter<>();
 
-	public void setTarget(ServiceEntrepriseRaw target) {
+	public void setTarget(EntrepriseConnector target) {
 		this.target = target;
 	}
 
 	@Override
-	public EntrepriseCivile getEntrepriseHistory(long noEntreprise) throws ServiceEntrepriseException {
+	public EntrepriseCivile getEntrepriseHistory(long noEntreprise) throws EntrepriseConnectorException {
 		loadMeter.start(new MethodCallDescriptor("getEntrepriseHistory", "noEntreprise", noEntreprise));
 		try {
 			return target.getEntrepriseHistory(noEntreprise);
@@ -41,7 +41,7 @@ public class ServiceEntrepriseEndPoint implements ServiceEntrepriseRaw, Detailed
 	}
 
 	@Override
-	public Long getNoEntrepriseFromNoEtablissement(Long noEtablissementCivil) throws ServiceEntrepriseException {
+	public Long getNoEntrepriseFromNoEtablissement(Long noEtablissementCivil) throws EntrepriseConnectorException {
 		loadMeter.start(new MethodCallDescriptor("getNoEntrepriseFromNoEtablissement", "noEtablissementCivil", noEtablissementCivil));
 		try {
 			return target.getNoEntrepriseFromNoEtablissement(noEtablissementCivil);
@@ -52,7 +52,7 @@ public class ServiceEntrepriseEndPoint implements ServiceEntrepriseRaw, Detailed
 	}
 
 	@Override
-	public Map<Long, EntrepriseCivileEvent> getEntrepriseEvent(long noEvenement) throws ServiceEntrepriseException {
+	public Map<Long, EntrepriseCivileEvent> getEntrepriseEvent(long noEvenement) throws EntrepriseConnectorException {
 		loadMeter.start(new MethodCallDescriptor("getEntrepriseEvent", "noEvenement", noEvenement));
 		try {
 			return target.getEntrepriseEvent(noEvenement);
@@ -63,7 +63,7 @@ public class ServiceEntrepriseEndPoint implements ServiceEntrepriseRaw, Detailed
 	}
 
 	@Override
-	public Identifiers getEntrepriseByNoIde(String noide) throws ServiceEntrepriseException {
+	public Identifiers getEntrepriseByNoIde(String noide) throws EntrepriseConnectorException {
 		loadMeter.start(new MethodCallDescriptor("getEntrepriseByNoIde", "noide", noide));
 		try {
 			return target.getEntrepriseByNoIde(noide);
@@ -74,7 +74,7 @@ public class ServiceEntrepriseEndPoint implements ServiceEntrepriseRaw, Detailed
 	}
 
 	@Override
-	public BaseAnnonceIDE.Statut validerAnnonceIDE(BaseAnnonceIDE modele) throws ServiceEntrepriseException {
+	public BaseAnnonceIDE.Statut validerAnnonceIDE(BaseAnnonceIDE modele) throws EntrepriseConnectorException {
 		loadMeter.start(new MethodCallDescriptor("validerAnnonceIDE", "modele", modele));
 		try {
 			return target.validerAnnonceIDE(modele);
@@ -86,7 +86,7 @@ public class ServiceEntrepriseEndPoint implements ServiceEntrepriseRaw, Detailed
 
 	@NotNull
 	@Override
-	public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws ServiceEntrepriseException {
+	public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws EntrepriseConnectorException {
 		loadMeter.start(new MethodCallDescriptor("findAnnoncesIDE", "query", query, "order", order, "pageNumber", pageNumber));
 		try {
 			return target.findAnnoncesIDE(query, order, pageNumber, resultsPerPage);

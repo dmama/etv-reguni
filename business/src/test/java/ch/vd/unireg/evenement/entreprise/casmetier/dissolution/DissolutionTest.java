@@ -16,7 +16,7 @@ import ch.vd.unireg.interfaces.entreprise.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.entreprise.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.entreprise.data.TypeDePublicationBusiness;
 import ch.vd.unireg.interfaces.entreprise.data.TypeEntrepriseRegistreIDE;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockDonneesRC;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockEntrepriseCivile;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockEtablissementCivil;
@@ -53,7 +53,7 @@ public class DissolutionTest extends AbstractEvenementEntrepriseCivileProcessorT
 		final Long noEntrepriseCivile = 101202100L;
 		final Long noEtablissement = noEntrepriseCivile + 1000000;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				MockEntrepriseCivile entreprise =
@@ -106,7 +106,7 @@ public class DissolutionTest extends AbstractEvenementEntrepriseCivileProcessorT
 		final Long noEntrepriseCivile = 101202100L;
 		final Long noEtablissement = noEntrepriseCivile + 1000000;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				MockEntrepriseCivile entreprise =

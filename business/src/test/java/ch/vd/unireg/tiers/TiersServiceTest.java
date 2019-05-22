@@ -56,7 +56,7 @@ import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
 import ch.vd.unireg.interfaces.entreprise.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.entreprise.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.entreprise.data.TypeEntrepriseRegistreIDE;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockEntrepriseCivile;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEtablissementCivilFactory;
@@ -3830,7 +3830,7 @@ debut PF                                                                        
 	public void testGetRapportActiviteEconomiqueAvecTiersReferentPM() throws Exception {
 
 		// mise en place du service PM
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(MockEntrepriseFactory.NESTLE);
@@ -3890,7 +3890,7 @@ debut PF                                                                        
 	public void testGetRaisonSocialeDebiteurAvecTiersReferentPM() throws Exception {
 
 		// mise en place du service PM
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(MockEntrepriseFactory.NESTLE);
@@ -8859,7 +8859,7 @@ debut PF                                                                        
 		final RegDate dateFinSurchargeCapital = date(2012, 6, 30);
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final MockEntrepriseCivile ent = addEntreprise(noEntrepriseCivile);

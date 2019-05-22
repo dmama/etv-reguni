@@ -35,7 +35,7 @@ import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseCriteria;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseDAO;
 import ch.vd.unireg.evenement.ide.ReferenceAnnonceIDE;
 import ch.vd.unireg.evenement.ide.ReferenceAnnonceIDEDAO;
-import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseException;
+import ch.vd.unireg.interfaces.entreprise.EntrepriseConnectorException;
 import ch.vd.unireg.interfaces.entreprise.data.AdresseAnnonceIDERCEnt;
 import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDE;
 import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDEData;
@@ -98,7 +98,7 @@ public class AnnonceIDEControllerTest {
 			@NotNull
 			@Override
 			public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws
-					ServiceEntrepriseException {
+					EntrepriseConnectorException {
 				if (pageNumber == 0) {
 					return new PageImpl<>(firstPage, PageRequest.of(0, 2), 3);
 				}
@@ -303,7 +303,7 @@ public class AnnonceIDEControllerTest {
 		controller.setServiceEntreprise(new MockServiceEntreprise(){
 			@NotNull
 			@Override
-			public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws ServiceEntrepriseException {
+			public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws EntrepriseConnectorException {
 				return new PageImpl<AnnonceIDE>(Collections.<AnnonceIDE>emptyList());
 			}
 		});
@@ -336,7 +336,7 @@ public class AnnonceIDEControllerTest {
 		controller.setServiceEntreprise(new MockServiceEntreprise(){
 			@NotNull
 			@Override
-			public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws ServiceEntrepriseException {
+			public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws EntrepriseConnectorException {
 				return new PageImpl<AnnonceIDE>(Collections.<AnnonceIDE>emptyList());
 			}
 		});
@@ -373,7 +373,7 @@ public class AnnonceIDEControllerTest {
 		controller.setServiceEntreprise(new MockServiceEntreprise(){
 			@NotNull
 			@Override
-			public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws ServiceEntrepriseException {
+			public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws EntrepriseConnectorException {
 				return new PageImpl<AnnonceIDE>(Collections.<AnnonceIDE>emptyList());
 			}
 		});

@@ -9,7 +9,7 @@ import org.junit.Test;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
@@ -716,7 +716,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 	public void testControleAssujettissementPersonneMorale() throws Exception {
 
 		// mise en place service PM
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(MockEntrepriseFactory.BCV);
@@ -823,7 +823,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 	public void testControlePM() throws Exception {
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(MockEntrepriseFactory.BCV);

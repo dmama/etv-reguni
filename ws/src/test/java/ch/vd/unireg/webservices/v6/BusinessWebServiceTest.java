@@ -42,7 +42,7 @@ import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
 import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockEntrepriseCivile;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
@@ -1275,7 +1275,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final MockEntrepriseCivile ent = MockEntrepriseFactory.createSimpleEntrepriseRC(noEntreprise, noEntreprise + 1011, "Au petit coin", pmActivityStartDate, null,
@@ -3373,7 +3373,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		final long noEntreprise = 423672L;
 		final RegDate pmActivityStartDate = date(2000, 1, 1);
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final MockEntrepriseCivile ent = MockEntrepriseFactory.createSimpleEntrepriseRC(noEntreprise, noEntreprise + 1011, "Au petit coin", pmActivityStartDate, null,

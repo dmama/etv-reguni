@@ -126,7 +126,7 @@
 				<entry key="IndividuConnector" value-ref="individuConnectorEndPoint"/>
 				<entry key="ServiceUpi" value-ref="serviceUpiEndPoint"/>
 				<entry key="InfraConnector" value-ref="infrastructureConnectorEndPoint"/>
-				<entry key="ServiceEntreprise" value-ref="serviceEntrepriseEndPoint"/>
+				<entry key="EntrepriseConnector" value-ref="entrepriseConnectorEndPoint"/>
 			</map>
 		</property>
 	</bean>

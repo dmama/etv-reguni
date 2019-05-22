@@ -12,7 +12,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.common.CasePostale;
-import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseException;
+import ch.vd.unireg.interfaces.entreprise.EntrepriseConnectorException;
 import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 
 public abstract class AdresseRCEnt<T extends AdresseRCEnt<T>> implements Serializable, Adresse, DateRangeLimitable<T> {
@@ -54,7 +54,7 @@ public abstract class AdresseRCEnt<T extends AdresseRCEnt<T>> implements Seriali
     protected AdresseRCEnt(RegDate dateDebut, RegDate dateFin, Address address) {
         this.dateDebut = dateDebut;
         this.dateFin = dateFin;
-        DateRangeHelper.assertValidRange(this.dateDebut, this.dateFin, ServiceEntrepriseException.class);
+        DateRangeHelper.assertValidRange(this.dateDebut, this.dateFin, EntrepriseConnectorException.class);
 
         this.localite = address.getAddressInformation().getTown();
         this.numeroMaison = address.getAddressInformation().getHouseNumber();
@@ -82,7 +82,7 @@ public abstract class AdresseRCEnt<T extends AdresseRCEnt<T>> implements Seriali
     protected AdresseRCEnt(RegDate dateDebut, RegDate dateFin, AdresseRCEnt source) {
         this.dateDebut = dateDebut;
         this.dateFin = dateFin;
-        DateRangeHelper.assertValidRange(this.dateDebut, this.dateFin, ServiceEntrepriseException.class);
+        DateRangeHelper.assertValidRange(this.dateDebut, this.dateFin, EntrepriseConnectorException.class);
 
         this.localite = source.localite;
         this.numeroMaison = source.numeroMaison;

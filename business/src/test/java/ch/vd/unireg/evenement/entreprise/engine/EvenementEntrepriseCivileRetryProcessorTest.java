@@ -21,7 +21,7 @@ import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseBasicInfo;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseDAO;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseProcessingMode;
 import ch.vd.unireg.evenement.entreprise.engine.processor.EvenementEntrepriseProcessor;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.type.EtatEvenementEntreprise;
 import ch.vd.unireg.type.TypeEvenementEntreprise;
@@ -50,7 +50,7 @@ public class EvenementEntrepriseCivileRetryProcessorTest extends BusinessTest {
 		final long noEntrepriseAvecErreur = 2367485247L;
 		final long noEntrepriseAvecAttenteEtErreur = 43784236L;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(MockEntrepriseFactory.createDummySA(noEntrepriseSans, "SansAttente", RegDate.get(2015, 4, 29)));

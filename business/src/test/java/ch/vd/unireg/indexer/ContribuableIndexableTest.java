@@ -32,7 +32,7 @@ import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockEntrepriseCivile;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.interfaces.infra.mock.DefaultMockInfrastructureConnector;
@@ -118,7 +118,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		});
 
 		serviceEntreprise = new ProxyServiceEntreprise(serviceInfra);
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final MockEntrepriseCivile ent = MockEntrepriseFactory.createSimpleEntrepriseRC(784512L, 7845121001L, "Pittet Levage S.A.R.L", date(1924, 4, 1), null,

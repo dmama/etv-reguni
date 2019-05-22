@@ -22,9 +22,9 @@ import ch.vd.evd0022.v3.NoticeRequest;
 import ch.vd.evd0022.v3.NoticeRequestReport;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.unireg.common.PaginationHelper;
-import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseException;
-import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseRaw;
-import ch.vd.unireg.interfaces.entreprise.WrongEntrepriseReceivedException;
+import ch.vd.unireg.interfaces.entreprise.EntrepriseConnector;
+import ch.vd.unireg.interfaces.entreprise.EntrepriseConnectorException;
+import ch.vd.unireg.interfaces.entreprise.WrongEntrepriseReceivedConnectorException;
 import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDE;
 import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDEQuery;
 import ch.vd.unireg.interfaces.entreprise.data.BaseAnnonceIDE;
@@ -37,21 +37,21 @@ import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 import ch.vd.unireg.wsclient.rcent.RcEntClient;
 import ch.vd.unireg.wsclient.rcent.RcEntClientException;
 
-public class ServiceEntrepriseRCEnt implements ServiceEntrepriseRaw {
+public class EntrepriseConnectorRCEnt implements EntrepriseConnector {
 
 	private final RcEntClient client;
 	private final RCEntAdapter adapter;
 	private final InfrastructureConnector infraService;
-	public static final Logger LOGGER = LoggerFactory.getLogger(ServiceEntrepriseRCEnt.class);
+	public static final Logger LOGGER = LoggerFactory.getLogger(EntrepriseConnectorRCEnt.class);
 
-	public ServiceEntrepriseRCEnt(RCEntAdapter adapter, RcEntClient client, InfrastructureConnector infraService) {
+	public EntrepriseConnectorRCEnt(RCEntAdapter adapter, RcEntClient client, InfrastructureConnector infraService) {
 		this.adapter = adapter;
 		this.client = client;
 		this.infraService = infraService;
 	}
 
 	@Override
-	public EntrepriseCivile getEntrepriseHistory(long noEntreprise) throws ServiceEntrepriseException {
+	public EntrepriseCivile getEntrepriseHistory(long noEntreprise) throws EntrepriseConnectorException {
 		try {
 			final ch.vd.unireg.interfaces.entreprise.rcent.adapter.model.Organisation received = adapter.getOrganisationHistory(noEntreprise);
 			if (received == null) {
@@ -61,12 +61,12 @@ public class ServiceEntrepriseRCEnt implements ServiceEntrepriseRaw {
 			return RCEntOrganisationHelper.get(received, infraService);
 		}
 		catch (RcEntClientException e) {
-			throw new ServiceEntrepriseException(e);
+			throw new EntrepriseConnectorException(e);
 		}
 	}
 
 	@Override
-	public Long getNoEntrepriseFromNoEtablissement(Long noEtablissementCivil) throws ServiceEntrepriseException {
+	public Long getNoEntrepriseFromNoEtablissement(Long noEtablissementCivil) throws EntrepriseConnectorException {
 		try {
 			final ch.vd.unireg.interfaces.entreprise.rcent.adapter.model.Organisation received = adapter.getLocation(noEtablissementCivil);
 			if (received == null) {
@@ -75,12 +75,12 @@ public class ServiceEntrepriseRCEnt implements ServiceEntrepriseRaw {
 			return received.getCantonalId();
 		}
 		catch (RcEntClientException e) {
-			throw new ServiceEntrepriseException(e);
+			throw new EntrepriseConnectorException(e);
 		}
 	}
 
 	@Override
-	public Identifiers getEntrepriseByNoIde(String noide) throws ServiceEntrepriseException {
+	public Identifiers getEntrepriseByNoIde(String noide) throws EntrepriseConnectorException {
 		try {
 			final ch.vd.unireg.interfaces.entreprise.rcent.adapter.model.Organisation received = adapter.getOrganisationByNoIde(noide, null);
 			if (received == null) {
@@ -99,16 +99,16 @@ public class ServiceEntrepriseRCEnt implements ServiceEntrepriseRaw {
 			}
 		}
 		catch (RcEntClientException e) {
-			throw new ServiceEntrepriseException(e);
+			throw new EntrepriseConnectorException(e);
 		}
 
 		// super bizarre... on nous renvoie des données mais ces données ne contiennent pas l'information recherchée...
-		throw new ServiceEntrepriseException(String.format("Les données renvoyées par RCEnt pour le numéro IDE %s ne contiennent aucun établissement arborant ce numéro.",
-		                                                   noide));
+		throw new EntrepriseConnectorException(String.format("Les données renvoyées par RCEnt pour le numéro IDE %s ne contiennent aucun établissement arborant ce numéro.",
+		                                                     noide));
 	}
 
 	@Override
-	public Map<Long, EntrepriseCivileEvent> getEntrepriseEvent(long noEvenement) throws ServiceEntrepriseException {
+	public Map<Long, EntrepriseCivileEvent> getEntrepriseEvent(long noEvenement) throws EntrepriseConnectorException {
 		try {
 			final Map<Long, ch.vd.unireg.interfaces.entreprise.rcent.adapter.model.OrganisationEvent> received = adapter.getOrganisationEvent(noEvenement);
 			if (received == null || received.isEmpty()) {
@@ -133,13 +133,13 @@ public class ServiceEntrepriseRCEnt implements ServiceEntrepriseRaw {
 			return result;
 		}
 		catch (RcEntClientException e) {
-			throw new ServiceEntrepriseException(e);
+			throw new EntrepriseConnectorException(e);
 		}
 	}
 
 	@NotNull
 	@Override
-	public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws ServiceEntrepriseException {
+	public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws EntrepriseConnectorException {
 
 		try {
 			final Sort sort = (order == null ? null : Sort.by(order));
@@ -161,12 +161,12 @@ public class ServiceEntrepriseRCEnt implements ServiceEntrepriseRaw {
 			}
 		}
 		catch (RcEntClientException e) {
-			throw new ServiceEntrepriseException(e);
+			throw new EntrepriseConnectorException(e);
 		}
 	}
 
 	@Override
-	public BaseAnnonceIDE.Statut validerAnnonceIDE(BaseAnnonceIDE modele) throws ServiceEntrepriseException {
+	public BaseAnnonceIDE.Statut validerAnnonceIDE(BaseAnnonceIDE modele) throws EntrepriseConnectorException {
 		if (modele == null) {
 			throw new IllegalArgumentException("Modèle d'annonce à valider manquant!");
 		}
@@ -176,14 +176,14 @@ public class ServiceEntrepriseRCEnt implements ServiceEntrepriseRaw {
 			final NoticeRequestReport noticeReport = client.validateNoticeRequest(noticeRequest);
 			if (noticeReport == null || noticeReport.getNoticeRequest() == null) {
 				final BaseAnnonceIDE.Contenu contenu = modele.getContenu();
-				throw new ServiceEntrepriseException(String.format("Reçu une réponse vide lors de l'appel pour valider le modèle d'annonce à l'IDE (entreprise: %s)", contenu == null ? "" : contenu.getNom()));
+				throw new EntrepriseConnectorException(String.format("Reçu une réponse vide lors de l'appel pour valider le modèle d'annonce à l'IDE (entreprise: %s)", contenu == null ? "" : contenu.getNom()));
 			}
 			final BaseAnnonceIDE.Statut statut = RCEntAnnonceIDEHelper.buildProtoAnnonceIDE(noticeReport).getStatut();
 			cleanErreurs(statut);
 			return statut;
 		}
 		catch (RcEntClientException e) {
-			throw new ServiceEntrepriseException(e);
+			throw new EntrepriseConnectorException(e);
 		}
 	}
 
@@ -209,18 +209,18 @@ public class ServiceEntrepriseRCEnt implements ServiceEntrepriseRaw {
 	}
 
 	@Override
-	public void ping() throws ServiceEntrepriseException {
+	public void ping() throws EntrepriseConnectorException {
 		try {
 			client.ping();
 		}
 		catch (RcEntClientException e) {
-			throw new ServiceEntrepriseException(e);
+			throw new EntrepriseConnectorException(e);
 		}
 	}
 
-	private void sanityCheck(long noEntrepriseCivile, long receivedId) throws ServiceEntrepriseException {
+	private void sanityCheck(long noEntrepriseCivile, long receivedId) throws EntrepriseConnectorException {
 		if (receivedId != noEntrepriseCivile) {
-			throw new WrongEntrepriseReceivedException(noEntrepriseCivile, receivedId);
+			throw new WrongEntrepriseReceivedConnectorException(noEntrepriseCivile, receivedId);
 		}
 	}
 }

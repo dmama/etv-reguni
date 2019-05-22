@@ -41,7 +41,7 @@ import ch.vd.unireg.evenement.entreprise.EvenementEntreprise;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseDAO;
 import ch.vd.unireg.evenement.ide.ReferenceAnnonceIDE;
 import ch.vd.unireg.evenement.ide.ReferenceAnnonceIDEDAO;
-import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseException;
+import ch.vd.unireg.interfaces.entreprise.EntrepriseConnectorException;
 import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDE;
 import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDEEnvoyee;
 import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDEQuery;
@@ -192,7 +192,7 @@ public class AnnonceIDEController {
 				annonces = serviceEntreprise.findAnnoncesIDE(view.toQuery(), order, pageNumber, pageSize);
 			}
 		}
-		catch (ServiceEntrepriseException e) {
+		catch (EntrepriseConnectorException e) {
 			LOGGER.warn("Erreur lors de la recherche de demandes à l'IDE", e);
 			Flash.warning("L'appel à RCEnt a levé l'erreur suivante : " + e.getMessage() + ". Veuillez réessayer plus tard.");
 			model.addAttribute("page", new PageImpl<>(Collections.<AnnonceIDEView>emptyList()));

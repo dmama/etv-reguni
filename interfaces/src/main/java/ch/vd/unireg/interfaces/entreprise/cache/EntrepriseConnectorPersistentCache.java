@@ -20,9 +20,9 @@ import ch.vd.unireg.cache.UniregCacheInterface;
 import ch.vd.unireg.cache.UniregCacheManager;
 import ch.vd.unireg.data.CivilDataEventListener;
 import ch.vd.unireg.data.CivilDataEventService;
-import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseException;
-import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseRaw;
-import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseWrapper;
+import ch.vd.unireg.interfaces.entreprise.EntrepriseConnector;
+import ch.vd.unireg.interfaces.entreprise.EntrepriseConnectorException;
+import ch.vd.unireg.interfaces.entreprise.EntrepriseConnectorWrapper;
 import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDE;
 import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDEQuery;
 import ch.vd.unireg.interfaces.entreprise.data.BaseAnnonceIDE;
@@ -30,20 +30,20 @@ import ch.vd.unireg.interfaces.entreprise.data.EntrepriseCivile;
 import ch.vd.unireg.interfaces.entreprise.data.EntrepriseCivileEvent;
 import ch.vd.unireg.stats.StatsService;
 
-public class ServiceEntreprisePersistentCache implements ServiceEntrepriseRaw, UniregCacheInterface, CivilDataEventListener, InitializingBean, DisposableBean, ServiceEntrepriseWrapper {
+public class EntrepriseConnectorPersistentCache implements EntrepriseConnector, UniregCacheInterface, CivilDataEventListener, InitializingBean, DisposableBean, EntrepriseConnectorWrapper {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ServiceEntreprisePersistentCache.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EntrepriseConnectorPersistentCache.class);
 
-	public static final String CACHE_NAME = "ServiceEntreprisePersistent";
+	public static final String CACHE_NAME = "EntrepriseConnectorPersistent";
 
 	private PersistentCache<EntrepriseDataCache> cache;
 	private PersistentCache<Long> etablissementCache;
-	private ServiceEntrepriseRaw target;
+	private EntrepriseConnector target;
 	private UniregCacheManager uniregCacheManager;
 	private StatsService statsService;
 	private CivilDataEventService dataEventService;
 
-	public void setTarget(ServiceEntrepriseRaw target) {
+	public void setTarget(EntrepriseConnector target) {
 		this.target = target;
 	}
 
@@ -99,7 +99,7 @@ public class ServiceEntreprisePersistentCache implements ServiceEntrepriseRaw, U
 	 */
 	@Override
 	public String getDescription() {
-		return "service entreprise persistent";
+		return "connecteur persistent des entreprises";
 	}
 
 	/**
@@ -145,7 +145,7 @@ public class ServiceEntreprisePersistentCache implements ServiceEntrepriseRaw, U
 	 * {@inheritDoc}
 	 */
 	@Override
-	public EntrepriseCivile getEntrepriseHistory(long noEntreprise) throws ServiceEntrepriseException {
+	public EntrepriseCivile getEntrepriseHistory(long noEntreprise) throws EntrepriseConnectorException {
 
 		final GetEntrepriseHistoryKey key = new GetEntrepriseHistoryKey(noEntreprise);
 		final EntrepriseDataCache value = cache.get(key);
@@ -182,7 +182,7 @@ public class ServiceEntreprisePersistentCache implements ServiceEntrepriseRaw, U
 	}
 
 	@Override
-	public Long getNoEntrepriseFromNoEtablissement(Long noEtablissementCivil) throws ServiceEntrepriseException {
+	public Long getNoEntrepriseFromNoEtablissement(Long noEtablissementCivil) throws EntrepriseConnectorException {
 
 		Long noEntreprise;
 
@@ -200,20 +200,20 @@ public class ServiceEntreprisePersistentCache implements ServiceEntrepriseRaw, U
 	}
 
 	@Override
-	public Identifiers getEntrepriseByNoIde(String noide) throws ServiceEntrepriseException {
+	public Identifiers getEntrepriseByNoIde(String noide) throws EntrepriseConnectorException {
 		// pas caché pour le moment...
 		return target.getEntrepriseByNoIde(noide);
 	}
 
 	@Override
-	public Map<Long, EntrepriseCivileEvent> getEntrepriseEvent(long noEvenement) throws ServiceEntrepriseException {
+	public Map<Long, EntrepriseCivileEvent> getEntrepriseEvent(long noEvenement) throws EntrepriseConnectorException {
 		// aucun intérêt à cacher ce genre d'information
 		return target.getEntrepriseEvent(noEvenement);
 	}
 
 	@NotNull
 	@Override
-	public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws ServiceEntrepriseException {
+	public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws EntrepriseConnectorException {
 		// pas de cache sur les recherches
 		return target.findAnnoncesIDE(query, order, pageNumber, resultsPerPage);
 	}
@@ -224,7 +224,7 @@ public class ServiceEntreprisePersistentCache implements ServiceEntrepriseRaw, U
 	}
 
 	@Override
-	public void ping() throws ServiceEntrepriseException {
+	public void ping() throws EntrepriseConnectorException {
 		target.ping();
 	}
 
@@ -252,14 +252,14 @@ public class ServiceEntreprisePersistentCache implements ServiceEntrepriseRaw, U
 	}
 
 	@Override
-	public ServiceEntrepriseRaw getTarget() {
+	public EntrepriseConnector getTarget() {
 		return target;
 	}
 
 	@Override
-	public ServiceEntrepriseRaw getUltimateTarget() {
-		if (target instanceof ServiceEntrepriseWrapper) {
-			return ((ServiceEntrepriseWrapper) target).getUltimateTarget();
+	public EntrepriseConnector getUltimateTarget() {
+		if (target instanceof EntrepriseConnectorWrapper) {
+			return ((EntrepriseConnectorWrapper) target).getUltimateTarget();
 		}
 		else {
 			return target;

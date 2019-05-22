@@ -10,7 +10,7 @@ import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.common.CasePostale;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockCanton;
@@ -974,7 +974,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdresseEnvoiDebiteurPrestationImposableSurEntreprise() throws Exception {
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(MockEntrepriseFactory.NESTLE);
@@ -1087,7 +1087,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			}
 		});
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(MockEntrepriseFactory.NESTLE);
@@ -2467,7 +2467,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdresseEnvoiJalHolding() throws Exception {
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(MockEntrepriseFactory.JAL_HOLDING);

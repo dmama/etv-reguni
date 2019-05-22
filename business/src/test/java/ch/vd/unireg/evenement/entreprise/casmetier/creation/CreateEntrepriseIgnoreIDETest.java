@@ -21,7 +21,7 @@ import ch.vd.unireg.interfaces.entreprise.data.InscriptionRC;
 import ch.vd.unireg.interfaces.entreprise.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.entreprise.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.entreprise.data.TypeEntrepriseRegistreIDE;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockDonneesRC;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockDonneesRegistreIDE;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockEntrepriseCivile;
@@ -84,7 +84,7 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 		// Mise en place service mock
 		final long noEntrepriseCivile = 101202100L;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(
@@ -137,7 +137,7 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 		// Mise en place service mock
 		final long noEntrepriseCivile = 101202100L;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(
@@ -195,7 +195,7 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 		// Mise en place service mock
 		final long noEntrepriseCivile = 101202100L;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(
@@ -250,7 +250,7 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 		// Mise en place service mock
 		final long noEntrepriseCivile = 101202100L;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(
@@ -304,7 +304,7 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 		// Mise en place service mock
 		final long noEntrepriseCivile = 101202100L;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(
@@ -362,7 +362,7 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 		final long noEtablissementPrincipal = noEntrepriseCivile + 1000000;
 		final long noEtablissementSecondaire = 9999999L;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final MockEntrepriseCivile entrepriseAvecEtablissementSecondaire =
@@ -562,7 +562,7 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 		final long noEntrepriseCivile = 101202100L;
 		final Long noEtablissement = noEntrepriseCivile + 1000000;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final RegDate dateInscription = date(2010, 6, 24);
@@ -638,7 +638,7 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 		final long noEtablissementPrincipal = noEntrepriseCivile + 1000000;
 		final long noEtablissementSecondaire = 9999999L;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final MockEntrepriseCivile entrepriseAvecSiteSecondaire =
@@ -708,7 +708,7 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 		                                                          date(2015, 6, 20), null,
 		                                                          date(2015, 6, 24), null));
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(ent);
@@ -769,7 +769,7 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 		                                                          date(2012, 4, 12), null,
 		                                                          date(2010, 6, 24), null));
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(ent);
@@ -819,7 +819,7 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 		// Mise en place service mock
 		final long noEntrepriseCivile = 101202100L;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(

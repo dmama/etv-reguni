@@ -21,7 +21,7 @@ import ch.vd.unireg.interfaces.entreprise.data.StatutAnnonce;
 import ch.vd.unireg.interfaces.entreprise.data.TypeAnnonce;
 import ch.vd.unireg.interfaces.entreprise.data.TypeEntrepriseRegistreIDE;
 import ch.vd.unireg.interfaces.entreprise.data.TypeEtablissementCivil;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockEntrepriseCivile;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.interfaces.entreprise.rcent.RCEntAnnonceIDEHelper;
@@ -88,7 +88,7 @@ public class ServiceIDECasParticuliersTest extends AbstractServiceIDEServiceTest
 		});
 
 		// Mise en place annonce à l'IDE RCEnt
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 
@@ -162,7 +162,7 @@ public class ServiceIDECasParticuliersTest extends AbstractServiceIDEServiceTest
 		});
 
 		// Mise en place annonce à l'IDE RCEnt
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 
@@ -225,7 +225,7 @@ public class ServiceIDECasParticuliersTest extends AbstractServiceIDEServiceTest
 		final MockEntrepriseCivile ent = MockEntrepriseFactory.createEntreprise(noEntrepriseCivile, noEtablissement, "Synergy Assoc", date(2016, 9, 8), null, FormeLegale.N_0109_ASSOCIATION,
 		                                                                        TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Renens.getNoOFS(), StatusInscriptionRC.ACTIF, date(2016, 9, 5),
 		                                                                        StatusRegistreIDE.DEFINITIF, TypeEntrepriseRegistreIDE.ASSOCIATION, "CHE999999996");
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 

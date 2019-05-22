@@ -27,7 +27,7 @@ import ch.vd.unireg.interfaces.entreprise.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.entreprise.data.StatusREE;
 import ch.vd.unireg.interfaces.entreprise.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.entreprise.data.TypeEntrepriseRegistreIDE;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockDonneesRC;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockDonneesREE;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockDonneesRegistreIDE;
@@ -85,7 +85,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementEnt
 		final Long noEtablissement = noEntrepriseCivile + 1000000;
 		final Long noEtablissement2 = noEntrepriseCivile + 2000000;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final MockEntrepriseCivile ent =
@@ -203,7 +203,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementEnt
 		final Long noEtablissement = noEntrepriseCivile + 1000000;
 		final Long noEtablissement2 = noEntrepriseCivile + 2000000;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final MockEntrepriseCivile ent =
@@ -327,7 +327,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementEnt
 		final Long noEtablissement = noEntrepriseCivile + 1000000;
 		final Long noEtablissement2 = noEntrepriseCivile + 2000000;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final MockEntrepriseCivile ent =
@@ -403,7 +403,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementEnt
 		final Long noEtablissement = noEntrepriseCivile + 1000000;
 		final Long noEtablissement2 = noEntrepriseCivile + 2000000;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final MockEntrepriseCivile ent =
@@ -486,7 +486,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementEnt
 		final Long noEtablissement = noEntrepriseCivile + 1000000;
 		final Long noEtablissement2 = noEntrepriseCivile + 2000000;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final MockEntrepriseCivile ent =
@@ -574,7 +574,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementEnt
 		final Long noEtablissement = noEntrepriseCivile + 1000000;
 		final Long noEtablissement2 = noEntrepriseCivile + 2000000;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final MockEntrepriseCivile ent =
@@ -691,7 +691,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementEnt
 		final Long noEtablissement2 = noEntrepriseCivile + 200;
 		final Long noEtablissement3 = noEntrepriseCivile + 300;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final MockEntrepriseCivile ent =
@@ -800,7 +800,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementEnt
 		final Long noEtablissement2 = noEntrepriseCivile + 200;
 		final Long noEtablissement3 = noEntrepriseCivile + 300;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final MockEntrepriseCivile ent =
@@ -965,7 +965,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementEnt
 		final Long noEtablissement2 = noEntrepriseCivile + 200;
 		final Long noEtablissement3 = noEntrepriseCivile + 300;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final MockEntrepriseCivile ent =
@@ -1218,7 +1218,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementEnt
 		final Long noEtablissement3 = noEntrepriseCivile + 300;
 		final Long noEtablissement4 = noEntrepriseCivile + 400;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final MockEntrepriseCivile ent =
@@ -1397,7 +1397,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementEnt
 		final Long noEtablissement = noEntrepriseCivile + 100;
 		final Long noEtablissement2 = noEntrepriseCivile + 200;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final MockEntrepriseCivile ent =
@@ -1547,7 +1547,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementEnt
 		final Long noEtablissement = noEntrepriseCivile + 100;
 		final Long noEtablissement2 = noEntrepriseCivile + 200;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final MockEntrepriseCivile ent =
@@ -1701,7 +1701,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementEnt
 		final Long noEtablissement = noEntrepriseCivile + 100;
 		final Long noEtablissement2 = noEntrepriseCivile + 200;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final MockEntrepriseCivile ent =
@@ -1835,7 +1835,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementEnt
 		final Long noEtablissement = noEntrepriseCivile + 100;
 		final Long noEtablissement2 = noEntrepriseCivile + 200;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final MockEntrepriseCivile ent =
@@ -1977,7 +1977,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementEnt
 		final Long noEtablissement2 = 1002L;
 		final Long noEtablissement3 = 1003L;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final MockEntrepriseCivile ent =
@@ -2168,7 +2168,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementEnt
 		final Long noEtablissement2 = noEntrepriseCivile + 200;
 		final Long noEtablissement3 = noEntrepriseCivile + 300;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final MockEntrepriseCivile ent =
@@ -2344,7 +2344,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementEnt
 		final Long noEtablissement = noEntrepriseCivile + 1000000;
 		final Long noEtablissement2 = noEntrepriseCivile + 2000000;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final MockEntrepriseCivile ent =
@@ -2435,7 +2435,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementEnt
 		final Long noEtablissement = noEntrepriseCivile + 1000000;
 		final Long noEtablissement2 = noEntrepriseCivile + 2000000;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final MockEntrepriseCivile ent =
@@ -2524,7 +2524,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementEnt
 		final Long noEtablissement = 101392713L;
 		final Long noEtablissement2 = 101043478L;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final MockEntrepriseCivile ent =
@@ -2702,7 +2702,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementEnt
 		final Long noEtablissement = noEntrepriseCivile + 100;
 		final Long noEtablissement2 = noEntrepriseCivile + 200;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final MockEntrepriseCivile ent =

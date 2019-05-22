@@ -43,7 +43,7 @@
 	       overflowToDisk="false"
 	/>
 
-	<cache name="serviceEntreprise"
+	<cache name="entrepriseConnector"
 	       maxEntriesLocalHeap="1000"
 	       timeToIdleSeconds="500"
 	       timeToLiveSeconds="500"

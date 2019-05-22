@@ -13,8 +13,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Sort;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseException;
-import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseRaw;
+import ch.vd.unireg.interfaces.entreprise.EntrepriseConnector;
+import ch.vd.unireg.interfaces.entreprise.EntrepriseConnectorException;
 import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDE;
 import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDEEnvoyee;
 import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDEQuery;
@@ -34,7 +34,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.type.TypeAdresseCivil;
 
-public abstract class MockServiceEntreprise implements ServiceEntrepriseRaw {
+public abstract class MockEntrepriseConnector implements EntrepriseConnector {
 
 	/**
 	 * Map des entreprisess par numéro
@@ -48,17 +48,17 @@ public abstract class MockServiceEntreprise implements ServiceEntrepriseRaw {
 	 */
 	protected abstract void init();
 
-	public MockServiceEntreprise() {
+	public MockEntrepriseConnector() {
 		this.init();
 	}
 
 	@Override
-	public EntrepriseCivile getEntrepriseHistory(long noEntreprise) throws ServiceEntrepriseException {
+	public EntrepriseCivile getEntrepriseHistory(long noEntreprise) throws EntrepriseConnectorException {
 		return entrepriseMap.get(noEntreprise);
 	}
 
 	@Override
-	public Long getNoEntrepriseFromNoEtablissement(Long noEtablissementCivil) throws ServiceEntrepriseException {
+	public Long getNoEntrepriseFromNoEtablissement(Long noEtablissementCivil) throws EntrepriseConnectorException {
 		for (Map.Entry<Long, MockEntrepriseCivile> entreprise : entrepriseMap.entrySet()) {
 			for (EtablissementCivil etablissement : entreprise.getValue().getEtablissements()) {
 				if (etablissement.getNumeroEtablissement() == noEtablissementCivil) {
@@ -70,7 +70,7 @@ public abstract class MockServiceEntreprise implements ServiceEntrepriseRaw {
 	}
 
 	@Override
-	public Identifiers getEntrepriseByNoIde(String noide) throws ServiceEntrepriseException {
+	public Identifiers getEntrepriseByNoIde(String noide) throws EntrepriseConnectorException {
 		for (Map.Entry<Long, MockEntrepriseCivile> entreprise : entrepriseMap.entrySet()) {
 			for (EtablissementCivil etablissement : entreprise.getValue().getEtablissements()) {
 				if (etablissement.getNumeroIDE() != null) {
@@ -86,7 +86,7 @@ public abstract class MockServiceEntreprise implements ServiceEntrepriseRaw {
 	}
 
 	@Override
-	public Map<Long, EntrepriseCivileEvent> getEntrepriseEvent(long noEvenement) throws ServiceEntrepriseException {
+	public Map<Long, EntrepriseCivileEvent> getEntrepriseEvent(long noEvenement) throws EntrepriseConnectorException {
 		throw new UnsupportedOperationException();
 	}
 
@@ -96,11 +96,11 @@ public abstract class MockServiceEntreprise implements ServiceEntrepriseRaw {
 
 	@NotNull
 	@Override
-	public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws ServiceEntrepriseException {
+	public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws EntrepriseConnectorException {
 
 		final Long noticeId = query.getNoticeId();
 		if (noticeId == null){
-			throw new NotImplementedException("Seule la recherche par identifiant est supportée dans cette version de MockServiceEntreprise");
+			throw new NotImplementedException("Seule la recherche par identifiant est supportée dans cette version de MockEntrepriseConnector");
 		}
 
 		/*
@@ -132,7 +132,7 @@ public abstract class MockServiceEntreprise implements ServiceEntrepriseRaw {
 	}
 
 	@Override
-	public void ping() throws ServiceEntrepriseException {
+	public void ping() throws EntrepriseConnectorException {
 		// un mock fonctionne toujours
 	}
 

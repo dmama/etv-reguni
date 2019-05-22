@@ -39,7 +39,7 @@ import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
@@ -5139,7 +5139,7 @@ public class TacheServiceTest extends BusinessTest {
 			}
 		});
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// là non plus, rien...
@@ -5241,7 +5241,7 @@ public class TacheServiceTest extends BusinessTest {
 			}
 		});
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// là non plus, rien...
@@ -5326,7 +5326,7 @@ public class TacheServiceTest extends BusinessTest {
 			}
 		});
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// là non plus, rien...
@@ -5402,7 +5402,7 @@ public class TacheServiceTest extends BusinessTest {
 			}
 		});
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// là non plus, rien...
@@ -5458,7 +5458,7 @@ public class TacheServiceTest extends BusinessTest {
 			}
 		});
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// là non plus, rien...
@@ -5553,7 +5553,7 @@ public class TacheServiceTest extends BusinessTest {
 			}
 		});
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// là non plus, rien...
@@ -5816,7 +5816,7 @@ public class TacheServiceTest extends BusinessTest {
 		final int pf = year - 1;
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// vide...
@@ -5935,7 +5935,7 @@ public class TacheServiceTest extends BusinessTest {
 		final RegDate dateDebut = date(2009, 6, 30);
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// vide
@@ -5996,7 +5996,7 @@ public class TacheServiceTest extends BusinessTest {
 		final RegDate dateDebut = date(lastYear - 1, 6, 30);
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// vide
@@ -6106,7 +6106,7 @@ public class TacheServiceTest extends BusinessTest {
 		final RegDate dateDebut = date(lastYear - 1, 6, 30);
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// vide
@@ -6175,7 +6175,7 @@ public class TacheServiceTest extends BusinessTest {
 		final RegDate dateDebut = date(lastYear - 1, 6, 30);
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// vide

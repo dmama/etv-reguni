@@ -66,7 +66,7 @@ import ch.vd.unireg.individu.IndividuView;
 import ch.vd.unireg.individu.WebCivilService;
 import ch.vd.unireg.interfaces.civil.IndividuConnectorException;
 import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseException;
+import ch.vd.unireg.interfaces.entreprise.EntrepriseConnectorException;
 import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.EntiteOFS;
@@ -265,7 +265,7 @@ public class TiersManager implements MessageSourceAware {
 						final List<String> nomCourrier = getAdresseService().getNomCourrier(dpi, null, false);
 						debiteurView.setNomCourrier(nomCourrier);
 					}
-					catch (ServiceEntrepriseException e) {
+					catch (EntrepriseConnectorException e) {
 						debiteurView.setNomCourrier(Collections.singletonList("<erreur lors de l'accès au service civil>"));
 					}
 					debiteursView.add(debiteurView);
@@ -726,7 +726,7 @@ public class TiersManager implements MessageSourceAware {
 			final boolean serviceIDEObligEtendues = serviceIDEService.isServiceIDEObligEtendues(entreprise, null);
 			tiersView.setCivilSousControleACI(serviceIDEObligEtendues);
 		}
-		catch (ServiceEntrepriseException e) {
+		catch (EntrepriseConnectorException e) {
 			tiersView.setCivilSousControleACI(false);
 			tiersView.setExceptionDonneesCiviles(e.getMessage());
 		}
@@ -832,7 +832,7 @@ public class TiersManager implements MessageSourceAware {
 		try {
 			tiersView.setEtablissement(entrepriseService.getEtablissement(etb));
 		}
-		catch (ServiceEntrepriseException e) {
+		catch (EntrepriseConnectorException e) {
 			tiersView.setExceptionDonneesCiviles(e.getMessage());
 		}
 	}

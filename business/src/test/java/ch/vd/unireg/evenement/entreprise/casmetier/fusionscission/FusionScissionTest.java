@@ -15,7 +15,7 @@ import ch.vd.unireg.interfaces.entreprise.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.entreprise.data.TypeDeFusion;
 import ch.vd.unireg.interfaces.entreprise.data.TypeDePublicationBusiness;
 import ch.vd.unireg.interfaces.entreprise.data.TypeEntrepriseRegistreIDE;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockEntrepriseCivile;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockEtablissementCivil;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
@@ -51,7 +51,7 @@ public class FusionScissionTest extends AbstractEvenementEntrepriseCivileProcess
 		final Long noEntrepriseCivile = 101202100L;
 		final Long noEtablissement = noEntrepriseCivile + 1000000;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				MockEntrepriseCivile entreprise =
@@ -103,7 +103,7 @@ public class FusionScissionTest extends AbstractEvenementEntrepriseCivileProcess
 		final Long noEntrepriseCivile = 101202100L;
 		final Long noEtablissement = noEntrepriseCivile + 1000000;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				MockEntrepriseCivile entreprise =
@@ -152,7 +152,7 @@ public class FusionScissionTest extends AbstractEvenementEntrepriseCivileProcess
 		final Long noEntrepriseCivile = 101202100L;
 		final Long noEtablissement = noEntrepriseCivile + 1000000;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				MockEntrepriseCivile entreprise =

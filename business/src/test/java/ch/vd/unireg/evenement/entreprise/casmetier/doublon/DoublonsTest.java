@@ -16,7 +16,7 @@ import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
 import ch.vd.unireg.interfaces.entreprise.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.entreprise.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.entreprise.data.TypeEntrepriseRegistreIDE;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockEntrepriseCivile;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockEtablissementCivil;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
@@ -59,7 +59,7 @@ public class DoublonsTest extends AbstractEvenementEntrepriseCivileProcessorTest
 		final long noEntrepriseCivileRemplacante = 4096L;
 		final Long noEtablissementRemplacant = noEntrepriseCivileRemplacante + 1000000;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				MockEntrepriseCivile entreprise =
@@ -156,7 +156,7 @@ public class DoublonsTest extends AbstractEvenementEntrepriseCivileProcessorTest
 		final long noEntrepriseCivile = 4096L;
 		final Long noEtablissement = noEntrepriseCivile + 1000000;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				MockEntrepriseCivile entrepriseRemplaceePar =
@@ -252,7 +252,7 @@ public class DoublonsTest extends AbstractEvenementEntrepriseCivileProcessorTest
 		final Long noEtablissement = noEntrepriseCivile + 1000000;
 		final long noEtablissementRemplacant = 4096321L;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				MockEntrepriseCivile entreprise =
@@ -321,7 +321,7 @@ public class DoublonsTest extends AbstractEvenementEntrepriseCivileProcessorTest
 		final Long noEtablissement = noEntrepriseCivile + 1000000;
 		final long noEtablissementRemplacant = 4096321L;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				MockEntrepriseCivile entreprise =
@@ -390,7 +390,7 @@ public class DoublonsTest extends AbstractEvenementEntrepriseCivileProcessorTest
 		final Long noEtablissement = noEntrepriseCivile + 1000000;
 		final long noEtablissementRemplacant = 4096321L;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				MockEntrepriseCivile entreprise =

@@ -67,30 +67,30 @@
 
 	<alias alias="individuConnector" name="individuConnectorCache"/>
 
-	<!-- Service Entreprise -->
+	<!-- Connecteur des entreprises -->
 
-	<bean id="serviceEntrepriseRemote" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
-		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/serviceEntreprise.remoting" />
-		<property name="serviceInterface" value="ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseRaw" />
+	<bean id="entrepriseConnectorRemote" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
+		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/entrepriseConnector.remoting" />
+		<property name="serviceInterface" value="ch.vd.unireg.interfaces.entreprise.EntrepriseConnector" />
 		<property name="executor" ref="nexusHttpRequestExecutor" />
 	</bean>
 
 
-	<bean id="serviceEntrepriseTracing" class="ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseTracing">
-		<property name="target" ref="serviceEntrepriseRemote" />
+	<bean id="entrepriseConnectorTracing" class="ch.vd.unireg.interfaces.entreprise.EntrepriseConnectorTracing">
+		<property name="target" ref="entrepriseConnectorRemote" />
 		<property name="statsService" ref="statsService" />
 	</bean>
 
-	<bean id="serviceEntrepriseCache" class="ch.vd.unireg.interfaces.entreprise.cache.ServiceEntrepriseCache">
-		<property name="target" ref="serviceEntrepriseTracing" />
+	<bean id="entrepriseConnectorCache" class="ch.vd.unireg.interfaces.entreprise.cache.EntrepriseConnectorCache">
+		<property name="target" ref="entrepriseConnectorTracing" />
 		<property name="cacheManager" ref="ehCacheManager" />
-		<property name="cacheName" value="serviceEntreprise" />
+		<property name="cacheName" value="entrepriseConnector" />
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
 		<property name="dataEventService" ref="dataEventService" />
 	</bean>
 
-	<alias alias="serviceEntrepriseRaw" name="serviceEntrepriseCache" />
+	<alias alias="entrepriseConnector" name="entrepriseConnectorCache" />
 
 	<!-- Service UPI -->
 

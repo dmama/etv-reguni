@@ -8,7 +8,7 @@ import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.metier.assujettissement.PeriodeImpositionService;
@@ -50,7 +50,7 @@ public class ExtractionDonneesRptPMProcessorTest extends BusinessTest {
 				// vide
 			}
 		});
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// vide
@@ -118,7 +118,7 @@ public class ExtractionDonneesRptPMProcessorTest extends BusinessTest {
 				// vide
 			}
 		});
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// vide
@@ -185,7 +185,7 @@ public class ExtractionDonneesRptPMProcessorTest extends BusinessTest {
 				// vide
 			}
 		});
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// vide

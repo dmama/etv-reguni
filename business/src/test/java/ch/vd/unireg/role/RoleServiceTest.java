@@ -21,7 +21,7 @@ import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -1750,7 +1750,7 @@ public class RoleServiceTest extends BusinessTest {
 		final RegDate dateFaillite = date(anneeRole, 8, 12);
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// rien du tout, c'est plus simple
@@ -1812,7 +1812,7 @@ public class RoleServiceTest extends BusinessTest {
 		final RegDate dateFaillite = date(anneeRole, 8, 12);
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// rien du tout, c'est plus simple
