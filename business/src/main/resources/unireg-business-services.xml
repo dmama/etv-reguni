@@ -241,7 +241,7 @@
 		<property name="serviceSecuriteService" ref="serviceSecuriteService" />
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="flowSearchThreadPoolSize" value="10"/>
-		<property name="serviceUpi" ref="serviceUpiRaw"/>
+		<property name="upiConnector" ref="upiConnector"/>
 		<property name="caracteresSpeciauxIdentificationEntreprise" ref="caracteresSpeciauxIdentificationPM"/>
 		<property name="motsReservesIdentificationEntreprise" ref="motsReservesIdentificationPM"/>
 	</bean>

@@ -19,8 +19,8 @@ import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.unireg.indexer.tiers.TiersIndexedData;
 import ch.vd.unireg.indexer.tiers.TopList;
-import ch.vd.unireg.interfaces.upi.ServiceUpiException;
-import ch.vd.unireg.interfaces.upi.ServiceUpiRaw;
+import ch.vd.unireg.interfaces.upi.UpiConnector;
+import ch.vd.unireg.interfaces.upi.UpiConnectorException;
 import ch.vd.unireg.interfaces.upi.data.UpiPersonInfo;
 import ch.vd.unireg.security.Role;
 import ch.vd.unireg.security.SecurityProviderInterface;
@@ -43,7 +43,7 @@ public class CreateNonresidentByVNRequestHandlerV1 implements RequestHandlerV2<C
 
 	private HibernateTemplate hibernateTemplate;
 	private SecurityProviderInterface securityProvider;
-	private ServiceUpiRaw serviceUpi;
+	private UpiConnector upiConnector;
 	private GlobalTiersSearcher tiersSearcher;
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
@@ -54,8 +54,8 @@ public class CreateNonresidentByVNRequestHandlerV1 implements RequestHandlerV2<C
 		this.securityProvider = securityProvider;
 	}
 
-	public void setServiceUpi(ServiceUpiRaw serviceUpi) {
-		this.serviceUpi = serviceUpi;
+	public void setUpiConnector(UpiConnector upiConnector) {
+		this.upiConnector = upiConnector;
 	}
 
 	public void setTiersSearcher(GlobalTiersSearcher tiersSearcher) {
@@ -83,13 +83,13 @@ public class CreateNonresidentByVNRequestHandlerV1 implements RequestHandlerV2<C
 		// récupération des informations de l'UPI par rapport au numéro AVS fourni
 		final UpiPersonInfo upiData;
 		try {
-			upiData = serviceUpi.getPersonInfo(avsDemande);
+			upiData = upiConnector.getPersonInfo(avsDemande);
 			if (upiData == null) {
 				return new RequestHandlerResult<>(new ExceptionResponse(new BusinessExceptionInfo("Numéro AVS inconnu à l'UPI.", BusinessExceptionCode.UNKNOWN_PARTY.name(), null)));
 			}
 		}
-		catch (ServiceUpiException e) {
-			LOGGER.error("Erreur à l'interrogation du service UPI avec le numéro AVS " + avsDemande, e);
+		catch (UpiConnectorException e) {
+			LOGGER.error("Erreur à l'interrogation du connecteur UPI avec le numéro AVS " + avsDemande, e);
 			throw new ServiceException(new TechnicalExceptionInfo(e.getMessage(), null));
 		}
 

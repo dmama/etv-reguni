@@ -56,19 +56,19 @@
 	<alias name="serviceEntreprise" alias="serviceEntreprise"/>
 
 
-	<!-- Service UPI -->
+	<!-- Connecteur UPI -->
 
-	<bean id="serviceUpiRcPers" class="ch.vd.unireg.interfaces.upi.rcpers.ServiceUpiRCPers">
+	<bean id="upiConnectorRCPers" class="ch.vd.unireg.interfaces.upi.rcpers.UpiConnectorRCPers">
 		<property name="client" ref="rcPersClient"/>
 		<property name="infraConnector" ref="infrastructureConnector"/>
 	</bean>
 
-	<bean id="serviceUpiTracing" class="ch.vd.unireg.interfaces.upi.ServiceUpiTracing">
-		<property name="target" ref="serviceUpiRcPers"/>
+	<bean id="upiConnectorTracing" class="ch.vd.unireg.interfaces.upi.UpiConnectorTracing">
+		<property name="target" ref="upiConnectorRCPers"/>
 		<property name="statsService" ref="statsService"/>
 	</bean>
 
-	<alias alias="serviceUpiRaw" name="serviceUpiTracing"/>
+	<alias alias="upiConnector" name="upiConnectorTracing"/>
 
 
 	<!-- Service infra -->

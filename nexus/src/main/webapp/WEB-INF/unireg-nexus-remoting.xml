@@ -16,9 +16,9 @@
 		<property name="serviceInterface" value="ch.vd.unireg.interfaces.entreprise.EntrepriseConnector"/>
 	</bean>
 
-	<bean name="serviceUpiRawExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
-		<property name="service" ref="serviceUpiRaw"/>
-		<property name="serviceInterface" value="ch.vd.unireg.interfaces.upi.ServiceUpiRaw"/>
+	<bean name="upiConnectorExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
+		<property name="service" ref="upiConnector"/>
+		<property name="serviceInterface" value="ch.vd.unireg.interfaces.upi.UpiConnector"/>
 	</bean>
 
 	<bean name="infraConnectorExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
@@ -41,7 +41,7 @@
 			<map>
 				<!-- Mapping des beans de remoting -->
 				<entry key="/individuConnector.remoting" value-ref="individuConnectorExporter" />
-				<entry key="/serviceUpi.remoting" value-ref="serviceUpiRawExporter" />
+				<entry key="/upiConnector.remoting" value-ref="upiConnectorExporter" />
 				<entry key="/infraConnector.remoting" value-ref="infraConnectorExporter" />
 				<entry key="/dataEventService.remoting" value-ref="dataEventServiceExporter" />
 				<entry key="/entrepriseConnector.remoting" value-ref="entrepriseConnectorExporter"/>

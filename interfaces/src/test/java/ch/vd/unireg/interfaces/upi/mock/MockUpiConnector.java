@@ -6,11 +6,11 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.unireg.interfaces.upi.ServiceUpiException;
-import ch.vd.unireg.interfaces.upi.ServiceUpiRaw;
+import ch.vd.unireg.interfaces.upi.UpiConnector;
+import ch.vd.unireg.interfaces.upi.UpiConnectorException;
 import ch.vd.unireg.interfaces.upi.data.UpiPersonInfo;
 
-public abstract class MockServiceUpi implements ServiceUpiRaw {
+public abstract class MockUpiConnector implements UpiConnector {
 
 	private final Map<String, String> avsReplacementMap = new HashMap<>();
 	private final Map<String, UpiPersonInfo> data = new HashMap<>();
@@ -36,7 +36,7 @@ public abstract class MockServiceUpi implements ServiceUpiRaw {
 	}
 
 	@Override
-	public UpiPersonInfo getPersonInfo(String noAvs13) throws ServiceUpiException {
+	public UpiPersonInfo getPersonInfo(String noAvs13) throws UpiConnectorException {
 		final String other = avsReplacementMap.get(noAvs13);
 		if (other != null) {
 			if (StringUtils.isBlank(other)) {

@@ -124,7 +124,7 @@
 		<property name="services">
 			<map>
 				<entry key="IndividuConnector" value-ref="individuConnectorEndPoint"/>
-				<entry key="ServiceUpi" value-ref="serviceUpiEndPoint"/>
+				<entry key="UpiConnector" value-ref="upiConnectorEndPoint"/>
 				<entry key="InfraConnector" value-ref="infrastructureConnectorEndPoint"/>
 				<entry key="EntrepriseConnector" value-ref="entrepriseConnectorEndPoint"/>
 			</map>

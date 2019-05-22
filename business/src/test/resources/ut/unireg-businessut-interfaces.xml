@@ -19,9 +19,9 @@
 	</bean>
 	<alias alias="serviceEntreprise" name="serviceEntrepriseMock"/>
 
-	<!-- Service UPI -->
-	<bean id="serviceUpiMock" class="ch.vd.unireg.interfaces.upi.mock.DefaultMockServiceUpi"/>
-	<alias alias="serviceUpiRaw" name="serviceUpiMock"/>
+	<!-- Connecteur UPI -->
+	<bean id="upiConnectorMock" class="ch.vd.unireg.interfaces.upi.mock.DefaultMockUpiConnector"/>
+	<alias alias="upiConnector" name="upiConnectorMock"/>
 
 	<!-- Bean client interfacesService MOCK -->
 	<bean id="serviceSecuriteServiceHost" class="ch.vd.unireg.interfaces.service.mock.ProxyServiceSecuriteService"/>

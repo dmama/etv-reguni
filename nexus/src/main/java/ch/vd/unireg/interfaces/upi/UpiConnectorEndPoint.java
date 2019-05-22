@@ -12,20 +12,20 @@ import ch.vd.unireg.load.MethodCallDescriptor;
 import ch.vd.unireg.stats.DetailedLoadMonitorable;
 import ch.vd.unireg.stats.LoadDetail;
 
-public class ServiceUpiEndPoint implements ServiceUpiRaw, DetailedLoadMonitorable {
+public class UpiConnectorEndPoint implements UpiConnector, DetailedLoadMonitorable {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ServiceUpiEndPoint.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(UpiConnectorEndPoint.class);
 
-	private ServiceUpiRaw target;
+	private UpiConnector target;
 
 	private final DetailedLoadMeter<MethodCallDescriptor> loadMeter = new DetailedLoadMeter<>();
 
-	public void setTarget(ServiceUpiRaw target) {
+	public void setTarget(UpiConnector target) {
 		this.target = target;
 	}
 
 	@Override
-	public UpiPersonInfo getPersonInfo(String noAvs13) throws ServiceUpiException {
+	public UpiPersonInfo getPersonInfo(String noAvs13) throws UpiConnectorException {
 		loadMeter.start(new MethodCallDescriptor("getPersonInfo", "noAvs13", noAvs13));
 		try {
 			return target.getPersonInfo(noAvs13);
@@ -34,7 +34,7 @@ public class ServiceUpiEndPoint implements ServiceUpiRaw, DetailedLoadMonitorabl
 			final String msg = getMessage(e);
 			LOGGER.error("Exception dans getPersonInfo(noAvs13=" + noAvs13 + ") : " + msg, e);
 			// on ne transmet que le message, pour éviter de transmettre des éléments non-sérializable
-			throw new ServiceUpiException(msg);
+			throw new UpiConnectorException(msg);
 		}
 		finally {
 			loadMeter.end();

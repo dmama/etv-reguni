@@ -92,20 +92,20 @@
 
 	<alias alias="entrepriseConnector" name="entrepriseConnectorCache" />
 
-	<!-- Service UPI -->
+	<!-- Connecteur UPI -->
 
-	<bean id="serviceUpiRemote" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
-		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/serviceUpi.remoting"/>
-		<property name="serviceInterface" value="ch.vd.unireg.interfaces.upi.ServiceUpiRaw"/>
+	<bean id="upiConnectorRemote" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
+		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/upiConnector.remoting"/>
+		<property name="serviceInterface" value="ch.vd.unireg.interfaces.upi.UpiConnector"/>
 		<property name="executor" ref="nexusHttpRequestExecutor"/>
 	</bean>
 
-	<bean id="serviceUpiTracing" class="ch.vd.unireg.interfaces.upi.ServiceUpiTracing">
-		<property name="target" ref="serviceUpiRemote"/>
+	<bean id="upiConnectorTracing" class="ch.vd.unireg.interfaces.upi.UpiConnectorTracing">
+		<property name="target" ref="upiConnectorRemote"/>
 		<property name="statsService" ref="statsService"/>
 	</bean>
 
-	<alias alias="serviceUpiRaw" name="serviceUpiTracing"/>
+	<alias alias="upiConnector" name="upiConnectorTracing"/>
 
 	<!-- Service infra -->
 

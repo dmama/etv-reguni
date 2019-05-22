@@ -8,8 +8,8 @@ import org.junit.Test;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.evenement.RequestHandlerResult;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.unireg.interfaces.upi.mock.DefaultMockServiceUpi;
-import ch.vd.unireg.interfaces.upi.mock.ServiceUpiProxy;
+import ch.vd.unireg.interfaces.upi.mock.DefaultMockUpiConnector;
+import ch.vd.unireg.interfaces.upi.mock.UpiConnectorProxy;
 import ch.vd.unireg.security.MockSecurityProvider;
 import ch.vd.unireg.security.Role;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -32,7 +32,7 @@ public class CreateNonResidentByVNRequestHandlerV1Test extends BusinessTest {
 	private static final UserLogin USER_LOGIN = new UserLogin("USER/22");
 
 	private CreateNonresidentByVNRequestHandlerV1 handler;
-	private ServiceUpiProxy serviceUpi;
+	private UpiConnectorProxy upiConnector;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -42,11 +42,11 @@ public class CreateNonResidentByVNRequestHandlerV1Test extends BusinessTest {
 
 			super.onSetUp();
 
-			serviceUpi = new ServiceUpiProxy();
+			upiConnector = new UpiConnectorProxy();
 
 			handler = new CreateNonresidentByVNRequestHandlerV1();
 			handler.setHibernateTemplate(hibernateTemplate);
-			handler.setServiceUpi(serviceUpi);
+			handler.setUpiConnector(upiConnector);
 			handler.setTiersSearcher(globalTiersSearcher);
 		}
 		finally {
@@ -70,10 +70,10 @@ public class CreateNonResidentByVNRequestHandlerV1Test extends BusinessTest {
 	@Test
 	public void testCreationSansProbleme() throws Exception {
 		handler.setSecurityProvider(new MockSecurityProvider(Role.CREATE_NONHAB));
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		final String noAvs = "7565115001333";
-		Assert.assertNotNull(serviceUpi.getPersonInfo(noAvs));
+		Assert.assertNotNull(upiConnector.getPersonInfo(noAvs));
 
 		final RequestHandlerResult<Response> result = doInNewTransactionAndSession(status -> {
 			final CreateNonresidentByVNRequest request = new CreateNonresidentByVNRequest(USER_LOGIN, Long.parseLong(noAvs));
@@ -91,7 +91,7 @@ public class CreateNonResidentByVNRequestHandlerV1Test extends BusinessTest {
 			Assert.assertNotNull(tiers);
 			Assert.assertEquals(PersonnePhysique.class, tiers.getClass());
 
-			// toutes les données viennent du DefaultMockServiceUpi...
+			// toutes les données viennent du DefaultMockUpiConnector...
 			final PersonnePhysique pp = (PersonnePhysique) tiers;
 			Assert.assertFalse(pp.isHabitantVD());
 			Assert.assertEquals(noAvs, pp.getNumeroAssureSocial());
@@ -114,11 +114,11 @@ public class CreateNonResidentByVNRequestHandlerV1Test extends BusinessTest {
 	@Test
 	public void testCreationSansProblemeAvecRemplacementNumeroAVS() throws Exception {
 		handler.setSecurityProvider(new MockSecurityProvider(Role.CREATE_NONHAB));
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		final String noAvs = "7567986294906";
 		final String noAvsRemplacant = "7565115001333";
-		Assert.assertNotNull(serviceUpi.getPersonInfo(noAvs));
+		Assert.assertNotNull(upiConnector.getPersonInfo(noAvs));
 
 		final RequestHandlerResult<Response> result = doInNewTransactionAndSession(status -> {
 			final CreateNonresidentByVNRequest request = new CreateNonresidentByVNRequest(USER_LOGIN, Long.parseLong(noAvs));
@@ -136,7 +136,7 @@ public class CreateNonResidentByVNRequestHandlerV1Test extends BusinessTest {
 			Assert.assertNotNull(tiers);
 			Assert.assertEquals(PersonnePhysique.class, tiers.getClass());
 
-			// toutes les données viennent du DefaultMockServiceUpi...
+			// toutes les données viennent du DefaultMockUpiConnector...
 			final PersonnePhysique pp = (PersonnePhysique) tiers;
 			Assert.assertFalse(pp.isHabitantVD());
 			Assert.assertEquals(noAvsRemplacant, pp.getNumeroAssureSocial());
@@ -159,10 +159,10 @@ public class CreateNonResidentByVNRequestHandlerV1Test extends BusinessTest {
 	@Test
 	public void testCreationNAVSTotalementInconnu() throws Exception {
 		handler.setSecurityProvider(new MockSecurityProvider(Role.CREATE_NONHAB));
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		final String noAvs = "7569999999991";
-		Assert.assertNull(serviceUpi.getPersonInfo(noAvs));
+		Assert.assertNull(upiConnector.getPersonInfo(noAvs));
 
 		final RequestHandlerResult<Response> result = doInNewTransactionAndSession(status -> {
 			final CreateNonresidentByVNRequest request = new CreateNonresidentByVNRequest(USER_LOGIN, Long.parseLong(noAvs));
@@ -193,10 +193,10 @@ public class CreateNonResidentByVNRequestHandlerV1Test extends BusinessTest {
 	@Test
 	public void testCreationAvecContribuableConnuAvecNAVSFourni() throws Exception {
 		handler.setSecurityProvider(new MockSecurityProvider(Role.CREATE_NONHAB));
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		final String noAvs = "7569050304498";
-		Assert.assertNotNull(serviceUpi.getPersonInfo(noAvs));
+		Assert.assertNotNull(upiConnector.getPersonInfo(noAvs));
 
 		// besoin d'indexation des tiers manipulés ici
 		setWantIndexationTiers(true);
@@ -244,12 +244,12 @@ public class CreateNonResidentByVNRequestHandlerV1Test extends BusinessTest {
 	@Test
 	public void testCreationAvecContribuableConnuAvecNAVSRemplacantCeluiFourni() throws Exception {
 		handler.setSecurityProvider(new MockSecurityProvider(Role.CREATE_NONHAB));
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		final String noAvs = "7560142399040";
 		final String noAvsRemplacant = "7569050304498";
-		Assert.assertNotNull(serviceUpi.getPersonInfo(noAvs));
-		Assert.assertEquals(noAvsRemplacant, serviceUpi.getPersonInfo(noAvs).getNoAvs13());
+		Assert.assertNotNull(upiConnector.getPersonInfo(noAvs));
+		Assert.assertEquals(noAvsRemplacant, upiConnector.getPersonInfo(noAvs).getNoAvs13());
 
 		// besoin d'indexation des tiers manipulés ici
 		setWantIndexationTiers(true);

@@ -7,14 +7,14 @@ import ch.vd.unireg.interfaces.upi.data.UpiPersonInfo;
 import ch.vd.unireg.stats.ServiceTracing;
 import ch.vd.unireg.stats.StatsService;
 
-public class ServiceUpiTracing implements ServiceUpiRaw, InitializingBean, DisposableBean {
+public class UpiConnectorTracing implements UpiConnector, InitializingBean, DisposableBean {
 
-	private ServiceUpiRaw target;
+	private UpiConnector target;
 	private StatsService statsService;
 
 	private final ServiceTracing tracing = new ServiceTracing(SERVICE_NAME);
 
-	public void setTarget(ServiceUpiRaw target) {
+	public void setTarget(UpiConnector target) {
 		this.target = target;
 	}
 
@@ -23,7 +23,7 @@ public class ServiceUpiTracing implements ServiceUpiRaw, InitializingBean, Dispo
 	}
 
 	@Override
-	public UpiPersonInfo getPersonInfo(final String noAvs13) throws ServiceUpiException {
+	public UpiPersonInfo getPersonInfo(final String noAvs13) throws UpiConnectorException {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();
@@ -34,7 +34,7 @@ public class ServiceUpiTracing implements ServiceUpiRaw, InitializingBean, Dispo
 			}
 			return ind;
 		}
-		catch (ServiceUpiException e) {
+		catch (UpiConnectorException e) {
 			t = e;
 			throw e;
 		}

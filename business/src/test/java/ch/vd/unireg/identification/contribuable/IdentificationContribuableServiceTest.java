@@ -51,11 +51,11 @@ import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
-import ch.vd.unireg.interfaces.upi.ServiceUpiException;
+import ch.vd.unireg.interfaces.upi.UpiConnectorException;
 import ch.vd.unireg.interfaces.upi.data.UpiPersonInfo;
-import ch.vd.unireg.interfaces.upi.mock.DefaultMockServiceUpi;
-import ch.vd.unireg.interfaces.upi.mock.MockServiceUpi;
-import ch.vd.unireg.interfaces.upi.mock.ServiceUpiProxy;
+import ch.vd.unireg.interfaces.upi.mock.DefaultMockUpiConnector;
+import ch.vd.unireg.interfaces.upi.mock.MockUpiConnector;
+import ch.vd.unireg.interfaces.upi.mock.UpiConnectorProxy;
 import ch.vd.unireg.tiers.AutreCommunaute;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.Entreprise;
@@ -131,7 +131,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 	private IdentificationContribuableServiceImpl service;
 	private TestMessageHandler messageHandler;
-	private ServiceUpiProxy serviceUpi;
+	private UpiConnectorProxy upiConnector;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -143,7 +143,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		adresseService = getBean(AdresseService.class, "adresseService");
 		infraService = getBean(ServiceInfrastructureService.class, "serviceInfrastructureService");
 		identCtbDAO = getBean(IdentCtbDAO.class, "identCtbDAO");
-		serviceUpi = new ServiceUpiProxy();
+		upiConnector = new UpiConnectorProxy();
 
 		service = new IdentificationContribuableServiceImpl() {
 			@Override
@@ -159,7 +159,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		service.setInfraService(infraService);
 		service.setIdentCtbDAO(identCtbDAO);
 		service.setTransactionManager(transactionManager);
-		service.setServiceUpi(serviceUpi);
+		service.setUpiConnector(upiConnector);
 		service.setCaracteresSpeciauxIdentificationEntreprise(new LinkedHashSet<>(Arrays.asList(",", ";", ".", ",", "-")));
 		service.setMotsReservesIdentificationEntreprise(new LinkedHashSet<>(Arrays.asList("de", "du", "des", "le", "la", "les", "sa", "sàrl", "gmbh", "ag", "en liquidation")));
 
@@ -180,7 +180,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testIdentifieBaseVide() throws Exception {
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		{
 			CriteresPersonne criteres = new CriteresPersonne();
@@ -200,7 +200,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testIdentifieUnNonHabitant() throws Exception {
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		final Long id = doInNewTransaction(status -> {
 			final PersonnePhysique albert = addNonHabitant("Albert", "Zweisteinen", date(1953, 4, 3), Sexe.MASCULIN);
@@ -218,7 +218,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final long noIndividu = 1234;
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
@@ -324,7 +324,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final long noIndividuAlbert = 1234;
 		final long noIndividuAnne = 2345;
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
@@ -392,7 +392,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final long noIndividuClaude = 151658;
 		final long noIndividuAnne = 2345;
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
@@ -478,7 +478,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final long noIndividuAnne = 2345;
 		final RegDate naissance = date(1979, 10, 4);
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
@@ -548,7 +548,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final long noIndividuAnne = 2345;
 		final RegDate naissance = date(1979, 10, 4);
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
@@ -606,7 +606,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final long noIndividuClaude = 151658;
 		final long noIndividuAnne = 2345;
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
@@ -673,7 +673,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final long noIndividuClaude = 151658;
 		final long noIndividuClaudeAnne = 2345;
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
@@ -748,7 +748,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final long noIndividuClaude = 151658;
 		final long noIndividuAnne = 2345;
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
@@ -809,7 +809,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final long noIndividuJudith = 1248758;
 		final long noIndividuHenchoz = 111345;
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
@@ -871,7 +871,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final long noIndividuRoger = 151659;
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
@@ -932,7 +932,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final long noIndividuRoger = 151659;
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
@@ -991,7 +991,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testNavs13MonsieurDateNaissanceFausse() throws Exception {
 		final long noIndividuClaude = 151658;
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
@@ -1048,7 +1048,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final long noIndividuClaude = 151658;
 		final long noIndividuHenri = 151657;
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
@@ -1112,7 +1112,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final long noIndividuClaude = 151658;
 		final long noIndividuAnne = 2345;
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
@@ -1179,7 +1179,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final long noIndividuClaude = 151658;
 		final long noIndividuAnne = 2345;
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
@@ -1246,7 +1246,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final long noIndividuClaude = 151658;
 		final long noIndividuAnne = 2345;
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
@@ -1303,7 +1303,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final long noIndividuClaude = 151658;
 		final long noIndividuAnne = 2345;
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
@@ -1360,7 +1360,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final long noIndividuClaude = 151658;
 		final long noIndividuAnne = 2345;
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
@@ -1416,7 +1416,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final long noIndividuClaude = 151658;
 		final long noIndividuAnne = 2345;
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
@@ -1483,7 +1483,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final long noIndividuClaude = 151658;
 		final long noIndividuAnne = 2345;
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
@@ -1550,7 +1550,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final long noIndividuClaude = 151658;
 		final long noIndividuAnne = 2345;
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
@@ -1617,7 +1617,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final long noIndividuClaude = 151658;
 		final long noIndividuAnne = 2345;
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
@@ -1686,7 +1686,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final long noIndividuClaude = 151658;
 		final long noIndividuAnne = 2345;
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
@@ -1758,7 +1758,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final long noIndividuJerome1 = 151658;
 		final long noIndividuJerome2 = 123497;
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
@@ -1863,7 +1863,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final long noIndividuClaude = 151658;
 		final long noIndividuAnne = 2345;
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		class Ids {
 			Long claude;
@@ -1933,7 +1933,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final long noIndividuClaude = 151658;
 		final long noIndividuAnne = 2345;
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		class Ids {
 			Long claude;
@@ -1994,7 +1994,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final long noIndividuAlbert = 1234;
 		final long noIndividuAnne = 2345;
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
@@ -2062,7 +2062,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final long noIndividuAlbert = 1234;
 		final long noIndividuAnne = 2345;
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
@@ -2152,7 +2152,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final long noIndividuAlbert = 1234;
 		final long noIndividuAnne = 2345;
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
@@ -2244,7 +2244,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		doInNewTransaction(status -> {
 			final PersonnePhysique robert = addNonHabitant("Robert", "Nicoud", date(1953, 4, 3), Sexe.MASCULIN);
@@ -2378,7 +2378,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		doInNewTransaction(status -> {
 			final PersonnePhysique robert = addNonHabitant("Robert", "Nicoud", date(1953, 4, 3), Sexe.MASCULIN);
@@ -2412,7 +2412,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		// la base est vide
 		assertCountDemandes(0);
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemandeMeldewesen("Arnold", "Duchoux");
@@ -2440,7 +2440,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	@Test
 	public void testHandleDemandeUnContribuableTrouve() throws Exception {
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		// création d'un contribuable
 		final Long id = doInNewTransaction(status -> {
@@ -2486,7 +2486,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	@Test
 	public void testHandleDemande_SANS_MANUEL() throws Exception {
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		// création d'un contribuable
 		final Long id = doInNewTransaction(status -> {
@@ -2532,7 +2532,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	@Test
 	public void testHandleDemande_MANUEL_AVEC_ACK() throws Exception {
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		// création d'un contribuable
 		final Long id = doInNewTransaction(status -> {
@@ -2578,7 +2578,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	@Test
 	public void testHandleDemandeEnErreur_MANUEL_AVEC_ACK() throws Exception {
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		final long noIndividu = 1234;
 		serviceCivil.setUp(new MockIndividuConnector() {
@@ -2641,7 +2641,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	@Test
 	public void testHandleDemande_NCS_MANUEL_AVEC_ACK() throws Exception {
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		// création d'un contribuable
 		final Long id = doInNewTransaction(status -> {
@@ -2687,7 +2687,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	@Test
 	public void testHandleDemande_EMPACI_MANUEL_AVEC_ACK() throws Exception {
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		// création d'un contribuable
 		final Long id = doInNewTransaction(status -> {
@@ -2733,7 +2733,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	@Test
 	public void testHandleDemande_E_FACTURE_SANS_MANUEL() throws Exception {
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		// création d'un contribuable
 		final Long numeroZora = doInNewTransaction(status -> {
@@ -2781,7 +2781,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	@Test
 	public void testHandleDemande_MANUEL_SANS_ACK() throws Exception {
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		// création d'un contribuable
 		final Long id = doInNewTransaction(status -> {
@@ -2823,7 +2823,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	@Test
 	public void testHandleDemandePlusieursContribuablesTrouves() throws Exception {
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		// création de plusieurs contribuables
 		doInNewTransaction(status -> {
@@ -2863,7 +2863,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	@Test
 	public void testHandleDemandeException() throws Exception {
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		// création d'un contribuable
 		doInNewTransaction(status -> {
@@ -2924,7 +2924,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	@Test
 	public void testHandleDemandeAvecNumeroAVSInconnu() throws Exception {
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		// création d'un contribuable
 		final Long id = doInNewTransaction(status -> {
@@ -2972,7 +2972,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	@Test
 	public void testHandleDemandeAvecNumeroAVSConnuMaisFaux() throws Exception {
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		// création d'un contribuable
 		doInNewTransaction(status -> {
@@ -3012,7 +3012,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	@Test
 	public void testHandleDemandeUnContribuableAvecMenageTrouve() throws Exception {
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		class Ids {
 			Long zora;
@@ -3077,7 +3077,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	@Test
 	public void testHandleDemandeUnContribuableAvecMenageSurPeriodeAvant2003() throws Exception {
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		class Ids {
 			Long zora;
@@ -3147,7 +3147,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testIdentifieUE() throws Exception {
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		final long noIndividu = 1234;
 
@@ -3188,7 +3188,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final long noIndividu = 1234;
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
@@ -3226,7 +3226,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final long noIndividu = 1234;
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
@@ -3264,7 +3264,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final long noIndividu = 1234;
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
@@ -3302,7 +3302,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final long noIndividu = 1234;
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
@@ -3340,7 +3340,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final long noIndividu = 1234;
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
@@ -3378,7 +3378,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final long noIndividu = 1234;
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
@@ -3416,7 +3416,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final long noIndividu = 1234;
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
@@ -3454,7 +3454,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final long noIndividu = 13624325642L;
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
@@ -3503,7 +3503,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final long noIndividu = 13624325642L;
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
@@ -3571,7 +3571,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final long noIndividu = 13624325642L;
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
@@ -3864,7 +3864,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final String navs11 = "78674361253";
 
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		// rien au civil
 		serviceCivil.setUp(new MockIndividuConnector() {
@@ -3933,7 +3933,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final String oldAvs = "7566101270542";
 		final String newAvs = "7566285711978";
 
-		serviceUpi.setUp(new MockServiceUpi() {
+		upiConnector.setUp(new MockUpiConnector() {
 			@Override
 			protected void init() {
 				addData(new UpiPersonInfo(newAvs, "Albert", "Foldingue", Sexe.MASCULIN, date(2000, 5, 3), null, MockNationalite.of(null, null, MockPays.Suisse), null, null));
@@ -3977,7 +3977,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final String oldAvs = "7566101270542";
 		final String newAvs = "7566285711978";
 
-		serviceUpi.setUp(new MockServiceUpi() {
+		upiConnector.setUp(new MockUpiConnector() {
 			@Override
 			protected void init() {
 				addData(new UpiPersonInfo(newAvs, "Albert", "Foldingue", Sexe.MASCULIN, date(2000, 5, 3), null, MockNationalite.of(null, null, MockPays.France), null, null));
@@ -3985,7 +3985,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 
 			@Override
-			public UpiPersonInfo getPersonInfo(String noAvs13) throws ServiceUpiException {
+			public UpiPersonInfo getPersonInfo(String noAvs13) throws UpiConnectorException {
 				throw new RuntimeException("Le service ne devrait pas être appelé !!");
 			}
 		});
@@ -4026,7 +4026,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final String oldAvs = "7566101270542";
 		final String newAvs = "7566285711978";
 
-		serviceUpi.setUp(new MockServiceUpi() {
+		upiConnector.setUp(new MockUpiConnector() {
 			@Override
 			protected void init() {
 				addData(new UpiPersonInfo(newAvs, "Mathilda", "Tourdesac", Sexe.FEMININ, date(1969, 4, 2), null, MockNationalite.of(null, null, MockPays.RoyaumeUni), null, null));
@@ -4034,7 +4034,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 
 			@Override
-			public UpiPersonInfo getPersonInfo(String noAvs13) throws ServiceUpiException {
+			public UpiPersonInfo getPersonInfo(String noAvs13) throws UpiConnectorException {
 				throw new RuntimeException("Le service ne devrait pas être appelé !!");
 			}
 		});
@@ -4097,7 +4097,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final String oldAvs = "7566101270542";
 		final String newAvs = "7566285711978";
 
-		serviceUpi.setUp(new MockServiceUpi() {
+		upiConnector.setUp(new MockUpiConnector() {
 			@Override
 			protected void init() {
 				addData(new UpiPersonInfo(newAvs, "Mathilda", "Tourdesac", Sexe.FEMININ, date(1969, 4, 2), null, MockNationalite.of(null, null, MockPays.RoyaumeUni), null, null));
@@ -4155,7 +4155,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final String oldAvs = "7566101270542";
 		final String newAvs = "7566285711978";
 
-		serviceUpi.setUp(new MockServiceUpi() {
+		upiConnector.setUp(new MockUpiConnector() {
 			@Override
 			protected void init() {
 				addData(new UpiPersonInfo(newAvs, "Mathilda", "Tourdesac", Sexe.FEMININ, date(1967, 4, 9), null, MockNationalite.of(null, null, MockPays.RoyaumeUni), null, null));
@@ -4212,7 +4212,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	 */
 	@Test
 	public void testAdressePresenteSansLocalite() throws Exception {
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		final Long id = doInNewTransaction(status -> {
 			final PersonnePhysique albert = addNonHabitant("Albert", "Zweisteinen", date(1953, 4, 3), Sexe.MASCULIN);
@@ -4255,7 +4255,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	 */
 	@Test
 	public void testPrenomsComposes() throws Exception {
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		doInNewTransaction(status -> {
 			final PersonnePhysique jeanDaniel = addNonHabitant("Jean-Daniel", "Zweisteinen", date(1953, 4, 3), Sexe.MASCULIN);
@@ -4295,7 +4295,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 	@Test
 	public void testPlusDeDeuxPrenoms() throws Exception {
-		serviceUpi.setUp(new DefaultMockServiceUpi());
+		upiConnector.setUp(new DefaultMockUpiConnector());
 
 		final Long id = doInNewTransaction(status -> {
 			final PersonnePhysique jeanDaniel = addNonHabitant("Jean Daniel", "Zweisteinen", date(1953, 4, 3), Sexe.MASCULIN);

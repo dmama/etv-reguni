@@ -7,7 +7,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.upi.data.UpiPersonInfo;
 import ch.vd.unireg.type.Sexe;
 
-public class DefaultMockServiceUpi extends MockServiceUpi {
+public class DefaultMockUpiConnector extends MockUpiConnector {
 
 	@Override
 	protected void init() {

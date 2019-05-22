@@ -17,13 +17,13 @@ import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
 import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.data.Pays;
-import ch.vd.unireg.interfaces.upi.ServiceUpiException;
-import ch.vd.unireg.interfaces.upi.ServiceUpiRaw;
+import ch.vd.unireg.interfaces.upi.UpiConnector;
+import ch.vd.unireg.interfaces.upi.UpiConnectorException;
 import ch.vd.unireg.interfaces.upi.data.UpiPersonInfo;
 import ch.vd.unireg.type.Sexe;
 import ch.vd.unireg.wsclient.rcpers.RcPersClient;
 
-public class ServiceUpiRCPers implements ServiceUpiRaw {
+public class UpiConnectorRCPers implements UpiConnector {
 
 	private RcPersClient client;
 	private InfrastructureConnector infraConnector;
@@ -37,10 +37,10 @@ public class ServiceUpiRCPers implements ServiceUpiRaw {
 	}
 
 	@Override
-	public UpiPersonInfo getPersonInfo(String noAvs13) throws ServiceUpiException {
+	public UpiPersonInfo getPersonInfo(String noAvs13) throws UpiConnectorException {
 		final String error = AvsHelper.validateNouveauNumAVS(noAvs13);
 		if (error != null) {
-			throw new ServiceUpiException("Numéro AVS13 invalide : '" + noAvs13 + "' (" + error + ')');
+			throw new UpiConnectorException("Numéro AVS13 invalide : '" + noAvs13 + "' (" + error + ')');
 		}
 
 		final long avs13 = EchHelper.avs13ToEch(noAvs13.replaceAll("\\.", ""));
@@ -48,7 +48,7 @@ public class ServiceUpiRCPers implements ServiceUpiRaw {
 			final GetInfoPersonResponse info = client.getInfoPersonUpi(avs13);
 			if (info.getRefused() != null) {
 				if (info.getRefused().getReason() == 10) {       // service indisponible
-					throw new ServiceUpiException("Service indisponible.");
+					throw new UpiConnectorException("Service indisponible.");
 				}
 				return null;
 			}
@@ -56,11 +56,11 @@ public class ServiceUpiRCPers implements ServiceUpiRaw {
 				return buildInfo(info.getAccepted(), infraConnector);
 			}
 			else {
-				throw new ServiceUpiException("La réponse ne contient ni le champ 'accepted' ni le champ 'refused'...");
+				throw new UpiConnectorException("La réponse ne contient ni le champ 'accepted' ni le champ 'refused'...");
 			}
 		}
 		catch (Exception e) {
-			throw new ServiceUpiException(e);
+			throw new UpiConnectorException(e);
 		}
 	}
 
@@ -88,7 +88,7 @@ public class ServiceUpiRCPers implements ServiceUpiRaw {
 	}
 
 	/**
-	 * Implémentation locale de la nationalité issue du service UPI
+	 * Implémentation locale de la nationalité issue du connecteur UPI
 	 */
 	private static final class NationaliteUpi implements Nationalite, Serializable {
 
