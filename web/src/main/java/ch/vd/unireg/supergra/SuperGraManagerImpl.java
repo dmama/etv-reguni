@@ -56,6 +56,7 @@ import ch.vd.unireg.declaration.ModeleFeuilleDocument;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.Periodicite;
 import ch.vd.unireg.documentfiscal.AutreDocumentFiscal;
+import ch.vd.unireg.documentfiscal.LiberationDocumentFiscal;
 import ch.vd.unireg.etiquette.ActionAutoEtiquette;
 import ch.vd.unireg.etiquette.Etiquette;
 import ch.vd.unireg.etiquette.EtiquetteTiers;
@@ -251,6 +252,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		childToParentRelationships.put(DomicileEtablissement.class, Etablissement.class);
 		childToParentRelationships.put(EtatDeclaration.class, Declaration.class);
 		childToParentRelationships.put(DelaiDeclaration.class, Declaration.class);
+		childToParentRelationships.put(LiberationDocumentFiscal.class, Declaration.class);
 		childToParentRelationships.put(ModeleFeuilleDocument.class, ModeleDocument.class);
 		childToParentRelationships.put(ParametrePeriodeFiscale.class, PeriodeFiscale.class);
 		childToParentRelationships.put(EvenementCivilEchErreur.class, EvenementCivilEch.class);

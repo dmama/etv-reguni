@@ -124,8 +124,7 @@ public abstract class DocumentFiscal extends HibernateEntity implements LinkedEn
 	 * @return les liberations
 	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	// msi : je ne comprends pas pourquoi la colonne est insertable/updatable = false
-	@JoinColumn(name = "DOCUMENT_FISCAL_ID", insertable = false, updatable = false, nullable = false, foreignKey = @ForeignKey(name = "FK_LIB_DOCFISC_DOCFISC_ID"))
+	@JoinColumn(name = "DOCUMENT_FISCAL_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_LIB_DOCFISC_DOCFISC_ID"))
 	public Set<LiberationDocumentFiscal> getLiberations() {
 		return liberations;
 	}
