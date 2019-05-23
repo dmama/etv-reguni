@@ -67,7 +67,7 @@ public abstract class BusinessItTestApplication {
 				BusinessTestingConstants.UNIREG_BUSINESS_UT_EDITIQUE,
 				BusinessTestingConstants.UNIREG_BUSINESS_UT_JMS,
 				BusinessItTestingConstants.UNIREG_BUSINESSIT_INTERFACES,
-				BusinessItTestingConstants.UNIREG_BUSINESSIT_RAW_INTERFACES,
+				BusinessItTestingConstants.UNIREG_BUSINESSIT_CONNECTORS,
 				BusinessItTestingConstants.UNIREG_BUSINESSIT_EXT_INTERFACES,
 				BusinessItTestingConstants.UNIREG_BUSINESSIT_EXT_INTERFACES_REFSEC,
 		};

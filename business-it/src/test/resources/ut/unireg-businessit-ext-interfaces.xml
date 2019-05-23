@@ -122,15 +122,4 @@
 
 	<alias name="serviceInfrastructureClientRaw" alias="serviceInfrastructureClient"/>
 
-	<!-- Securité RefSec -->
-
-	<bean id="securiteConnector" class="ch.vd.unireg.interfaces.securite.refsec.SecuriteConnectorRefSec">
-		<property name="client" ref="refSecClient" />
-	</bean>
-
-	<bean id="serviceSecuriteClientRefSec" class="ch.vd.unireg.interfaces.service.ServiceSecuriteImpl">
-		<property name="securiteConnector" ref="securiteConnector" />
-		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
-	</bean>
-
 </beans>

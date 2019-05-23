@@ -18,7 +18,7 @@ import ch.vd.unireg.utils.UniregPropertiesImpl;
 
 @ContextConfiguration(locations = {
 		BusinessItTestingConstants.UNIREG_BUSINESSIT_INTERFACES,
-		BusinessItTestingConstants.UNIREG_BUSINESSIT_RAW_INTERFACES,
+		BusinessItTestingConstants.UNIREG_BUSINESSIT_CONNECTORS,
 		BusinessItTestingConstants.UNIREG_BUSINESSIT_EXT_INTERFACES,
 		BusinessItTestingConstants.UNIREG_BUSINESSIT_EXT_INTERFACES_REFSEC,
 		BusinessItTestingConstants.UNIREG_BUSINESSIT_CACHE,

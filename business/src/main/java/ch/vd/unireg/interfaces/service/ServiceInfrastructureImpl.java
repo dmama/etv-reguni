@@ -39,7 +39,7 @@ import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.tiers.TiersDAO;
 
 /**
- * Service d'infrastructure utilisée par le code métier. Ce service expose toutes les méthodes du service d'infrastructure <i>raw</i> en y ajoutant des méthodes utilitaires.
+ * Service d'infrastructure utilisée par le code métier. Ce service expose toutes les méthodes du connecteur d'infrastructure en y ajoutant des méthodes utilitaires.
  */
 public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 

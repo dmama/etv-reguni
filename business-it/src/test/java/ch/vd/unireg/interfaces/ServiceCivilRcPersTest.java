@@ -45,9 +45,9 @@ public class ServiceCivilRcPersTest extends BusinessItTest {
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		final IndividuConnector raw = getBean(IndividuConnector.class, "individuConnectorRCPers");
+		final IndividuConnector connector = getBean(IndividuConnector.class, "individuConnectorRCPers");
 		final ServiceInfrastructureService infraService = getBean(ServiceInfrastructureService.class, "serviceInfrastructureService");
-		service = new ServiceCivilImpl(infraService, raw);
+		service = new ServiceCivilImpl(infraService, connector);
 	}
 
 	@Test(timeout = 10000)

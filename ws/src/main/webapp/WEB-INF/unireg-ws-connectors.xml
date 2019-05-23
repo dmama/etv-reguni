@@ -71,7 +71,7 @@
 
 	<alias alias="entrepriseConnector" name="entrepriseConnectorCache" />
 
-	<!-- Service infra -->
+	<!-- Connecteur infra -->
 
 	<bean id="infrastructureConnectorRemote" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
 		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/infraConnector.remoting" />
@@ -95,7 +95,7 @@
 
 	<alias alias="infrastructureConnector" name="infrastructureConnectorCache"/>
 
-	<!-- Service RefSec -->
+	<!-- Connecteur RefSec -->
 
 	<bean id="securiteConnectorRemote" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
 		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/securiteConnector.remoting" />

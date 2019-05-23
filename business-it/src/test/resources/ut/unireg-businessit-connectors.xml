@@ -71,7 +71,7 @@
 	<alias alias="upiConnector" name="upiConnectorTracing"/>
 
 
-	<!-- Service infra -->
+	<!-- Connecteur infra -->
 
 	<bean id="infrastructureConnectorHost" class="ch.vd.unireg.interfaces.infra.host.InfrastructureConnectorHostInterfaces">
 		<property name="client" ref="serviceInfrastructureClient" />
@@ -103,5 +103,16 @@
 	</bean>
 
 	<alias alias="infrastructureConnector" name="infrastructureConnectorCache"/>
+
+	<!-- Connecteur RefSec -->
+
+	<bean id="securiteConnector" class="ch.vd.unireg.interfaces.securite.refsec.SecuriteConnectorRefSec">
+		<property name="client" ref="refSecClient" />
+	</bean>
+
+	<bean id="serviceSecuriteClientRefSec" class="ch.vd.unireg.interfaces.service.ServiceSecuriteImpl">
+		<property name="securiteConnector" ref="securiteConnector" />
+		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
+	</bean>
 
 </beans>
