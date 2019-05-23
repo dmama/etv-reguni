@@ -12,12 +12,12 @@ public class LiberationDocumentFiscalView implements Comparable<LiberationDocume
 	private Long id;
 	private final RegDate dateLiberation;
 	private final String motif;
-	private final String logModifUser;
+	private final String LogCreationUser;
 	private final String entity;
 
 	public LiberationDocumentFiscalView(LiberationDocumentFiscal liberation) {
 		this.id = liberation.getId();
-		this.logModifUser = liberation.getLogModifUser();
+		this.LogCreationUser = liberation.getLogCreationUser();
 		this.dateLiberation = liberation.getDateLiberation();
 		this.motif = liberation instanceof LiberationDeclaration ? ((LiberationDeclaration) liberation).getMotif() : ((LiberationQuestionnaireSNC) liberation).getMotif();
 		this.entity = liberation instanceof LiberationDeclaration ? LiberationDeclaration.class.getSimpleName() : LiberationQuestionnaireSNC.class.getSimpleName();
@@ -31,8 +31,8 @@ public class LiberationDocumentFiscalView implements Comparable<LiberationDocume
 		return motif;
 	}
 
-	public String getLogModifUser() {
-		return logModifUser;
+	public String getLogCreationUser() {
+		return LogCreationUser;
 	}
 
 	public Long getId() {

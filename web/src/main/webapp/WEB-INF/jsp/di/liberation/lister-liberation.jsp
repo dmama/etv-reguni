@@ -10,7 +10,7 @@
 			</display:column>
 
 			<display:column titleKey="label.user.liberation">
-				${liberation.logModifUser}
+				${liberation.logCreationUser}
 			</display:column>
 
 			<display:column titleKey="label.motivation.liberation">

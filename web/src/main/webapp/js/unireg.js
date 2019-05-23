@@ -3090,7 +3090,7 @@ var Decl = {
 				let l = liberations[i];
 				html += '<tr class="' + (i % 2 === 0 ? 'even' : 'odd') + '">';
 				html += '<td>' + RegDate.format(l.dateLiberation) + '</td>';
-				html += '<td>' + StringUtils.escapeHTML(l.logModifUser) + '</td>';
+				html += '<td>' + StringUtils.escapeHTML(l.logCreationUser) + '</td>';
 				html += '<td>' + StringUtils.escapeHTML(l.motif) + '</td>';
 				html += '<td>' + Link.consulterLog(l.entity, l.id) + '</td></tr>';
 			}
