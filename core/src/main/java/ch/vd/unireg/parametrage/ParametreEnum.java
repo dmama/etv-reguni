@@ -38,6 +38,7 @@ public enum ParametreEnum {
 	delaiRetourQuestionnaireSNCEmisManuellement("90", Type.delaisEnJour, true),
 	delaiEnvoiRappelQuestionnaireSNC("15", Type.delaisEnJour, true),
 	delaiImpressionCadev("3", Type.delaisEnJour, true),
+	delaiCadevImpressionQuestionnaireSNC("3", Type.delaisEnJour, true),
 	delaiRetourQuestionnaireSNCRappele("30", Type.delaisEnJour, true),
 	delaiAccordeDemandeDelai("30", Type.delaisEnJour, true),
 

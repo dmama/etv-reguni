@@ -88,6 +88,8 @@ public interface ParametreAppAccessor {
 
 	Integer getDelaiMinimalRetourDeclarationImpotPM();
 
+	Integer getDelaiCadevImpressionQuestionnaireSNC();
+
 	/**
 	 * [UNIREG-2507]
 	 *

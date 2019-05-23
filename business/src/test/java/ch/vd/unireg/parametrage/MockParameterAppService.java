@@ -244,6 +244,11 @@ public final class MockParameterAppService implements ParametreAppService {
 	}
 
 	@Override
+	public Integer getDelaiCadevImpressionQuestionnaireSNC() {
+		return container.getDelaiCadevImpressionQuestionnaireSNC();
+	}
+
+	@Override
 	public void reset() {
 		container.reset();
 	}
