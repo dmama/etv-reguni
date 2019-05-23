@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
-import ch.vd.unireg.interfaces.service.host.Operateur;
+import ch.vd.unireg.security.Operateur;
 
 /**
  * Classe contenant les informations des signataires d'un document émis

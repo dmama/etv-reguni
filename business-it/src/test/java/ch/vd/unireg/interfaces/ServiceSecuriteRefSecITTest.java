@@ -10,7 +10,7 @@ import org.junit.Test;
 import ch.vd.unireg.common.BusinessItTest;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
-import ch.vd.unireg.interfaces.service.host.Operateur;
+import ch.vd.unireg.security.Operateur;
 import ch.vd.unireg.security.ProcedureSecurite;
 import ch.vd.unireg.security.ProfileOperateur;
 
@@ -19,7 +19,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-public class ServiceSecuriteClientRefSecTest extends BusinessItTest {
+public class ServiceSecuriteRefSecITTest extends BusinessItTest {
 
 	private ServiceSecuriteService service;
 

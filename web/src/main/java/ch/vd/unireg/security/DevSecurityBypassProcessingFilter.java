@@ -24,8 +24,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.filter.GenericFilterBean;
 
 import ch.vd.unireg.common.AuthenticationHelper;
-import ch.vd.unireg.interfaces.service.host.ProcedureSecuriteImpl;
-import ch.vd.unireg.interfaces.service.host.ProfileOperateurImpl;
+import ch.vd.unireg.interfaces.securite.data.ProcedureSecuriteImpl;
+import ch.vd.unireg.interfaces.securite.data.ProfileOperateurImpl;
 import ch.vd.unireg.utils.UniregModeHelper;
 
 /**

@@ -24,7 +24,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteException;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
-import ch.vd.unireg.interfaces.service.host.Operateur;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.DroitAcces;
 import ch.vd.unireg.tiers.Entreprise;

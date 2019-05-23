@@ -1,16 +1,16 @@
-package ch.vd.unireg.interfaces.service.host;
+package ch.vd.unireg.interfaces.securite.data;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.jetbrains.annotations.NotNull;
 
+import ch.vd.unireg.security.Operateur;
 import ch.vd.unireg.wsclient.refsec.model.User;
 
 
-public class Operateur implements Serializable, Comparable {
+public class OperateurImpl implements Serializable, Comparable, Operateur {
 
 	private String nom;
 	private String prenom;
@@ -18,35 +18,34 @@ public class Operateur implements Serializable, Comparable {
 	private String code;
 
 
-	public static Operateur get(ch.vd.securite.model.rest.Operateur o) {
+	public static OperateurImpl get(ch.vd.securite.model.rest.Operateur o) {
 		if (o == null) {
 			return null;
 		}
 
-		final Operateur op = new Operateur();
+		final OperateurImpl op = new OperateurImpl();
 		op.setNom(o.getNom());
 		op.setPrenom(o.getPrenom());
 		op.setEmail(o.getEmail());
 		op.setCode(o.getCode());
-
-
 		return op;
 	}
 
-	public static Operateur get(User user, String visa) {
+	public static Operateur get(User user) {
 		if (user == null) {
 			return null;
 		}
 
-		final Operateur op = new Operateur();
+		final OperateurImpl op = new OperateurImpl();
 		op.setNom(user.getLastName());
 		op.setPrenom(user.getFirstName());
 		op.setEmail(user.getEmail());
-		op.setCode(visa);
+		op.setCode(user.getVisa());
 		return op;
 	}
 
 
+	@Override
 	public String getNom() {
 		return nom;
 	}
@@ -55,6 +54,7 @@ public class Operateur implements Serializable, Comparable {
 		this.nom = nom;
 	}
 
+	@Override
 	public String getPrenom() {
 		return prenom;
 	}
@@ -63,6 +63,7 @@ public class Operateur implements Serializable, Comparable {
 		this.prenom = prenom;
 	}
 
+	@Override
 	public String getEmail() {
 		return email;
 	}
@@ -71,6 +72,7 @@ public class Operateur implements Serializable, Comparable {
 		this.email = email;
 	}
 
+	@Override
 	public String getCode() {
 		return code;
 	}
@@ -87,24 +89,16 @@ public class Operateur implements Serializable, Comparable {
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
-
-		if (!(o instanceof Operateur)) return false;
-
-		final Operateur operateur = (Operateur) o;
-
-		return new EqualsBuilder()
-				.append(getNom(), operateur.getNom())
-				.append(getPrenom(), operateur.getPrenom())
-				.append(getCode(), operateur.getCode())
-				.isEquals();
+		if (!(o instanceof OperateurImpl)) return false;
+		final OperateurImpl operateur = (OperateurImpl) o;
+		return Objects.equals(nom, operateur.nom) &&
+				Objects.equals(prenom, operateur.prenom) &&
+				Objects.equals(email, operateur.email) &&
+				Objects.equals(code, operateur.code);
 	}
 
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder(17, 37)
-				.append(getNom())
-				.append(getPrenom())
-				.append(getCode())
-				.toHashCode();
+		return Objects.hash(nom, prenom, email, code);
 	}
 }

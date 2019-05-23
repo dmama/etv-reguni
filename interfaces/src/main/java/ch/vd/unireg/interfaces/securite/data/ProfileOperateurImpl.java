@@ -1,4 +1,4 @@
-package ch.vd.unireg.interfaces.service.host;
+package ch.vd.unireg.interfaces.securite.data;
 
 import java.io.Serializable;
 import java.util.ArrayList;

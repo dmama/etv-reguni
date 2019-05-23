@@ -9,7 +9,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
-import ch.vd.unireg.interfaces.service.host.Operateur;
+import ch.vd.unireg.security.Operateur;
 import ch.vd.unireg.security.ProfileOperateur;
 import ch.vd.unireg.stats.ServiceTracing;
 import ch.vd.unireg.stats.StatsService;

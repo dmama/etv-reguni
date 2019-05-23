@@ -22,14 +22,15 @@ import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.document.ListeDroitsAccesRapport;
 import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.interfaces.securite.data.OperateurImpl;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
-import ch.vd.unireg.interfaces.service.host.Operateur;
 import ch.vd.unireg.metier.assujettissement.Assujettissement;
 import ch.vd.unireg.rapport.RapportService;
 import ch.vd.unireg.scheduler.JobCategory;
 import ch.vd.unireg.scheduler.JobDefinition;
 import ch.vd.unireg.scheduler.JobParam;
 import ch.vd.unireg.scheduler.JobParamRegDate;
+import ch.vd.unireg.security.Operateur;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.DroitAcces;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
@@ -122,10 +123,11 @@ public class ListeDroitsAccesJob extends JobDefinition {
 					if (operateur == null) {
 						//SIFISC-26187 Pas d'opérateur trouvé, on créé un opérateur fantome pour l'affichage du message d'erreur dans le rapport
 						final String msgErreur = String.format("Opérateur %s non trouvé dans host-interfaces", visa);
-						operateur = new Operateur();
-						operateur.setCode(visa);
-						operateur.setNom("");
-						operateur.setPrenom(msgErreur);
+						final OperateurImpl op = new OperateurImpl();
+						op.setCode(visa);
+						op.setNom("");
+						op.setPrenom(msgErreur);
+						operateur = op;
 
 					}
 					rapport.addDroitAcces(da.getTiers().getNumero(), oid, adresseEnvoi, da.getType(), da.getNiveau(), operateur);

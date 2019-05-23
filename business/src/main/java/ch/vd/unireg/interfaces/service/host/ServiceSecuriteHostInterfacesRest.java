@@ -15,8 +15,11 @@ import ch.vd.securite.model.rest.ProfilOperateur;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeImpl;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
+import ch.vd.unireg.interfaces.securite.data.OperateurImpl;
+import ch.vd.unireg.interfaces.securite.data.ProfileOperateurImpl;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteException;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
+import ch.vd.unireg.security.Operateur;
 import ch.vd.unireg.security.ProfileOperateur;
 import ch.vd.unireg.wsclient.host.interfaces.ServiceSecuriteClient;
 import ch.vd.unireg.wsclient.host.interfaces.ServiceSecuriteClientException;
@@ -141,7 +144,7 @@ public class ServiceSecuriteHostInterfacesRest implements ServiceSecuriteService
 			final List<ch.vd.securite.model.rest.Operateur> listeOperateurs = operateurs.getOperateur();
 			if (CollectionUtils.isNotEmpty(listeOperateurs)) {
 				for (ch.vd.securite.model.rest.Operateur operateur : listeOperateurs) {
-					res.add(Operateur.get(operateur));
+					res.add(OperateurImpl.get(operateur));
 				}
 			}
 			return res;
@@ -153,16 +156,13 @@ public class ServiceSecuriteHostInterfacesRest implements ServiceSecuriteService
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Nullable
 	@Override
 	public Operateur getOperateur(@NotNull String visa) throws ServiceSecuriteException {
 		try {
 			// [SIFISC-7231] On ne veut pas se limiter aux opérateurs actuellement valides
 			final ch.vd.securite.model.rest.Operateur operateur = client.getOperateurTous(visa);
-			return Operateur.get(operateur);
+			return OperateurImpl.get(operateur);
 		}
 		catch (Exception e) {
 			throw new ServiceSecuriteException("impossible de récupérer l'utilisateur correspondant au visa " + visa, e);

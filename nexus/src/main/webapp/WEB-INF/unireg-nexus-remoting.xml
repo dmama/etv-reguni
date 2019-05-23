@@ -31,9 +31,9 @@
 		<property name="serviceInterface" value="ch.vd.unireg.data.CivilDataEventListener" />
 	</bean>
 
-	<bean name="refSecClientExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
-		<property name="service" ref="refSecClient"/>
-		<property name="serviceInterface" value="ch.vd.unireg.wsclient.refsec.RefSecClient"/>
+	<bean name="securiteConnectorExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
+		<property name="service" ref="securiteConnector"/>
+		<property name="serviceInterface" value="ch.vd.unireg.interfaces.securite.SecuriteConnector"/>
 	</bean>
 
 	<bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
@@ -45,7 +45,7 @@
 				<entry key="/infraConnector.remoting" value-ref="infraConnectorExporter" />
 				<entry key="/dataEventService.remoting" value-ref="dataEventServiceExporter" />
 				<entry key="/entrepriseConnector.remoting" value-ref="entrepriseConnectorExporter"/>
-				<entry key="/refSecClient.remoting" value-ref="refSecClientExporter"/>
+				<entry key="/securiteConnector.remoting" value-ref="securiteConnectorExporter"/>
 			</map>
 		</property>
 	</bean>

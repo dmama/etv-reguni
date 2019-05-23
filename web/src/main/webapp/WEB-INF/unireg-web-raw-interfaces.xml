@@ -107,7 +107,7 @@
 
 	<alias alias="upiConnector" name="upiConnectorTracing"/>
 
-	<!-- Service infra -->
+	<!-- Connecteur infra -->
 
 	<bean id="infrastructureConnectorRemote" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
 		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/infraConnector.remoting" />
@@ -131,18 +131,19 @@
 
 	<alias alias="infrastructureConnector" name="infrastructureConnectorCache"/>
 
-	<!-- Service REF -Sec -->
+	<!-- Connecteur RefSec -->
 
-	<bean id="refSecClientRemote" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
-		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/refSecClient.remoting" />
-		<property name="serviceInterface" value="ch.vd.unireg.wsclient.refsec.RefSecClient" />
+	<bean id="securiteConnectorRemote" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
+		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/securiteConnector.remoting" />
+		<property name="serviceInterface" value="ch.vd.unireg.interfaces.securite.SecuriteConnector" />
 		<property name="executor" ref="nexusHttpRequestExecutor" />
 	</bean>
 
-	<bean id="refSecClientTracing" class="ch.vd.unireg.wsclient.refsec.RefSecClientTracing">
-		<property name="target" ref="refSecClientRemote" />
+	<bean id="securiteConnectorTracing" class="ch.vd.unireg.interfaces.securite.SecuriteConnectorTracing">
+		<property name="target" ref="securiteConnectorRemote" />
 		<property name="statsService" ref="statsService" />
 	</bean>
-	<alias alias="refSecClient" name="refSecClientTracing" />
+
+	<alias alias="securiteConnector" name="securiteConnectorTracing" />
 
 </beans>

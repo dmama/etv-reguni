@@ -7,7 +7,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.JobResults;
-import ch.vd.unireg.interfaces.service.host.Operateur;
+import ch.vd.unireg.security.Operateur;
 import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.Niveau;
 import ch.vd.unireg.type.TypeDroitAcces;

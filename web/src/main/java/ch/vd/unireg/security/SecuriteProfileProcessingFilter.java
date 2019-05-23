@@ -19,8 +19,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.web.filter.GenericFilterBean;
 
 import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.interfaces.securite.data.ProfileOperateurImpl;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
-import ch.vd.unireg.interfaces.service.host.ProfileOperateurImpl;
 
 /**
  * Ce filtre est utilisé pour récupérer le profil de sécurité de l'utilisateur connecté et le stocker dans le context de sécurité. Il ne fait aucun contrôle d'accès par lui-même.

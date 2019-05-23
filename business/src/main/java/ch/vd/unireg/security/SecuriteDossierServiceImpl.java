@@ -24,7 +24,6 @@ import ch.vd.unireg.common.StringRenderer;
 import ch.vd.unireg.common.TiersNotFoundException;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
-import ch.vd.unireg.interfaces.service.host.Operateur;
 import ch.vd.unireg.tiers.DroitAcces;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;

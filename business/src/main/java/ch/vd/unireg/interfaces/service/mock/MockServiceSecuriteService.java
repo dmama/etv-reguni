@@ -11,11 +11,12 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
+import ch.vd.unireg.interfaces.securite.data.OperateurImpl;
+import ch.vd.unireg.interfaces.securite.data.ProcedureSecuriteImpl;
+import ch.vd.unireg.interfaces.securite.data.ProfileOperateurImpl;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteException;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
-import ch.vd.unireg.interfaces.service.host.Operateur;
-import ch.vd.unireg.interfaces.service.host.ProcedureSecuriteImpl;
-import ch.vd.unireg.interfaces.service.host.ProfileOperateurImpl;
+import ch.vd.unireg.security.Operateur;
 import ch.vd.unireg.security.ProcedureSecurite;
 import ch.vd.unireg.security.ProfileOperateur;
 import ch.vd.unireg.security.Role;
@@ -70,7 +71,7 @@ public abstract class MockServiceSecuriteService implements ServiceSecuriteServi
 			}
 		}
 
-		final Operateur o = new Operateur();
+		final OperateurImpl o = new OperateurImpl();
 		o.setCode(visa);
 		operatorsByVisa.put(visa, o);
 		profilesOperatorByIndividu.put(visa, new ProfileOperateurImpl(visa, procedures));

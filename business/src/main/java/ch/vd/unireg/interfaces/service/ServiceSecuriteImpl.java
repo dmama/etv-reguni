@@ -1,9 +1,8 @@
-package ch.vd.unireg.interfaces.service.refsec;
+package ch.vd.unireg.interfaces.service;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -18,38 +17,27 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.infra.data.TypeCommunication;
-import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
-import ch.vd.unireg.interfaces.service.ServiceSecuriteException;
-import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
-import ch.vd.unireg.interfaces.service.host.Operateur;
-import ch.vd.unireg.interfaces.service.host.ProfileOperateurImpl;
+import ch.vd.unireg.interfaces.securite.SecuriteConnector;
+import ch.vd.unireg.interfaces.securite.SecuriteConnectorException;
+import ch.vd.unireg.security.Operateur;
 import ch.vd.unireg.security.ProfileOperateur;
-import ch.vd.unireg.wsclient.refsec.RefSecClient;
-import ch.vd.unireg.wsclient.refsec.RefSecClientException;
-import ch.vd.unireg.wsclient.refsec.RefSecClientTracing;
-import ch.vd.unireg.wsclient.refsec.model.ProfilOperateur;
-import ch.vd.unireg.wsclient.refsec.model.User;
 
 
-public class ServiceSecuriteRefSecImpl implements ServiceSecuriteService {
+public class ServiceSecuriteImpl implements ServiceSecuriteService {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ServiceSecuriteRefSecImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ServiceSecuriteImpl.class);
 
-	private RefSecClient refSecClient;
+	private SecuriteConnector securiteConnector;
 	private ServiceInfrastructureService serviceInfrastructureService;
 
 
 	@Nullable
 	@Override
 	public ProfileOperateur getProfileUtilisateur(String visa, int codeCollectivite) throws ServiceSecuriteException {
-
 		try {
-
-			final User user = refSecClient.getUser(visa);
-			final ProfilOperateur profile = refSecClient.getProfilOperateur(visa, codeCollectivite);
-			return ProfileOperateurImpl.get(profile, user);
+			return securiteConnector.getProfileUtilisateur(visa, codeCollectivite);
 		}
-		catch (RefSecClientException e) {
+		catch (SecuriteConnectorException e) {
 			LOGGER.error(e.getMessage(), e);
 			throw new ServiceSecuriteException("impossible de récupérer le profil de l'utilisateur  refsec " + visa + " pour l'OID "
 					                                   + codeCollectivite, e);
@@ -58,15 +46,13 @@ public class ServiceSecuriteRefSecImpl implements ServiceSecuriteService {
 			LOGGER.error(e.getMessage(), e);
 			throw new ServiceSecuriteException("impossible de récupérer l'utilisateur  IAM " + visa, e);
 		}
-
 	}
 
 	@Override
 	@Nullable
 	public Operateur getOperateur(@NotNull String visa) throws ServiceSecuriteException {
 		try {
-			final User user = refSecClient.getUser(visa);
-			return Operateur.get(user, visa);
+			return securiteConnector.getOperateur(visa);
 		}
 		catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
@@ -78,21 +64,15 @@ public class ServiceSecuriteRefSecImpl implements ServiceSecuriteService {
 	@Override
 	public List<Operateur> getUtilisateurs(List<TypeCollectivite> typesCollectivite) throws ServiceSecuriteException {
 		try {
-			final Set<Operateur> resultat = new HashSet<>();
-			final Set<User> usersFromCollectivite = new HashSet<>();
 			final List<CollectiviteAdministrative> collectivitesAdministratives = serviceInfrastructureService.getCollectivitesAdministratives(typesCollectivite);
-
-			collectivitesAdministratives.forEach(collectivite -> usersFromCollectivite.addAll(refSecClient.getUsersFromCollectivite(collectivite.getNoColAdm())));
-
-			resultat.addAll(usersFromCollectivite.stream()
-					                .map(User::getVisa)
-					                .distinct()
-					                .map(uip -> Operateur.get(refSecClient.getUser(uip), uip))
-					                .collect(Collectors.toSet()));
-
-			final List<Operateur> operateurs = new ArrayList<>(resultat);
-			Collections.sort(operateurs);
-			return operateurs;
+			return collectivitesAdministratives.stream()
+					.map(CollectiviteAdministrative::getNoColAdm)
+					.map(securiteConnector::getUtilisateurs)
+					.flatMap(Collection::stream)
+					.distinct()
+					.sorted()
+					.map(this::getOperateur)
+					.collect(Collectors.toList());
 		}
 		catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
@@ -103,14 +83,17 @@ public class ServiceSecuriteRefSecImpl implements ServiceSecuriteService {
 	@NotNull
 	@Override
 	public List<CollectiviteAdministrative> getCollectivitesUtilisateur(String visa) throws ServiceSecuriteException {
+		if (visa == null) {
+			throw new IllegalArgumentException("Le visa est obligatoire.");
+		}
 		try {
-			final Set<Integer> codeCollectivites = refSecClient.getCollectivitesOperateur(visa);
+			final Set<Integer> codeCollectivites = securiteConnector.getCollectivitesOperateur(visa);
 			final List<CollectiviteAdministrative> collectivitesAdministratives = serviceInfrastructureService.findCollectivitesAdministratives(new ArrayList<>(codeCollectivites), false);
 			return filtreCollectiviteAdministrativeParTypeCommunicationACI(collectivitesAdministratives)
 					.sorted(Comparator.comparing(CollectiviteAdministrative::getNomCourt))
 					.collect(Collectors.toList());
 		}
-		catch (RefSecClientException e) {
+		catch (SecuriteConnectorException e) {
 			throw new ServiceSecuriteException("impossible de récupérer les codes collectivités administrative depuis Refsec de l'operateur   " + visa, e);
 		}
 		catch (Exception e) {
@@ -121,7 +104,7 @@ public class ServiceSecuriteRefSecImpl implements ServiceSecuriteService {
 	@NotNull
 	private Stream<CollectiviteAdministrative> filtreCollectiviteAdministrativeParTypeCommunicationACI(List<CollectiviteAdministrative> collectivites) {
 		return collectivites.stream()
-				.filter(ServiceSecuriteRefSecImpl::hasTypeCommunicationACI);
+				.filter(ServiceSecuriteImpl::hasTypeCommunicationACI);
 	}
 
 	@Nullable
@@ -142,13 +125,12 @@ public class ServiceSecuriteRefSecImpl implements ServiceSecuriteService {
 
 	@Override
 	public void ping() throws ServiceSecuriteException {
-		refSecClient.ping();
+		securiteConnector.ping();
 	}
 
-	public void setRefSecClient(RefSecClientTracing refSecClient) {
-		this.refSecClient = refSecClient;
+	public void setSecuriteConnector(SecuriteConnector securiteConnector) {
+		this.securiteConnector = securiteConnector;
 	}
-
 
 	public void setServiceInfrastructureService(ServiceInfrastructureService serviceInfrastructureService) {
 		this.serviceInfrastructureService = serviceInfrastructureService;
