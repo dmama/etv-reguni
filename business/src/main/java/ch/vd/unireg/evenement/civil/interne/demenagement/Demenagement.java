@@ -21,7 +21,7 @@ import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.model.AdressesCiviles;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
@@ -81,7 +81,7 @@ public class Demenagement extends EvenementCivilInterneAvecAdresses {
 		try {
 			this.nouvelleCommunePrincipale = context.getServiceInfra().getCommuneByAdresse(getNouvelleAdressePrincipale(), dateEvenement);
 		}
-		catch (ServiceInfrastructureException e) {
+		catch (InfrastructureException e) {
 			throw new EvenementCivilException(e);
 		}
 	}

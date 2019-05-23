@@ -12,12 +12,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.identification.contribuable.IdentificationContribuableService;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
 import ch.vd.unireg.interfaces.entreprise.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.entreprise.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.entreprise.data.TypeEntrepriseRegistreIDE;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockEntrepriseCivile;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockEtablissementCivil;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
@@ -210,7 +210,7 @@ public class IdentificationContribuableRequestHandlerV4Test extends BusinessTest
 	public void testMultipleQuestions() throws Exception {
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne... où sont-ils tous partis ?
@@ -355,7 +355,7 @@ public class IdentificationContribuableRequestHandlerV4Test extends BusinessTest
 		assertTrue(raisonSociale.length() > 100);
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final MockEntrepriseCivile entreprise = addEntreprise(noCivilPM);
@@ -411,7 +411,7 @@ public class IdentificationContribuableRequestHandlerV4Test extends BusinessTest
 		final Long noEtablissement = noEntrepriseCivile + 1000000;
 		final String ide = "CHE999999996";
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				MockEntrepriseCivile entreprise =

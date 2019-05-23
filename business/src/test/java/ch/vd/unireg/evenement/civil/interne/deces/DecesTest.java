@@ -14,7 +14,7 @@ import ch.vd.unireg.evenement.civil.interne.MessageCollector;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -176,7 +176,7 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 		super.onSetUp();
 
 		serviceInfra.setUpDefault();
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				super.init();
@@ -423,7 +423,7 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 		final RegDate dateDeces = date(2009, 5, 12);
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, date(1934, 2, 4), "Riddle", "Tom", true);

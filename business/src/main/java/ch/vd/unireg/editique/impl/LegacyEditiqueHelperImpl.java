@@ -31,7 +31,7 @@ import ch.vd.unireg.editique.LegacyEditiqueHelper;
 import ch.vd.unireg.editique.TypeDocumentEditique;
 import ch.vd.unireg.editique.ZoneAffranchissementEditique;
 import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.TypeAffranchissement;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
@@ -167,15 +167,15 @@ public class LegacyEditiqueHelperImpl implements LegacyEditiqueHelper {
 	 * Alimente la partie expéditeur du document
 	 */
 	@Override
-	public Expediteur remplitExpediteurACI(InfoEnteteDocument infoEnteteDocument) throws ServiceInfrastructureException {
+	public Expediteur remplitExpediteurACI(InfoEnteteDocument infoEnteteDocument) throws InfrastructureException {
 		ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative aci = infraService.getACI();
 		return remplitExpediteur(aci, infoEnteteDocument);
 	}
 
-	private Expediteur remplitExpediteur(ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative ca, InfoEnteteDocument infoEnteteDocument) throws ServiceInfrastructureException {
+	private Expediteur remplitExpediteur(ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative ca, InfoEnteteDocument infoEnteteDocument) throws InfrastructureException {
 		final Adresse adresse = ca.getAdresse();
 		if (adresse == null) {
-			throw new ServiceInfrastructureException("Le collectivité administrative n°" + ca.getNoColAdm() + " ne possède pas d'adresse courrier.");
+			throw new InfrastructureException("Le collectivité administrative n°" + ca.getNoColAdm() + " ne possède pas d'adresse courrier.");
 		}
 		final Commune commune = infraService.getCommuneByAdresse(adresse, null);
 
@@ -209,7 +209,7 @@ public class LegacyEditiqueHelperImpl implements LegacyEditiqueHelper {
 	 * Alimente la partie expéditeur CAT du document
 	 */
 	@Override
-	public Expediteur remplitExpediteurCAT(InfoEnteteDocument infoEnteteDocument) throws ServiceInfrastructureException {
+	public Expediteur remplitExpediteurCAT(InfoEnteteDocument infoEnteteDocument) throws InfrastructureException {
 		final ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative cat = infraService.getCAT();
 		final Expediteur expediteur = remplitExpediteur(cat, infoEnteteDocument);
 		expediteur.setSrvExp(CAT_NOM_SERVICE_EXPEDITEUR);
@@ -218,7 +218,7 @@ public class LegacyEditiqueHelperImpl implements LegacyEditiqueHelper {
 	}
 
 	@Override
-	public Expediteur remplitExpediteur(CollectiviteAdministrative collAdm, InfoEnteteDocument infoEnteteDocument) throws ServiceInfrastructureException {
+	public Expediteur remplitExpediteur(CollectiviteAdministrative collAdm, InfoEnteteDocument infoEnteteDocument) throws InfrastructureException {
 		final ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative ca = infraService.getCollectivite(collAdm.getNumeroCollectiviteAdministrative());
 		return remplitExpediteur(ca, infoEnteteDocument);
 	}
@@ -243,7 +243,7 @@ public class LegacyEditiqueHelperImpl implements LegacyEditiqueHelper {
 		try {
 			commune = infraService.getCommuneByNumeroOfs(numeroOfsAutoriteFiscale, forGestion.getDateFin());
 		}
-		catch (ServiceInfrastructureException e) {
+		catch (InfrastructureException e) {
 			commune = null;
 			LOGGER.error("Exception lors de la recherche de la commune par numéro " + numeroOfsAutoriteFiscale, e);
 		}
@@ -258,14 +258,14 @@ public class LegacyEditiqueHelperImpl implements LegacyEditiqueHelper {
 	 * Alimente la partie expéditeur d'une sommation de LR
 	 */
 	@Override
-	public Expediteur remplitExpediteurPourSommationLR(Declaration declaration, InfoEnteteDocument infoEnteteDocument, String traitePar) throws ServiceInfrastructureException {
+	public Expediteur remplitExpediteurPourSommationLR(Declaration declaration, InfoEnteteDocument infoEnteteDocument, String traitePar) throws InfrastructureException {
 		//
 		// Expediteur
 		//
 		ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative aciImpotSource = infraService.getACIImpotSource();
 		Adresse adresseAciImpotSource = aciImpotSource.getAdresse();
 		if (adresseAciImpotSource == null) {
-			throw new ServiceInfrastructureException("Le collectivité administrative n°" + aciImpotSource.getNoColAdm() + " ne possède pas d'adresse courrier.");
+			throw new InfrastructureException("Le collectivité administrative n°" + aciImpotSource.getNoColAdm() + " ne possède pas d'adresse courrier.");
 		}
 
 		Expediteur expediteur = infoEnteteDocument.addNewExpediteur();
@@ -304,14 +304,14 @@ public class LegacyEditiqueHelperImpl implements LegacyEditiqueHelper {
 	 * Alimente la partie expéditeur d'une LR
 	 */
 	@Override
-	public Expediteur remplitExpediteurPourEnvoiLR(Declaration declaration, InfoEnteteDocument infoEnteteDocument, String traitePar) throws ServiceInfrastructureException {
+	public Expediteur remplitExpediteurPourEnvoiLR(Declaration declaration, InfoEnteteDocument infoEnteteDocument, String traitePar) throws InfrastructureException {
 		//
 		// Expediteur
 		//
 		ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative aci = infraService.getACI();
 		Adresse aciAdresse = aci.getAdresse();
 		if (aciAdresse == null) {
-			throw new ServiceInfrastructureException("Le collectivité administrative n°" + aci.getNoColAdm() + " ne possède pas d'adresse courrier.");
+			throw new InfrastructureException("Le collectivité administrative n°" + aci.getNoColAdm() + " ne possède pas d'adresse courrier.");
 		}
 
 		Expediteur expediteur = infoEnteteDocument.addNewExpediteur();

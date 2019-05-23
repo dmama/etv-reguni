@@ -2,7 +2,7 @@ package ch.vd.unireg.adresse;
 
 import org.junit.Test;
 
-import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
+import ch.vd.unireg.interfaces.infra.mock.DefaultMockInfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureImpl;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
@@ -14,7 +14,7 @@ import static org.junit.Assert.assertEquals;
 
 public class AdressesFiscalesTest {
 
-	final ServiceInfrastructureService serviceInfra = new ServiceInfrastructureImpl(new DefaultMockServiceInfrastructureService(), null);
+	final ServiceInfrastructureService serviceInfra = new ServiceInfrastructureImpl(new DefaultMockInfrastructureConnector(), null);
 
 	@Test
 	public void testOfType() throws Exception {

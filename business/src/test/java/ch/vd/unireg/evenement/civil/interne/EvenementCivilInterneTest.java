@@ -21,8 +21,8 @@ import ch.vd.unireg.evenement.civil.interne.arrivee.ArriveePrincipale;
 import ch.vd.unireg.evenement.civil.interne.mariage.Mariage;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
+import ch.vd.unireg.interfaces.infra.mock.DefaultMockInfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.service.ServiceCivilImpl;
@@ -49,8 +49,8 @@ public class EvenementCivilInterneTest extends WithoutSpringTest {
 		final long noIndividuConjoint = 2;
 
 		final MockTiersDAO tiersDAO = new MockTiersDAO();
-		final ServiceInfrastructureService infrastructureService = new ServiceInfrastructureImpl(new DefaultMockServiceInfrastructureService(), tiersDAO);
-		final ServiceCivilService serviceCivil = new ServiceCivilImpl(infrastructureService, new MockServiceCivil() {
+		final ServiceInfrastructureService infrastructureService = new ServiceInfrastructureImpl(new DefaultMockInfrastructureConnector(), tiersDAO);
+		final ServiceCivilService serviceCivil = new ServiceCivilImpl(infrastructureService, new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividuPrincipal, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -102,8 +102,8 @@ public class EvenementCivilInterneTest extends WithoutSpringTest {
 		final RegDate dateMariage = RegDate.get(1985, 7, 11);
 
 		final MockTiersDAO tiersDAO = new MockTiersDAO();
-		final ServiceInfrastructureService infrastructureService = new ServiceInfrastructureImpl(new DefaultMockServiceInfrastructureService(), tiersDAO);
-		final ServiceCivilService serviceCivil = new ServiceCivilImpl(infrastructureService, new MockServiceCivil() {
+		final ServiceInfrastructureService infrastructureService = new ServiceInfrastructureImpl(new DefaultMockInfrastructureConnector(), tiersDAO);
+		final ServiceCivilService serviceCivil = new ServiceCivilImpl(infrastructureService, new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndMonsieur, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);

@@ -17,7 +17,7 @@ import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.common.ListesResults;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
@@ -181,7 +181,7 @@ public class AcomptesProcessorTest extends BusinessTest {
 
 		final int anneeReference = 2010;
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 			}
@@ -271,7 +271,7 @@ public class AcomptesProcessorTest extends BusinessTest {
 			long idHorsSuisse;
 		}
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(idIndividuVaudoisSansForSecondaire, date(1974, 11, 4), "Romanova", "Anasthasia", false);
@@ -418,7 +418,7 @@ public class AcomptesProcessorTest extends BusinessTest {
 	@Test
 	public void testSourcierMixte1() throws Exception {
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 			}
@@ -483,7 +483,7 @@ public class AcomptesProcessorTest extends BusinessTest {
 
 		final int anneeAcomptes = 2011;
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 			}
@@ -525,7 +525,7 @@ public class AcomptesProcessorTest extends BusinessTest {
 		final int anneeAcomptes = 2011;
 		final RegDate dateDepart = date(anneeAcomptes - 1, 8, 24);
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 			}
@@ -584,7 +584,7 @@ public class AcomptesProcessorTest extends BusinessTest {
 		final int anneeAcomptes = RegDate.get().year();
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 			}
@@ -632,7 +632,7 @@ public class AcomptesProcessorTest extends BusinessTest {
 		final RegDate arrivee = date(anneeAcomptes, 1, 1);
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 			}

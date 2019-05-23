@@ -8,7 +8,7 @@ import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
 import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.unireg.evenement.civil.interne.MessageCollector;
 import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
@@ -58,7 +58,7 @@ public class AnnulationDecesTest extends AbstractEvenementCivilInterneTest {
 	public void testAnnulationDecesCelibataire() throws Exception {
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final RegDate dateNaissance = date(1956, 2, 25);
@@ -117,7 +117,7 @@ public class AnnulationDecesTest extends AbstractEvenementCivilInterneTest {
 	public void testAnnulationDecesCelibataireAvecDecisionAci() throws Exception {
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final RegDate dateNaissance = date(1956, 2, 25);
@@ -160,7 +160,7 @@ public class AnnulationDecesTest extends AbstractEvenementCivilInterneTest {
 	public void testAnnulationDecesMarieSeul() throws Exception {
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu andre = addIndividu(NO_INDIVIDU_MARIE_SEUL, date(1956, 2, 25), "Girard", "André", true);
@@ -251,7 +251,7 @@ public class AnnulationDecesTest extends AbstractEvenementCivilInterneTest {
 	public void testAnnulationDecesMarie() throws Exception {
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ppal = addIndividu(NO_INDIVIDU_MARIE, date(1950, 3, 12), "Tartempion", "Momo", true);

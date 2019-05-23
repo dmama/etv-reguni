@@ -16,7 +16,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.ListesResults;
 import ch.vd.unireg.common.NomPrenom;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.metier.assujettissement.AssujettissementException;
@@ -182,12 +182,12 @@ public abstract class ExtractionDonneesRptResults extends ListesResults<Extracti
 	 * Calcul de la liste des périodes à faire apparaître dans l'extraction pour un contribuable donné
 	 * @param ctb le contribuable à analyser
 	 * @return périodes à faire apparaître dans l'extraction
-	 * @throws ServiceInfrastructureException problème dans l'infrastructure fiscale
+	 * @throws InfrastructureException problème dans l'infrastructure fiscale
 	 * @throws CoupleInvalideException contribuable ménage commun sans lien vers des personnes physiques
 	 * @throws AssujettissementException problème dans le calcul de l'assujettissement du contribuable
 	 * @throws ContribuableIgnoreException si le contribuable est ignoré (le message inclus dans l'exception en explique la raison)
 	 */
-	private List<InfoPeriodeImposition> buildInfoPeriodes(Contribuable ctb) throws ServiceInfrastructureException, CoupleInvalideException, AssujettissementException, ContribuableIgnoreException {
+	private List<InfoPeriodeImposition> buildInfoPeriodes(Contribuable ctb) throws InfrastructureException, CoupleInvalideException, AssujettissementException, ContribuableIgnoreException {
 		final DecompositionForsAnneeComplete decomposition = new DecompositionForsAnneeComplete(ctb, periodeFiscale);
 		return buildInfoPeriodes(decomposition);
 	}
@@ -196,12 +196,12 @@ public abstract class ExtractionDonneesRptResults extends ListesResults<Extracti
 	 * Calcul de la liste des périodes à faire apparaître dans l'extraction pour un contribuable donné
 	 * @param decomposition décomposition des fors pour le contribuable inspecté sur l'année de la période fiscale
 	 * @return périodes à faire apparaître dans l'extraction
-	 * @throws ServiceInfrastructureException problème dans l'infrastructure fiscale
+	 * @throws InfrastructureException problème dans l'infrastructure fiscale
 	 * @throws CoupleInvalideException contribuable ménage commun sans lien vers des personnes physiques
 	 * @throws AssujettissementException problème dans le calcul de l'assujettissement du contribuable
 	 * @throws ContribuableIgnoreException si le contribuable est ignoré (le message inclus dans l'exception en explique la raison)
 	 */
-	protected abstract List<InfoPeriodeImposition> buildInfoPeriodes(DecompositionForsAnneeComplete decomposition) throws ServiceInfrastructureException, CoupleInvalideException, AssujettissementException, ContribuableIgnoreException;
+	protected abstract List<InfoPeriodeImposition> buildInfoPeriodes(DecompositionForsAnneeComplete decomposition) throws InfrastructureException, CoupleInvalideException, AssujettissementException, ContribuableIgnoreException;
 
 	/**
 	 * Construit un objet {@link InfoIdentificationCtb} pour le contribuable donné à la date donnée
@@ -273,7 +273,7 @@ public abstract class ExtractionDonneesRptResults extends ListesResults<Extracti
 	}
 
 	@Override
-	public final void addContribuable(Contribuable ctb) throws ServiceInfrastructureException {
+	public final void addContribuable(Contribuable ctb) throws InfrastructureException {
 		++ nbContribuablesAnalyses;
 		try {
 			final List<InfoPeriodeImposition> periodes = buildInfoPeriodes(ctb);

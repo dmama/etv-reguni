@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.MenageCommun;
@@ -20,7 +20,7 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 		final long noInd = 1244;
 
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noInd, date(2005, 3, 12), "RuppertDate", "Jeroma", Sexe.FEMININ);
@@ -50,7 +50,7 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 		final long noIndParent = 1245;
 		final RegDate dateNaissance = date(2005, 3, 12);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertDate", "Jeroma", Sexe.FEMININ);
@@ -92,7 +92,7 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 		final long noIndParent = 1245;
 		final RegDate dateNaissance = date(2005, 3, 12);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertDate", "Jeroma", Sexe.FEMININ);
@@ -135,7 +135,7 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 		final long noIndParent = 1245;
 		final RegDate dateNaissance = date(2005, 3, 12);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertDate", "Jeroma", Sexe.FEMININ);
@@ -181,7 +181,7 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 		final long noIndParent = 1245;
 		final RegDate dateNaissance = date(2005, 3, 12);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertDate", "Jeroma", Sexe.FEMININ);
@@ -229,7 +229,7 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 		final long noIndMere = 1246;
 		final RegDate dateNaissance = date(2005, 3, 12);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertDate", "Jeroma", Sexe.FEMININ);
@@ -277,7 +277,7 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 		final long noIndMere = 1246;
 		final RegDate dateNaissance = date(2005, 3, 12);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertDate", "Jeroma", Sexe.FEMININ);
@@ -330,7 +330,7 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 		final long noIndMere = 1246;
 		final RegDate dateNaissance = date(2005, 3, 12);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertDate", "Jeroma", Sexe.FEMININ);
@@ -388,7 +388,7 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 		final long noIndMere = 1246;
 		final RegDate dateNaissance = date(2005, 3, 12);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertDate", "Jeroma", Sexe.FEMININ);
@@ -448,7 +448,7 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 		final long noIndMere = 1246;
 		final RegDate dateNaissance = date(2005, 3, 12);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertDate", "Jeroma", Sexe.FEMININ);
@@ -503,7 +503,7 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 		final long noIndMere = 1246;
 		final RegDate dateNaissance = date(2005, 3, 12);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertDate", "Jeroma", Sexe.FEMININ);

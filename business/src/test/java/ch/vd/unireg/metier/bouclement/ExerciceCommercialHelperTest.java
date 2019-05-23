@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessTest;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.tiers.Entreprise;
@@ -32,7 +32,7 @@ public class ExerciceCommercialHelperTest extends BusinessTest {
 		final RegDate dateDebut = date(2009, 4, 1);
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// rien
@@ -69,7 +69,7 @@ public class ExerciceCommercialHelperTest extends BusinessTest {
 		final RegDate dateDebut = date(2009, 4, 1);
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// rien
@@ -107,7 +107,7 @@ public class ExerciceCommercialHelperTest extends BusinessTest {
 		final RegDate dateDebut = date(2009, 4, 1);
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// rien

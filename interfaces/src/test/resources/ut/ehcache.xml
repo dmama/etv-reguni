@@ -36,80 +36,24 @@
 	              diskPersistent="true"
 	              diskExpiryThreadIntervalSeconds="120" />
 
-	<cache name="serviceCivil"
+	<cache name="entrepriseConnector"
 	       maxEntriesLocalHeap="2500"
 	       timeToIdleSeconds="500"
 	       timeToLiveSeconds="500"
 	       overflowToDisk="false"
 	/>
 
-	<cache name="serviceEntreprise"
-	       maxEntriesLocalHeap="2500"
-	       timeToIdleSeconds="500"
-	       timeToLiveSeconds="500"
-	       overflowToDisk="false"
-	/>
-
-	<cache name="servicePM"
-	       maxEntriesLocalHeap="2500"
-	       timeToIdleSeconds="500"
-	       timeToLiveSeconds="500"
-	       overflowToDisk="false"
-	/>
-
-	<cache name="serviceInfra"
+	<cache name="infraConnector"
 	       maxEntriesLocalHeap="5000"
 	       timeToIdleSeconds="86400"
 	       timeToLiveSeconds="86400"
 	       overflowToDisk="false"
 	/>
 
-	<cache name="serviceInfraShortLived"
+	<cache name="infraConnectorShortLived"
 	       maxEntriesLocalHeap="1000"
 	       timeToIdleSeconds="3600"
 	       timeToLiveSeconds="3600"
-	       overflowToDisk="false"
-	/>
-
-	<cache name="serviceSecurite"
-	       maxEntriesLocalHeap="1000"
-	       timeToIdleSeconds="3600"
-	       timeToLiveSeconds="86400"
-	       overflowToDisk="false"
-	/>
-
-	<cache name="securityProvider"
-	       maxEntriesLocalHeap="1000"
-	       timeToIdleSeconds="3600"
-	       timeToLiveSeconds="3600"
-	       overflowToDisk="false"
-	/>
-
-	<cache name="webServiceParty3"
-	       maxEntriesLocalHeap="1000"
-	       timeToIdleSeconds="300"
-	       timeToLiveSeconds="300"
-	       overflowToDisk="false"
-	/>
-
-	<cache name="webService5"
-	       maxEntriesLocalHeap="1000"
-	       timeToIdleSeconds="300"
-	       timeToLiveSeconds="300"
-	       overflowToDisk="false"
-	/>
-
-	<cache name="webService6"
-	       maxEntriesLocalHeap="1000"
-	       timeToIdleSeconds="300"
-	       timeToLiveSeconds="300"
-	       overflowToDisk="false"
-	/>
-
-	<cache name="webService7"
-	       maxEntriesLocalHeap="1000"
-	       timeToIdleSeconds="300"
-	       timeToLiveSeconds="300"
 	       overflowToDisk="false"
 	/>
 

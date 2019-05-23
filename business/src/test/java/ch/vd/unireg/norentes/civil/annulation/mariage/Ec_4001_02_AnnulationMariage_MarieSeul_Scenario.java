@@ -1,8 +1,8 @@
 package ch.vd.unireg.norentes.civil.annulation.mariage;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.norentes.annotation.Check;
 import ch.vd.unireg.norentes.annotation.Etape;
@@ -42,11 +42,11 @@ public class Ec_4001_02_AnnulationMariage_MarieSeul_Scenario extends EvenementCi
 		return NAME;
 	}
 
-	private DefaultMockServiceCivil localMockServiceCivil;
+	private DefaultMockIndividuConnector localMockServiceCivil;
 
 	@Override
 	protected void initServiceCivil() {
-		localMockServiceCivil = new DefaultMockServiceCivil();
+		localMockServiceCivil = new DefaultMockIndividuConnector();
 		serviceCivilService.setUp(localMockServiceCivil);
 	}
 
@@ -99,7 +99,7 @@ public class Ec_4001_02_AnnulationMariage_MarieSeul_Scenario extends EvenementCi
 	@Etape(id=2, descr="Envoi de l'événement Annulation de Mariage")
 	public void step2() throws Exception {
 		// annulation dans le civil
-		MockServiceCivil.annuleMariage(localMockServiceCivil.getIndividu(noIndPierre));
+		MockIndividuConnector.annuleMariage(localMockServiceCivil.getIndividu(noIndPierre));
 		// envoi de l'événement
 		long id = addEvenementCivil(TypeEvenementCivil.ANNUL_MARIAGE, noIndPierre, dateMariage, commune.getNoOFS());
 		commitAndStartTransaction();

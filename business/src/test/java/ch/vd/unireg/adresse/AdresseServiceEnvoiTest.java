@@ -8,18 +8,18 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.common.CasePostale;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockCanton;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockInfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.interfaces.infra.mock.MockServiceInfrastructureService;
 import ch.vd.unireg.tiers.AppartenanceMenage;
 import ch.vd.unireg.tiers.CollectiviteAdministrative;
 import ch.vd.unireg.tiers.ContactImpotSource;
@@ -67,7 +67,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		/*
 		 * Crée les données du mock service civil
 		 */
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividu, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -150,7 +150,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		/*
 		 * Crée les données du mock service civil
 		 */
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividuPrincipal, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -247,7 +247,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		/*
 		 * Crée les données du mock service civil
 		 */
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividuPrincipal, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -327,7 +327,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		/*
 		 * Crée les données du mock service civil
 		 */
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividu, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -410,7 +410,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		/*
 		 * Crée les données du mock service civil
 		 */
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividu, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -492,7 +492,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		/*
 		 * Crée les données du mock service civil
 		 */
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividu, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -577,7 +577,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		/*
 		 * Crée les données du mock service civil
 		 */
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividuPrincipal, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -668,7 +668,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		/*
 		 * Crée les données du mock service civil
 		 */
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividu, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -756,7 +756,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		/*
 		 * Crée les données du mock service civil
 		 */
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividu, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -873,7 +873,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 
 		final int noTribunalCantonal = 42;      // pas utilisé par les collectivités enregistrées par défaut dans le Mock
 
-		serviceInfra.setUp(new MockServiceInfrastructureService() {
+		serviceInfra.setUp(new MockInfrastructureConnector() {
 			@Override
 			protected void init() {
 				pays.add(MockPays.Suisse);
@@ -974,7 +974,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdresseEnvoiDebiteurPrestationImposableSurEntreprise() throws Exception {
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(MockEntrepriseFactory.NESTLE);
@@ -1076,7 +1076,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdresseEnvoiDebiteurPrestationImposableAvecAdresseCourrierSurEntreprise() throws Exception {
 
-		serviceInfra.setUp(new MockServiceInfrastructureService() {
+		serviceInfra.setUp(new MockInfrastructureConnector() {
 			@Override
 			protected void init() {
 				pays.add(MockPays.Suisse);
@@ -1087,7 +1087,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			}
 		});
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(MockEntrepriseFactory.NESTLE);
@@ -1247,7 +1247,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 
 		final int noCollectivite = 1;
 
-		serviceInfra.setUp(new MockServiceInfrastructureService() {
+		serviceInfra.setUp(new MockInfrastructureConnector() {
 			@Override
 			protected void init() {
 				// Pays
@@ -1359,7 +1359,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		/*
 		 * Crée les données du mock service civil
 		 */
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noPupille, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -1501,7 +1501,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		/*
 		 * Crée les données du mock service civil
 		 */
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividuPrincipal, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -1660,7 +1660,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		/*
 		 * Crée les données du mock service civil
 		 */
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividuPrincipal, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -1780,7 +1780,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		/*
 		 * Crée les données du mock service civil
 		 */
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividuPrincipal, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -1964,7 +1964,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		final RegDate dateCuratelle = date(2009, 4, 3);
 		final RegDate dateDecesConjoint = date(2009, 11, 26);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu indPrincipal = addIndividu(noIndPrincipal, date(1919, 11, 13), "Rochat", "Maurice", true);
@@ -2420,7 +2420,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		final long noIndividuCurateurMadame = 12346L;
 		final long noIndividuTuteurMonsieur = 3245L;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// voilà madame
@@ -2467,7 +2467,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdresseEnvoiJalHolding() throws Exception {
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(MockEntrepriseFactory.JAL_HOLDING);

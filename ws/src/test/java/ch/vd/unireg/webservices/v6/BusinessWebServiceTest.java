@@ -39,13 +39,13 @@ import ch.vd.unireg.declaration.Periodicite;
 import ch.vd.unireg.efacture.EFactureServiceProxy;
 import ch.vd.unireg.efacture.MockEFactureService;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
 import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockEntrepriseCivile;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
@@ -184,7 +184,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		final UserLogin login = new UserLogin(getDefaultOperateurName(), 22);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne...
@@ -274,7 +274,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		});
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne...
@@ -359,7 +359,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		final int annee = 2012;
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne...
@@ -451,7 +451,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		final RegDate delaiInitial = date(annee + 1, 6, 30);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne...
@@ -1263,7 +1263,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		final RegDate dateDebutContactIS = date(2012, 5, 1);
 		final RegDate pmActivityStartDate = date(2000, 1, 1);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Dufoin", "Balthazar", Sexe.MASCULIN);
@@ -1275,7 +1275,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final MockEntrepriseCivile ent = MockEntrepriseFactory.createSimpleEntrepriseRC(noEntreprise, noEntreprise + 1011, "Au petit coin", pmActivityStartDate, null,
@@ -1306,7 +1306,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			addRegimeFiscalCH(pm, pmActivityStartDate, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 			addForPrincipal(pm, pmActivityStartDate, MotifFor.DEBUT_EXPLOITATION, MockCommune.Morges);
 
-			final CollectiviteAdministrative ca = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCAT);
+			final CollectiviteAdministrative ca = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCAT);
 			final AutreCommunaute ac = addAutreCommunaute("Tata!!");
 			ac.setFormeJuridique(FormeJuridique.ASS);
 			final IdentificationEntreprise ide = new IdentificationEntreprise();
@@ -1429,7 +1429,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		final long noIndividu = 32672456L;
 		final RegDate dateArrivee = date(2000, 1, 23);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Delagrange", "Arthur", Sexe.MASCULIN);
@@ -1648,7 +1648,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		final RegDate dateAchat = dateArrivee.addYears(1);
 		final RegDate dateVente = dateAchat.addYears(5).addMonths(-3);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Delagrange", "Marcel", Sexe.MASCULIN);
@@ -1721,7 +1721,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		final RegDate dateAchat = dateArrivee.addYears(1);
 		final RegDate dateVente = dateAchat.addYears(5).addMonths(-3);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Delagrange", "Marcel", Sexe.MASCULIN);
@@ -1798,7 +1798,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		final RegDate dateAchat = dateArrivee.addYears(1);
 		final RegDate dateVente = dateAchat.addYears(5).addMonths(-3);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Delagrange", "Marcel", Sexe.MASCULIN);
@@ -1850,7 +1850,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		final RegDate dateNaissance = date(1965, 3, 12);
 		final RegDate dateMariage = date(1999, 8, 3);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu lui = addIndividu(noIndividuLui, dateNaissance, "Delagrange", "Marcel", Sexe.MASCULIN);
@@ -1926,7 +1926,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		final RegDate dateNaissance = date(1965, 3, 12);
 		final RegDate dateMariage = date(1999, 8, 3);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu lui = addIndividu(noIndividuLui, dateNaissance, "Delagrange", "Marcel", Sexe.MASCULIN);
@@ -1994,7 +1994,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		final RegDate dateNaissance = date(1965, 3, 12);
 		final RegDate dateMariage = date(2005, 8, 3);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu lui = addIndividu(noIndividuLui, dateNaissance, "Delagrange", "Marcel", Sexe.MASCULIN);
@@ -2068,7 +2068,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		final RegDate dateMariage = date(2010, 8, 3);
 		final RegDate dateDeces = date(2013, 9, 4);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu lui = addIndividu(noIndividuLui, dateNaissance, "Delagrange", "Marcel", Sexe.MASCULIN);
@@ -2204,7 +2204,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		final RegDate dateDebutRT = date(2011, 8, 1);
 		final RegDate dateDeces = date(2013, 9, 4);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu lui = addIndividu(noIndividuLui, dateNaissance, "Delagrange", "Marcel", Sexe.MASCULIN);
@@ -2298,7 +2298,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		final RegDate dateSeparation = date(2012, 9, 3);
 		final RegDate dateDivorce = date(2013, 4, 5);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu lui = addIndividu(noIndividuLui, dateNaissance, "Delagrange", "Marcel", Sexe.MASCULIN);
@@ -2386,7 +2386,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		final RegDate dateEmissionDi = RegDate.get();
 		final RegDate dateDelaiDi = dateEmissionDi.addDays(30);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Delagrange", "Marcel", Sexe.MASCULIN);
@@ -2398,7 +2398,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			final PersonnePhysique pp = addHabitant(noIndividu);
 			addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
 
-			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 			final PeriodeFiscale pf = addPeriodeFiscale(2013);
 			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
 			final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(pf.getAnnee(), 1, 1), date(pf.getAnnee(), 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, md);
@@ -2495,7 +2495,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		final RegDate dateDebutPeriodiciteInitiale = date(2010, 1, 1);
 		final RegDate dateDebutPeriodiciteModifiee = date(2013, 7, 1);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// .. personne ..
@@ -2558,7 +2558,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		final RegDate dateNaissanceFiston = date(2002, 8, 5);
 		final RegDate dateDecesPapa = date(1999, 12, 27);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu papa = addIndividu(noIndividuPapa, null, "Dupondt", "Alexandre Senior", Sexe.MASCULIN);
@@ -2688,7 +2688,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		final RegDate dateDepartHS = date(anneeDI + 1, 1, 12);
 		final Date dateInscriptionEfacture = DateHelper.getDateTime(2014, 1, 23, 22, 10, 46);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Gautier", "Mafalda", Sexe.FEMININ);
@@ -2710,7 +2710,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			final PersonnePhysique pp = addHabitant(noIndividu);
 			addSituation(pp, dateNaissance, null, 0, EtatCivil.CELIBATAIRE);
 			addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateDepartHS, MotifFor.DEPART_HS, MockCommune.Lausanne);
-			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 			final PeriodeFiscale pf = addPeriodeFiscale(anneeDI);
 			final ModeleDocument mdDi = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
 			final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(anneeDI, 1, 1), date(anneeDI, 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, mdDi);
@@ -2988,7 +2988,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		final RegDate dateFinRT = date(2010, 9, 12);
 		final RegDate dateDepartHS = date(anneeDI + 1, 1, 12);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Gautier", "Mafalda", Sexe.FEMININ);
@@ -3007,7 +3007,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			final PersonnePhysique pp = addHabitant(noIndividu);
 			addSituation(pp, dateNaissance, null, 0, EtatCivil.CELIBATAIRE);
 			addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateDepartHS, MotifFor.DEPART_HS, MockCommune.Lausanne);
-			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 			final PeriodeFiscale pf = addPeriodeFiscale(anneeDI);
 			final ModeleDocument mdDi = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
 			final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(anneeDI, 1, 1), date(anneeDI, 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, mdDi);
@@ -3150,7 +3150,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 	@Test
 	public void testGetPartyAllPartsOnCorporation() throws Exception {
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// rien
@@ -3373,7 +3373,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		final long noEntreprise = 423672L;
 		final RegDate pmActivityStartDate = date(2000, 1, 1);
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final MockEntrepriseCivile ent = MockEntrepriseFactory.createSimpleEntrepriseRC(noEntreprise, noEntreprise + 1011, "Au petit coin", pmActivityStartDate, null,
@@ -3512,7 +3512,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		final RegDate dateDepartHS = date(anneeDI + 1, 1, 12);
 		final Date dateInscriptionEfacture = DateHelper.getDateTime(2014, 1, 23, 22, 10, 46);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Gautier", "Mafalda", Sexe.FEMININ);
@@ -3531,7 +3531,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			final PersonnePhysique pp = addHabitant(noIndividu);
 			addSituation(pp, dateNaissance, null, 0, EtatCivil.CELIBATAIRE);
 			addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateDepartHS, MotifFor.DEPART_HS, MockCommune.Lausanne);
-			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 			final PeriodeFiscale pf = addPeriodeFiscale(anneeDI);
 			final ModeleDocument mdDi = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
 			final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(anneeDI, 1, 1), date(anneeDI, 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, mdDi);
@@ -3906,7 +3906,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		final RegDate dateFinRT = date(2006, 6, 30);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Labaffe", "Melchior", Sexe.MASCULIN);
@@ -3990,7 +3990,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		final RegDate dateNaissance = date(1975, 7, 31);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, dateNaissance, "Labaffe", "Melchior", Sexe.MASCULIN);
@@ -4056,7 +4056,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		final long noIndividuAbsent = 4538735674L;
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// persone...

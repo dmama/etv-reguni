@@ -66,16 +66,16 @@ import ch.vd.unireg.indexer.IndexerException;
 import ch.vd.unireg.indexer.TooManyResultsIndexerException;
 import ch.vd.unireg.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.unireg.indexer.tiers.TiersIndexedData;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Canton;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
-import ch.vd.unireg.interfaces.service.host.Operateur;
-import ch.vd.unireg.interfaces.upi.ServiceUpiException;
-import ch.vd.unireg.interfaces.upi.ServiceUpiRaw;
+import ch.vd.unireg.interfaces.upi.UpiConnector;
+import ch.vd.unireg.interfaces.upi.UpiConnectorException;
 import ch.vd.unireg.interfaces.upi.data.UpiPersonInfo;
+import ch.vd.unireg.security.Operateur;
 import ch.vd.unireg.tiers.AutreCommunaute;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.Entreprise;
@@ -102,7 +102,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	private IdentificationContribuableMessageHandler messageHandler;
 	private PlatformTransactionManager transactionManager;
 	private ServiceSecuriteService serviceSecuriteService;
-	private ServiceUpiRaw serviceUpi;
+	private UpiConnector upiConnector;
 	private HibernateTemplate hibernateTemplate;
 	private int flowSearchThreadPoolSize;
 
@@ -152,8 +152,8 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		this.hibernateTemplate = hibernateTemplate;
 	}
 
-	public void setServiceUpi(ServiceUpiRaw serviceUpi) {
-		this.serviceUpi = serviceUpi;
+	public void setUpiConnector(UpiConnector upiConnector) {
+		this.upiConnector = upiConnector;
 	}
 
 	public void setFlowSearchThreadPoolSize(int flowSearchThreadPoolSize) {
@@ -542,7 +542,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 				}
 
 				// recherche à l'UPI
-				final UpiPersonInfo upiInfo = serviceUpi.getPersonInfo(navs13Demande);
+				final UpiPersonInfo upiInfo = upiConnector.getPersonInfo(navs13Demande);
 				if (upiInfo != null && !navs13Demande.equals(upiInfo.getNoAvs13())) {
 					LOGGER.info(String.format("L'UPI indique que le NAVS13 '%s' a été remplacé par '%s'.", navs13Demande, upiInfo.getNoAvs13()));
 
@@ -561,8 +561,8 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		catch (TooManyResultsIndexerException e) {
 			return Collections.emptyList();
 		}
-		catch (ServiceUpiException e) {
-			LOGGER.warn("Erreur à l'appel au service UPI, l'identification se poursuit sans l'aide des informations UPI.", e);
+		catch (UpiConnectorException e) {
+			LOGGER.warn("Erreur à l'appel au connecteur UPI, l'identification se poursuit sans l'aide des informations UPI.", e);
 			return Collections.emptyList();
 		}
 	}
@@ -985,11 +985,11 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	 *
 	 * @param message
 	 * @param personne
-	 * @throws ServiceInfrastructureException
+	 * @throws InfrastructureException
 	 */
 
 	private void verifierEtMettreAJourContribuable(IdentificationContribuable message, PersonnePhysique personne)
-			throws ServiceInfrastructureException {
+			throws InfrastructureException {
 		if (!personne.isHabitantVD() && REPARTITION_INTERCANTONALE.equals(message.getDemande().getTypeMessage())
 				&& isAdresseFromCantonEmetteur(message)) {
 			CriteresPersonne criteres = message.getDemande().getPersonne();
@@ -1006,9 +1006,9 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	 *
 	 * @param message
 	 * @return
-	 * @throws ServiceInfrastructureException
+	 * @throws InfrastructureException
 	 */
-	protected boolean isAdresseFromCantonEmetteur(IdentificationContribuable message) throws ServiceInfrastructureException {
+	protected boolean isAdresseFromCantonEmetteur(IdentificationContribuable message) throws InfrastructureException {
 		final CriteresAdresse adresse = message.getDemande().getPersonne().getAdresse();
 		if (adresse != null) {
 			final String emetteur = message.getDemande().getEmetteurId();
@@ -1514,7 +1514,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 			try {
 				canton = infraService.getCantonBySigle(sigle);
 			}
-			catch (ServiceInfrastructureException e) {
+			catch (InfrastructureException e) {
 				// On n'a pas réussi à résoudre le canton,
 				// on renvoie l'emetteur id telquel
 				canton = null;

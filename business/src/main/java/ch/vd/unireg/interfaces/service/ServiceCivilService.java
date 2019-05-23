@@ -10,7 +10,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.HistoriqueCommune;
 import ch.vd.unireg.common.DonneesCivilesException;
 import ch.vd.unireg.common.NomPrenom;
-import ch.vd.unireg.interfaces.civil.ServiceCivilException;
+import ch.vd.unireg.interfaces.civil.IndividuConnectorException;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.Individu;
@@ -18,7 +18,7 @@ import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.unireg.interfaces.civil.data.Origine;
 import ch.vd.unireg.interfaces.civil.data.Permis;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.model.AdressesCiviles;
 import ch.vd.unireg.interfaces.model.AdressesCivilesHisto;
 
@@ -62,10 +62,10 @@ public interface ServiceCivilService {
 	 * @return une liste des communes de domiciles fréquentées depuis la date de référence
 	 * @throws ch.vd.unireg.common.DonneesCivilesException
 	 *          en cas d'erreur dans les données civiles
-	 * @throws ch.vd.unireg.interfaces.infra.ServiceInfrastructureException
+	 * @throws InfrastructureException
 	 *          en cas d'erreur dans les données d'infrastructure
 	 */
-	List<HistoriqueCommune> getCommunesDomicileHisto(RegDate depuis, long noIndividu, boolean strict, boolean seulementVaud) throws DonneesCivilesException, ServiceInfrastructureException;
+	List<HistoriqueCommune> getCommunesDomicileHisto(RegDate depuis, long noIndividu, boolean strict, boolean seulementVaud) throws DonneesCivilesException, InfrastructureException;
 
 	/**
 	 * Retourne l'individu, valide <b>jusqu'à</b> l'année en paramètre, identifié par le numéro en paramètre.
@@ -83,9 +83,9 @@ public interface ServiceCivilService {
 	 * @param date       la date de validité des individus
 	 * @param parties      les parties optionnelles devant être renseignées
 	 * @return l'individu populé avec les données valides jusqu'à l'année spécifiée; ou <b>null</b> si l'individu n'existe pas.
-	 * @throws ServiceCivilException en cas d'erreur lors de la récupération de l'individu.
+	 * @throws IndividuConnectorException en cas d'erreur lors de la récupération de l'individu.
 	 */
-	Individu getIndividu(long noIndividu, @Nullable RegDate date, AttributeIndividu... parties) throws ServiceCivilException;
+	Individu getIndividu(long noIndividu, @Nullable RegDate date, AttributeIndividu... parties) throws IndividuConnectorException;
 
 	/**
 	 * Retourne l'individu, valide <b>jusqu'à</b> l'année en paramètre, concerné par l'événement civil dont l'identifié est donné en paramètre.
@@ -103,9 +103,9 @@ public interface ServiceCivilService {
 	 * @param date       la date de validité des individus
 	 * @param parties      les parties optionnelles devant être renseignées
 	 * @return l'individu populé avec les données valides jusqu'à l'année spécifiée; ou <b>null</b> si l'individu n'existe pas.
-	 * @throws ServiceCivilException en cas d'erreur lors de la récupération de l'individu.
+	 * @throws IndividuConnectorException en cas d'erreur lors de la récupération de l'individu.
 	 */
-	Individu getIndividuByEvent(long eventId, @Nullable RegDate date, AttributeIndividu... parties) throws ServiceCivilException;
+	Individu getIndividuByEvent(long eventId, @Nullable RegDate date, AttributeIndividu... parties) throws IndividuConnectorException;
 
 	/**
 	 * Retourne l'individu conjoint valide <b>à la date</b> passée en paramètre, de l'indivu dont le numéro est  en paramètre.
@@ -161,9 +161,9 @@ public interface ServiceCivilService {
 	 * @param date         la date de validité des individus
 	 * @param parties      les parties optionnelles devant être renseignées
 	 * @return la liste des individus trouvés, ou <b>null</b> si le service n'est pas capable de charger les individus par lots.
-	 * @throws ServiceCivilException en cas d'erreur lors de la récupération d'un ou plusieurs individus.
+	 * @throws IndividuConnectorException en cas d'erreur lors de la récupération d'un ou plusieurs individus.
 	 */
-	List<Individu> getIndividus(Collection<Long> nosIndividus, @Nullable RegDate date, AttributeIndividu... parties) throws ServiceCivilException;
+	List<Individu> getIndividus(Collection<Long> nosIndividus, @Nullable RegDate date, AttributeIndividu... parties) throws IndividuConnectorException;
 
 	/**
 	 * Retourne les nationalités d'un individu à une date donnée.

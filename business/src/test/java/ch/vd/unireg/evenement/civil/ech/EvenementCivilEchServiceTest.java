@@ -10,12 +10,12 @@ import org.junit.Test;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.BusinessTest;
-import ch.vd.unireg.interfaces.civil.ServiceCivilException;
+import ch.vd.unireg.interfaces.civil.IndividuConnectorException;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
@@ -59,7 +59,7 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 		final RegDate dateEvenement = RegDate.get();
 		final ActionEvenementCivilEch actionEvt = ActionEvenementCivilEch.PREMIERE_LIVRAISON;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = createIndividu(noIndividu, null, "Leblanc", "Claude", Sexe.MASCULIN);
@@ -72,7 +72,7 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 			}
 
 			@Override
-			public Individu getIndividuByEvent(long evtId, AttributeIndividu... parties) throws ServiceCivilException {
+			public Individu getIndividuByEvent(long evtId, AttributeIndividu... parties) throws IndividuConnectorException {
 				throw new RuntimeException("Ne devrait pas être appelé, le numéro est déjà connu");
 			}
 		});
@@ -103,7 +103,7 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 		final ActionEvenementCivilEch actionEvt = ActionEvenementCivilEch.PREMIERE_LIVRAISON;
 
 		final MutableBoolean called = new MutableBoolean(false);
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = createIndividu(noIndividu, null, "Leblanc", "Claude", Sexe.MASCULIN);
@@ -117,7 +117,7 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 			}
 
 			@Override
-			public Individu getIndividuByEvent(long evtId, AttributeIndividu... parties) throws ServiceCivilException {
+			public Individu getIndividuByEvent(long evtId, AttributeIndividu... parties) throws IndividuConnectorException {
 				throw new RuntimeException("Ne devrait pas être appelé, le getIndividuAfterEvent aurait dû suffire");
 			}
 		});
@@ -147,7 +147,7 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 		final ActionEvenementCivilEch actionEvt = ActionEvenementCivilEch.PREMIERE_LIVRAISON;
 
 		final MutableBoolean called = new MutableBoolean(false);
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = createIndividu(noIndividu, null, "Leblanc", "Claude", Sexe.MASCULIN);
@@ -161,7 +161,7 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 			}
 
 			@Override
-			public Individu getIndividuByEvent(long evtId, AttributeIndividu... parties) throws ServiceCivilException {
+			public Individu getIndividuByEvent(long evtId, AttributeIndividu... parties) throws IndividuConnectorException {
 				called.setValue(true);
 				final IndividuApresEvenement indApres = super.getIndividuAfterEvent(evtId);
 				return indApres.getIndividu();
@@ -193,7 +193,7 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 		final ActionEvenementCivilEch actionEvt = ActionEvenementCivilEch.PREMIERE_LIVRAISON;
 
 		final MutableBoolean called = new MutableBoolean(false);
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = createIndividu(noIndividu, null, "Leblanc", "Claude", Sexe.MASCULIN);
@@ -202,11 +202,11 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 
 			@Override
 			public IndividuApresEvenement getIndividuAfterEvent(long eventId) {
-				throw new ServiceCivilException("Boom !");
+				throw new IndividuConnectorException("Boom !");
 			}
 
 			@Override
-			public Individu getIndividuByEvent(long evtId, AttributeIndividu... parties) throws ServiceCivilException {
+			public Individu getIndividuByEvent(long evtId, AttributeIndividu... parties) throws IndividuConnectorException {
 				called.setValue(true);
 				final IndividuApresEvenement indApres = super.getIndividuAfterEvent(evtId);
 				return indApres.getIndividu();
@@ -239,7 +239,7 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 		final RegDate dateMariage = date(1986, 5, 1);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Peticou", "Justin", Sexe.MASCULIN);
@@ -318,7 +318,7 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 		final EvenementCivilEchServiceImpl service = buildService();
 
 		// création de l'individu
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				createIndividu(noIndividu, dateNaissance, "Dupont", "Albert", Sexe.MASCULIN);
@@ -343,7 +343,7 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 		final EvenementCivilEchServiceImpl service = buildService();
 
 		// création de l'individu
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				createIndividu(noIndividu, dateNaissance, "Dupont", "Albert", Sexe.MASCULIN);
@@ -400,7 +400,7 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 		final EvenementCivilEchServiceImpl service = buildService();
 
 		// création de l'individu
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				createIndividu(noIndividu, dateNaissance, "Dupont", "Albert", Sexe.MASCULIN);
@@ -534,7 +534,7 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 		final EvenementCivilEchServiceImpl service = buildService();
 
 		// création de l'individu
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				createIndividu(noIndividu, dateNaissance, "Dupont", "Albert", Sexe.MASCULIN);
@@ -680,7 +680,7 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 		final EvenementCivilEchServiceImpl service = buildService();
 
 		// création de l'individu
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				createIndividu(noIndividu, dateNaissance, "Dupont", "Albert", Sexe.MASCULIN);
@@ -749,7 +749,7 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 		final EvenementCivilEchServiceImpl service = buildService();
 
 		// création de l'individu
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				createIndividu(noIndividu, dateNaissance, "Dupont", "Albert", Sexe.MASCULIN);
@@ -802,7 +802,7 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 		final EvenementCivilEchServiceImpl service = buildService();
 
 		// création de l'individu
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				createIndividu(noIndividu, dateNaissance, "Dupont", "Albert", Sexe.MASCULIN);
@@ -844,7 +844,7 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 		final EvenementCivilEchServiceImpl service = buildService();
 
 		// création d'un individu (cela sert-il vraiment à quelque chose ?)
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, null, "Tartempion", "Bidule", Sexe.MASCULIN);
@@ -988,7 +988,7 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 		final EvenementCivilEchService service = buildService();
 
 		// création d'un individu support
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, null, "Titi", "Banh", Sexe.MASCULIN);
@@ -1024,7 +1024,7 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 		final EvenementCivilEchService service = buildService();
 
 		// création d'un individu support
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, null, "Titi", "Banh", Sexe.MASCULIN);
@@ -1032,12 +1032,12 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 
 			@Override
 			public IndividuApresEvenement getIndividuAfterEvent(long eventId) {
-				throw new ServiceCivilException("Exception de test");
+				throw new IndividuConnectorException("Exception de test");
 			}
 
 			@Override
-			public Individu getIndividuByEvent(long evtId, AttributeIndividu... parties) throws ServiceCivilException {
-				throw new ServiceCivilException("Exception de test");
+			public Individu getIndividuByEvent(long evtId, AttributeIndividu... parties) throws IndividuConnectorException {
+				throw new IndividuConnectorException("Exception de test");
 			}
 		});
 

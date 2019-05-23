@@ -42,9 +42,9 @@ import ch.vd.unireg.editique.ZoneAffranchissementEditique;
 import ch.vd.unireg.etiquette.Etiquette;
 import ch.vd.unireg.etiquette.EtiquetteService;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
-import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
+import ch.vd.unireg.interfaces.infra.mock.DefaultMockInfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockBatiment;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -98,7 +98,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 		tiersService = getBean(TiersService.class, "tiersService");
 		situationFamilleService = getBean(SituationFamilleService.class, "situationFamilleService");
 		editiqueHelper = getBean(LegacyEditiqueHelper.class, "legacyEditiqueHelper");
-		serviceInfra.setUp(new DefaultMockServiceInfrastructureService());
+		serviceInfra.setUp(new DefaultMockInfrastructureConnector());
 		impressionDIPPHelper = new ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl(serviceInfra, adresseService, tiersService, situationFamilleService, editiqueHelper);
 		etiquetteService = getBean(EtiquetteService.class, "etiquetteService");
 	}
@@ -132,7 +132,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 	public void testAdresseRetourDIHorsCanton() throws Exception {
 		LOGGER.debug("EditiqueHelperTest - testRemplitExpediteur UNIREG-2541");
 
-		final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
+		final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noACI);
 
 		// Crée une personne physique (ctb ordinaire vaudois) qui a déménagé mi 2010 de Morges à Paris
 		final PersonnePhysique pp = addNonHabitant("Céline", "André", date(1980, 6, 23), Sexe.MASCULIN);
@@ -169,7 +169,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 	public void testAdresseRetourDISur3Periodes() throws Exception {
 		LOGGER.debug("EditiqueHelperTest - testRemplitExpediteur UNIREG-3059");
 
-		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 		final CollectiviteAdministrative nyon = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_NYON.getNoColAdm());
 		final CollectiviteAdministrative echallens = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_ECHALLENS.getNoColAdm());
 		final CollectiviteAdministrative yverdon = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_YVERDON.getNoColAdm());
@@ -290,7 +290,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 	public void testInfoCommune() throws Exception {
 		LOGGER.debug("EditiqueHelperTest - testInfoCommune SIFISC-1389");
 
-		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 		final CollectiviteAdministrative nyon = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_NYON.getNoColAdm());
 		final CollectiviteAdministrative morges = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
 
@@ -353,7 +353,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 	public void testAdresseRetourDI2008() throws Exception {
 		LOGGER.debug("EditiqueHelperTest - testRemplitExpediteur UNIREG-3059");
 
-		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 		final CollectiviteAdministrative nyon = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_NYON.getNoColAdm());
 
 		final int anneeCourante = RegDate.get().year();
@@ -432,7 +432,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 	public void testFormuleAppel() throws Exception {
 		LOGGER.debug("EditiqueHelperTest - testFormuleAppel SIFISC-1989");
 
-		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 
 		final int anneeCourante = RegDate.get().year();
 		// Crée une personne physique (ctb ordinaire vaudois) qui a déménagé mi 2010 de Morges à Paris
@@ -469,7 +469,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 	public void testImpressionLocaleTypeDI() throws Exception {
 		LOGGER.debug("EditiqueHelperTest - testImpressionTypeDI SIFISC-8417");
 
-		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 
 		final int anneeCourante = RegDate.get().year();
 		// Crée une personne physique (ctb ordinaire vaudois) qui a déménagé mi 2010 de Morges à Paris
@@ -507,7 +507,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 	@Transactional(rollbackFor = Throwable.class)
 	public void testRemplitAncienneCommune() throws Exception {
 
-		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 		final CollectiviteAdministrative orbe = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_ORBE.getNoColAdm());
 		final CollectiviteAdministrative aigle = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_AIGLE.getNoColAdm());
 
@@ -641,7 +641,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 	@Transactional(rollbackFor = Throwable.class)
 	public void testAdresseRetourDIDecede() throws Exception {
 
-		final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
+		final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noACI);
 
 		// Crée une personne physique décédé
 		final PersonnePhysique pp = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
@@ -820,7 +820,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 	public void testCtbSansEnfant() throws Exception {
 
 		final long diId = doInNewTransactionAndSession(status -> {
-			final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
+			final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noACI);
 
 			// Crée une personne physique décédé
 			final PersonnePhysique pp = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
@@ -856,7 +856,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 		final RegDate dateNaissanceFille = date(2005, 2, 8);
 
 		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Guy", true);
@@ -890,7 +890,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 			addParente(fils, pere, dateNaissanceFils, null);
 			addParente(fille, pere, dateNaissanceFille, null);
 
-			final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
+			final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noACI);
 
 			// Crée un for
 			addForPrincipal(pere, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Vevey);
@@ -918,7 +918,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 	public void testZoneAffranchissement() throws Exception {
 
 		final long diId = doInNewTransactionAndSession(status -> {
-			final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
+			final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noACI);
 
 			// Crée une personne physique
 			final PersonnePhysique pp = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
@@ -947,7 +947,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 	public void testInfosSurDI2011() throws Exception {
 
 		final long diId = doInNewTransactionAndSession(status -> {
-			final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
+			final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noACI);
 
 			// Crée une personne physique décédé
 			final PersonnePhysique pp = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
@@ -976,7 +976,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 	public void testInfosSurDI2010() throws Exception {
 
 		final long diId = doInNewTransactionAndSession(status -> {
-			final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
+			final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noACI);
 
 			// Crée une personne physique
 			final PersonnePhysique pp = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
@@ -1011,7 +1011,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 		final RegDate dateNaissanceFille = date(2005, 2, 8);
 
 		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Guy", true);
@@ -1045,7 +1045,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 			addParente(fils, pere, dateNaissanceFils, null);
 			addParente(fille, pere, dateNaissanceFille, null);
 
-			final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
+			final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noACI);
 
 			// Crée une for
 			addForPrincipal(pere, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Vevey);
@@ -1071,7 +1071,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 	public void testRemplitDiAvecCodeRegion() throws Exception {
 
 		final long diId = doInNewTransactionAndSession(status -> {
-			CollectiviteAdministrative cedi = tiersDAO.getCollectiviteAdministrativesByNumeroTechnique(ServiceInfrastructureRaw.noCEDI);
+			CollectiviteAdministrative cedi = tiersDAO.getCollectiviteAdministrativesByNumeroTechnique(InfrastructureConnector.noCEDI);
 
 			// Crée une personne physique (ctb ordinaire vaudois) qui a déménagé début 2008 de Vallorbe à Bex
 			final PersonnePhysique pp = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
@@ -1168,7 +1168,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 		final ModeleDocument modele2011 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2011);
 
 
-		final CollectiviteAdministrative cedi = tiersDAO.getCollectiviteAdministrativesByNumeroTechnique(ServiceInfrastructureRaw.noCEDI);
+		final CollectiviteAdministrative cedi = tiersDAO.getCollectiviteAdministrativesByNumeroTechnique(InfrastructureConnector.noCEDI);
 		final long idCedi = cedi.getId();
 		//   SI l'utilisateur choisit "OID" dans l'adresse de retour, il s'agira alors d'imprimer l'OID de gestion
 		{
@@ -1506,7 +1506,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 	public void testIDEnvoiHorsSuisseRueOuLocaliteInconnue() throws Exception {
 
 		final long diId = doInNewTransactionAndSession(status -> {
-			final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
+			final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noACI);
 
 			// Crée une personne physique (ctb ordinaire vaudois) qui a déménagé mi 2010 de Morges à Paris
 			final PersonnePhysique pp = addNonHabitant("Céline", "André", date(1980, 6, 23), Sexe.MASCULIN);
@@ -1539,7 +1539,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 		LOGGER.debug("EditiqueHelperTest - testIDEnvoiHorsSuissePaysInconnue SIFISC-4146");
 
 		final long diId = doInNewTransactionAndSession(status -> {
-			final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
+			final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noACI);
 
 			// Crée une personne physique (ctb ordinaire vaudois) qui a déménagé mi 2010 de Morges à Paris
 			final PersonnePhysique pp = addNonHabitant("Céline", "André", date(1980, 6, 23), Sexe.MASCULIN);
@@ -1569,7 +1569,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 	public void testAvecEtiquette() throws Exception {
 
 		final long diId = doInNewTransactionAndSession(status -> {
-			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 			assertNotNull(cedi);
 
 			// Crée une personne physique (ctb ordinaire vaudois) qui a déménagé mi 2010 de Morges à Paris

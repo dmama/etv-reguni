@@ -6,13 +6,13 @@ import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
-import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
 import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.unireg.evenement.civil.interne.MessageCollector;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.tiers.ForFiscal;
 import ch.vd.unireg.tiers.ForFiscalRevenuFortune;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -52,7 +52,7 @@ public class AnnulationMariageTest extends AbstractEvenementCivilInterneTest {
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		serviceCivil.setUp(new DefaultMockServiceCivil());
+		serviceCivil.setUp(new DefaultMockIndividuConnector());
 		loadDatabase(DB_UNIT_DATA_FILE);
 	}
 	
@@ -204,7 +204,7 @@ public class AnnulationMariageTest extends AbstractEvenementCivilInterneTest {
 		doModificationIndividu(noIndividu, new IndividuModification() {
 			@Override
 			public void modifyIndividu(MockIndividu individu) {
-				MockServiceCivil.annuleMariage(individu);
+				MockIndividuConnector.annuleMariage(individu);
 			}
 		});
 		return serviceCivil.getIndividu(noIndividu, date(2008, 12, 31));
@@ -221,7 +221,7 @@ public class AnnulationMariageTest extends AbstractEvenementCivilInterneTest {
 		doModificationIndividus(noIndividu, noConjoint, new IndividusModification() {
 			@Override
 			public void modifyIndividus(MockIndividu individu, MockIndividu conjoint) {
-				MockServiceCivil.annuleMariage(individu, conjoint);
+				MockIndividuConnector.annuleMariage(individu, conjoint);
 			}
 		});
 		return serviceCivil.getIndividu(noIndividu, date(2008, 12, 31));

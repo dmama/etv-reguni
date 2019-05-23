@@ -19,7 +19,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.efacture.data.ResultatQuittancement;
 import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -166,7 +166,7 @@ public class EFactureServiceTest extends BusinessTest {
 
 			final RegDate dateMariage = date(2002, 3, 4);
 
-			serviceCivil.setUp(new MockServiceCivil() {
+			serviceCivil.setUp(new MockIndividuConnector() {
 				@Override
 				protected void init() {
 					MockIndividu jacquier = addIndividu(NO_JACQUIER, date(1980,1,2), "Sébastien", "Jacquier", true); // sans adresse

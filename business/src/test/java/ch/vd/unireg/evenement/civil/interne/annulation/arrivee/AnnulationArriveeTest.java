@@ -15,7 +15,7 @@ import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.unireg.evenement.civil.interne.MessageCollector;
 import ch.vd.unireg.evenement.common.EvenementErreur;
 import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
@@ -82,7 +82,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		final long noIndividu = 12345657879L;
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, RegDate.get().addYears(-17), "Poucet", "Petit", true);
@@ -111,7 +111,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		final long noIndividu = 12345657879L;
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, RegDate.get().addYears(-17), "Poucet", "Petit", true);
@@ -145,7 +145,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		final long noIndividu = 12345657879L;
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, RegDate.get().addYears(-17), "Poucet", "Petit", true);
@@ -184,7 +184,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		final RegDate dateMariage = RegDate.get().addMonths(-1);
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, RegDate.get().addYears(-17), "Poucet", "Petit", true);
@@ -227,7 +227,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		final RegDate dateMariage = RegDate.get().addMonths(-1);
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, RegDate.get().addYears(-17), "Poucet", "Petit", true);
@@ -273,7 +273,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		final RegDate dateMariage = RegDate.get().addMonths(-1);
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, RegDate.get().addYears(-17), "Poucet", "Petit", true);
@@ -324,7 +324,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		final RegDate dateMariage = RegDate.get().addMonths(-1);
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu m = addIndividu(noIndividu, RegDate.get().addYears(-17), "Poucet", "Petit", true);
@@ -374,7 +374,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		final RegDate dateMariage = RegDate.get().addMonths(-1);
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu m = addIndividu(noIndividu, RegDate.get().addYears(-17), "Poucet", "Petit", true);
@@ -427,7 +427,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		final RegDate dateMariage = RegDate.get().addMonths(-1);
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu m = addIndividu(noIndividu, RegDate.get().addYears(-17), "Poucet", "Petit", true);
@@ -484,7 +484,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		final RegDate dateMariage = RegDate.get().addMonths(-1);
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu m = addIndividu(noIndividu, RegDate.get().addYears(-17), "Poucet", "Petit", true);
@@ -539,7 +539,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		final RegDate dateMariage = RegDate.get().addMonths(-1);
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu m = addIndividu(noIndividu, RegDate.get().addYears(-17), "Poucet", "Petit", true);
@@ -597,7 +597,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		final RegDate dateMariage = RegDate.get().addMonths(-1);
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu m = addIndividu(noIndividu, RegDate.get().addYears(-17), "Poucet", "Petit", true);
@@ -652,7 +652,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		final long noIndividu = 12345657879L;
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, RegDate.get().addYears(-19), "Poucet", "Grand", true);
@@ -685,7 +685,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		final long noIndividu = 12345657879L;
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, RegDate.get().addYears(-19), "Poucet", "Grand", true);
@@ -723,7 +723,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		final long noIndividu = 12345657879L;
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, RegDate.get().addYears(-19), "Poucet", "Grand", true);
@@ -759,7 +759,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		final long noIndividu = 12345657879L;
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, RegDate.get().addYears(-19), "Poucet", "Grand", true);

@@ -58,7 +58,7 @@ public class ServiceEntrepriseCivileRCEntTest {
 			}
 		};
 
-		ServiceEntrepriseRCEnt service = new ServiceEntrepriseRCEnt(null, client, null);
+		EntrepriseConnectorRCEnt service = new EntrepriseConnectorRCEnt(null, client, null);
 
 		// on devrait quand même recevoir une page, mais vide
 		final Page<AnnonceIDE> annonces = service.findAnnoncesIDE(query, null, 0, 10);
@@ -91,7 +91,7 @@ public class ServiceEntrepriseCivileRCEntTest {
 			}
 		};
 
-		final ServiceEntrepriseRCEnt service = new ServiceEntrepriseRCEnt(null, client, null);
+		final EntrepriseConnectorRCEnt service = new EntrepriseConnectorRCEnt(null, client, null);
 
 		// on devrait recevoir une page avec les trois demandes d'annonces
 		final Page<AnnonceIDE> annonces = service.findAnnoncesIDE(query, null, 0, 10);

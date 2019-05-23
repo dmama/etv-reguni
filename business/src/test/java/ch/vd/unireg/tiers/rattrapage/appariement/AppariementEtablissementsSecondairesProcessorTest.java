@@ -13,7 +13,7 @@ import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
 import ch.vd.unireg.interfaces.entreprise.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.entreprise.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.entreprise.data.TypeEntrepriseRegistreIDE;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockEntrepriseCivile;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockEtablissementCivil;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEtablissementCivilFactory;
@@ -53,7 +53,7 @@ public class AppariementEtablissementsSecondairesProcessorTest extends BusinessT
 		}
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				MockEntrepriseCivile ent = addEntreprise(noCantonalEntreprise);
@@ -140,7 +140,7 @@ public class AppariementEtablissementsSecondairesProcessorTest extends BusinessT
 		}
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				MockEntrepriseCivile ent = addEntreprise(noCantonalEntreprise);
@@ -223,7 +223,7 @@ public class AppariementEtablissementsSecondairesProcessorTest extends BusinessT
 		final String ide = "CHE101390939";
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final MockEntrepriseCivile ent = addEntreprise(noCantonalEntreprise);
@@ -375,7 +375,7 @@ public class AppariementEtablissementsSecondairesProcessorTest extends BusinessT
 		final RegDate dateDemenagementFiscal = dateDebutCivile.addMonths(-2);
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final MockEntrepriseCivile ent = addEntreprise(noCantonalEntreprise);
@@ -554,7 +554,7 @@ public class AppariementEtablissementsSecondairesProcessorTest extends BusinessT
 		final RegDate dateDemenagementFiscal2 = dateDebutCivile.addMonths(2);
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final MockEntrepriseCivile ent = addEntreprise(noCantonalEntreprise);

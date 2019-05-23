@@ -32,7 +32,7 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessItTest;
 import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseRaw;
+import ch.vd.unireg.interfaces.entreprise.EntrepriseConnector;
 import ch.vd.unireg.interfaces.entreprise.data.AdresseAnnonceIDERCEnt;
 import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDEData;
 import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDEEnvoyee;
@@ -122,7 +122,7 @@ public class ServiceEntrepriseRCEntItTest extends BusinessItTest {
 
 	@Test(timeout = 30000)
 	public void testGetEntrepriseIdsByNoIde() {
-		final ServiceEntrepriseRaw.Identifiers ids = service.getEntrepriseIdsByNoIde(IDE_SUCC);
+		final EntrepriseConnector.Identifiers ids = service.getEntrepriseIdsByNoIde(IDE_SUCC);
 		assertNotNull(ids);
 		assertEquals(ID_ORGANISATION_SUCC, ids.idCantonalEntreprise);
 		assertEquals(ID_SUCC, ids.idCantonalEtablissement);

@@ -11,7 +11,7 @@ import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
@@ -132,7 +132,7 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessorTest extends Busine
 		final RegDate dateMariage = dateReference.addYears(-3);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu rentierOrdinaire = addIndividu(noIndividuRentierOrdinaire, dateNaissanceRentierM, "Rentier", "Ordinaire", Sexe.MASCULIN);
@@ -235,7 +235,7 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessorTest extends Busine
 		final RegDate dateNaissance = dateReference.addYears(-getAgeRentierFemme(paramAppService)).addMonths(-7);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu mme = addIndividu(noIndividu, dateNaissance, "McGonagall", "Minerva", Sexe.FEMININ);

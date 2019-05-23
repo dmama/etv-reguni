@@ -13,9 +13,9 @@ import org.junit.Test;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.common.MultipleSwitch;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.tiers.Parente;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.RapportEntreTiers;
@@ -40,7 +40,7 @@ public class CalculParentesProcessorTest extends BusinessTest {
 
 	@Test
 	public void testAucunConnuAuCivil() throws Exception {
-		serviceCivil.setUp(new DefaultMockServiceCivil());
+		serviceCivil.setUp(new DefaultMockIndividuConnector());
 
 		// quelques non-habitants quand-même
 		doInNewTransactionAndSession(status -> {
@@ -64,7 +64,7 @@ public class CalculParentesProcessorTest extends BusinessTest {
 		final long noIndividuEnfant = 4398243L;
 		final RegDate dateNaissanceEnfant = date(2005, 5, 1);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu parent = addIndividu(noIndividuParent, null, "Malfoy", "Lucius", Sexe.MASCULIN);
@@ -92,7 +92,7 @@ public class CalculParentesProcessorTest extends BusinessTest {
 
 	@Test
 	public void testDestructionParentesPresentesModeFull() throws Exception {
-		serviceCivil.setUp(new DefaultMockServiceCivil());
+		serviceCivil.setUp(new DefaultMockIndividuConnector());
 
 		final class Ids {
 			long idParent;
@@ -182,7 +182,7 @@ public class CalculParentesProcessorTest extends BusinessTest {
 		final long noIndHenri = 4378935623L;
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu papa = addIndividu(noIndPapa, date(1982, 6, 30), "Barba", "Papa", Sexe.MASCULIN);
@@ -335,7 +335,7 @@ public class CalculParentesProcessorTest extends BusinessTest {
 		final RegDate dateNaissanceEnfant2 = date(2002, 1, 12);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu parent1 = addIndividu(noIndParent1, null, "Bleu", "Papa", Sexe.MASCULIN);
@@ -445,7 +445,7 @@ public class CalculParentesProcessorTest extends BusinessTest {
 		final RegDate dateNaissanceEnfant2 = date(2002, 1, 12);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu parent1 = addIndividu(noIndParent1, null, "Bleu", "Papa", Sexe.MASCULIN);
@@ -552,7 +552,7 @@ public class CalculParentesProcessorTest extends BusinessTest {
 		final RegDate dateNaissanceEnfant1 = date(2000, 5, 31);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu parent1 = addIndividu(noIndParent1, null, "Bleu", "Papa", Sexe.MASCULIN);

@@ -8,7 +8,7 @@ import ch.vd.unireg.common.Duplicable;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.common.CasePostale;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.type.TypeAdresseCivil;
@@ -53,7 +53,7 @@ public class MockAdresse implements Adresse, Duplicable<MockAdresse> {
 	}
 
 	public MockAdresse(TypeAdresseCivil type, String rue, @Nullable CasePostale casePostale, String npaLocalite, @NotNull MockPays pays, RegDate debutValidite, @Nullable RegDate finValidite) {
-		if (pays.getNoOFS() == ServiceInfrastructureRaw.noOfsSuisse) {
+		if (pays.getNoOFS() == InfrastructureConnector.noOfsSuisse) {
 			throw new IllegalArgumentException("Pour la Suisse, il faut utiliser une autre méthode newAdresse");
 		}
 		this.typeAdresse = type;
@@ -235,7 +235,7 @@ public class MockAdresse implements Adresse, Duplicable<MockAdresse> {
 	@Override
 	public Integer getNoOfsPays() {
 		if (noOfsPays == null) {
-			return ServiceInfrastructureRaw.noOfsSuisse;
+			return InfrastructureConnector.noOfsSuisse;
 		}
 		else {
 			return noOfsPays;

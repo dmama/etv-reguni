@@ -11,7 +11,7 @@ import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.civil.data.Nationalite;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockNationalite;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
@@ -38,7 +38,7 @@ public class NaturalisationEchProcessorTest extends AbstractEvenementCivilEchPro
 		final RegDate dateNaissance = date(1956, 12, 12);
 		final RegDate dateNaturalisation = date(2013, 11, 4);
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Barbar", "Konan", true);
@@ -99,7 +99,7 @@ public class NaturalisationEchProcessorTest extends AbstractEvenementCivilEchPro
 		final RegDate dateNaissance = date(1956, 12, 12);
 		final RegDate dateNaturalisation = date(2014, 1, 6);
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Barbar", "Konan", true);
@@ -165,7 +165,7 @@ public class NaturalisationEchProcessorTest extends AbstractEvenementCivilEchPro
 		final RegDate dateNaturalisation = date(2016, 1, 6);
 
 		// mise en place civile -> étranger résident HC inscrit en secondaire sur VD
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Barbar", "Konan", true);

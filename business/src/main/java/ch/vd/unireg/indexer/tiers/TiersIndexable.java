@@ -13,7 +13,7 @@ import ch.vd.unireg.indexer.Indexable;
 import ch.vd.unireg.indexer.IndexableData;
 import ch.vd.unireg.indexer.IndexerException;
 import ch.vd.unireg.indexer.IndexerFormatHelper;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
@@ -155,7 +155,7 @@ public abstract class TiersIndexable<T extends Tiers> implements Indexable {
 		try {
 			return tiersService.getLocalisationAsString(localisation);
 		}
-		catch (ServiceInfrastructureException | ObjectNotFoundException e) {
+		catch (InfrastructureException | ObjectNotFoundException e) {
 			throw new IndexerException(tiers, e);
 		}
 	}

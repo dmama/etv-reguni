@@ -10,7 +10,7 @@ import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
 import ch.vd.unireg.hibernate.HibernateTemplate;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.TiersDAO;
@@ -31,7 +31,7 @@ public class MockOuvertureForsContribuablesMajeursProcessor extends OuvertureFor
 
 		//Exception d'infrastructure
 		try {
-			throw new ServiceInfrastructureException("Exception Infrastructure attendu");
+			throw new InfrastructureException("Exception Infrastructure attendu");
 		}
 		catch (Exception e) {
 			r.addUnknownException(habitant, e);

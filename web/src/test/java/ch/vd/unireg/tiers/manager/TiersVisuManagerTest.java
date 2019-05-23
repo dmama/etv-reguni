@@ -16,8 +16,8 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.WebTest;
 import ch.vd.unireg.common.pagination.WebParamPagination;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
@@ -51,7 +51,7 @@ public class TiersVisuManagerTest extends WebTest {
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 
@@ -142,7 +142,7 @@ public class TiersVisuManagerTest extends WebTest {
 	@Test
 	public void testGetAdressesCivilesPrincipalHC() throws Exception {
 
-	    serviceCivil.setUp(new MockServiceCivil() {
+	    serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu zotan = addIndividu(185386, RegDate.get(1974, 3, 22), "Zotan", "Mitev", true);
@@ -203,7 +203,7 @@ public class TiersVisuManagerTest extends WebTest {
 	public void testGetAdresseCivilesEntreprise() throws Exception {
 
 		// on insère les données du Tennis-Club de Forel-Savigny (qui possède une boîte postale)
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(MockEntrepriseFactory.TENNIS_CLUB_FOREL_SAVIGNY);
@@ -242,7 +242,7 @@ public class TiersVisuManagerTest extends WebTest {
 		final long numeroEtablissement = MockEntrepriseFactory.TENNIS_CLUB_FOREL_SAVIGNY.getEtablissementPrincipal(null).getPayload().getNumeroEtablissement();
 
 		// on insère les données du Tennis-Club de Forel-Savigny (dont l'établissement principal possède une boîte postale)
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(MockEntrepriseFactory.TENNIS_CLUB_FOREL_SAVIGNY);

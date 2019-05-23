@@ -12,7 +12,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCanton;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -4870,7 +4870,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final long noIndividu = 42748232L;
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, null, "Chevalier", "Ernest", Sexe.MASCULIN);
@@ -4968,7 +4968,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final long noIndividu = 42748232L;
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, null, "Chevalier", "Ernest", Sexe.MASCULIN);
@@ -5064,7 +5064,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final long noIndividu = 42748232L;
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Chevalier", "Ernest", Sexe.MASCULIN);
@@ -5200,7 +5200,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate retour = date(lastYear, 10, 20);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Lade", "Réga", Sexe.FEMININ);
@@ -5260,7 +5260,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate retour = date(lastYear, 10, 20);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, null, "Lade", "Réga", Sexe.FEMININ);
@@ -5348,7 +5348,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate retour = date(lastYear, 10, 20);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Lade", "Réga", Sexe.FEMININ);
@@ -5432,7 +5432,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate depart = date(lastYear, 7, 12);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, null, "Frigoletta", "Alessio", Sexe.MASCULIN);
@@ -5508,7 +5508,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate retour = date(lastYear, 10, 26);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, null, "Frigoletta", "Alessio", Sexe.MASCULIN);
@@ -5600,7 +5600,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate departFinal = date(lastYear, 12, 31);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, null, "Frigoletta", "Alessio", Sexe.MASCULIN);
@@ -5693,7 +5693,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate departFinal = date(lastYear, 12, 31);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, null, "Frigoletta", "Alessio", Sexe.MASCULIN);
@@ -5786,7 +5786,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate departFinal = date(lastYear, 12, 31);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, null, "Frigoletta", "Alessio", Sexe.MASCULIN);
@@ -5892,7 +5892,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate departFinal = date(lastYear, 12, 31);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, null, "Frigoletta", "Alessio", Sexe.MASCULIN);
@@ -6000,7 +6000,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate departFinal = date(lastYear, 12, 31);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, null, "Frigoletta", "Alessio", Sexe.MASCULIN);
@@ -6100,7 +6100,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 	public void testFusionCommunesHC() throws Exception {
 
 		// mise en place civile -> rien
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// rien
@@ -6168,7 +6168,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate departFinal = date(lastYear, 12, 31);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, null, "Frigoletta", "Alessio", Sexe.MASCULIN);
@@ -6234,7 +6234,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate dateDepart = date(2015, 12, 31);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, null, "Grandrenaud", "Escapador", Sexe.MASCULIN);
@@ -6328,7 +6328,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate dateDeces = date(2016, 10, 10);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, null, "Grandrenaud", "Escapador", Sexe.MASCULIN);
@@ -6390,7 +6390,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate dateDeces = date(2016, 10, 10);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, null, "Grandrenaud", "Escapador", Sexe.MASCULIN);
@@ -6452,7 +6452,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate dateDeces = date(2016, 10, 10);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, null, "Grandrenaud", "Escapador", Sexe.MASCULIN);
@@ -6526,7 +6526,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate dateDeces = date(2016, 10, 10);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, null, "Grandrenaud", "Escapador", Sexe.MASCULIN);
@@ -6599,7 +6599,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate dateArriveeHC = date(2014, 1, 1);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, null, "Grandrenaud", "Escapador", Sexe.MASCULIN);
@@ -6652,7 +6652,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate debut = date(today.year() - 2, 1, 1);
 
 		// mise en place civile -> rien
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// rien
@@ -6735,7 +6735,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate dateArriveeHC = date(anneeCourante - 1, 9, 19);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, date(1964, 8, 12), "Térébentine", "Francis", Sexe.MASCULIN);
@@ -6804,7 +6804,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate dateArriveeHC = date(anneeCourante - 1, 9, 19);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, date(1964, 8, 12), "Térébentine", "Francis", Sexe.MASCULIN);

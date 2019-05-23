@@ -10,12 +10,11 @@ import net.sf.ehcache.CacheManager;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.junit.Before;
-import org.junit.Test;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.cache.UniregCacheManagerImpl;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 
 import static org.junit.Assert.assertEquals;
@@ -24,23 +23,23 @@ import static org.junit.Assert.assertNotNull;
 @SuppressWarnings({"JavaDoc"})
 public class ServiceInfrastructureCommuneCacheTest {
 
-	private ServiceInfrastructureCache cache;
-	private TestService target;
+	private InfrastructureConnectorCache cache;
+	private Test target;
 
 	@Before
 	public void setup() throws Exception {
-		cache = new ServiceInfrastructureCache();
+		cache = new InfrastructureConnectorCache();
 		final CacheManager manager = CacheManager.create(ResourceUtils.getFile("classpath:ut/ehcache.xml").getPath());
 		cache.setCacheManager(manager);
-		cache.setCacheName("serviceInfra");
-		cache.setShortLivedCacheName("serviceInfraShortLived");
+		cache.setCacheName("infraConnector");
+		cache.setShortLivedCacheName("infraConnectorShortLived");
 		cache.setUniregCacheManager(new UniregCacheManagerImpl());
-		target = new TestService();
+		target = new Test();
 		cache.setTarget(target);
 		cache.afterPropertiesSet();
 	}
 
-	@Test
+	@org.junit.Test
 	public void testGetCommuneHistoByNumeroOfsMonoThread() {
 		final List<Commune> list = cache.getCommuneHistoByNumeroOfs(1);
 		assertNotNull(list);
@@ -53,10 +52,10 @@ public class ServiceInfrastructureCommuneCacheTest {
 	private static final int NB_THREADS = 4;
 
 	/**
-	 * Ce test à pour but de tester le fonctionnement correct du cache du service infrastructure, et plus particulièrement dans le cas où la taille maximum d'éléments en mémoire n'est pas dépassée, de
+	 * Ce test à pour but de tester le fonctionnement correct du cache du connecteur d'infrastructure, et plus particulièrement dans le cas où la taille maximum d'éléments en mémoire n'est pas dépassée, de
 	 * s'assurer que le cache enregistre bien toutes les données (= tous les appels subséquents doivent retourner la même instance que le premier appel).
 	 */
-	@Test
+	@org.junit.Test
 	public void testGetCommuneHistoByNumeroOfsMultiThreads() throws Exception {
 
 		// plusieurs listes (une par thread) de numéros Ofs de commune à demander
@@ -202,7 +201,7 @@ public class ServiceInfrastructureCommuneCacheTest {
 		}
 	}
 
-	private static class TestService extends NotImplementedServiceInfrastructure {
+	private static class Test extends NotImplementedInfrastructureConnector {
 
 		private AtomicInteger calls = new AtomicInteger(0);
 
@@ -215,7 +214,7 @@ public class ServiceInfrastructureCommuneCacheTest {
 		}
 
 		@Override
-		public List<Commune> getCommuneHistoByNumeroOfs(int noOfsCommune) throws ServiceInfrastructureException {
+		public List<Commune> getCommuneHistoByNumeroOfs(int noOfsCommune) throws InfrastructureException {
 			calls.incrementAndGet();
 //			System.out.println(String.format("[thread %d] getCommuneHistoByNumeroOfs(%d)", Thread.currentThread().getId(), noOfsCommune));
 			List<Commune> list = new ArrayList<>(1);

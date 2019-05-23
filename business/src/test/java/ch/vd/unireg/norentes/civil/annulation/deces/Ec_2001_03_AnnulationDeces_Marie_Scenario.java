@@ -1,10 +1,10 @@
 package ch.vd.unireg.norentes.civil.annulation.deces;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.unireg.norentes.annotation.Check;
 import ch.vd.unireg.norentes.annotation.Etape;
 import ch.vd.unireg.norentes.common.EvenementCivilScenario;
@@ -58,7 +58,7 @@ public class Ec_2001_03_AnnulationDeces_Marie_Scenario extends EvenementCivilSce
 
 	@Override
 	protected void initServiceCivil() {
-		serviceCivilService.setUp(new DefaultMockServiceCivil());
+		serviceCivilService.setUp(new DefaultMockIndividuConnector());
 	}
 
 	@Etape(id=1, descr="Chargement du couple")

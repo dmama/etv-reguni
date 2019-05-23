@@ -47,7 +47,7 @@ import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.model.AdressesCivilesHisto;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
@@ -1999,7 +1999,7 @@ public class MetierServiceImpl implements MetierService {
 			audit.warn(message);
 			return null;
 		}
-		catch (ModeImpositionResolverException | ServiceInfrastructureException ex) {
+		catch (ModeImpositionResolverException | InfrastructureException ex) {
 			throw new MetierServiceException(ex.getMessage(), ex);
 		}
 	}

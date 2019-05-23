@@ -30,7 +30,7 @@ import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.model.AdressesCivilesHisto;
@@ -85,7 +85,7 @@ public abstract class Depart extends Mouvement {
 		try {
 			this.paysInconnu = context.getServiceInfra().getPaysInconnu();
 		}
-		catch (ServiceInfrastructureException e) {
+		catch (InfrastructureException e) {
 			throw new EvenementCivilException(e);
 		}
 
@@ -114,7 +114,7 @@ public abstract class Depart extends Mouvement {
 		try {
 			this.paysInconnu = context.getServiceInfra().getPaysInconnu();
 		}
-		catch (ServiceInfrastructureException e) {
+		catch (InfrastructureException e) {
 			throw new EvenementCivilException(e);
 		}
 	}
@@ -469,7 +469,7 @@ public abstract class Depart extends Mouvement {
 			try {
 				nouvelleCommune = context.getServiceInfra().getCommuneByNumeroOfs(localisation.getNoOfs(), lendemain);
 			}
-			catch (ServiceInfrastructureException e) {
+			catch (InfrastructureException e) {
 				throw new EvenementCivilException(e);
 			}
 		}

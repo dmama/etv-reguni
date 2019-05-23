@@ -10,12 +10,12 @@ import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur;
 import noNamespace.TypAdresse;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.adresse.AdresseEnvoi;
 import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdressesResolutionException;
 import ch.vd.unireg.declaration.Declaration;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.tiers.CollectiviteAdministrative;
 import ch.vd.unireg.tiers.Tiers;
 
@@ -40,24 +40,24 @@ public interface LegacyEditiqueHelper {
 	 *
 	 * @param infoEnteteDocument
 	 * @return
-	 * @throws ServiceInfrastructureException
+	 * @throws InfrastructureException
 	 * @throws RemoteException
-	 * @throws ServiceInfrastructureException
-	 * @throws ServiceInfrastructureException
+	 * @throws InfrastructureException
+	 * @throws InfrastructureException
 	 */
-	Expediteur remplitExpediteurACI(InfoEnteteDocument infoEnteteDocument) throws ServiceInfrastructureException;
+	Expediteur remplitExpediteurACI(InfoEnteteDocument infoEnteteDocument) throws InfrastructureException;
 
 	/**
 	 * Alimente la partie expéditeur CAT du document
 	 *
 	 * @param infoEnteteDocument
 	 * @return
-	 * @throws ServiceInfrastructureException
+	 * @throws InfrastructureException
 	 * @throws RemoteException
-	 * @throws ServiceInfrastructureException
-	 * @throws ServiceInfrastructureException
+	 * @throws InfrastructureException
+	 * @throws InfrastructureException
 	 */
-	Expediteur remplitExpediteurCAT(InfoEnteteDocument infoEnteteDocument) throws ServiceInfrastructureException;
+	Expediteur remplitExpediteurCAT(InfoEnteteDocument infoEnteteDocument) throws InfrastructureException;
 
 
 	/**
@@ -65,9 +65,9 @@ public interface LegacyEditiqueHelper {
 	 *
 	 * @param ca
 	 * @return
-	 * @throws ServiceInfrastructureException
+	 * @throws InfrastructureException
 	 */
-	Expediteur remplitExpediteur(CollectiviteAdministrative ca, InfoEnteteDocument infoEnteteDocument) throws ServiceInfrastructureException;
+	Expediteur remplitExpediteur(CollectiviteAdministrative ca, InfoEnteteDocument infoEnteteDocument) throws InfrastructureException;
 
 	/**
 	 * Alimente la partie Destinataire (contribuable/débiteur) du document
@@ -112,9 +112,9 @@ public interface LegacyEditiqueHelper {
 	 *  @param declaration
 	 * @param infoEnteteDocument
 	 * @param traitePar
-	 * @throws ServiceInfrastructureException
+	 * @throws InfrastructureException
 	 */
-	Expediteur remplitExpediteurPourSommationLR(Declaration declaration, InfoEnteteDocument infoEnteteDocument, String traitePar) throws ServiceInfrastructureException;
+	Expediteur remplitExpediteurPourSommationLR(Declaration declaration, InfoEnteteDocument infoEnteteDocument, String traitePar) throws InfrastructureException;
 
 	/**  Renseigne la partie expediteur avec les données et régles spécifiques
 	 * à l'envoi de lR
@@ -122,9 +122,9 @@ public interface LegacyEditiqueHelper {
 	 * @param infoEnteteDocument
 	 * @param traitePar
 	 * @return
-	 * @throws ServiceInfrastructureException
+	 * @throws InfrastructureException
 	 */
-	Expediteur remplitExpediteurPourEnvoiLR(Declaration declaration, InfoEnteteDocument infoEnteteDocument, String traitePar) throws ServiceInfrastructureException;
+	Expediteur remplitExpediteurPourEnvoiLR(Declaration declaration, InfoEnteteDocument infoEnteteDocument, String traitePar) throws InfrastructureException;
 
 	/**
 	 * Construit une structure éditique pour une demande d'archivage de document lors de sa génération

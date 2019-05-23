@@ -23,8 +23,8 @@ import ch.vd.unireg.editique.LegacyEditiqueHelper;
 import ch.vd.unireg.etiquette.Etiquette;
 import ch.vd.unireg.etiquette.EtiquetteService;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
+import ch.vd.unireg.interfaces.infra.mock.DefaultMockInfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
@@ -69,7 +69,7 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest ext
 		tiersService = getBean(TiersService.class, "tiersService");
 		editiqueHelper =  getBean(LegacyEditiqueHelper.class, "legacyEditiqueHelper");
 		delaisService =  getBean(DelaisService.class, "delaisService");
-		serviceInfra.setUp(new DefaultMockServiceInfrastructureService());
+		serviceInfra.setUp(new DefaultMockInfrastructureConnector());
 		impressionSommationDIHelper = new ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperImpl(serviceInfra, adresseService, tiersService,  editiqueHelper, delaisService);
 		etiquetteService = getBean(EtiquetteService.class, "etiquetteService");
 
@@ -135,7 +135,7 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest ext
 
 		final long noIndividu = 213567254L;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne !
@@ -168,7 +168,7 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest ext
 		final long noIndividu = 213567254L;
 		final RegDate dateDivorce = date(2010, 6, 1);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu jean = addIndividu(noIndividu, null, "Dupont", "Jean", Sexe.MASCULIN);
@@ -325,7 +325,7 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest ext
 	@Test
 	public void testSommationDiSurMenageAvecUnMembresDecede() throws Exception {
 		final Long noIndElle = 1234568L;
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu indElle = addIndividu(noIndElle, date(1942,1,1), "Maksimovic", "Radislavka", Sexe.MASCULIN);

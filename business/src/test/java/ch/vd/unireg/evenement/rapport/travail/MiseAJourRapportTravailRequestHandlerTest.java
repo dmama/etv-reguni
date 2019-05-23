@@ -15,7 +15,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
@@ -1038,7 +1038,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		final long noIndividu = 323263L;
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Plantagenet", "Pierre-Henri", Sexe.MASCULIN);
@@ -1113,7 +1113,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		final long noIndividu = 323263L;
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Plantagenet", "Pierre-Henri", Sexe.MASCULIN);
@@ -1190,7 +1190,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		final long noIndividu = 323263L;
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Plantagenet", "Pierre-Henri", Sexe.MASCULIN);
@@ -1277,7 +1277,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		final long noIndividu = 323263L;
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Plantagenet", "Pierre-Henri", Sexe.MASCULIN);
@@ -1353,7 +1353,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		final long noIndividu = 323263L;
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Plantagenet", "Pierre-Henri", Sexe.MASCULIN);
@@ -1441,7 +1441,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 	public void testDemandeFermetureDateAnterieureAFermetureExistante() throws Exception {
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne !
@@ -1513,7 +1513,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		final long noIndividuSourcier = 478267L;
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividuSourcier, date(1965, 9, 17), "O'Hara", "Starlett", Sexe.FEMININ);
@@ -1593,7 +1593,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		final long noIndividuSourcier = 478267L;
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividuSourcier, date(1965, 9, 17), "O'Hara", "Starlett", Sexe.FEMININ);
@@ -1663,7 +1663,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		final long noIndividuSourcier = 478267L;
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividuSourcier, date(1965, 9, 17), "O'Hara", "Starlett", Sexe.FEMININ);

@@ -8,7 +8,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
@@ -122,7 +122,7 @@ public class ListeEchangeRenseignementsResultsTest extends BusinessTest
 
 
 			// mise en place civile
-			serviceCivil.setUp(new MockServiceCivil() {
+			serviceCivil.setUp(new MockIndividuConnector() {
 				@Override
 				protected void init() {
 					final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Armand", "Tutu", Sexe.MASCULIN);
@@ -161,7 +161,7 @@ public class ListeEchangeRenseignementsResultsTest extends BusinessTest
 			final RegDate dateFin = date(2017, 8, 5);
 
 			// mise en place civile
-			serviceCivil.setUp(new MockServiceCivil() {
+			serviceCivil.setUp(new MockIndividuConnector() {
 				@Override
 				protected void init() {
 					final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Armande", "Tutu", Sexe.FEMININ);

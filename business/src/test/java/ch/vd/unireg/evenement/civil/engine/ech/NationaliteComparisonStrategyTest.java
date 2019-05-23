@@ -6,7 +6,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.type.ActionEvenementCivilEch;
@@ -24,7 +24,7 @@ public class NationaliteComparisonStrategyTest extends AbstractIndividuCompariso
 
 	private void setupCivil(final long noIndividu, final long noEvt1, final DateRange range1, final Pays pays1, final RegDate dateEvt1,
 	                        final long noEvt2, final DateRange range2, final Pays pays2, final RegDate dateEvt2) {
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, null, "Leblanc", "Juste", true);

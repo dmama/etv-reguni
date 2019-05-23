@@ -1,13 +1,13 @@
 package ch.vd.unireg.norentes.civil.mariage;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.common.FormatNumeroHelper;
-import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.unireg.norentes.annotation.Check;
 import ch.vd.unireg.norentes.annotation.Etape;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
@@ -56,7 +56,7 @@ public class Ec_4000_04_Mariage_CoupleArriveHorsSuisseEnDeuxFois_Scenario extend
 	private final RegDate dateMariage = RegDate.get(2006, 1, 10);		// mariage annoncé après l'arrivée des deux, mais temporellement avant l'arrivée d'un seul
 	private final MockCommune communeArrivee = MockCommune.Lausanne;
 
-	private class InternalServiceCivil extends MockServiceCivil {
+	private class InternalIndividuConnector extends MockIndividuConnector {
 		@Override
 		protected void init() {
 			final RegDate dateNaissanceRafa = RegDate.get(1974, 6, 25);
@@ -79,11 +79,11 @@ public class Ec_4000_04_Mariage_CoupleArriveHorsSuisseEnDeuxFois_Scenario extend
 		}
 	}
 
-	private InternalServiceCivil internalServiceCivil;
+	private InternalIndividuConnector internalServiceCivil;
 
 	@Override
 	protected void initServiceCivil() {
-		internalServiceCivil = new InternalServiceCivil();
+		internalServiceCivil = new InternalIndividuConnector();
 		serviceCivilService.setUp(internalServiceCivil);
 	}
 

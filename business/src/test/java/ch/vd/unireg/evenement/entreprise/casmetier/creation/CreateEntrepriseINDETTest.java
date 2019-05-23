@@ -14,7 +14,7 @@ import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
 import ch.vd.unireg.interfaces.entreprise.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.entreprise.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.entreprise.data.TypeEntrepriseRegistreIDE;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.tiers.Bouclement;
@@ -57,7 +57,7 @@ public class CreateEntrepriseINDETTest extends AbstractEvenementEntrepriseCivile
 		// Mise en place service mock
 		final long noEntrepriseCivile = 101202100L;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(MockEntrepriseFactory
@@ -148,7 +148,7 @@ public class CreateEntrepriseINDETTest extends AbstractEvenementEntrepriseCivile
 		// Mise en place service mock
 		final long noEntrepriseCivile = 101202100L;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(MockEntrepriseFactory
@@ -227,7 +227,7 @@ public class CreateEntrepriseINDETTest extends AbstractEvenementEntrepriseCivile
 		// Mise en place service mock
 		final long noEntrepriseCivile = 101202100L;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(

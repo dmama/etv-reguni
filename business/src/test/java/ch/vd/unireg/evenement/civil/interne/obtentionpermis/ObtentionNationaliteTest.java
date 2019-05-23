@@ -9,13 +9,13 @@ import ch.vd.unireg.common.WithoutSpringTest;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.infra.mock.MockCanton;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockInfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.unireg.interfaces.infra.mock.MockServiceInfrastructureService;
 import ch.vd.unireg.interfaces.service.ServiceCivilImpl;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureImpl;
@@ -69,7 +69,7 @@ public class ObtentionNationaliteTest extends WithoutSpringTest {
 	private MockTiersDAO tiersDAO = new MockTiersDAO();
 
 	// Prend le mock infrastructure par défaut
-	ServiceInfrastructureService infrastructureService = new ServiceInfrastructureImpl(new MockServiceInfrastructureService() {
+	ServiceInfrastructureService infrastructureService = new ServiceInfrastructureImpl(new MockInfrastructureConnector() {
 		@Override
 		protected void init() {
 			// Pays
@@ -89,7 +89,7 @@ public class ObtentionNationaliteTest extends WithoutSpringTest {
 	}, tiersDAO);
 
 	// Crée les données du mock service civil
-	ServiceCivilService serviceCivilSimple = new ServiceCivilImpl(infrastructureService, new DefaultMockServiceCivil() {
+	ServiceCivilService serviceCivilSimple = new ServiceCivilImpl(infrastructureService, new DefaultMockIndividuConnector() {
 		@Override
 		protected void init() {
 			MockIndividu momo = addIndividu(NO_INDIVIDU_NATIONALITE_FRANCE, RegDate.get(1961, 3, 12), "Durant", "Maurice", true);

@@ -20,9 +20,9 @@ import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterneComposite;
 import ch.vd.unireg.evenement.civil.interne.HandleStatus;
 import ch.vd.unireg.evenement.civil.interne.testing.Testing;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -135,7 +135,7 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 		final long noIndividu = 316547256L;
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, date(1976, 8, 22), "Kaderate", "Yamamoto", true);
@@ -193,7 +193,7 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 		final long noIndividu = 316547256L;
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, date(1976, 8, 22), "Kaderate", "Yamamoto", true);
@@ -258,7 +258,7 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 		final long evtAttenteId = 484212L;
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, null, "Tartempion", "Pê", Sexe.MASCULIN);
@@ -327,7 +327,7 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 		final long evtAttenteId = 484212L;
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, null, "Tartempion", "Pê", Sexe.MASCULIN);
@@ -390,7 +390,7 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 	private void traiterEvenementTesting(final long noEventTesting, final AfterHandleCallback afterHandleCallback) throws Exception {
 		final long noIndividu = 12345L;
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, date(1982, 1, 2), "Anoa", "Yamomoto", true);
@@ -458,7 +458,7 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 		final long noIndividu = 25614312L;
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, date(1982, 4, 12), "Lara", "Clette", false);
@@ -568,7 +568,7 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 		final long noIndividu = 346783L;
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, date(1982, 4, 12), "Lara", "Clette", false);
@@ -588,7 +588,7 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 		final long noIndividu = 423782690773L;
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, date(1982, 4, 12), "Lara", "Clette", false);
@@ -658,7 +658,7 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 		final long noIndividu = 467278456783L;
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, date(1982, 4, 12), "Lara", "Clette", false);
@@ -706,7 +706,7 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 		final long noIndividu = 14563435356783512L;
 		final long evtId = 12456234125L;
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, date(1940, 10, 31), "Hitchcock", "Alfred", true);
@@ -762,7 +762,7 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 		final RegDate dateNaissanceEnfant = date(2010, 4, 2);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu parent = addIndividu(noIndParent, null, "Dumas", "Alexandre, père", Sexe.MASCULIN);

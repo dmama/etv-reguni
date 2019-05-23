@@ -8,16 +8,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.common.NomPrenom;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
-import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.adresse.TypeAdresseFiscale;
 import ch.vd.unireg.common.JobResults;
+import ch.vd.unireg.common.NomPrenom;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
+import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
@@ -108,7 +108,7 @@ public class ListeNoteResults extends JobResults<Long, ListeNoteResults> {
 
 					}
 				}
-				catch (ServiceInfrastructureException e) {
+				catch (InfrastructureException e) {
 					LOGGER.warn("Résolution de l'oid de gestion et de la commune  du contribuable " + ctb.getNumero() + " impossible", e);
 				}
 
@@ -123,7 +123,7 @@ public class ListeNoteResults extends JobResults<Long, ListeNoteResults> {
 					this.communeHC = infraService.getCommuneByNumeroOfs(autoriteFiscale, date);
 					this.nomCantonHC = infraService.getCantonBySigle(communeHC.getSigleCanton()).getNomOfficiel();
 				}
-				catch (ServiceInfrastructureException e) {
+				catch (InfrastructureException e) {
 					LOGGER.warn("Résolution de la commune HC du contribuable " + ctb.getNumero() + " impossible", e);
 				}
 			}
@@ -148,7 +148,7 @@ public class ListeNoteResults extends JobResults<Long, ListeNoteResults> {
 					}
 
 				}
-				catch (ServiceInfrastructureException e) {
+				catch (InfrastructureException e) {
 					LOGGER.warn("Résolution de de la commune en fin e période du contribuable " + ctb.getNumero() + " impossible", e);
 				}
 

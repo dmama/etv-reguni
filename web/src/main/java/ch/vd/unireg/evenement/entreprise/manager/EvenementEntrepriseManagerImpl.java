@@ -33,10 +33,10 @@ import ch.vd.unireg.evenement.entreprise.view.EvenementEntrepriseCriteriaView;
 import ch.vd.unireg.evenement.entreprise.view.EvenementEntrepriseDetailView;
 import ch.vd.unireg.evenement.entreprise.view.EvenementEntrepriseElementListeRechercheView;
 import ch.vd.unireg.evenement.entreprise.view.EvenementEntrepriseSummaryView;
-import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseException;
+import ch.vd.unireg.interfaces.entreprise.EntrepriseConnectorException;
 import ch.vd.unireg.interfaces.entreprise.data.EntrepriseCivile;
 import ch.vd.unireg.interfaces.entreprise.data.EntrepriseCivileEvent;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.service.ServiceEntreprise;
@@ -110,7 +110,7 @@ public class EvenementEntrepriseManagerImpl implements EvenementEntrepriseManage
 
 	@Override
     @Transactional(readOnly = true)
-	public EvenementEntrepriseDetailView get(Long id) throws AdresseException, ServiceInfrastructureException {
+	public EvenementEntrepriseDetailView get(Long id) throws AdresseException, InfrastructureException {
 		final EvenementEntreprise evt = evenementService.get(id);
 		if (evt == null) {
 			throw newObjectNotFoundException(id);
@@ -120,7 +120,7 @@ public class EvenementEntrepriseManagerImpl implements EvenementEntrepriseManage
 
 	@Override
 	@Transactional(readOnly = true)
-	public EvenementEntrepriseSummaryView getSummary(Long id) throws AdresseException, ServiceInfrastructureException {
+	public EvenementEntrepriseSummaryView getSummary(Long id) throws AdresseException, InfrastructureException {
 		final EvenementEntreprise evt = evenementService.get(id);
 		if (evt == null) {
 			throw newObjectNotFoundException(id);
@@ -352,7 +352,7 @@ public class EvenementEntrepriseManagerImpl implements EvenementEntrepriseManage
 			view.setRecyclable(evaluateRecyclable(evt.getId(), list));
 			view.setForcable(evaluateForcable(evt.getEtat(), view.isRecyclable()));
 		}
-		catch (ServiceEntrepriseException e) {
+		catch (EntrepriseConnectorException e) {
 			LOGGER.warn("Impossible d'afficher toutes les données de l'événement entreprise " + evt.toString(), e);
 			view.setNom("<erreur: entreprise civile introuvable>");
 		}
@@ -386,7 +386,7 @@ public class EvenementEntrepriseManagerImpl implements EvenementEntrepriseManage
 				try {
 					tiersAssocie = createTiersAssocieView(entreprise);
 				}
-				catch (ServiceEntrepriseException e) {
+				catch (EntrepriseConnectorException e) {
 					tiersAssocie = createTiersAssocieViewSansCivil(entreprise);
 				}
 				evtView.setTiersAssocie(tiersAssocie);
@@ -416,7 +416,7 @@ public class EvenementEntrepriseManagerImpl implements EvenementEntrepriseManage
 		return localiteOuPays;
 	}
 
-	protected TiersAssocieView createTiersAssocieView(Entreprise entreprise) throws AdresseException, ServiceInfrastructureException {
+	protected TiersAssocieView createTiersAssocieView(Entreprise entreprise) throws AdresseException, InfrastructureException {
 		final TiersAssocieView tiersAssocie = new TiersAssocieView();
 		tiersAssocie.setNumero(entreprise.getNumero());
 		final List<String> nomCourrier = adresseService.getNomCourrier(entreprise, null, false);
@@ -437,7 +437,7 @@ public class EvenementEntrepriseManagerImpl implements EvenementEntrepriseManage
 		return tiersAssocie;
 	}
 
-	protected TiersAssocieView createTiersAssocieViewSansCivil(Entreprise entreprise) throws AdresseException, ServiceInfrastructureException {
+	protected TiersAssocieView createTiersAssocieViewSansCivil(Entreprise entreprise) throws AdresseException, InfrastructureException {
 		final TiersAssocieView tiersAssocie = new TiersAssocieView();
 		tiersAssocie.setNumero(entreprise.getNumero());
 		final String message = "<erreur: entreprise introuvable>";

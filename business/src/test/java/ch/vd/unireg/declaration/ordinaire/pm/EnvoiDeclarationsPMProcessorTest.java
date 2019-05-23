@@ -19,7 +19,7 @@ import ch.vd.unireg.evenement.fiscal.EvenementFiscal;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalDAO;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalDeclarationSommable;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalTiers;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
@@ -90,7 +90,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 		final RegDate dateTraitement = date(pf, 2, 2);
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// vide...
@@ -256,7 +256,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 		final RegDate dateTraitement = date(pf, 2, 2);
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// vide...
@@ -424,7 +424,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 		final RegDate dateTraitement = date(pf, 2, 2);
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// vide...
@@ -593,7 +593,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 		final RegDate dateTraitement = date(pf, 10, 5);
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// vide...
@@ -678,7 +678,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 		final RegDate dateTraitement = date(pf, 2, 10);
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// vide...
@@ -788,7 +788,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 		final RegDate dateTraitement = date(pf, 2, 10);
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// vide...
@@ -899,7 +899,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 		final RegDate dateTraitement = date(pf, 4, 5);
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// vide...
@@ -991,7 +991,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 		final RegDate dateTraitement = date(pf, 7, 31);
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// vide...

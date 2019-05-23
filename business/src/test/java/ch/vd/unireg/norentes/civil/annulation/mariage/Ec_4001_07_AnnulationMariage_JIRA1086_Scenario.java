@@ -4,7 +4,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.validation.ValidationResults;
 import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
@@ -56,7 +56,7 @@ public class Ec_4001_07_AnnulationMariage_JIRA1086_Scenario extends EvenementCiv
 		return NAME;
 	}
 
-	private final class DefaultMockServiceCivil extends MockServiceCivil {
+	private final class DefaultMockIndividuConnector extends MockIndividuConnector {
 
 		@Override
 		protected void init() {
@@ -80,7 +80,7 @@ public class Ec_4001_07_AnnulationMariage_JIRA1086_Scenario extends EvenementCiv
 
 	@Override
 	protected void initServiceCivil() {
-		serviceCivilService.setUp(new DefaultMockServiceCivil());
+		serviceCivilService.setUp(new DefaultMockIndividuConnector());
 	}
 
 	private static final long noIndJaime = 2000465; // Jaime

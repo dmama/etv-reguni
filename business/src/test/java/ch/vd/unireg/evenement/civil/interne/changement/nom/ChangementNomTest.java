@@ -14,7 +14,7 @@ import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.unireg.evenement.civil.interne.MessageCollector;
 import ch.vd.unireg.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.unireg.indexer.tiers.TiersIndexedData;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.tiers.TiersCriteria;
@@ -46,7 +46,7 @@ public class ChangementNomTest extends AbstractEvenementCivilInterneTest {
 	 */
 	private GlobalTiersSearcher searcher;
 	private TiersDAO tiersDAO;
-	private DefaultMockServiceCivil mockServiceCivil;
+	private DefaultMockIndividuConnector mockServiceCivil;
 
 	public ChangementNomTest() {
 		setWantIndexationTiers(true);
@@ -57,7 +57,7 @@ public class ChangementNomTest extends AbstractEvenementCivilInterneTest {
 		super.onSetUp();
 		searcher = getBean(GlobalTiersSearcher.class, "globalTiersSearcher");
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
-		mockServiceCivil = new DefaultMockServiceCivil();
+		mockServiceCivil = new DefaultMockIndividuConnector();
 	}
 
 	@Test

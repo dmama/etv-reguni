@@ -21,8 +21,8 @@ import ch.vd.unireg.declaration.ModeleDocument;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.Periodicite;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.tiers.AutreCommunaute;
@@ -65,7 +65,7 @@ public class TiersEditManagerTest extends WebTest {
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 
@@ -408,7 +408,7 @@ public class TiersEditManagerTest extends WebTest {
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	public void testRefresh() throws AdresseException, ServiceInfrastructureException {
+	public void testRefresh() throws AdresseException, InfrastructureException {
 		final TiersEditView view = tiersEditManager.getView(6789L);
 		view.getTiers().setPersonneContact("toto");
 		tiersEditManager.refresh(view, 6789L);

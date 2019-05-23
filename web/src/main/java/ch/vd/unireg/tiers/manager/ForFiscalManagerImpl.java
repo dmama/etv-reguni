@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.common.TiersNotFoundException;
 import ch.vd.unireg.interfaces.InterfaceDataException;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.tiers.Tiers;
@@ -26,7 +26,7 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 	 * @return un objet TiersView
 	 */
 	@Override
-	public TiersEditView getView(Long numero) throws AdresseException, ServiceInfrastructureException {
+	public TiersEditView getView(Long numero) throws AdresseException, InfrastructureException {
 		TiersEditView tiersEditView = new TiersEditView();
 
 		if (numero == null) {

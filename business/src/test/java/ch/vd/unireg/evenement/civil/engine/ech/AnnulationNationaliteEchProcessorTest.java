@@ -10,8 +10,8 @@ import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchErreur;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockPermis;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
@@ -39,7 +39,7 @@ public class AnnulationNationaliteEchProcessorTest extends AbstractEvenementCivi
 		final RegDate dateArrivee = date(2005, 1, 1);
 		final RegDate dateDebutNationaliteSuisse = date(2012, 1, 1);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Kaderate", "Yamamoto", true);
@@ -99,7 +99,7 @@ public class AnnulationNationaliteEchProcessorTest extends AbstractEvenementCivi
 		final RegDate dateArrivee = date(2005, 1, 1);
 		final RegDate dateDebutNationaliteNonSuisse = date(2012, 1, 1);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Kaderate", "Yamamoto", true);
@@ -158,7 +158,7 @@ public class AnnulationNationaliteEchProcessorTest extends AbstractEvenementCivi
 		final RegDate dateArrivee = date(2005, 1, 1);
 		final RegDate dateDebutNationaliteSuisse = date(2012, 1, 1);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Kaderate", "Yamamoto", true);

@@ -15,7 +15,7 @@ import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchSourceHelper;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -44,7 +44,7 @@ public class EvenementCivilEchGrappeProcessorTest extends AbstractEvenementCivil
 		final RegDate dateMariage = dateArrivee.addMonths(3);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Sorel", "Julien", Sexe.MASCULIN);
@@ -136,7 +136,7 @@ public class EvenementCivilEchGrappeProcessorTest extends AbstractEvenementCivil
 		final RegDate dateMariage = dateArrivee.addMonths(3);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Sorel", "Julien", Sexe.MASCULIN);
@@ -273,7 +273,7 @@ public class EvenementCivilEchGrappeProcessorTest extends AbstractEvenementCivil
 		final RegDate dateAnnulationPremierDeces = date(2015, 4, 25);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Sorel", "Julien", Sexe.MASCULIN);
@@ -381,7 +381,7 @@ public class EvenementCivilEchGrappeProcessorTest extends AbstractEvenementCivil
 		final RegDate dateArrivee = dateDepartCorrecte.addDays(1);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Bovary", "Emma", Sexe.FEMININ);
@@ -546,7 +546,7 @@ public class EvenementCivilEchGrappeProcessorTest extends AbstractEvenementCivil
 		final RegDate dateCorrectionForcee = date(2011, 5, 1);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, date(1970, 5, 3), "Piccolina", "Antonia", Sexe.FEMININ);
@@ -648,7 +648,7 @@ public class EvenementCivilEchGrappeProcessorTest extends AbstractEvenementCivil
 		final RegDate dateArrivee = date(2008, 3, 1);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Piccolino", "Antonio", Sexe.MASCULIN);
@@ -744,7 +744,7 @@ public class EvenementCivilEchGrappeProcessorTest extends AbstractEvenementCivil
 		final RegDate dateArrivee = dateDepartCorrecte.addDays(1);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Piccolino", "Antonio", Sexe.MASCULIN);
@@ -826,7 +826,7 @@ public class EvenementCivilEchGrappeProcessorTest extends AbstractEvenementCivil
 		final RegDate dateArrivee = dateDepartCorrecte.addDays(1);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Piccolino", "Antonio", Sexe.MASCULIN);
@@ -917,7 +917,7 @@ public class EvenementCivilEchGrappeProcessorTest extends AbstractEvenementCivil
 		final String nouveauNom = "Tourtenpièce";
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, null, ancienNom, "Gudule", Sexe.FEMININ);
@@ -1012,7 +1012,7 @@ public class EvenementCivilEchGrappeProcessorTest extends AbstractEvenementCivil
 		final String nouveauNom = "Tourtenpièce";
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, null, ancienNom, "Gudule", Sexe.FEMININ);
@@ -1106,7 +1106,7 @@ public class EvenementCivilEchGrappeProcessorTest extends AbstractEvenementCivil
 		final RegDate dateDepart = dateArrivee.addMonths(5);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, null, "Tatempion", "Gudule", Sexe.FEMININ);

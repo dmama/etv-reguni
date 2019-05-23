@@ -11,7 +11,7 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BusinessTest;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.efacture.data.Demande;
 import ch.vd.unireg.interfaces.efacture.data.DemandeAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
@@ -93,7 +93,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		final BigInteger noAdherent = getNewNumeroAdherent();
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne...
@@ -152,7 +152,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		final BigInteger noAdherent = getNewNumeroAdherent();
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne...
@@ -212,7 +212,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		final BigInteger noAdherent = getNewNumeroAdherent();
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne...
@@ -273,7 +273,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		final BigInteger noAdherent = getNewNumeroAdherent();
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne...
@@ -334,7 +334,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		final BigInteger noAdherent = getNewNumeroAdherent();
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne...
@@ -395,7 +395,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		final BigInteger noAdherent = getNewNumeroAdherent();
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne...
@@ -458,7 +458,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		final BigInteger noAdherent = getNewNumeroAdherent();
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne...
@@ -519,7 +519,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		final BigInteger noAdherent = getNewNumeroAdherent();
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne...
@@ -585,7 +585,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		final BigInteger noAdherent = getNewNumeroAdherent();
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne...
@@ -646,7 +646,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		final BigInteger noAdherent = getNewNumeroAdherent();
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne...
@@ -713,7 +713,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		final BigInteger noAdherent = getNewNumeroAdherent();
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne...
@@ -780,7 +780,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		final BigInteger noAdherent = getNewNumeroAdherent();
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne...
@@ -846,7 +846,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		final BigInteger noAdherent = getNewNumeroAdherent();
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne...
@@ -906,7 +906,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		final BigInteger noAdherent = getNewNumeroAdherent();
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne...
@@ -966,7 +966,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		final BigInteger noAdherent = getNewNumeroAdherent();
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne...
@@ -1039,7 +1039,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		final BigInteger noAdherent = getNewNumeroAdherent();
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne...
@@ -1090,7 +1090,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		final BigInteger noAdherent = getNewNumeroAdherent();
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne...
@@ -1150,7 +1150,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		final BigInteger noAdherent = getNewNumeroAdherent();
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne...
@@ -1210,7 +1210,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		final BigInteger noAdherent = getNewNumeroAdherent();
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne...
@@ -1270,7 +1270,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		final BigInteger noAdherent = getNewNumeroAdherent();
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne...
@@ -1331,7 +1331,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		final BigInteger noAdherent = getNewNumeroAdherent();
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne...
@@ -1389,7 +1389,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		final BigInteger noAdherent = getNewNumeroAdherent();
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne...

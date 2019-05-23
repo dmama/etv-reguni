@@ -10,7 +10,7 @@ import ch.vd.unireg.declaration.Declaration;
 import ch.vd.unireg.declaration.ModeleDocument;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.infra.mock.MockBatiment;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -49,7 +49,7 @@ public class LegacyEditiqueHelperTest extends BusinessTest {
 		final long numeroIndGeorges = 4;
 		final long numeroIndTheotime = 5;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu indJerome = addIndividu(numeroIndJerome, date(1960, 1, 1), "Cognac", "Jerome", true);
@@ -123,7 +123,7 @@ public class LegacyEditiqueHelperTest extends BusinessTest {
 	@Test
 	public void testForGestionPourHorsCantonQuiAcheteEtVendSonImmeubleLaMemeAnnee() throws Exception {
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 			}

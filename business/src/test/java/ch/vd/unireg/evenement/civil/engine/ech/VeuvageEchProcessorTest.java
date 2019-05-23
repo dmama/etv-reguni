@@ -10,9 +10,9 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchErreur;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
@@ -43,7 +43,7 @@ public class VeuvageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		final RegDate dateMariage = date(2005, 5, 5);
 		final RegDate dateVeuvage = date(2008, 11, 23);
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu monsieur = addIndividu(noMonsieur, date(1923, 2, 12), "duTonnerre", "Bouchon", true);
@@ -76,7 +76,7 @@ public class VeuvageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		doModificationIndividu(noMadame, new IndividuModification() {
 			@Override
 			public void modifyIndividu(MockIndividu individu) {
-				MockServiceCivil.veuvifieIndividu(individu, dateVeuvage, false);
+				MockIndividuConnector.veuvifieIndividu(individu, dateVeuvage, false);
 			}
 		});
 
@@ -134,7 +134,7 @@ public class VeuvageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		final RegDate dateMariage = date(2005, 5, 5);
 		final RegDate dateVeuvage = date(2008, 11, 23);
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu monsieur = addIndividu(noMonsieur, date(1923, 2, 12), "duTonnerre", "Bouchon", true);
@@ -168,7 +168,7 @@ public class VeuvageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		doModificationIndividu(noMadame, new IndividuModification() {
 			@Override
 			public void modifyIndividu(MockIndividu individu) {
-				MockServiceCivil.veuvifieIndividu(individu, dateVeuvage, false);
+				MockIndividuConnector.veuvifieIndividu(individu, dateVeuvage, false);
 			}
 		});
 
@@ -222,7 +222,7 @@ public class VeuvageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		final RegDate dateMariage = date(2005, 5, 5);
 		final RegDate dateVeuvage = date(2008, 11, 23);
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu monsieur = addIndividu(noMonsieur, date(1923, 2, 12), "duTonnerre", "Bouchon", true);
@@ -246,7 +246,7 @@ public class VeuvageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		doModificationIndividu(noMadame, new IndividuModification() {
 			@Override
 			public void modifyIndividu(MockIndividu individu) {
-				MockServiceCivil.veuvifieIndividu(individu, dateVeuvage, false);
+				MockIndividuConnector.veuvifieIndividu(individu, dateVeuvage, false);
 			}
 		});
 
@@ -290,7 +290,7 @@ public class VeuvageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		final RegDate dateUnion = date(2005, 5, 5);
 		final RegDate dateVeuvage = date(2008, 11, 23);
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu conjoint = addIndividu(noConjoint, date(1923, 2, 12), "duTonnerre", "Bouchonita", false);
@@ -323,7 +323,7 @@ public class VeuvageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		doModificationIndividu(noPrincipal, new IndividuModification() {
 			@Override
 			public void modifyIndividu(MockIndividu individu) {
-				MockServiceCivil.veuvifieIndividu(individu, dateVeuvage, true);
+				MockIndividuConnector.veuvifieIndividu(individu, dateVeuvage, true);
 			}
 		});
 
@@ -384,7 +384,7 @@ public class VeuvageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		final RegDate dateVeuvage = date(2011, 4, 12);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Guerre", "Martin", true);

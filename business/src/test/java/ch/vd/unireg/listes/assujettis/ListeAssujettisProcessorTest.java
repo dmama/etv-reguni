@@ -9,7 +9,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
 import ch.vd.unireg.common.BusinessTest;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
@@ -42,7 +42,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 		final long noIndividu = 1235435L;
 
 		// service civil
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, date(1964, 5, 30), "Parker", "Camilla", false);
@@ -79,7 +79,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 		final long noIndividu = 1235435L;
 
 		// service civil
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, date(1964, 5, 30), "Parker", "Camilla", false);
@@ -112,7 +112,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 		final long noIndividu = 1235435L;
 
 		// service civil
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, date(1964, 5, 30), "Parker", "Camilla", false);
@@ -167,7 +167,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 		final long noIndividu = 1235435L;
 
 		// service civil
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, date(1964, 5, 30), "Parker", "Camilla", false);
@@ -205,7 +205,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 		final long noIndividu = 1235435L;
 
 		// service civil
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, date(1964, 5, 30), "Parker", "Camilla", false);
@@ -243,7 +243,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 		final long noIndividu = 1235435L;
 
 		// service civil
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, date(1964, 5, 30), "Parker", "Camilla", false);
@@ -290,7 +290,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 		final long noIndividu = 1235435L;
 
 		// service civil
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, date(1964, 5, 30), "Parker", "Camilla", false);
@@ -326,7 +326,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 		final long noIndividu = 1235435L;
 
 		// service civil
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, date(1964, 5, 30), "Parker", "Camilla", false);
@@ -358,7 +358,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 		final long noIndividu = 1235435L;
 
 		// service civil
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, date(1964, 5, 30), "Parker", "Camilla", false);
@@ -395,7 +395,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 		final long noIndividu = 1235435L;
 
 		// service civil
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, date(1964, 5, 30), "Parker", "Camilla", false);
@@ -429,7 +429,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 		final long noIndividu = 1235435L;
 
 		// service civil
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, date(1964, 5, 30), "Parker", "Camilla", false);
@@ -466,7 +466,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 		final long noIndividu = 1235435L;
 
 		// service civil
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, date(1964, 5, 30), "Parker", "Camilla", false);

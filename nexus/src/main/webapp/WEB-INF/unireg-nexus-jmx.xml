@@ -123,10 +123,10 @@
 		<property name="objectNamePrefix" value="ch.vd.unireg-nexus:type=Monitoring,resourceName=AccessLoad,name="/>
 		<property name="services">
 			<map>
-				<entry key="ServiceCivil" value-ref="serviceCivilEndPoint"/>
-				<entry key="ServiceUpi" value-ref="serviceUpiEndPoint"/>
-				<entry key="ServiceInfra" value-ref="serviceInfrastructureEndPoint"/>
-				<entry key="ServiceEntreprise" value-ref="serviceEntrepriseEndPoint"/>
+				<entry key="IndividuConnector" value-ref="individuConnectorEndPoint"/>
+				<entry key="UpiConnector" value-ref="upiConnectorEndPoint"/>
+				<entry key="InfraConnector" value-ref="infrastructureConnectorEndPoint"/>
+				<entry key="EntrepriseConnector" value-ref="entrepriseConnectorEndPoint"/>
 			</map>
 		</property>
 	</bean>

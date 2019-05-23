@@ -3,13 +3,13 @@ package ch.vd.unireg.norentes.common;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
-import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.evenement.civil.EvenementCivilCriteria;
 import ch.vd.unireg.evenement.civil.engine.regpp.EvenementCivilProcessor;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPPDAO;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.service.mock.ProxyServiceCivil;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.SituationFamille;
@@ -39,7 +39,7 @@ public abstract class EvenementCivilScenario extends EvenementScenario {
 	}
 
 	protected void initServiceCivil() {
-		serviceCivilService.setUp(new DefaultMockServiceCivil());
+		serviceCivilService.setUp(new DefaultMockIndividuConnector());
 	}
 
 	protected void traiteEvenements(long id) throws Exception {
@@ -161,7 +161,7 @@ public abstract class EvenementCivilScenario extends EvenementScenario {
 	}
 
 	protected void doModificationIndividu(long noIndividu, IndividuModification modifier) {
-		final MockIndividu ind = ((MockServiceCivil) serviceCivilService.getTarget()).getIndividu(noIndividu);
+		final MockIndividu ind = ((MockIndividuConnector) serviceCivilService.getTarget()).getIndividu(noIndividu);
 		modifier.modifyIndividu(ind);
 	}
 }

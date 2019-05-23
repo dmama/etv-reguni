@@ -20,7 +20,7 @@ import ch.vd.unireg.adresse.AdresseTiers;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.common.Fuse;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCanton;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
@@ -6565,7 +6565,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 		final RegDate dateNaissance = date(1985, 10, 20);
 		final RegDate dateActe = date(2013, 6, 9);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Labarrière", "Philistin", Sexe.MASCULIN);
@@ -6638,7 +6638,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 		final RegDate dateNaissance = date(1985, 10, 20);
 		final RegDate dateActe = date(2013, 6, 9);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Labarrière", "Philistin", Sexe.MASCULIN);
@@ -6720,7 +6720,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 		final RegDate dateNaissance = date(1985, 10, 20);
 		final RegDate dateActe = date(2013, 6, 9);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Labarrière", "Philistin", Sexe.MASCULIN);
@@ -6801,7 +6801,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 		final RegDate dateNaissance = date(1985, 10, 20);
 		final RegDate dateActe = date(2013, 6, 9);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Labarrière", "Philistin", Sexe.MASCULIN);
@@ -6880,7 +6880,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 		final RegDate dateNaissance = date(1985, 10, 20);
 		final RegDate dateActe = date(2013, 6, 9);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Labarrière", "Philistin", Sexe.MASCULIN);
@@ -6956,7 +6956,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 		final RegDate dateNaissance = date(1985, 10, 20);
 		final RegDate dateActe = date(2013, 6, 9);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, dateNaissance, "Labarrière", "Philistin", Sexe.MASCULIN);
@@ -7033,7 +7033,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 		final RegDate dateNaissance = date(1985, 10, 20);
 		final RegDate dateActe = date(2013, 6, 9);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, dateNaissance, "Labarrière", "Philistin", Sexe.MASCULIN);
@@ -7109,7 +7109,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 		final RegDate dateNaissance = date(1985, 10, 20);
 		final RegDate dateActe = date(2013, 6, 9);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, dateNaissance, "Labarrière", "Philistin", Sexe.MASCULIN);
@@ -7213,7 +7213,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 		final RegDate dateNaissance = date(1985, 10, 20);
 		final RegDate dateActe = date(2013, 6, 9);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, dateNaissance, "Labarrière", "Philistin", Sexe.MASCULIN);
@@ -7315,7 +7315,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 		final RegDate dateNaissance = date(1985, 10, 20);
 		final RegDate dateActe = date(2013, 6, 9);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, dateNaissance, "Labarrière", "Philistin", Sexe.MASCULIN);
@@ -7387,7 +7387,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 		final RegDate dateNaissance = date(1985, 10, 20);
 		final RegDate dateActe = date(2013, 6, 9);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, dateNaissance, "Labarrière", "Philistin", Sexe.MASCULIN);
@@ -7475,7 +7475,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 		final RegDate dateNaissance = date(1985, 10, 20);
 		final RegDate dateActe = date(2013, 6, 9);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, dateNaissance, "Labarrière", "Philistin", Sexe.MASCULIN);
@@ -7547,7 +7547,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 		final RegDate dateNaissance = date(1985, 10, 20);
 		final RegDate dateActe = date(2013, 6, 9);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, dateNaissance, "Labarrière", "Philistin", Sexe.MASCULIN);
@@ -7629,7 +7629,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 		final RegDate dateNaissance = date(1985, 10, 20);
 		final RegDate dateActe = date(2013, 6, 9);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, dateNaissance, "Labarrière", "Philistin", Sexe.MASCULIN);

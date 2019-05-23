@@ -5,7 +5,7 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 
 import ch.vd.unireg.common.WebTestSpring3;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.type.GenreImpot;
@@ -30,7 +30,7 @@ public class AddForSecondaireValidatorTest extends WebTestSpring3 {
 	@Test
 	public void testAbsenceMultipleSurForSecondaire() throws Exception {
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				// vide...

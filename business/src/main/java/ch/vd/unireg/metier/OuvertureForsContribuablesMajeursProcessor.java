@@ -28,14 +28,14 @@ import ch.vd.unireg.common.FiscalDateHelper;
 import ch.vd.unireg.common.LoggingStatusManager;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.hibernate.HibernateTemplate;
-import ch.vd.unireg.interfaces.civil.ServiceCivilException;
+import ch.vd.unireg.interfaces.civil.IndividuConnectorException;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.metier.OuvertureForsResults.ErreurType;
@@ -408,7 +408,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		try {
 			individu = tiersService.getIndividu(habitant, dateReference, AttributeIndividu.PERMIS, AttributeIndividu.NATIONALITES);
 		}
-		catch (ServiceCivilException e) {
+		catch (IndividuConnectorException e) {
 			LOGGER.error("Impossible de récupérer l'habitant n° " + habitant.getNumero(), e);
 			throw new OuvertureForsErreurException(habitant, ErreurType.CIVIL_EXCEPTION, e);
 		}
@@ -459,7 +459,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 				commune = null;
 			}
 		}
-		catch (ServiceInfrastructureException e) {
+		catch (InfrastructureException e) {
 			LOGGER.error("Impossible de récupérer la commune de l'habitant n° " + habitant.getNumero(), e);
 			throw new OuvertureForsErreurException(habitant, ErreurType.INFRA_EXCEPTION, e);
 		}

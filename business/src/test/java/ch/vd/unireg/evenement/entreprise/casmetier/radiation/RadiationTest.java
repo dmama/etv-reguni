@@ -25,7 +25,7 @@ import ch.vd.unireg.interfaces.entreprise.data.InscriptionRC;
 import ch.vd.unireg.interfaces.entreprise.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.entreprise.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.entreprise.data.TypeEntrepriseRegistreIDE;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockDonneesRC;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockDonneesREE;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockDonneesRegistreIDE;
@@ -111,7 +111,7 @@ public class RadiationTest extends AbstractEvenementEntrepriseCivileProcessorTes
 		final Long noEntrepriseCivile = 101202100L;
 		final Long noEtablissement = noEntrepriseCivile + 1000000;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final RegDate dateInscription = date(2010, 6, 24);
@@ -185,7 +185,7 @@ public class RadiationTest extends AbstractEvenementEntrepriseCivileProcessorTes
 		final Long noEntrepriseCivile = 101202100L;
 		final Long noEtablissement = noEntrepriseCivile + 1000000;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final RegDate dateInscription = date(2010, 6, 24);
@@ -271,7 +271,7 @@ public class RadiationTest extends AbstractEvenementEntrepriseCivileProcessorTes
 		final Long noEntrepriseCivile = 101202100L;
 		final Long noEtablissement = noEntrepriseCivile + 1000000;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final RegDate dateInscription = date(2010, 6, 24);
@@ -363,7 +363,7 @@ public class RadiationTest extends AbstractEvenementEntrepriseCivileProcessorTes
 		final Long noEntrepriseCivile = 101202100L;
 		final Long noEtablissement = noEntrepriseCivile + 1000000;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final RegDate dateInscription = date(2010, 6, 24);
@@ -455,7 +455,7 @@ public class RadiationTest extends AbstractEvenementEntrepriseCivileProcessorTes
 		final Long noEtablissement = noEntrepriseCivile + 1000000;
 		final Long noEtablissementSecondaire = noEntrepriseCivile + 2000000;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final RegDate dateInscription = date(2010, 6, 24);
@@ -556,7 +556,7 @@ public class RadiationTest extends AbstractEvenementEntrepriseCivileProcessorTes
 		final Long noEntrepriseCivile = 101202100L;
 		final Long noEtablissement = noEntrepriseCivile + 1000000;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				MockEntrepriseCivile entreprise =
@@ -618,7 +618,7 @@ public class RadiationTest extends AbstractEvenementEntrepriseCivileProcessorTes
 		final Long noEntrepriseCivile = 101202100L;
 		final Long noEtablissement = noEntrepriseCivile + 1000000;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final RegDate dateInscription = date(2010, 6, 24);
@@ -705,7 +705,7 @@ public class RadiationTest extends AbstractEvenementEntrepriseCivileProcessorTes
 		final Long noEntrepriseCivile = 101202100L;
 		final Long noEtablissement = noEntrepriseCivile + 1000000;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final RegDate dateInscription = date(2010, 6, 24);
@@ -790,7 +790,7 @@ public class RadiationTest extends AbstractEvenementEntrepriseCivileProcessorTes
 		final Long noEntrepriseCivile = 101202100L;
 		final Long noEtablissement = noEntrepriseCivile + 1000000;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final RegDate dateInscription = date(2010, 6, 24);
@@ -886,7 +886,7 @@ public class RadiationTest extends AbstractEvenementEntrepriseCivileProcessorTes
 		final RegDate dateCreation = date(2018, 1, 11);
 		final RegDate dateRadiation = date(2018, 1, 29);
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 

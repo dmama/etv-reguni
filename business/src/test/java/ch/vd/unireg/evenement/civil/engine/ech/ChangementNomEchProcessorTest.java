@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.type.ActionEvenementCivilEch;
 import ch.vd.unireg.type.EtatEvenementCivil;
 import ch.vd.unireg.type.TypeEvenementCivilEch;
@@ -19,7 +19,7 @@ public class ChangementNomEchProcessorTest extends AbstractEvenementCivilEchProc
 		final RegDate dateEvt = date(2011, 10, 31);
 
 		// Mme Lara Clette a changé de nom...
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				final RegDate dateNaissance = date(1956, 4, 23);
@@ -58,7 +58,7 @@ public class ChangementNomEchProcessorTest extends AbstractEvenementCivilEchProc
 		final RegDate dateEvt = date(2011, 10, 31);
 
 		// Mme Lara Clette a changé de nom...
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				final RegDate dateNaissance = date(1956, 4, 23);
@@ -97,7 +97,7 @@ public class ChangementNomEchProcessorTest extends AbstractEvenementCivilEchProc
 		final RegDate dateEvt = date(2011, 10, 31);
 
 		// Mme Lara Clette a changé de nom...
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 				final RegDate dateNaissance = date(1956, 4, 23);

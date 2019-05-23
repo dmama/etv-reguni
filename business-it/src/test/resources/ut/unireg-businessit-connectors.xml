@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<!-- Connecteur individus -->
+
+	<bean id="individuConnectorRCPers" class="ch.vd.unireg.interfaces.civil.rcpers.IndividuConnectorRCPers">
+		<property name="client" ref="rcPersClient" />
+		<property name="infraConnector" ref="infrastructureConnector"/>
+	</bean>
+
+	<bean id="individuConnectorTracing" class="ch.vd.unireg.interfaces.civil.IndividuConnectorTracing">
+		<property name="target" ref="individuConnectorRCPers" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+	<bean id="individuConnectorCache" class="ch.vd.unireg.interfaces.civil.cache.IndividuConnectorCache">
+		<property name="target" ref="individuConnectorTracing" />
+		<property name="cacheManager" ref="ehCacheManager" />
+		<property name="cacheName" value="serviceCivil" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+		<property name="statsService" ref="statsService" />
+		<property name="dataEventService" ref="dataEventService" />
+	</bean>
+
+	<alias alias="individuConnector" name="individuConnectorCache"/>
+
+
+	<!-- Connecteur des entreprises -->
+
+	<bean id="entrepriseConnectorRCEnt" class="ch.vd.unireg.interfaces.entreprise.rcent.EntrepriseConnectorRCEnt">
+		<constructor-arg ref="rcEntAdapter"/>
+		<constructor-arg ref="rcEntClientRaw"/>
+		<constructor-arg ref="infrastructureConnector"/>
+	</bean>
+
+	<bean id="entrepriseConnectorTracing" class="ch.vd.unireg.interfaces.entreprise.EntrepriseConnectorTracing">
+		<property name="target" ref="entrepriseConnectorRCEnt" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+	<bean id="entrepriseConnectorCache" class="ch.vd.unireg.interfaces.entreprise.cache.EntrepriseConnectorCache">
+		<property name="target" ref="entrepriseConnectorTracing" />
+		<property name="cacheManager" ref="ehCacheManager" />
+		<property name="cacheName" value="entrepriseConnector" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+		<property name="statsService" ref="statsService" />
+		<property name="dataEventService" ref="dataEventService" />
+	</bean>
+
+	<alias alias="entrepriseConnector" name="entrepriseConnectorCache"/>
+
+	<bean id="serviceEntreprise" class="ch.vd.unireg.interfaces.service.ServiceEntrepriseImpl">
+		<property name="connector" ref="entrepriseConnector"/>
+	</bean>
+	<alias name="serviceEntreprise" alias="serviceEntreprise"/>
+
+
+	<!-- Connecteur UPI -->
+
+	<bean id="upiConnectorRCPers" class="ch.vd.unireg.interfaces.upi.rcpers.UpiConnectorRCPers">
+		<property name="client" ref="rcPersClient"/>
+		<property name="infraConnector" ref="infrastructureConnector"/>
+	</bean>
+
+	<bean id="upiConnectorTracing" class="ch.vd.unireg.interfaces.upi.UpiConnectorTracing">
+		<property name="target" ref="upiConnectorRCPers"/>
+		<property name="statsService" ref="statsService"/>
+	</bean>
+
+	<alias alias="upiConnector" name="upiConnectorTracing"/>
+
+
+	<!-- Connecteur infra -->
+
+	<bean id="infrastructureConnectorHost" class="ch.vd.unireg.interfaces.infra.host.InfrastructureConnectorHostInterfaces">
+		<property name="client" ref="serviceInfrastructureClient" />
+	</bean>
+
+	<bean id="infrastructureConnectorFidor" class="ch.vd.unireg.interfaces.infra.fidor.InfrastructureConnectorFidor">
+		<property name="fidorClient" ref="fidorClient" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+		<property name="regimesFiscauxBlacklist" value=""/>
+	</bean>
+
+	<bean id="infrastructureConnectorMarshaller" class="ch.vd.unireg.interfaces.infra.InfrastructureConnectorMarshaller">
+		<property name="hostConnector" ref="infrastructureConnectorHost" />
+		<property name="fidorConnector" ref="infrastructureConnectorFidor" />
+	</bean>
+
+	<bean id="infrastructureConnectorTracing" class="ch.vd.unireg.interfaces.infra.InfrastructureConnectorTracing">
+		<property name="target" ref="infrastructureConnectorMarshaller" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+	<bean id="infrastructureConnectorCache" class="ch.vd.unireg.interfaces.infra.cache.InfrastructureConnectorCache">
+		<property name="target" ref="infrastructureConnectorTracing" />
+		<property name="cacheManager" ref="ehCacheManager" />
+		<property name="cacheName" value="infraConnector" />
+		<property name="shortLivedCacheName" value="infraConnectorShortLived" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+	<alias alias="infrastructureConnector" name="infrastructureConnectorCache"/>
+
+	<!-- Connecteur RefSec -->
+
+	<bean id="securiteConnector" class="ch.vd.unireg.interfaces.securite.refsec.SecuriteConnectorRefSec">
+		<property name="client" ref="refSecClient" />
+	</bean>
+
+	<bean id="serviceSecuriteClientRefSec" class="ch.vd.unireg.interfaces.service.ServiceSecuriteImpl">
+		<property name="securiteConnector" ref="securiteConnector" />
+		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
+	</bean>
+
+</beans>

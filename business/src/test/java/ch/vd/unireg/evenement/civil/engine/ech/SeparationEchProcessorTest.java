@@ -7,7 +7,7 @@ import org.junit.Test;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -39,7 +39,7 @@ public class SeparationEchProcessorTest extends AbstractEvenementCivilEchProcess
 		final RegDate dateMariage = date(2005, 5, 5);
 		final RegDate dateSeparation = date(2008, 11, 23);
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu monsieur = addIndividu(noMonsieur, date(1923, 2, 12), "Crispus", "Santacorpus", true);
@@ -109,7 +109,7 @@ public class SeparationEchProcessorTest extends AbstractEvenementCivilEchProcess
 		final RegDate dateMariage = date(2005, 5, 5);
 		final RegDate dateSeparation = date(2008, 11, 23);
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu monsieur = addIndividu(noMonsieur, date(1923, 2, 12), "Crispus", "Santacorpus", true);
@@ -168,7 +168,7 @@ public class SeparationEchProcessorTest extends AbstractEvenementCivilEchProcess
 		final RegDate dateAchat = date(2007, 5, 26);
 		final RegDate dateSeparation = date(2008, 11, 23);
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu monsieur = addIndividu(noMonsieur, date(1923, 2, 12), "Crispus", "Santacorpus", true);
@@ -248,7 +248,7 @@ public class SeparationEchProcessorTest extends AbstractEvenementCivilEchProcess
 		final RegDate dateAchat = date(2007, 5, 26);
 		final RegDate dateSeparation = date(2008, 11, 23);
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu monsieur = addIndividu(noMonsieur, date(1923, 2, 12), "Crispus", "Santacorpus", true);

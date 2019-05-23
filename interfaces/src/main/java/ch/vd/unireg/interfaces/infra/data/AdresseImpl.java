@@ -15,7 +15,7 @@ import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.common.CasePostale;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.fidor.FidorXmlUtils;
 import ch.vd.unireg.type.TypeAdresseCivil;
 
@@ -55,7 +55,7 @@ public class AdresseImpl implements Adresse, Serializable {
 	}
 
 	@Nullable
-	public static Adresse getAt(@NotNull List<ch.vd.fidor.xml.colladm.v1.Adresse> adresses, RegDate date, @NotNull ServiceInfrastructureRaw service) {
+	public static Adresse getAt(@NotNull List<ch.vd.fidor.xml.colladm.v1.Adresse> adresses, RegDate date, @NotNull InfrastructureConnector service) {
 		return adresses.stream()
 				.filter(a -> FidorXmlUtils.isValid(a, date))
 				.findFirst()
@@ -63,7 +63,7 @@ public class AdresseImpl implements Adresse, Serializable {
 				.orElse(null);
 	}
 
-	public AdresseImpl(@NotNull ch.vd.fidor.xml.colladm.v1.Adresse right, @NotNull ServiceInfrastructureRaw service) {
+	public AdresseImpl(@NotNull ch.vd.fidor.xml.colladm.v1.Adresse right, @NotNull InfrastructureConnector service) {
 
 		final RegDate dateDebut = XmlUtils.xmlcal2regdate(right.getDateDebut());
 		final Optional<Rue> rue = Optional.ofNullable(right.getEstrid())
@@ -82,7 +82,7 @@ public class AdresseImpl implements Adresse, Serializable {
 		this.numeroOrdrePostal = (right.getNoOrdrePoste() > 0 ? right.getNoOrdrePoste() : null);
 		this.numeroPostal = localite.map(Localite::getNPA).map(String::valueOf).orElse(null);
 		this.numeroPostalComplementaire = localite.map(Localite::getComplementNPA).filter(compl -> compl > 0).map(String::valueOf).orElse(null);
-		this.noOfsPays = ServiceInfrastructureRaw.noOfsSuisse;  // les collectivités administratives étrangères ne sont pas stockées
+		this.noOfsPays = InfrastructureConnector.noOfsSuisse;  // les collectivités administratives étrangères ne sont pas stockées
 		this.rue = rue.map(Rue::getDesignationCourrier).orElse(right.getNomRue());
 		this.titre = null;
 		this.typeAdresse = TypeAdresseCivil.COURRIER;
@@ -100,7 +100,7 @@ public class AdresseImpl implements Adresse, Serializable {
 		this.numeroAppartement = target.getNumeroAppartement();
 		this.numeroPostal = target.getNumeroPostal();
 		this.numeroPostalComplementaire = target.getNumeroPostalComplementaire();
-		this.noOfsPays = (target.getPays() == null ? ServiceInfrastructureRaw.noOfsSuisse : target.getPays().getNoOFS()); // le pays n'est pas toujours renseignée dans le base lorsqu'il s'agit de la Suisse
+		this.noOfsPays = (target.getPays() == null ? InfrastructureConnector.noOfsSuisse : target.getPays().getNoOFS()); // le pays n'est pas toujours renseignée dans le base lorsqu'il s'agit de la Suisse
 		this.rue = target.getRue(); // nom de la rue TOUJOURS résolu (+ concaténation éventuelle du numéro de police)
 		this.numeroOrdrePostal = target.getNumeroOrdrePostal() == 0 ? null : AdresseHelper.getNoOrdrePosteOfficiel(target.getNumeroOrdrePostal());
 		this.numeroRue = null;      // on ne veut plus de ces numéros qui viennent du host !!

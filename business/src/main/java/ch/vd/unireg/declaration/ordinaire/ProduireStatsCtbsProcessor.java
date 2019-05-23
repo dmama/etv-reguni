@@ -24,7 +24,7 @@ import ch.vd.unireg.common.LoggingStatusManager;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.declaration.DeclarationException;
 import ch.vd.unireg.hibernate.HibernateTemplate;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
@@ -270,7 +270,7 @@ public class ProduireStatsCtbsProcessor {
 	/**
 	 * @return l'id de l'office d'impôt responsable de la commune spécifiée.
 	 */
-	private Integer getOID(Commune commune) throws ServiceInfrastructureException {
+	private Integer getOID(Commune commune) throws InfrastructureException {
 		if (commune == null) {
 			return null;
 		}
@@ -286,9 +286,9 @@ public class ProduireStatsCtbsProcessor {
 
 	/**
 	 * @return la commune du for de gestion du contribuable spécifié, ou <b>null</b> si le contribuable ne possède pas de for de gestion.
-	 * @throws ServiceInfrastructureException en cas de souci retourné par le service infrastructure
+	 * @throws InfrastructureException en cas de souci retourné par le service infrastructure
 	 */
-	private Commune getCommuneGestion(Contribuable ctb, int annee) throws ServiceInfrastructureException {
+	private Commune getCommuneGestion(Contribuable ctb, int annee) throws InfrastructureException {
 		final ForGestion forGestion = tiersService.getDernierForGestionConnu(ctb, RegDate.get(annee, 12, 31));
 		Commune commune = null;
 		if (forGestion != null) {
@@ -308,9 +308,9 @@ public class ProduireStatsCtbsProcessor {
 	 * @param ctb un contribuable
 	 * @param max la date seuil avant laquelle tout se passe
 	 * @return la commune du for trouvé, ou <code>null</code> s'il n'y en a pas
-	 * @throws ServiceInfrastructureException en cas de souci retourné par le service infrastructure
+	 * @throws InfrastructureException en cas de souci retourné par le service infrastructure
 	 */
-	private Commune getCommuneDepuisFors(Contribuable ctb, RegDate max) throws ServiceInfrastructureException {
+	private Commune getCommuneDepuisFors(Contribuable ctb, RegDate max) throws InfrastructureException {
 		final Function<ForFiscal, RegDate> dateFinExtractor = ff -> ff.getDateFin() == null || ff.getDateFin().isAfter(max) ? null : ff.getDateFin();
 		return ctb.getForsFiscauxNonAnnules(false).stream()
 				.filter(ff -> ff.getDateDebut().isBeforeOrEqual(max))

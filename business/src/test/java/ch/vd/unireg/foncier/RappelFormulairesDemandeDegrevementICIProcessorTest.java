@@ -12,7 +12,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.documentfiscal.AutreDocumentFiscalServiceImpl;
 import ch.vd.unireg.documentfiscal.EtatAutreDocumentFiscalRappele;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.parametrage.DelaisService;
@@ -59,7 +59,7 @@ public class RappelFormulairesDemandeDegrevementICIProcessorTest extends Busines
 	public void testPopulationInspecteeSurBaseVide() throws Exception {
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// personne
@@ -81,7 +81,7 @@ public class RappelFormulairesDemandeDegrevementICIProcessorTest extends Busines
 		final RegDate dateTraitement = RegDate.get();
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// rien
@@ -155,7 +155,7 @@ public class RappelFormulairesDemandeDegrevementICIProcessorTest extends Busines
 		final RegDate dateTraitement = RegDate.get();
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// rien
@@ -345,7 +345,7 @@ public class RappelFormulairesDemandeDegrevementICIProcessorTest extends Busines
 		final RegDate dateTraitement = RegDate.get();
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// rien
@@ -450,7 +450,7 @@ public class RappelFormulairesDemandeDegrevementICIProcessorTest extends Busines
 		final RegDate dateTraitement = RegDate.get();
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// rien

@@ -43,7 +43,7 @@
 	       overflowToDisk="false"
 	/>
 
-	<cache name="serviceEntreprise"
+	<cache name="entrepriseConnector"
 	       maxEntriesLocalHeap="2500"
 	       timeToIdleSeconds="500"
 	       timeToLiveSeconds="500"
@@ -57,14 +57,14 @@
 	       overflowToDisk="false"
 	/>
 
-	<cache name="serviceInfra"
+	<cache name="infraConnector"
 	       maxEntriesLocalHeap="5000"
 	       timeToIdleSeconds="86400"
 	       timeToLiveSeconds="86400"
 	       overflowToDisk="false"
 	/>
 
-	<cache name="serviceInfraShortLived"
+	<cache name="infraConnectorShortLived"
 	       maxEntriesLocalHeap="1000"
 	       timeToIdleSeconds="3600"
 	       timeToLiveSeconds="3600"

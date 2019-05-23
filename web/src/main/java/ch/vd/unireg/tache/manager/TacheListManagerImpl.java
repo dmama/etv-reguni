@@ -29,7 +29,7 @@ import ch.vd.unireg.editique.EditiqueCompositionService;
 import ch.vd.unireg.editique.EditiqueException;
 import ch.vd.unireg.editique.EditiqueResultat;
 import ch.vd.unireg.editique.EditiqueResultatDocument;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteException;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
@@ -122,7 +122,7 @@ public class TacheListManagerImpl implements TacheListManager {
 		this.autorisationCache = autorisationCache;
 	}
 
-	private String getNomCollectiviteAdministrativeAssociee(Tache tache) throws ServiceInfrastructureException {
+	private String getNomCollectiviteAdministrativeAssociee(Tache tache) throws InfrastructureException {
 		final CollectiviteAdministrative caAssignee = tache.getCollectiviteAdministrativeAssignee();
 		if (caAssignee != null) {
 			final ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative ca = serviceInfrastructureService.getCollectivite(caAssignee.getNumeroCollectiviteAdministrative());
@@ -138,7 +138,7 @@ public class TacheListManagerImpl implements TacheListManager {
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public List<TacheListView> find(TacheCriteriaView tacheCriteria, ParamPagination paramPagination) throws ServiceInfrastructureException, AdressesResolutionException {
+	public List<TacheListView> find(TacheCriteriaView tacheCriteria, ParamPagination paramPagination) throws InfrastructureException, AdressesResolutionException {
 
 		final String currentPrincipal = AuthenticationHelper.getCurrentPrincipal();
 		final Integer currentOID = AuthenticationHelper.getCurrentOID();
@@ -254,7 +254,7 @@ public class TacheListManagerImpl implements TacheListManager {
 		}
 	}
 
-	private TacheCriteria buildCoreCriteria(TacheCriteriaViewBase tacheCriteria) throws ServiceInfrastructureException {
+	private TacheCriteria buildCoreCriteria(TacheCriteriaViewBase tacheCriteria) throws InfrastructureException {
 		TacheCriteria coreCriteria = tacheCriteria.asCoreCriteria();
 		if (tacheCriteria.getTypeTache() == null) {
 			coreCriteria.setTypeTache(TypeTache.TacheNouveauDossier);
@@ -300,7 +300,7 @@ public class TacheListManagerImpl implements TacheListManager {
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public List<NouveauDossierListView> find(NouveauDossierCriteriaView dossierCriteria) throws ServiceInfrastructureException, AdresseException {
+	public List<NouveauDossierListView> find(NouveauDossierCriteriaView dossierCriteria) throws InfrastructureException, AdresseException {
 
 		List<NouveauDossierListView> dossiersView = new ArrayList<>();
 
@@ -335,7 +335,7 @@ public class TacheListManagerImpl implements TacheListManager {
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public List<NouveauDossierListView> find(NouveauDossierCriteriaView dossierCriteria, ParamPagination paramPagination) throws ServiceInfrastructureException, AdresseException {
+	public List<NouveauDossierListView> find(NouveauDossierCriteriaView dossierCriteria, ParamPagination paramPagination) throws InfrastructureException, AdresseException {
 
 		final List<NouveauDossierListView> nouveauxDossiersView = new ArrayList<>();
 		dossierCriteria.setTypeTache(TypeTache.TacheNouveauDossier);
@@ -411,7 +411,7 @@ public class TacheListManagerImpl implements TacheListManager {
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public int count(TacheCriteriaView tacheCriteriaView) throws ServiceInfrastructureException {
+	public int count(TacheCriteriaView tacheCriteriaView) throws InfrastructureException {
 		final TacheCriteria coreCriteria = buildCoreCriteria(tacheCriteriaView);
 		return tacheDAO.count(coreCriteria);
 	}
@@ -421,7 +421,7 @@ public class TacheListManagerImpl implements TacheListManager {
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public int count(NouveauDossierCriteriaView nouveauDossierCriteriaView) throws ServiceInfrastructureException {
+	public int count(NouveauDossierCriteriaView nouveauDossierCriteriaView) throws InfrastructureException {
 		final TacheCriteria coreCriteria = buildCoreCriteria(nouveauDossierCriteriaView);
 		return tacheDAO.count(coreCriteria);
 	}

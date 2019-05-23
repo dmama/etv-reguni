@@ -13,7 +13,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.common.CsvHelper;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TemporaryFile;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.metier.FusionDeCommunesResults;
@@ -217,7 +217,7 @@ public class PdfFusionDeCommunesRapport extends PdfRapport {
 		try {
 			commune = infraService.getCommuneByNumeroOfs(noOfs, dateReference);
 		}
-		catch (ServiceInfrastructureException e) {
+		catch (InfrastructureException e) {
 			commune = null;
 		}
 

@@ -18,7 +18,7 @@ import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.TiersNotFoundException;
 import ch.vd.unireg.declaration.Periodicite;
 import ch.vd.unireg.interfaces.InterfaceDataException;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.tiers.AutreCommunaute;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
@@ -57,7 +57,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public TiersEditView getCivilView(Long numero) throws AdresseException, ServiceInfrastructureException {
+	public TiersEditView getCivilView(Long numero) throws AdresseException, InfrastructureException {
 
 		TiersEditView tiersEditView = new TiersEditView();
 		if ( numero == null) {
@@ -107,11 +107,11 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 	 *
 	 * @param numero numéro de tiers du débiteur recherché
 	 * @return un objet DebiteurEditView
-	 * @throws ServiceInfrastructureException
+	 * @throws InfrastructureException
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public DebiteurEditView getDebiteurEditView(Long numero) throws ServiceInfrastructureException {
+	public DebiteurEditView getDebiteurEditView(Long numero) throws InfrastructureException {
 		if (numero == null) {
 			return null;
 		}
@@ -199,7 +199,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 	 *
 	 */
 	@Override
-	public TiersEditView getView(Long numero) throws AdresseException, ServiceInfrastructureException{
+	public TiersEditView getView(Long numero) throws AdresseException, InfrastructureException {
 		TiersEditView tiersEditView = new TiersEditView();
 		refresh(tiersEditView, numero);
 		return tiersEditView;
@@ -211,7 +211,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 	 *
 	 */
 	@Override
-	public TiersEditView refresh(TiersEditView tiersEditView, Long numero) throws AdresseException, ServiceInfrastructureException {
+	public TiersEditView refresh(TiersEditView tiersEditView, Long numero) throws AdresseException, InfrastructureException {
 		if ( numero == null) {
 			return null;
 		}
@@ -294,9 +294,9 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 	/**
 	 * Met a jour le non-habitant pour l'edition
 	 *
-	 * @throws ServiceInfrastructureException
+	 * @throws InfrastructureException
 	 */
-	private void setNonHabitant(TiersEditView tiersEditView, PersonnePhysique nonHabitant) throws ServiceInfrastructureException {
+	private void setNonHabitant(TiersEditView tiersEditView, PersonnePhysique nonHabitant) throws InfrastructureException {
 
 		final IdentificationPersonneView idPersonneView = new IdentificationPersonneView(nonHabitant);
 		final Integer numeroOfsNationalite = nonHabitant.getNumeroOfsNationalite();

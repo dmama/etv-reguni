@@ -11,7 +11,7 @@ import ch.vd.unireg.common.CsvHelper;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TemporaryFile;
 import ch.vd.unireg.droits.ListeDroitsAccesResults;
-import ch.vd.unireg.interfaces.service.host.Operateur;
+import ch.vd.unireg.security.Operateur;
 
 /**
  * Rapport PDF contenant les résultats de l'exécution du job de listing des droits d'accès

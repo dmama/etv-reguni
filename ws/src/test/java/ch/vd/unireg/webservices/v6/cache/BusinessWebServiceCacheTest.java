@@ -40,7 +40,7 @@ import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.efacture.EFactureServiceProxy;
 import ch.vd.unireg.efacture.MockEFactureService;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -145,7 +145,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		final RegDate dateNaissance = date(1965, 4, 13);
 		final RegDate dateNaissanceJunior = date(2002, 3, 7);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu papa = addIndividu(noIndividuPapa, date(1925, 11, 29), "Papa", "Bolomey", true);

@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.ServiceCivilException;
+import ch.vd.unireg.interfaces.civil.IndividuConnectorException;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
 import ch.vd.unireg.tiers.TiersDAO;
@@ -69,7 +69,7 @@ public class ServiceCivilCacheWarmerImpl implements ServiceCivilCacheWarmer {
 					LOGGER.debug(String.format("Récupéré %d individu(s) en %d ms", nosIndividus.size(), (end - start) / 1000000L));
 				}
 			}
-			catch (ServiceCivilException e) {
+			catch (IndividuConnectorException e) {
 				LOGGER.error("Impossible de précharger le lot d'individus [" + nosIndividus + "]. L'erreur est : " + e.getMessage());
 			}
 		}

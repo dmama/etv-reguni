@@ -13,9 +13,9 @@ import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchSourceHelper;
 import ch.vd.unireg.indexer.tiers.TiersIndexedData;
 import ch.vd.unireg.interfaces.civil.data.Origine;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockOrigine;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -41,7 +41,7 @@ public class EvenementCivilEchIssuDe99ProcessorTest extends AbstractEvenementCiv
 		final RegDate dateNaissance = date(1989, 10, 3);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Bouliokova", "Tatiana", Sexe.FEMININ);
@@ -137,7 +137,7 @@ public class EvenementCivilEchIssuDe99ProcessorTest extends AbstractEvenementCiv
 		final RegDate dateNaissance = date(1989, 10, 3);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Bouliokova", "Tatiana", Sexe.FEMININ);
@@ -234,7 +234,7 @@ public class EvenementCivilEchIssuDe99ProcessorTest extends AbstractEvenementCiv
 		final RegDate dateNaissance = date(1989, 10, 3);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Bouliokova", "Tatiana", Sexe.FEMININ);
@@ -248,7 +248,7 @@ public class EvenementCivilEchIssuDe99ProcessorTest extends AbstractEvenementCiv
 			final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
 			Assert.assertNotNull("l'origine du non-habitant devrait être Orbe (VD)", pp.getOrigine());
 			Assert.assertEquals("l'origine du non-habitant devrait être Orbe (VD)", "Orbe", pp.getOrigine().getLibelle());
-			Assert.assertEquals("l'origine du non-habitant devrait être Orbe (VD)", ServiceInfrastructureRaw.SIGLE_CANTON_VD, pp.getOrigine().getSigleCanton());
+			Assert.assertEquals("l'origine du non-habitant devrait être Orbe (VD)", InfrastructureConnector.SIGLE_CANTON_VD, pp.getOrigine().getSigleCanton());
 			return pp.getNumero();
 		});
 
@@ -256,7 +256,7 @@ public class EvenementCivilEchIssuDe99ProcessorTest extends AbstractEvenementCiv
 		doModificationIndividu(noIndividu, new IndividuModification() {
 			@Override
 			public void modifyIndividu(MockIndividu individu) {
-				final MockOrigine nlleOrigine = new MockOrigine(MockCommune.Pully.getNomOfficiel(), ServiceInfrastructureRaw.SIGLE_CANTON_VD);
+				final MockOrigine nlleOrigine = new MockOrigine(MockCommune.Pully.getNomOfficiel(), InfrastructureConnector.SIGLE_CANTON_VD);
 				individu.setOrigines(Collections.<Origine>singletonList(nlleOrigine));
 			}
 		});
@@ -295,7 +295,7 @@ public class EvenementCivilEchIssuDe99ProcessorTest extends AbstractEvenementCiv
 			Assert.assertNotNull(pp);
 			Assert.assertNotNull(pp.getOrigine());
 			Assert.assertEquals("Pully", pp.getOrigine().getLibelle());
-			Assert.assertEquals(ServiceInfrastructureRaw.SIGLE_CANTON_VD, pp.getOrigine().getSigleCanton());
+			Assert.assertEquals(InfrastructureConnector.SIGLE_CANTON_VD, pp.getOrigine().getSigleCanton());
 			return null;
 		});
 
@@ -308,7 +308,7 @@ public class EvenementCivilEchIssuDe99ProcessorTest extends AbstractEvenementCiv
 		final RegDate dateNaissance = date(1989, 10, 3);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Bouliokova", "Tatiana", Sexe.FEMININ);

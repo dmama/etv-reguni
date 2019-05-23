@@ -25,7 +25,7 @@ import ch.vd.unireg.interfaces.entreprise.data.PublicationFOSC;
 import ch.vd.unireg.interfaces.entreprise.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.entreprise.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.entreprise.data.TypeEntrepriseRegistreIDE;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockDonneesRC;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockEntrepriseCivile;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
@@ -86,7 +86,7 @@ public class CreateEntreprisePMTest extends AbstractEvenementEntrepriseCivilePro
 		// Mise en place service mock
 		final long noEntrepriseCivile = 101202100L;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(
@@ -223,7 +223,7 @@ public class CreateEntreprisePMTest extends AbstractEvenementEntrepriseCivilePro
 		final long noEtablissementPrincipal = noEntrepriseCivile + 1000000;
 		final long noEtablissementSecondaire = 9999999L;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final MockEntrepriseCivile entrepriseAvecSiteSecondaire =
@@ -363,7 +363,7 @@ public class CreateEntreprisePMTest extends AbstractEvenementEntrepriseCivilePro
 		final long noEtablissementPrincipal = noEntrepriseCivile + 1000000;
 		final long noEtablissementSecondaire = 9999999L;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final MockEntrepriseCivile entrepriseAvecSiteSecondaire =
@@ -504,7 +504,7 @@ public class CreateEntreprisePMTest extends AbstractEvenementEntrepriseCivilePro
 		final long noEtablissementPrincipal = noEntrepriseCivile + 1000000;
 		final long noEtablissementSecondaire = 9999999L;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final MockEntrepriseCivile entrepriseAvecSiteSecondaire =
@@ -648,7 +648,7 @@ public class CreateEntreprisePMTest extends AbstractEvenementEntrepriseCivilePro
 		final long noEtablissementSecondaire1 = 9999998L;
 		final long noEtablissementSecondaire2 = 9999999L;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final MockEntrepriseCivile entreprise =
@@ -792,7 +792,7 @@ public class CreateEntreprisePMTest extends AbstractEvenementEntrepriseCivilePro
 		                                                          date(2015, 6, 20), null,
 		                                                          date(2015, 6, 24), null));
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(ent);
@@ -911,7 +911,7 @@ public class CreateEntreprisePMTest extends AbstractEvenementEntrepriseCivilePro
 		                                                          date(2012, 4, 12), null,
 		                                                          date(2010, 6, 24), null));
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(ent);
@@ -952,7 +952,7 @@ public class CreateEntreprisePMTest extends AbstractEvenementEntrepriseCivilePro
 		// Mise en place service mock
 		final long noEntrepriseCivile = 101202100L;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(
@@ -1009,7 +1009,7 @@ public class CreateEntreprisePMTest extends AbstractEvenementEntrepriseCivilePro
 		// Mise en place service mock
 		final long noEntrepriseCivile = 101202100L;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(
@@ -1050,7 +1050,7 @@ public class CreateEntreprisePMTest extends AbstractEvenementEntrepriseCivilePro
 		// Mise en place service mock
 		final long noEntrepriseCivile = 101202100L;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(
@@ -1097,7 +1097,7 @@ public class CreateEntreprisePMTest extends AbstractEvenementEntrepriseCivilePro
 		// Mise en place service mock
 		final long noEntrepriseCivile = 101202100L;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(
@@ -1143,7 +1143,7 @@ public class CreateEntreprisePMTest extends AbstractEvenementEntrepriseCivilePro
 		// Mise en place service mock
 		final long noEntrepriseCivile = 101202100L;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(
@@ -1271,7 +1271,7 @@ public class CreateEntreprisePMTest extends AbstractEvenementEntrepriseCivilePro
 		final RegDate dateMauvaiseInscriptionRC = date(2015, 6, 24);
 		final RegDate dateEntreeJournal = date(2015, 6, 20);
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 
@@ -1323,7 +1323,7 @@ public class CreateEntreprisePMTest extends AbstractEvenementEntrepriseCivilePro
 		// Mise en place service mock
 		final long noEntrepriseCivile = 101202100L;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(

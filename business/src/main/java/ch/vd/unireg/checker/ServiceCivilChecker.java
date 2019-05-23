@@ -4,11 +4,11 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.shared.statusmanager.CheckerException;
 import ch.vd.shared.statusmanager.StatusChecker;
-import ch.vd.unireg.interfaces.civil.ServiceCivilRaw;
+import ch.vd.unireg.interfaces.civil.IndividuConnector;
 
 public class ServiceCivilChecker implements StatusChecker {
 
-	private ServiceCivilRaw serviceCivilRaw;
+	private IndividuConnector individuConnector;
 
 	@NotNull
 	@Override
@@ -24,7 +24,7 @@ public class ServiceCivilChecker implements StatusChecker {
 	@Override
 	public void check() throws CheckerException {
 		try {
-			serviceCivilRaw.ping();
+			individuConnector.ping();
 		}
 		catch (Exception e) {
 			throw new CheckerException(e.getMessage());
@@ -32,7 +32,7 @@ public class ServiceCivilChecker implements StatusChecker {
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setServiceCivilRaw(ServiceCivilRaw serviceCivilRaw) {
-		this.serviceCivilRaw = serviceCivilRaw;
+	public void setIndividuConnector(IndividuConnector individuConnector) {
+		this.individuConnector = individuConnector;
 	}
 }

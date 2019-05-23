@@ -8,11 +8,11 @@ import ch.vd.unireg.interfaces.entreprise.data.EntrepriseCivile;
 import ch.vd.unireg.interfaces.entreprise.data.EntrepriseCivileRCEnt;
 import ch.vd.unireg.interfaces.entreprise.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.entreprise.rcent.adapter.model.OrganisationLocation;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 
 public class RCEntOrganisationHelper {
 
-	public static EntrepriseCivile get(ch.vd.unireg.interfaces.entreprise.rcent.adapter.model.Organisation organisation, ServiceInfrastructureRaw infraService) {
+	public static EntrepriseCivile get(ch.vd.unireg.interfaces.entreprise.rcent.adapter.model.Organisation organisation, InfrastructureConnector infraService) {
 		return new EntrepriseCivileRCEnt(
 				organisation.getCantonalId(),
 				RCEntHelper.convert(organisation.getLocations()),
@@ -20,7 +20,7 @@ public class RCEntOrganisationHelper {
 		);
 	}
 
-	private static Map<Long, EtablissementCivil> convertLocations(List<OrganisationLocation> locations, ServiceInfrastructureRaw infraService) {
+	private static Map<Long, EtablissementCivil> convertLocations(List<OrganisationLocation> locations, InfrastructureConnector infraService) {
 		final Map<Long, EtablissementCivil> etablissements = new HashMap<>();
 		for (OrganisationLocation loc : locations) {
 			etablissements.put(loc.getCantonalId(), RCEntEtablissementHelper.get(loc, infraService));

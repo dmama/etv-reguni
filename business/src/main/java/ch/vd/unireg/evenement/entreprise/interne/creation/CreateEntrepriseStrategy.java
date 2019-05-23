@@ -19,7 +19,7 @@ import ch.vd.unireg.interfaces.entreprise.data.Domicile;
 import ch.vd.unireg.interfaces.entreprise.data.EntrepriseCivile;
 import ch.vd.unireg.interfaces.entreprise.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.tiers.Entreprise;
 
@@ -205,7 +205,7 @@ public class CreateEntrepriseStrategy extends AbstractEntrepriseStrategy {
 		try {
 			return context.getServiceInfra().getCommuneByNumeroOfs(domicile.getNumeroOfsAutoriteFiscale(), dateEvenement);
 		}
-		catch (ServiceInfrastructureException e) {
+		catch (InfrastructureException e) {
 			final String message = String.format("Une erreur est survenue lors de la récupération des information de la commune n°%d (Ofs) de l'établissement civil n°%d de l'entreprise civile n°%d: %s",
 			                                     domicile.getNumeroOfsAutoriteFiscale(), etablissement.getNumeroEtablissement(), entrepriseCivile.getNumeroEntreprise(), e.getMessage());
 			throw new EvenementEntrepriseException(message);

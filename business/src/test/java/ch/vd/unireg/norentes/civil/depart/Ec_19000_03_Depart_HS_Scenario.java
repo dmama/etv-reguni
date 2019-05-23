@@ -3,9 +3,11 @@ package ch.vd.unireg.norentes.civil.depart;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Pays;
@@ -14,8 +16,6 @@ import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.common.FormatNumeroHelper;
-import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.unireg.norentes.annotation.Check;
 import ch.vd.unireg.norentes.annotation.Etape;
 import ch.vd.unireg.tiers.ForFiscal;
@@ -69,7 +69,7 @@ public class Ec_19000_03_Depart_HS_Scenario extends DepartScenario {
 	private final Pays paysDepart = MockPays.Danemark;
 	private final int numOfsPaysDepart = paysDepart.getNoOFS();
 
-	private class InternalServiceCivil extends MockServiceCivil {
+	private class InternalIndividuConnector extends MockIndividuConnector {
 
 		@Override
 		protected void init() {
@@ -123,11 +123,11 @@ public class Ec_19000_03_Depart_HS_Scenario extends DepartScenario {
 		}
 	}
 
-	private InternalServiceCivil internalServiceCivil;
+	private InternalIndividuConnector internalServiceCivil;
 
 	@Override
 	protected void initServiceCivil() {
-		internalServiceCivil = new InternalServiceCivil();
+		internalServiceCivil = new InternalIndividuConnector();
 		serviceCivilService.setUp(internalServiceCivil);
 	}
 

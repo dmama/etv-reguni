@@ -17,7 +17,7 @@ import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.adresse.TypeAdresseFiscale;
 import ch.vd.unireg.common.FormatNumeroHelper;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
@@ -121,7 +121,7 @@ public abstract class RoleData {
 			final Commune commune = infrastructureService.getCommuneByNumeroOfs(ofsCommune, dateReference);
 			return Optional.ofNullable(commune).map(Commune::getNomOfficiel).orElse(null);
 		}
-		catch (ServiceInfrastructureException e) {
+		catch (InfrastructureException e) {
 			LOGGER.error("Impossible de récupérer le nom de la commune " + ofsCommune + " au " + RegDateHelper.dateToDisplayString(dateReference), e);
 			return null;
 		}
@@ -220,7 +220,7 @@ public abstract class RoleData {
 				throw new IllegalArgumentException("Type d'autorité fiscale inconnue : " + localisation.getTypeAutoriteFiscale());
 			}
 		}
-		catch (ServiceInfrastructureException e) {
+		catch (InfrastructureException e) {
 			LOGGER.error("Impossible de récupérer le nom de la localisation fiscale %s/%d", localisation.getTypeAutoriteFiscale(), localisation.getNumeroOfsAutoriteFiscale());
 			return null;
 		}

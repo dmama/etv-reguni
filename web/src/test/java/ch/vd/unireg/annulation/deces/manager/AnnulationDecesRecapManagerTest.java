@@ -10,7 +10,7 @@ import ch.vd.unireg.common.BusinessTestingConstants;
 import ch.vd.unireg.common.WebTest;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
@@ -44,7 +44,7 @@ public class AnnulationDecesRecapManagerTest extends WebTest {
 		final RegDate dateDeces = date(2014, 7, 20);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, date(1935, 11, 4), "Vaisselle", "Jehan", Sexe.MASCULIN);
@@ -96,7 +96,7 @@ public class AnnulationDecesRecapManagerTest extends WebTest {
 		final RegDate dateDeces = date(2014, 7, 20);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, date(1935, 11, 4), "Vaisselle", "Jehan", Sexe.MASCULIN);
@@ -148,7 +148,7 @@ public class AnnulationDecesRecapManagerTest extends WebTest {
 		final RegDate dateDeces = date(2014, 7, 20);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, date(1935, 11, 4), "Vaisselle", "Jehan", Sexe.MASCULIN);
@@ -201,7 +201,7 @@ public class AnnulationDecesRecapManagerTest extends WebTest {
 		final RegDate dateVeuvage = dateDeces.getOneDayBefore();
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne
@@ -300,7 +300,7 @@ public class AnnulationDecesRecapManagerTest extends WebTest {
 		final RegDate dateVeuvage = dateDeces.getOneDayAfter();
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne

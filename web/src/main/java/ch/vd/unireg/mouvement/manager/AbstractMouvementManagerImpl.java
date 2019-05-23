@@ -24,12 +24,11 @@ import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.common.TiersNotFoundException;
 import ch.vd.unireg.general.manager.TiersGeneralManager;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
-import ch.vd.unireg.interfaces.service.host.Operateur;
 import ch.vd.unireg.mouvement.EnvoiDossier;
 import ch.vd.unireg.mouvement.EnvoiDossierVersCollaborateur;
 import ch.vd.unireg.mouvement.EnvoiDossierVersCollectiviteAdministrative;
@@ -40,6 +39,7 @@ import ch.vd.unireg.mouvement.ReceptionDossierArchives;
 import ch.vd.unireg.mouvement.ReceptionDossierPersonnel;
 import ch.vd.unireg.mouvement.view.ContribuableView;
 import ch.vd.unireg.mouvement.view.MouvementDetailView;
+import ch.vd.unireg.security.Operateur;
 import ch.vd.unireg.security.ProfileOperateur;
 import ch.vd.unireg.tiers.ForGestion;
 import ch.vd.unireg.tiers.Tiers;
@@ -123,11 +123,11 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 	 * @param mvt          le mouvement depuis lequel bâtir la vue
 	 * @param isExtraction
 	 * @return la vue
-	 * @throws ServiceInfrastructureException
+	 * @throws InfrastructureException
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public MouvementDetailView getView(MouvementDossier mvt, boolean isExtraction) throws ServiceInfrastructureException {
+	public MouvementDetailView getView(MouvementDossier mvt, boolean isExtraction) throws InfrastructureException {
 		final MouvementDetailView view = buildAndFillCommonElements(mvt, isExtraction);
 		if (mvt instanceof ReceptionDossier) {
 			fillReceptionDossier((ReceptionDossier) mvt, view);
@@ -138,7 +138,7 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 		return view;
 	}
 
-	protected List<MouvementDetailView> getViews(Collection<MouvementDossier> mvts, boolean sortByNoDossier, boolean isExtraction) throws ServiceInfrastructureException {
+	protected List<MouvementDetailView> getViews(Collection<MouvementDossier> mvts, boolean sortByNoDossier, boolean isExtraction) throws InfrastructureException {
 		if (mvts != null && !mvts.isEmpty()) {
 			prefetchIndividus(mvts);
 			final List<MouvementDetailView> liste = new ArrayList<>(mvts.size());
@@ -322,7 +322,7 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 		return new InfoCollaborateur(nomUtilisateur, noTelephone, visaOperateur);
 	}
 
-	private void fillEnvoiDossier(EnvoiDossier envoi, MouvementDetailView view) throws ServiceInfrastructureException {
+	private void fillEnvoiDossier(EnvoiDossier envoi, MouvementDetailView view) throws InfrastructureException {
 		view.setTypeMouvement(TypeMouvement.EnvoiDossier);
 		view.setCollectiviteAdministrative(getNomCollectiviteAdministrative(envoi.getCollectiviteAdministrativeEmettrice()));
 
@@ -343,7 +343,7 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 		}
 	}
 
-	private void fillReceptionDossier(ReceptionDossier reception, MouvementDetailView view) throws ServiceInfrastructureException {
+	private void fillReceptionDossier(ReceptionDossier reception, MouvementDetailView view) throws InfrastructureException {
 		view.setTypeMouvement(TypeMouvement.ReceptionDossier);
 		if (reception.getCollectiviteAdministrativeReceptrice() != null) {
 			final String nomCollectiviteAdm = getNomCollectiviteAdministrative(reception.getCollectiviteAdministrativeReceptrice());
@@ -380,7 +380,7 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 		view.setLocalisation(reception.getLocalisation());
 	}
 
-	private String getNomCollectiviteAdministrative(ch.vd.unireg.tiers.CollectiviteAdministrative ca) throws ServiceInfrastructureException {
+	private String getNomCollectiviteAdministrative(ch.vd.unireg.tiers.CollectiviteAdministrative ca) throws InfrastructureException {
 		final String nom;
 		if (ca != null) {
 			final int iNumCol = ca.getNumeroCollectiviteAdministrative();
@@ -401,7 +401,7 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 				final Commune commune = serviceInfra.getCommuneByNumeroOfs(ofsCommune, forGestion.getDateFin());
 				return commune == null ? "" : commune.getNomOfficiel();
 			}
-			catch (ServiceInfrastructureException e) {
+			catch (InfrastructureException e) {
 				LOGGER.error("Erreur lors de la récupération de la commune de gestion", e);
 				return null;
 			}

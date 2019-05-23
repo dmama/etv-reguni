@@ -122,13 +122,4 @@
 
 	<alias name="serviceInfrastructureClientRaw" alias="serviceInfrastructureClient"/>
 
-	<bean id="refSecClientTracing" class="ch.vd.unireg.wsclient.refsec.RefSecClientTracing">
-		<property name="target" ref="refSecClient" />
-	</bean>
-
-	<bean id="serviceSecuriteClientRefSec" class="ch.vd.unireg.interfaces.service.refsec.ServiceSecuriteRefSecImpl">
-		<property name="refSecClient" ref="refSecClientTracing" />
-		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
-	</bean>
-
 </beans>

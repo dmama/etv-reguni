@@ -10,9 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.NomPrenom;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
-import ch.vd.unireg.interfaces.service.host.Operateur;
 import ch.vd.unireg.mouvement.DestinationEnvoi;
 import ch.vd.unireg.mouvement.EnvoiDossier;
 import ch.vd.unireg.mouvement.EnvoiDossierVersCollaborateur;
@@ -26,6 +25,7 @@ import ch.vd.unireg.mouvement.ReceptionDossierClassementIndependants;
 import ch.vd.unireg.mouvement.ReceptionDossierPersonnel;
 import ch.vd.unireg.mouvement.view.MouvementDetailView;
 import ch.vd.unireg.mouvement.view.MouvementListView;
+import ch.vd.unireg.security.Operateur;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.type.Localisation;
 import ch.vd.unireg.type.TypeMouvement;
@@ -40,7 +40,7 @@ public class MouvementEditManagerImpl extends AbstractMouvementManagerImpl imple
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public MouvementListView findByNumeroDossier(Long numero, boolean seulementTraites) throws ServiceInfrastructureException {
+	public MouvementListView findByNumeroDossier(Long numero, boolean seulementTraites) throws InfrastructureException {
 		final MouvementListView mvtListView = new MouvementListView();
 		mvtListView.setContribuable(creerCtbView(numero));
 		final List<MouvementDetailView> mvtsView = new ArrayList<>();
@@ -82,7 +82,7 @@ public class MouvementEditManagerImpl extends AbstractMouvementManagerImpl imple
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public MouvementDetailView creerMvtForTacheTransmissionDossier(Long numero, Long idTache) throws ServiceInfrastructureException {
+	public MouvementDetailView creerMvtForTacheTransmissionDossier(Long numero, Long idTache) throws InfrastructureException {
 		final MouvementDetailView mvtDetailView = new MouvementDetailView();
 		mvtDetailView.setContribuable(creerCtbView(numero));
 		mvtDetailView.setIdTache(idTache);

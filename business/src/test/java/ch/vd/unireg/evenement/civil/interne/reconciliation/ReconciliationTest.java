@@ -13,9 +13,9 @@ import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.unireg.evenement.civil.interne.MessageCollector;
 import ch.vd.unireg.evenement.common.EvenementErreur;
 import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
 import ch.vd.unireg.tiers.MenageCommun;
@@ -60,7 +60,7 @@ public class ReconciliationTest extends AbstractEvenementCivilInterneTest {
 	public void onSetUp() throws Exception {
 
 		super.onSetUp();
-		serviceCivil.setUp(new DefaultMockServiceCivil());
+		serviceCivil.setUp(new DefaultMockIndividuConnector());
 		loadDatabase(DB_UNIT_DATA_FILE);
 	}
 
@@ -195,8 +195,8 @@ public class ReconciliationTest extends AbstractEvenementCivilInterneTest {
 			doModificationIndividu(noIndividu, new IndividuModification() {
 				@Override
 				public void modifyIndividu(MockIndividu individu) {
-					MockServiceCivil.separeIndividu(individu, DATE_SEPARATION);
-					MockServiceCivil.marieIndividu(individu, DATE_RECONCILIATION);
+					MockIndividuConnector.separeIndividu(individu, DATE_SEPARATION);
+					MockIndividuConnector.marieIndividu(individu, DATE_RECONCILIATION);
 				}
 			});
 		}
@@ -204,8 +204,8 @@ public class ReconciliationTest extends AbstractEvenementCivilInterneTest {
 			doModificationIndividus(noIndividu, noIndividuConjoint, new IndividusModification() {
 				@Override
 				public void modifyIndividus(MockIndividu individu, MockIndividu conjoint) {
-					MockServiceCivil.separeIndividus(individu, conjoint, DATE_SEPARATION);
-					MockServiceCivil.marieIndividus(individu, conjoint, DATE_RECONCILIATION);
+					MockIndividuConnector.separeIndividus(individu, conjoint, DATE_SEPARATION);
+					MockIndividuConnector.marieIndividus(individu, conjoint, DATE_RECONCILIATION);
 				}
 			});
 		}

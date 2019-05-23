@@ -36,11 +36,11 @@ import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
 import ch.vd.unireg.declaration.QuestionnaireSNC;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -168,7 +168,7 @@ public class TacheServiceTest extends BusinessTest {
 		pfDAO = getBean(PeriodeFiscaleDAO.class, "periodeFiscaleDAO");
 		paramAppService = getBean(ParametreAppService.class, "parametreAppService");
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 
@@ -668,7 +668,7 @@ public class TacheServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		doInNewTransaction(status -> {
-			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 			ids.oidCedi = cedi.getId();
 
 			PeriodeFiscale pf2003 = pfDAO.getPeriodeFiscaleByYear(2003);
@@ -1187,7 +1187,7 @@ public class TacheServiceTest extends BusinessTest {
 		final long idIndividuMonsieur = 253828;
 		final long idIndividuMadame = 157837;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 
@@ -1314,7 +1314,7 @@ public class TacheServiceTest extends BusinessTest {
 		final long idIndividuMonsieur = 253828;
 		final long idIndividuMadame = 157837;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 
@@ -1475,7 +1475,7 @@ public class TacheServiceTest extends BusinessTest {
 		final long idIndividuMonsieur = 253828;
 		final long idIndividuMadame = 157837;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 
@@ -1643,7 +1643,7 @@ public class TacheServiceTest extends BusinessTest {
 		final long idIndividuMonsieur = 253828;
 		final long idIndividuMadame = 157837;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 
@@ -1767,7 +1767,7 @@ public class TacheServiceTest extends BusinessTest {
 
 		final RegDate dateArrivee = date(2005, 5, 1);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu monsieur = addIndividu(100000, RegDate.get(1963, 1, 1), "Duplot", "Simon", true);
@@ -1787,7 +1787,7 @@ public class TacheServiceTest extends BusinessTest {
 		 * Un contribuable domicilié au Danemark et qui possède un immeuble depuis 2000 à Cossonay
 		 */
 		doInNewTransaction(status -> {
-			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 			ids.oidCedi = cedi.getId();
 
 			final PersonnePhysique simon = addHabitant(100000);
@@ -1848,7 +1848,7 @@ public class TacheServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		doInNewTransaction(status -> {
-			serviceCivil.setUp(new MockServiceCivil() {
+			serviceCivil.setUp(new MockIndividuConnector() {
 				@Override
 				protected void init() {
 
@@ -1889,7 +1889,7 @@ public class TacheServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		doInNewTransaction(status -> {
-			serviceCivil.setUp(new MockServiceCivil() {
+			serviceCivil.setUp(new MockIndividuConnector() {
 				@Override
 				protected void init() {
 
@@ -1937,7 +1937,7 @@ public class TacheServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		doInNewTransaction(status -> {
-			serviceCivil.setUp(new MockServiceCivil() {
+			serviceCivil.setUp(new MockIndividuConnector() {
 				@Override
 				protected void init() {
 
@@ -1977,7 +1977,7 @@ public class TacheServiceTest extends BusinessTest {
 
 		// Un contribuable normal avec des tâches associées.
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu raoul = addIndividu(100000, RegDate.get(1963, 1, 1), "Lavanchy", "Raoul", true);
@@ -2017,7 +2017,7 @@ public class TacheServiceTest extends BusinessTest {
 
 		// Un contribuable normal sans aucune tâche associée.
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu raoul = addIndividu(100000, date(1963, 1, 1), "Lavanchy", "Raoul", true);
@@ -2582,7 +2582,7 @@ public class TacheServiceTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDivorceMenageCommunSourcePur() throws Exception {
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ilya = addIndividu(915112, date(1967, 8, 1), "Eigenbrot", "Ilya", true);
@@ -2792,7 +2792,7 @@ public class TacheServiceTest extends BusinessTest {
 
 		final int anneePrecedente = RegDate.get().year() - 1;
 
-		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 		assertNotNull(cedi);
 
 		// Contribuable arrivé de hors-Suisse dans l'année
@@ -2815,7 +2815,7 @@ public class TacheServiceTest extends BusinessTest {
 
 		final int anneePrecedente = RegDate.get().year() - 1;
 
-		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 		assertNotNull(cedi);
 
 		// Contribuable arrivé de hors-Suisse dans l'année
@@ -2843,7 +2843,7 @@ public class TacheServiceTest extends BusinessTest {
 
 		final int anneePrecedente = RegDate.get().year() - 1;
 
-		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 		assertNotNull(cedi);
 
 		// Contribuable arrivé non-assujetti
@@ -2940,7 +2940,7 @@ public class TacheServiceTest extends BusinessTest {
 
 		final int anneePrecedente = RegDate.get().year() - 1;
 
-		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 		assertNotNull(cedi);
 
 		// Contribuable arrivé de hors-Suisse dans l'année
@@ -2971,7 +2971,7 @@ public class TacheServiceTest extends BusinessTest {
 		final int anneeCourante = RegDate.get().year();
 		final int anneePrecedente = anneeCourante - 1;
 
-		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 		assertNotNull(cedi);
 
 		// Contribuable arrivé de hors-Suisse dans l'année
@@ -3025,7 +3025,7 @@ public class TacheServiceTest extends BusinessTest {
 
 		final int anneePrecedente = RegDate.get().year() - 1;
 
-		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 		assertNotNull(cedi);
 
 		// Contribuable non-assujetti
@@ -3051,7 +3051,7 @@ public class TacheServiceTest extends BusinessTest {
 
 		final int anneePrecedente = RegDate.get().year() - 1;
 
-		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 		assertNotNull(cedi);
 
 		// Contribuable non-assujetti
@@ -3163,7 +3163,7 @@ public class TacheServiceTest extends BusinessTest {
 
 		final int anneePrecedente = RegDate.get().year() - 1;
 
-		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 		assertNotNull(cedi);
 
 		// Contribuable non-assujetti
@@ -3330,7 +3330,7 @@ public class TacheServiceTest extends BusinessTest {
 		final int anneeAvant = anneeCourante - 1;
 		final int anneeAvantAvant = anneeCourante - 2;
 
-		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 		assertNotNull(cedi);
 
 		class Ids {
@@ -3455,7 +3455,7 @@ public class TacheServiceTest extends BusinessTest {
 
 		final int anneeCourante = RegDate.get().year();
 
-		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 		assertNotNull(cedi);
 
 		class Ids {
@@ -3568,7 +3568,7 @@ public class TacheServiceTest extends BusinessTest {
 	public void testRecalculTachesAvecDiSansTypeContribuable() throws Exception {
 
 		final long noInd = 333908L;
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noInd, RegDate.get(1974, 3, 22), "Cuendet", "Adrienne", false);
@@ -3622,7 +3622,7 @@ public class TacheServiceTest extends BusinessTest {
 	public void testRecalculTachesAvecDiSansTypeContribuableEtDeuxTachesAnnulationEtEnvoi() throws Exception {
 
 		final long noInd = 333908L;
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noInd, RegDate.get(1974, 3, 22), "Corbaz", "Magali", false);
@@ -3664,7 +3664,7 @@ public class TacheServiceTest extends BusinessTest {
 			}
 
 			// les deux tâches
-			final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
+			final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noACI);
 			assertNotNull(aci);
 			addTacheAnnulDI(TypeEtatTache.EN_INSTANCE, date(2008, 7, 1), declaration2008, pp, aci);
 			addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 7, 1), date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pp,
@@ -3719,7 +3719,7 @@ public class TacheServiceTest extends BusinessTest {
 	public void testRecalculTachesApresDepartHSAvecImmeuble() throws Exception {
 
 		final long noInd = 333908L;
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noInd, RegDate.get(1974, 3, 22), "Cuendet", "Adrienne", false);
@@ -3907,7 +3907,7 @@ public class TacheServiceTest extends BusinessTest {
 		final RegDate dateDepart = date(anneeCourante, 1, 2);
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil(true) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(true) {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, date(1971, 4, 12), "Weasley", "Ronald", true);
@@ -4040,7 +4040,7 @@ public class TacheServiceTest extends BusinessTest {
 		final RegDate dateDeces = date(anneeCourante, 1, 2);
 
 		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil(true) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(true) {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, date(1971, 4, 12), "Weasley", "Ronald", true);
@@ -5051,7 +5051,7 @@ public class TacheServiceTest extends BusinessTest {
 	@Test
 	public void testTypeDeclarationImpotDansTacheEnvoiPP() throws Exception {
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne... où sont-ils tous partis ? sommes-nous passés dans la quatrième dimension ?
@@ -5132,14 +5132,14 @@ public class TacheServiceTest extends BusinessTest {
 	@Test
 	public void testTacheAutomatiqueEnvoiPM() throws Exception {
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne... où sont-ils tous partis ? sommes-nous passés dans la quatrième dimension ?
 			}
 		});
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// là non plus, rien...
@@ -5234,14 +5234,14 @@ public class TacheServiceTest extends BusinessTest {
 	@Test
 	public void testTacheAutomatiqueEnvoiPMsurEntrepriseDIOptionnelleVD() throws Exception {
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne... où sont-ils tous partis ? sommes-nous passés dans la quatrième dimension ?
 			}
 		});
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// là non plus, rien...
@@ -5319,14 +5319,14 @@ public class TacheServiceTest extends BusinessTest {
 	@Test
 	public void testTacheAutomatiqueEnvoiPMsurEntrepriseDIOptionnelleVDHorsVD() throws Exception {
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne... où sont-ils tous partis ? sommes-nous passés dans la quatrième dimension ?
 			}
 		});
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// là non plus, rien...
@@ -5395,14 +5395,14 @@ public class TacheServiceTest extends BusinessTest {
 	@Test
 	public void testTacheAutomatiqueEnvoiPMsurEntrepriseExoneree() throws Exception {
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne... où sont-ils tous partis ? sommes-nous passés dans la quatrième dimension ?
 			}
 		});
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// là non plus, rien...
@@ -5451,14 +5451,14 @@ public class TacheServiceTest extends BusinessTest {
 	@Test
 	public void testTacheAutomatiqueEnvoiPMChangementTypeDocument() throws Exception {
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne... où sont-ils tous partis ? sommes-nous passés dans la quatrième dimension ?
 			}
 		});
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// là non plus, rien...
@@ -5546,14 +5546,14 @@ public class TacheServiceTest extends BusinessTest {
 	@Test
 	public void testTacheAutomatiqueEnvoiPMChangementTypeDocumentLocalBatch() throws Exception {
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne... où sont-ils tous partis ? sommes-nous passés dans la quatrième dimension ?
 			}
 		});
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// là non plus, rien...
@@ -5617,7 +5617,7 @@ public class TacheServiceTest extends BusinessTest {
 		final RegDate dateDepart = RegDate.get();
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Pasquier", "Baudouin", Sexe.MASCULIN);
@@ -5663,7 +5663,7 @@ public class TacheServiceTest extends BusinessTest {
 		final RegDate dateDepart = RegDate.get().addYears(-1);          // l'année dernière
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Pasquier", "Baudouin", Sexe.MASCULIN);
@@ -5709,7 +5709,7 @@ public class TacheServiceTest extends BusinessTest {
 		final RegDate dateDepart = RegDate.get().addYears(-2);          // il y a deux ans
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Pasquier", "Baudouin", Sexe.MASCULIN);
@@ -5758,7 +5758,7 @@ public class TacheServiceTest extends BusinessTest {
 		final RegDate dateRetourHS = date(2013, 4, 30);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Casevieille", "Robert", Sexe.MASCULIN);
@@ -5816,7 +5816,7 @@ public class TacheServiceTest extends BusinessTest {
 		final int pf = year - 1;
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// vide...
@@ -5935,7 +5935,7 @@ public class TacheServiceTest extends BusinessTest {
 		final RegDate dateDebut = date(2009, 6, 30);
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// vide
@@ -5996,7 +5996,7 @@ public class TacheServiceTest extends BusinessTest {
 		final RegDate dateDebut = date(lastYear - 1, 6, 30);
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// vide
@@ -6106,7 +6106,7 @@ public class TacheServiceTest extends BusinessTest {
 		final RegDate dateDebut = date(lastYear - 1, 6, 30);
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// vide
@@ -6175,7 +6175,7 @@ public class TacheServiceTest extends BusinessTest {
 		final RegDate dateDebut = date(lastYear - 1, 6, 30);
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// vide

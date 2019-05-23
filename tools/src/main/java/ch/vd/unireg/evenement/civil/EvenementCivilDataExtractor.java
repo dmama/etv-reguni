@@ -7,12 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.civil.ServiceInfraGetPaysSimpleCache;
-import ch.vd.unireg.interfaces.civil.ServiceCivilRaw;
+import ch.vd.unireg.civil.InfraGetPaysSimpleCache;
+import ch.vd.unireg.interfaces.civil.IndividuConnector;
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
-import ch.vd.unireg.interfaces.civil.rcpers.ServiceCivilRCPers;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
-import ch.vd.unireg.interfaces.infra.fidor.ServiceInfrastructureFidor;
+import ch.vd.unireg.interfaces.civil.rcpers.IndividuConnectorRCPers;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
+import ch.vd.unireg.interfaces.infra.fidor.InfrastructureConnectorFidor;
 import ch.vd.unireg.webservice.fidor.v5.FidorClientImpl;
 import ch.vd.unireg.wsclient.WebClientPool;
 import ch.vd.unireg.wsclient.rcpers.RcPersClientImpl;
@@ -30,7 +30,7 @@ public class EvenementCivilDataExtractor {
 	private static final String sourceFilename = "evenements.csv";
 
 	public static void main(String[] args) throws Exception {
-		final ServiceCivilRaw serviceCivil = buildServiceCivil();
+		final IndividuConnector serviceCivil = buildServiceCivil();
 
 		// lecture du fichier d'entrée
 		final List<Long> ids = new ArrayList<>();
@@ -55,7 +55,7 @@ public class EvenementCivilDataExtractor {
 		}
 	}
 
-	private static ServiceCivilRaw buildServiceCivil() throws Exception {
+	private static IndividuConnector buildServiceCivil() throws Exception {
 
 		final WebClientPool rcpersPool = new WebClientPool();
 		rcpersPool.setBaseUrl(RCPERS_URL);
@@ -75,15 +75,15 @@ public class EvenementCivilDataExtractor {
 		final FidorClientImpl fidorClient = new FidorClientImpl();
 		fidorClient.setWcPool(fidorPool);
 
-		final ServiceInfrastructureFidor infraServiceFiDor = new ServiceInfrastructureFidor();
+		final InfrastructureConnectorFidor infraServiceFiDor = new InfrastructureConnectorFidor();
 		infraServiceFiDor.setFidorClient(fidorClient);
 
-		final ServiceInfrastructureRaw infraServiceCache = new ServiceInfraGetPaysSimpleCache(infraServiceFiDor);
+		final InfrastructureConnector infraServiceCache = new InfraGetPaysSimpleCache(infraServiceFiDor);
 
-		final ServiceCivilRCPers serviceCivilRCPers = new ServiceCivilRCPers();
-		serviceCivilRCPers.setClient(rcpersClient);
-		serviceCivilRCPers.setInfraService(infraServiceCache);
+		final IndividuConnectorRCPers donneesCivilesAccessorRCPers = new IndividuConnectorRCPers();
+		donneesCivilesAccessorRCPers.setClient(rcpersClient);
+		donneesCivilesAccessorRCPers.setInfraConnector(infraServiceCache);
 
-		return serviceCivilRCPers;
+		return donneesCivilesAccessorRCPers;
 	}
 }

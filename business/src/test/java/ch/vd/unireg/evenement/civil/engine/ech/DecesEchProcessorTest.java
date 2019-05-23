@@ -13,10 +13,10 @@ import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchErreur;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockEtatCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -56,7 +56,7 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 		final RegDate dateDeces = RegDate.get().addMonths(-1);
 
 		// mise en place de son vivant
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, dateNaissance, "Quatre", "Jessica", false);
@@ -127,7 +127,7 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 		final RegDate dateDeces = RegDate.get(2012, 4, 27);
 
 		// Dans le civil
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu monsieur = addIndividu(noMonsieur, date(1923, 2, 12), "Crispus", "Santacorpus", true);
@@ -274,7 +274,7 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 		final long evtDecesId = 3564283462L;
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final RegDate dateNaissance = date(1930, 3, 16);
@@ -424,7 +424,7 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 		final RegDate dateDeces = date(2013, 3, 12);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu m = addIndividu(noIndividuMonsieur, dateNaissances, "Curie", "Pierre", Sexe.MASCULIN);
@@ -530,7 +530,7 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 		final long noInvididuDecede = 4784365L;
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu decede = addIndividu(noInvididuDecede, null, "Arthur", "Jacques", Sexe.MASCULIN);
@@ -607,7 +607,7 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 		final RegDate dateDeces = date(2014, 7, 20);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, dateNaissance, "Duplancher", "Hara", Sexe.FEMININ);
@@ -670,7 +670,7 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 		final RegDate dateDeces = RegDate.get().addMonths(-1);
 
 		// mise en place de son vivant
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, dateNaissance, "Quatre", "Jessica", false);
@@ -737,7 +737,7 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 		final RegDate dateDeces = date(2014, 8, 19);
 		final RegDate dateNaissanceMadame = date(1974, 8, 1);
 		final RegDate dateNaissanceMonsieur = date(1923, 2, 12);
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 
@@ -811,7 +811,7 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 		final RegDate dateDeces = date(2014, 8, 19);
 		final RegDate dateNaissanceMadame = date(1974, 8, 1);
 		final RegDate dateNaissanceMonsieur = date(1923, 2, 12);
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu monsieur = addIndividu(noMonsieur, dateNaissanceMonsieur, "Crispus", "Santacorpus", true);
@@ -937,7 +937,7 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 		final RegDate dateNaissanceEnfants = date(1975, 2, 12);
 
 		// Dans le civil
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu monsieur = addIndividu(noMonsieur, date(1923, 2, 12), "Crispus", "Santacorpus", true);

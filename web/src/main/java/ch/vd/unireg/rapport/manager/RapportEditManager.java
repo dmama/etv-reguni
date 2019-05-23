@@ -7,7 +7,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdressesResolutionException;
 import ch.vd.unireg.common.pagination.WebParamPagination;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.rapport.SensRapportEntreTiers;
 import ch.vd.unireg.rapport.view.RapportView;
 import ch.vd.unireg.tiers.view.TiersEditView;
@@ -91,10 +91,10 @@ public interface RapportEditManager {
 	 * @param numero
 	 * @return un objet TiersView
 	 * @throws AdressesResolutionException
-	 * @throws ServiceInfrastructureException
+	 * @throws InfrastructureException
 	 */
 	@Transactional(readOnly = true)
-	TiersEditView getView(Long numero) throws AdresseException, ServiceInfrastructureException;
+	TiersEditView getView(Long numero) throws AdresseException, InfrastructureException;
 
 	/**
 	 * Charge les informations dans TiersView
@@ -104,10 +104,10 @@ public interface RapportEditManager {
 	 * @param rapportsPrestationHisto
 	 * @return un objet TiersView
 	 * @throws AdressesResolutionException
-	 * @throws ServiceInfrastructureException
+	 * @throws InfrastructureException
 	 */
 	@Transactional(readOnly = true)
-	TiersEditView getRapportsPrestationView(Long numero, WebParamPagination webParamPagination, boolean rapportsPrestationHisto) throws AdresseException, ServiceInfrastructureException;
+	TiersEditView getRapportsPrestationView(Long numero, WebParamPagination webParamPagination, boolean rapportsPrestationHisto) throws AdresseException, InfrastructureException;
 
 	/**
 	 * Désigne l'héritier comme membre principal de la communauté d'héritiers.

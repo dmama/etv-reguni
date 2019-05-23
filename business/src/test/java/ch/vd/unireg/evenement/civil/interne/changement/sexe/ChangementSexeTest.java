@@ -9,13 +9,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
-import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.unireg.evenement.civil.interne.MessageCollector;
 import ch.vd.unireg.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.unireg.indexer.tiers.TiersIndexedData;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.tiers.TiersCriteria;
 import ch.vd.unireg.type.Sexe;
 
@@ -35,7 +35,7 @@ public class ChangementSexeTest extends AbstractEvenementCivilInterneTest {
 	private static final String DB_UNIT_DATA_FILE = "ChangementSexeTest.xml";
 
 	private GlobalTiersSearcher searcher;
-	private DefaultMockServiceCivil mockServiceCivil;
+	private DefaultMockIndividuConnector mockServiceCivil;
 
 	public ChangementSexeTest() {
 		setWantIndexationTiers(true);
@@ -44,7 +44,7 @@ public class ChangementSexeTest extends AbstractEvenementCivilInterneTest {
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		mockServiceCivil = new DefaultMockServiceCivil();
+		mockServiceCivil = new DefaultMockIndividuConnector();
 		serviceCivil.setUp(mockServiceCivil);
 		searcher = getBean(GlobalTiersSearcher.class, "globalTiersSearcher");
 

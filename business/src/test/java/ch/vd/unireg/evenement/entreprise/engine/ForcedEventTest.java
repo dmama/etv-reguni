@@ -20,7 +20,7 @@ import ch.vd.unireg.interfaces.entreprise.data.InscriptionRC;
 import ch.vd.unireg.interfaces.entreprise.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.entreprise.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.entreprise.data.TypeEntrepriseRegistreIDE;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockDonneesRC;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockDonneesRegistreIDE;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockEntrepriseCivile;
@@ -65,7 +65,7 @@ public class ForcedEventTest extends AbstractEvenementEntrepriseCivileProcessorT
 		final Long noEntrepriseCivile = 101202100L;
 		final Long noEtablissement = noEntrepriseCivile + 1000000;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final RegDate dateInscriptionRC = date(2010, 6, 24);
@@ -159,7 +159,7 @@ public class ForcedEventTest extends AbstractEvenementEntrepriseCivileProcessorT
 		final Long noEntrepriseCivile = 101202100L;
 		final Long noEtablissement = noEntrepriseCivile + 1000000;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final RegDate dateInscription = date(2010, 6, 24);
@@ -234,7 +234,7 @@ public class ForcedEventTest extends AbstractEvenementEntrepriseCivileProcessorT
 		final Long noEntrepriseCivile = 101202100L;
 		final Long noEtablissement = noEntrepriseCivile + 1000000;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final RegDate dateInscription = date(2010, 6, 24);

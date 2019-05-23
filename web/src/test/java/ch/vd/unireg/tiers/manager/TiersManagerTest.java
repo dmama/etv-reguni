@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import ch.vd.unireg.common.WebTest;
 import ch.vd.unireg.common.pagination.WebParamPagination;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.rt.view.RapportPrestationView;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -33,7 +33,7 @@ public class TiersManagerTest extends WebTest {
 		final long noIndividuMine = 326723157123L;
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, null, "Sorel", "Julien", Sexe.MASCULIN);

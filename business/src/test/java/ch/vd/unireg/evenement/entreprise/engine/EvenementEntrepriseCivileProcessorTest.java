@@ -37,7 +37,7 @@ import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
 import ch.vd.unireg.interfaces.entreprise.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.entreprise.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.entreprise.data.TypeEntrepriseRegistreIDE;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockEntrepriseCivile;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEtablissementCivilFactory;
@@ -109,7 +109,7 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		// Mise en place service mock
 		final Long noEntrepriseCivile = 101202100L;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(
@@ -174,7 +174,7 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		// Mise en place service mock
 		final Long noEntrepriseCivile = 101202100L;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(
@@ -256,7 +256,7 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		// Mise en place service mock
 		final Long noEntrepriseCivile = 101202100L;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(
@@ -350,7 +350,7 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		// Mise en place service mock
 		final Long noEntrepriseCivile = 101202100L;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(
@@ -581,7 +581,7 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		final Long noEntrepriseCivile = 101202100L;
 		final Long noEtablissement = noEntrepriseCivile + 1000000;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(MockEntrepriseFactory.createEntreprise(noEntrepriseCivile, noEtablissement, nom, dateDebut, null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
@@ -690,7 +690,7 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		MockEtablissementCivilFactory.addEtablissement(noEtablissement2, entreprise, date(2015, 7, 5), null, nom2, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, false,
 		                                               TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Renens.getNoOFS(), StatusInscriptionRC.ACTIF, dateRC,
 		                                               StatusRegistreIDE.DEFINITIF, TypeEntrepriseRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999997");
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(entreprise);
@@ -824,7 +824,7 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		MockEtablissementCivilFactory.addEtablissement(noEtablissement2, entreprise, date(2015, 7, 5), null, nom2, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, false,
 		                                               TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Renens.getNoOFS(), StatusInscriptionRC.ACTIF, dateRC,
 		                                               StatusRegistreIDE.DEFINITIF, TypeEntrepriseRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999997");
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(entreprise);
@@ -946,7 +946,7 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		final Long noEntrepriseCivileDoublon = 201202100L;
 		final Long noEtablissementDoublon = noEntrepriseCivile + 1000000;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(MockEntrepriseFactory.createEntreprise(noEntrepriseCivile, noEtablissement, nom, dateDebut, null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
@@ -1044,7 +1044,7 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		final Long noEntrepriseCivile = 101202100L;
 		final Long noEtablissement = noEntrepriseCivile + 1000000;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(MockEntrepriseFactory.createEntreprise(noEntrepriseCivile, noEtablissement, nom, dateDeDebut, null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
@@ -1132,7 +1132,7 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		final Long noEntrepriseCivile = 101202100L;
 		final Long noEtablissement = noEntrepriseCivile + 1000000;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(MockEntrepriseFactory.createEntreprise(noEntrepriseCivile, noEtablissement, nom, dateDebut, null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
@@ -1226,7 +1226,7 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		final Long noEntrepriseCivile = 101202100L;
 		final Long noEtablissement = noEntrepriseCivile + 1000000;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(MockEntrepriseFactory.createEntreprise(noEntrepriseCivile, noEtablissement, nom, dateDeDebut, null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
@@ -1312,7 +1312,7 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		final Long noEntrepriseCivile = 101202100L;
 		final Long noEtablissement = noEntrepriseCivile + 1000000;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(MockEntrepriseFactory.createEntreprise(noEntrepriseCivile, noEtablissement, nom, dateDebut, null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
@@ -1407,7 +1407,7 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		// Mise en place service mock
 		final Long noEntrepriseCivile = 101202100L;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(
@@ -1487,7 +1487,7 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		// Mise en place service mock
 		final Long noEntrepriseCivile = 101202100L;
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(
@@ -1575,7 +1575,7 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		final MockEntrepriseCivile entreprise = MockEntrepriseFactory.createEntreprise(noEntrepriseCivile, noEtablissement, nom, dateDebut, null, FormeLegale.N_0101_ENTREPRISE_INDIVIDUELLE,
 		                                                                               TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null,
 		                                                                               null, null, null, null);
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(entreprise);
@@ -1659,7 +1659,7 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		final MockEntrepriseCivile entreprise = MockEntrepriseFactory.createEntreprise(noEntrepriseCivile, noEtablissement, nom, dateDebut, null, null,
 		                                                                               TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null,
 		                                                                               null, null, null, null);
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(entreprise);

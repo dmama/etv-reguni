@@ -5,7 +5,7 @@ import java.util.Date;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.evenement.ide.AnnonceIDEService;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.service.mock.ProxyServiceCivil;
 import ch.vd.unireg.interfaces.service.mock.ProxyServiceEntreprise;
 import ch.vd.unireg.interfaces.service.mock.ProxyServiceInfrastructureService;
@@ -53,13 +53,13 @@ public abstract class BusinessTest extends AbstractBusinessTest {
 	}
 
 	protected void doModificationIndividu(long noIndividu, IndividuModification modifier) {
-		final MockIndividu ind = ((MockServiceCivil) serviceCivil.getUltimateTarget()).getIndividu(noIndividu);
+		final MockIndividu ind = ((MockIndividuConnector) serviceCivil.getUltimateTarget()).getIndividu(noIndividu);
 		modifier.modifyIndividu(ind);
 	}
 
 	protected void doModificationIndividus(long noIndividu, long noOther, IndividusModification modifier) {
-		final MockIndividu ind = ((MockServiceCivil) serviceCivil.getUltimateTarget()).getIndividu(noIndividu);
-		final MockIndividu other = ((MockServiceCivil) serviceCivil.getUltimateTarget()).getIndividu(noOther);
+		final MockIndividu ind = ((MockIndividuConnector) serviceCivil.getUltimateTarget()).getIndividu(noIndividu);
+		final MockIndividu other = ((MockIndividuConnector) serviceCivil.getUltimateTarget()).getIndividu(noOther);
 		modifier.modifyIndividus(ind, other);
 	}
 

@@ -55,8 +55,8 @@ import ch.vd.unireg.evenement.fiscal.EvenementFiscal;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
 import ch.vd.unireg.evenement.fiscal.MockEvenementFiscalService;
 import ch.vd.unireg.hibernate.HibernateTemplate;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -153,7 +153,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		diService = getBean(DeclarationImpotService.class, "diService");
 		demandeDelaisMandataireDAO = getBean(DemandeDelaisMandataireDAO.class, "demandeDelaisMandataireDAO");
 
-		serviceCivil.setUp(new DefaultMockServiceCivil());
+		serviceCivil.setUp(new DefaultMockIndividuConnector());
 
 		/*
 		 * création du service à la main de manière à pouvoir appeler les méthodes protégées (= en passant par Spring on se prend un proxy
@@ -164,11 +164,11 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		                                          assujettissementService, ticketService, regimeFiscalService, demandeDelaisMandataireDAO, audit);
 
 		doInNewTransactionAndSession(status -> {
-			CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noCEDI);
 			idCedi = cedi.getId();
 			CollectiviteAdministrative oidLausanne = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 			idOidLausanne = oidLausanne.getId();
-			CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
+			CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(InfrastructureConnector.noACI);
 			idAci = aci.getId();
 			return null;
 		});

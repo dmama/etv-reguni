@@ -5,7 +5,7 @@ import org.mockito.Mockito;
 
 import ch.vd.fidor.xml.colladm.v1.Adresse;
 import ch.vd.unireg.interfaces.common.CasePostale;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.type.TexteCasePostale;
@@ -22,7 +22,7 @@ public class AdresseTest {
 	@Test
 	public void testAdresseCollAdminFidorAvecEstrid() {
 
-		final ServiceInfrastructureRaw service = Mockito.mock(ServiceInfrastructureRaw.class);
+		final InfrastructureConnector service = Mockito.mock(InfrastructureConnector.class);
 		Mockito.when(service.getRueByNumero(1132347, null)).thenReturn(MockRue.Echallens.PlaceEmileGardaz);
 		Mockito.when(service.getLocaliteByONRP(185, null)).thenReturn(MockLocalite.Echallens);
 
@@ -59,7 +59,7 @@ public class AdresseTest {
 	@Test
 	public void testAdresseCollAdminFidorAvecNomRue() {
 
-		final ServiceInfrastructureRaw service = Mockito.mock(ServiceInfrastructureRaw.class);
+		final InfrastructureConnector service = Mockito.mock(InfrastructureConnector.class);
 		Mockito.when(service.getLocaliteByONRP(162, null)).thenReturn(MockLocalite.Lausanne1014);
 
 		final Adresse adresseFidor = new Adresse();

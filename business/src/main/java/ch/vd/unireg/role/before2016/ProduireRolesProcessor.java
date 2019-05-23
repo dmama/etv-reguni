@@ -39,10 +39,10 @@ import ch.vd.unireg.common.MovingWindow;
 import ch.vd.unireg.common.ParallelBatchTransactionTemplateWithResults;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.hibernate.HibernateTemplate;
-import ch.vd.unireg.interfaces.civil.ServiceCivilException;
+import ch.vd.unireg.interfaces.civil.IndividuConnectorException;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
@@ -301,7 +301,7 @@ public class ProduireRolesProcessor {
 					pp.setIndividuCache(individu);
 				}
 			}
-			catch (ServiceCivilException e) {
+			catch (IndividuConnectorException e) {
 				LOGGER.error("Impossible de précharger le lot d'individus [" + ppByNoIndividu.keySet() + "]. L'erreur est : " + e.getMessage());
 			}
 		}
@@ -639,7 +639,7 @@ public class ProduireRolesProcessor {
 				return nos;
 			});
 		}
-		catch (ServiceInfrastructureException e) {
+		catch (InfrastructureException e) {
 			throw new ServiceException(e);
 		}
 
@@ -721,7 +721,7 @@ public class ProduireRolesProcessor {
 			}
 			return liste.toArray(new ProduireRolesOIDsResults[0]);
 		}
-		catch (ServiceInfrastructureException e) {
+		catch (InfrastructureException e) {
 			throw new ServiceException(e);
 		}
 	}

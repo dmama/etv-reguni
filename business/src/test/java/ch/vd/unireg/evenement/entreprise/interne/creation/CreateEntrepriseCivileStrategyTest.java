@@ -17,7 +17,7 @@ import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
 import ch.vd.unireg.interfaces.entreprise.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.entreprise.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.entreprise.data.TypeEntrepriseRegistreIDE;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockEntrepriseCivile;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -46,7 +46,7 @@ public class CreateEntrepriseCivileStrategyTest extends AbstractEvenementEntrepr
 	/**
 	 * Version du service mock ou on peut ajouter des entreprises à la demande.
 	 */
-	public static class OpenMockServiceEntreprise extends MockServiceEntreprise {
+	public static class OpenMockEntrepriseConnector extends MockEntrepriseConnector {
 		@Override
 		protected void init() {}
 
@@ -60,7 +60,7 @@ public class CreateEntrepriseCivileStrategyTest extends AbstractEvenementEntrepr
 		super.onSetUp();
 
 		// Mise en place services mock
-		this.serviceEntreprise.setUp(new OpenMockServiceEntreprise());
+		this.serviceEntreprise.setUp(new OpenMockEntrepriseConnector());
 
 		MockTiersDAO tiersDAO = new MockTiersDAO() {
 			@Override
@@ -238,7 +238,7 @@ public class CreateEntrepriseCivileStrategyTest extends AbstractEvenementEntrepr
 	}
 
 	private void addEnt(MockEntrepriseCivile ent) {
-		((OpenMockServiceEntreprise) serviceEntreprise.getUltimateTarget())
+		((OpenMockEntrepriseConnector) serviceEntreprise.getUltimateTarget())
 				.addEntreprise(ent);
 	}
 

@@ -16,7 +16,7 @@ import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.Nationalite;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.tiers.PersonnePhysique;
 
@@ -67,7 +67,7 @@ public class ObtentionNationaliteNonSuisse extends ObtentionNationalite {
 				throw new EvenementCivilException("L'individu n°" + getNoIndividu() + " ne possède pas de nationalité non-suisse qui commence à la date = " + RegDateHelper.dateToDisplayString(getDate()));
 			}
 			final Pays pays = ref.getPays();
-			final int noOfs = pays != null ? pays.getNoOFS() : ServiceInfrastructureRaw.noPaysInconnu;
+			final int noOfs = pays != null ? pays.getNoOFS() : InfrastructureConnector.noPaysInconnu;
 			pp.setNumeroOfsNationalite(noOfs);
 			context.audit.info(getNumeroEvenement(), String.format("L'individu %d (tiers non-habitant %s) a maintenant la nationalité du pays '%s'",
 			                                               getNoIndividu(),

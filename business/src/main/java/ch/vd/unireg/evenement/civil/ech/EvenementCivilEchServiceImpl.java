@@ -23,7 +23,7 @@ import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.common.pagination.ParamPagination;
 import ch.vd.unireg.evenement.civil.EvenementCivilCriteria;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
-import ch.vd.unireg.interfaces.civil.ServiceCivilException;
+import ch.vd.unireg.interfaces.civil.IndividuConnectorException;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
@@ -399,7 +399,7 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 			    LOGGER.debug(String.format("Aucune information exploitable fournie par le GetIndividuAfterEvent(%d), essayons le GetIndividuByEvent", eventId));
 			}
 		}
-		catch (ServiceCivilException e) {
+		catch (IndividuConnectorException e) {
 			if (LOGGER.isDebugEnabled()) {
 			    LOGGER.debug(String.format("Exception lancée par le GetIndividuAfterEvent(%d), essayons le GetIndividuByEvent...", eventId), e);
 			}
@@ -413,7 +413,7 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 					LOGGER.debug(String.format("Aucune information exploitable fournie par le GetIndividuByEvent(%d), essayons les dépendances (grappe)", eventId));
 				}
 			}
-			catch (ServiceCivilException e) {
+			catch (IndividuConnectorException e) {
 				if (LOGGER.isDebugEnabled()) {
 					LOGGER.debug(String.format("Exception lancée par le GetIndividuByEvent(%d), essayons les dépendances (grappe)...", eventId), e);
 				}

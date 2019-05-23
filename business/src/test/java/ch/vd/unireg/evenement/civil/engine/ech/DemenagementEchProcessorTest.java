@@ -9,9 +9,9 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchErreur;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockBatiment;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -43,7 +43,7 @@ public class DemenagementEchProcessorTest extends AbstractEvenementCivilEchProce
 		final RegDate dateNaissance = date(1956, 4, 23);
 
 		// le p'tit nouveau
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 
@@ -105,7 +105,7 @@ public class DemenagementEchProcessorTest extends AbstractEvenementCivilEchProce
 		final RegDate dateNaissance = date(1956, 4, 23);
 
 		// le p'tit nouveau
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 
@@ -168,7 +168,7 @@ public class DemenagementEchProcessorTest extends AbstractEvenementCivilEchProce
 		final RegDate dateMariage = date(2008, 10, 19);
 		final RegDate dateDemenagement = date(2008, 5, 6);
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu monsieur = addIndividu(noMonsieur, date(1923, 2, 12), "Crispus", "Santacorpus", true);
@@ -248,7 +248,7 @@ public class DemenagementEchProcessorTest extends AbstractEvenementCivilEchProce
 		final RegDate dateNaissance = date(1956, 4, 23);
 
 		// le p'tit nouveau
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 
@@ -301,7 +301,7 @@ public class DemenagementEchProcessorTest extends AbstractEvenementCivilEchProce
 		final RegDate dateNaissance = date(1956, 4, 23);
 
 		// le p'tit nouveau
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+		serviceCivil.setUp(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
 
@@ -354,7 +354,7 @@ public class DemenagementEchProcessorTest extends AbstractEvenementCivilEchProce
 		final RegDate dateDemenagement = date(2014, 3, 12);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Berney", "Alphonse", Sexe.MASCULIN);
@@ -422,7 +422,7 @@ public class DemenagementEchProcessorTest extends AbstractEvenementCivilEchProce
 		final RegDate dateDemenagement = date(2014, 3, 12);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Berney", "Alphonse", Sexe.MASCULIN);

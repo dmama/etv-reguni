@@ -4,11 +4,11 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.shared.statusmanager.CheckerException;
 import ch.vd.shared.statusmanager.StatusChecker;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 
 public class ServiceInfraChecker implements StatusChecker {
 
-	private ServiceInfrastructureRaw serviceInfraRaw;
+	private InfrastructureConnector infraConnector;
 
 	@NotNull
 	@Override
@@ -24,7 +24,7 @@ public class ServiceInfraChecker implements StatusChecker {
 	@Override
 	public void check() throws CheckerException {
 		try {
-			serviceInfraRaw.ping();
+			infraConnector.ping();
 		}
 		catch (Exception e) {
 			throw new CheckerException(e.getMessage());
@@ -32,7 +32,7 @@ public class ServiceInfraChecker implements StatusChecker {
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setServiceInfraRaw(ServiceInfrastructureRaw serviceInfraRaw) {
-		this.serviceInfraRaw = serviceInfraRaw;
+	public void setInfraConnector(InfrastructureConnector infraConnector) {
+		this.infraConnector = infraConnector;
 	}
 }

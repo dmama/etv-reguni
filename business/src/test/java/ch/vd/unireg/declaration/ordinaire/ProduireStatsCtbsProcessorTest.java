@@ -8,9 +8,9 @@ import org.junit.Test;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BusinessTest;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
@@ -46,7 +46,7 @@ public class ProduireStatsCtbsProcessorTest extends BusinessTest {
 	public void testExtractionEntreprise() throws Exception {
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// rien
@@ -96,7 +96,7 @@ public class ProduireStatsCtbsProcessorTest extends BusinessTest {
 		Assert.assertEquals(1, results.stats.size());
 		final Map.Entry<StatistiquesCtbs.Key, StatistiquesCtbs.Value> entry = results.stats.entrySet().iterator().next();
 		Assert.assertNotNull(entry);
-		Assert.assertEquals(new StatistiquesCtbs.Key(ServiceInfrastructureRaw.noOIPM, MockCommune.Echallens, StatistiquesCtbs.TypeContribuable.VAUDOIS_ORDINAIRE), entry.getKey());
+		Assert.assertEquals(new StatistiquesCtbs.Key(InfrastructureConnector.noOIPM, MockCommune.Echallens, StatistiquesCtbs.TypeContribuable.VAUDOIS_ORDINAIRE), entry.getKey());
 		Assert.assertEquals(1, entry.getValue().nombre);
 	}
 
@@ -105,7 +105,7 @@ public class ProduireStatsCtbsProcessorTest extends BusinessTest {
 	public void testExtractionCtbSourceAvecPIIS() throws Exception {
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// rien
@@ -156,7 +156,7 @@ public class ProduireStatsCtbsProcessorTest extends BusinessTest {
 	public void testExtractionCtbSourceSansPIIS() throws Exception {
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// rien
@@ -197,7 +197,7 @@ public class ProduireStatsCtbsProcessorTest extends BusinessTest {
 //	public void testExtractionCtbAvecForSurCommuneFusionnee() throws Exception {
 //
 //		// mise en place civile
-//		serviceCivil.setUp(new MockServiceCivil() {
+//		serviceCivil.setUp(new MockIndividuConnector() {
 //			@Override
 //			protected void init() {
 //				// rien
@@ -235,7 +235,7 @@ public class ProduireStatsCtbsProcessorTest extends BusinessTest {
 //		Assert.assertEquals(1, results.stats.size());
 //		final Map.Entry<StatistiquesCtbs.Key, StatistiquesCtbs.Value> entry = results.stats.entrySet().iterator().next();
 //		Assert.assertNotNull(entry);
-//		Assert.assertEquals(new StatistiquesCtbs.Key(ServiceInfrastructureRaw.noOIPM, MockCommune.Echallens, StatistiquesCtbs.TypeContribuable.VAUDOIS_ORDINAIRE), entry.getKey());
+//		Assert.assertEquals(new StatistiquesCtbs.Key(InfrastructureConnector.noOIPM, MockCommune.Echallens, StatistiquesCtbs.TypeContribuable.VAUDOIS_ORDINAIRE), entry.getKey());
 //		Assert.assertEquals(1, entry.getValue().nombre);
 //	}
 }

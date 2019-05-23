@@ -9,7 +9,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchErreur;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
@@ -30,7 +30,7 @@ public class AbsenceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		final RegDate dateDisparition = RegDate.get().addMonths(-1);
 
 		// mise en place de son vivant
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, dateNaissance, "Quatre", "Jessica", false);
@@ -93,7 +93,7 @@ public class AbsenceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		final RegDate dateDisparition = RegDate.get().addMonths(-1);
 
 		// mise en place de son vivant
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, dateNaissance, "Quatre", "Jessica", false);
@@ -158,7 +158,7 @@ public class AbsenceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		final RegDate dateDisparition = RegDate.get().addMonths(-1);
 
 		// mise en place de son vivant
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, dateNaissance, "Quatre", "Jessica", false);

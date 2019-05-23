@@ -8,11 +8,11 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.common.WebTestSpring3;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.unireg.common.WebTestSpring3;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.manager.AutorisationManager;
@@ -83,7 +83,7 @@ public class EditModeImpositionValidatorTest extends WebTestSpring3 {
 	public void testDateChangementModeImpositionSurHabitant() throws Exception {
 
 		final long noIndividu = 49841417981L;
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, date(1965, 6, 1), "Tartempion", "Bidule", true);

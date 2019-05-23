@@ -38,7 +38,7 @@ import ch.vd.unireg.common.RueEtNumero;
 import ch.vd.unireg.declaration.DeclarationAvecNumeroSequence;
 import ch.vd.unireg.declaration.ordinaire.pm.ImpressionDeclarationImpotPersonnesMoralesHelperImpl;
 import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
@@ -392,14 +392,14 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 
 	protected CTypeInfoEnteteDocument buildInfoEnteteDocumentPM(Tiers destinataire, RegDate dateExpedition,
 	                                                            String traitePar, String nomServiceExpediteur,
-	                                                            CollectiviteAdministrative expediteurPourAdresse, CollectiviteAdministrative expediteurPourTelFaxMail) throws ServiceInfrastructureException, AdresseException {
+	                                                            CollectiviteAdministrative expediteurPourAdresse, CollectiviteAdministrative expediteurPourTelFaxMail) throws InfrastructureException, AdresseException {
 		return buildInfoEnteteDocumentPM(destinataire, dateExpedition, traitePar, nomServiceExpediteur, expediteurPourAdresse, expediteurPourTelFaxMail, IMPOT_BENEFICE_CAPITAL);
 	}
 
 	protected CTypeInfoEnteteDocument buildInfoEnteteDocumentPM(Tiers destinataire, RegDate dateExpedition,
 	                                                            String traitePar, String nomServiceExpediteur,
 	                                                            CollectiviteAdministrative expediteurPourAdresse, CollectiviteAdministrative expediteurPourTelFaxMail,
-	                                                            String libelleTitre) throws ServiceInfrastructureException, AdresseException {
+	                                                            String libelleTitre) throws InfrastructureException, AdresseException {
 		final CTypeInfoEnteteDocument entete = new CTypeInfoEnteteDocument();
 		entete.setDestinataire(buildDestinatairePM(destinataire));
 		entete.setExpediteur(buildExpediteurPM(expediteurPourAdresse, expediteurPourTelFaxMail, dateExpedition, traitePar, nomServiceExpediteur));
@@ -412,7 +412,7 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 	protected ch.vd.unireg.xml.editique.pp.CTypeInfoEnteteDocument buildInfoEnteteDocumentPP(Tiers destinataire, RegDate dateExpedition,
 	                                                                                         String traitePar, String nomServiceExpediteur,
 	                                                                                         CollectiviteAdministrative expediteurPourAdresse, CollectiviteAdministrative expediteurPourTelFaxMail,
-	                                                                                         String libelleTitre) throws ServiceInfrastructureException, AdresseException {
+	                                                                                         String libelleTitre) throws InfrastructureException, AdresseException {
 		final ch.vd.unireg.xml.editique.pp.CTypeInfoEnteteDocument entete = new ch.vd.unireg.xml.editique.pp.CTypeInfoEnteteDocument();
 		entete.setDestinataire(buildDestinatairePP(destinataire));
 		entete.setExpediteur(buildExpediteurPP(expediteurPourAdresse, expediteurPourTelFaxMail, dateExpedition, traitePar, nomServiceExpediteur));
@@ -454,7 +454,7 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 	}
 
 	private CTypeExpediteur buildExpediteurPM(CollectiviteAdministrative expediteurPourAdresse, CollectiviteAdministrative expediteurPourTelFaxMail,
-	                                          RegDate dateExpedition, String traitePar, String nomServiceExpediteur) throws ServiceInfrastructureException, AdresseException {
+	                                          RegDate dateExpedition, String traitePar, String nomServiceExpediteur) throws InfrastructureException, AdresseException {
 		final CTypeExpediteur expediteur = new CTypeExpediteur();
 
 		final Adresse adresse = expediteurPourAdresse.getAdresse();
@@ -483,7 +483,7 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 	}
 
 	private ch.vd.unireg.xml.editique.pp.CTypeExpediteur buildExpediteurPP(CollectiviteAdministrative expediteurPourAdresse, CollectiviteAdministrative expediteurPourTelFaxMail,
-	                                                                       RegDate dateExpedition, String traitePar, String nomServiceExpediteur) throws ServiceInfrastructureException, AdresseException {
+	                                                                       RegDate dateExpedition, String traitePar, String nomServiceExpediteur) throws InfrastructureException, AdresseException {
 		final ch.vd.unireg.xml.editique.pp.CTypeExpediteur expediteur = new ch.vd.unireg.xml.editique.pp.CTypeExpediteur();
 
 		final Adresse adresse = expediteurPourAdresse.getAdresse();

@@ -8,8 +8,8 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
@@ -49,7 +49,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 
 		final long noInd = 1244;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noInd, date(1983, 3, 12), "RuppertPeriode", "Jeroma", Sexe.FEMININ);
@@ -87,7 +87,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 
 		final long noInd = 1244;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noInd, date(1983, 3, 12), "RuppertPeriode", "Jeroma", Sexe.FEMININ);
@@ -129,7 +129,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 
 		final long noInd = 1244;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noInd, date(1983, 3, 12), "RuppertPeriode", "Jeroma", Sexe.FEMININ);
@@ -159,7 +159,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 
 		final long noInd = 1244;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noInd, date(1983, 3, 12), "RuppertPeriode", "Jeroma", Sexe.FEMININ);
@@ -190,7 +190,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 
 		final long noInd = 1244;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noInd, date(1983, 3, 12), "RuppertPeriode", "Jeroma", Sexe.FEMININ);
@@ -220,7 +220,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 
 		final long noInd = 1244;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noInd, date(1983, 3, 12), "RuppertPeriode", "Jeroma", Sexe.FEMININ);
@@ -252,7 +252,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 
 		final long noInd = 1244;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noInd, date(1983, 3, 12), "RuppertPeriode", "Jeroma", Sexe.FEMININ);
@@ -287,7 +287,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		}
 		final Ids ids = new Ids();
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noInd, date(1994, 3, 12), "RuppertPeriode", "Jeroma", Sexe.FEMININ);
@@ -329,7 +329,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		}
 		final Ids ids = new Ids();
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noInd, date(1994, 3, 12), "RuppertPeriode", "Jeroma", Sexe.FEMININ);
@@ -370,7 +370,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		}
 		final Ids ids = new Ids();
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noInd, date(1994, 3, 12), "RuppertPeriode", "Jeroma", Sexe.FEMININ);
@@ -407,7 +407,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		}
 		final Ids ids = new Ids();
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noInd, date(1994, 3, 12), "RuppertPeriode", "Jeroma", Sexe.FEMININ);
@@ -454,7 +454,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		}
 		final Ids ids = new Ids();
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noInd, date(1994, 3, 12), "RuppertPeriode", "Jeroma", Sexe.FEMININ);
@@ -489,7 +489,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 
 		final long noInd = 1244;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noInd, date(1994, 3, 12), "RuppertPeriode", "Jeroma", Sexe.FEMININ);
@@ -520,7 +520,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 
 		final long noInd = 1244;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noInd, date(1983, 3, 12), "RuppertPeriode", "Jeroma", Sexe.FEMININ);
@@ -560,7 +560,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		final Ids ids = new Ids();
 		final RegDate dateNaissance = date(2005, 3, 12);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertPeriode", "Jeroma", Sexe.FEMININ);
@@ -615,7 +615,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		final Ids ids = new Ids();
 		final RegDate dateNaissance = date(2005, 3, 12);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertPeriode", "Jeroma", Sexe.FEMININ);
@@ -676,7 +676,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		final Ids ids = new Ids();
 		final RegDate dateNaissance = date(2005, 3, 12);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertPeriode", "Jeroma", Sexe.FEMININ);
@@ -716,7 +716,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 	public void testControleAssujettissementPersonneMorale() throws Exception {
 
 		// mise en place service PM
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(MockEntrepriseFactory.BCV);
@@ -759,7 +759,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		final RegDate dateDemandeControle = date(2012, 8, 15);
 
 		// mise ne place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu papa = addIndividu(noIndPapa, null, "Potter", "James", Sexe.MASCULIN);
@@ -823,7 +823,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 	public void testControlePM() throws Exception {
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(MockEntrepriseFactory.BCV);
@@ -904,7 +904,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 
 		final long noInd = 1244;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noInd, date(1994, 3, 12), "RuppertPeriode", "Jeroma", Sexe.FEMININ);
@@ -940,7 +940,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		}
 		final Ids ids = new Ids();
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noInd, date(1994, 3, 12), "RuppertPeriode", "Jeroma", Sexe.FEMININ);
@@ -986,7 +986,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		}
 		final Ids ids = new Ids();
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertPeriode", "Jeroma", Sexe.FEMININ);
@@ -1030,7 +1030,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		}
 		final Ids ids = new Ids();
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertPeriode", "Jeroma", Sexe.FEMININ);
@@ -1081,7 +1081,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		}
 		final Ids ids = new Ids();
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertPeriode", "Jeroma", Sexe.FEMININ);
@@ -1125,7 +1125,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 	public void testRunControleDateSansForPresentMaisRejetPresent() throws Exception {
 		final long noInd = 1234;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noInd, date(1956, 3, 12), "Ruppert", "Jerome", Sexe.MASCULIN);
@@ -1153,7 +1153,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 	public void testRunControleDateAvecForPresentPasConcerneParRejets() throws Exception {
 		final long noInd = 1234;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noInd, date(1956, 3, 12), "Ruppert", "Jerome", Sexe.MASCULIN);
@@ -1183,7 +1183,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 	public void testRunControlePeriodeNonAssujettiAvecRejets() throws Exception {
 		final long noInd = 1244;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noInd, date(1994, 3, 12), "RuppertPeriode", "Jeroma", Sexe.FEMININ);
@@ -1210,7 +1210,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 	public void testRunControlePeriodeAssujettiNonConcerneParRejets() throws Exception {
 		final long noInd = 1244;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noInd, date(1994, 3, 12), "RuppertPeriode", "Jeroma", Sexe.FEMININ);
@@ -1244,7 +1244,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		final long noInd = 1244;
 		final int periode = 2012;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noInd, date(1994, 3, 12), "RuppertPeriode", "Jeroma", Sexe.FEMININ);

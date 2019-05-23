@@ -8,7 +8,7 @@
 	<!-- Service Infrastructure -->
 	
 	<bean id="serviceInfrastructureService" class="ch.vd.unireg.interfaces.service.ServiceInfrastructureImpl">
-		<property name="rawService" ref="serviceInfrastructureRaw" />
+		<property name="connector" ref="infrastructureConnector" />
 		<property name="tiersDAO" ref="tiersDAO"/>
 	</bean>
 
@@ -16,13 +16,13 @@
 
 	<bean id="serviceCivilService" class="ch.vd.unireg.interfaces.service.ServiceCivilImpl">
 		<property name="infraService" ref="serviceInfrastructureService"/>
-		<property name="target" ref="serviceCivilRaw"/>
+		<property name="target" ref="individuConnector"/>
 	</bean>
 
 	<!-- Service Entreprise -->
 
 	<bean id="serviceEntreprise" class="ch.vd.unireg.interfaces.service.ServiceEntrepriseImpl">
-		<property name="target" ref="serviceEntrepriseRaw"/>
+		<property name="connector" ref="entrepriseConnector"/>
 		<property name="serviceInfra" ref="serviceInfrastructureService"/>
 	</bean>
 

@@ -6,9 +6,9 @@ import java.util.List;
 
 import ch.vd.evd0001.v5.Nationality;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
-import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.common.XmlUtils;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
+import ch.vd.unireg.interfaces.infra.data.Pays;
 
 public class NationaliteRCPers implements Nationalite, Serializable {
 
@@ -18,23 +18,23 @@ public class NationaliteRCPers implements Nationalite, Serializable {
 	private final RegDate dateFin;
 	private final Pays pays;
 
-	public NationaliteRCPers(Nationality nat, ServiceInfrastructureRaw infraService) {
+	public NationaliteRCPers(Nationality nat, InfrastructureConnector infraService) {
 		this.pays = initPays(nat, infraService);
 		this.dateDebut = determineDateDebut(this.pays, nat.getNaturalizationSwissDate(), nat.getReportingDate());
 		this.dateFin = determineDateFin(this.pays, nat.getUndoSwissDate());
 	}
 
-	private static Pays initPays(Nationality nationality, ServiceInfrastructureRaw infraService) {
+	private static Pays initPays(Nationality nationality, InfrastructureConnector infraService) {
 		final Pays p;
 		final String status = nationality.getNationalityStatus();
 		switch (status) {
 		case "0":
 			// inconnu
-			p = infraService.getPays(ServiceInfrastructureRaw.noPaysInconnu, null);
+			p = infraService.getPays(InfrastructureConnector.noPaysInconnu, null);
 			break;
 		case "1":
 			// apatride
-			p = infraService.getPays(ServiceInfrastructureRaw.noPaysApatride, null);
+			p = infraService.getPays(InfrastructureConnector.noPaysApatride, null);
 			break;
 		case "2":
 			// ok
@@ -88,7 +88,7 @@ public class NationaliteRCPers implements Nationalite, Serializable {
 		return XmlUtils.xmlcal2regdate(date);
 	}
 
-	public static Nationalite get(Nationality nationality, ServiceInfrastructureRaw infraService) {
+	public static Nationalite get(Nationality nationality, InfrastructureConnector infraService) {
 		if (nationality == null) {
 			return null;
 		}

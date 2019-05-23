@@ -3,7 +3,7 @@ package ch.vd.unireg.evenement.civil.engine.ech;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -41,7 +41,7 @@ abstract public class AnnulationOuCessationSeparationEchProcessorTest extends Ab
 		final RegDate dateSeparation = date(2008, 11, 23);
 		final RegDate dateReconciliation = date(2009, 1, 15);
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu monsieur = addIndividu(noMonsieur, dateNaissance, "Lambert", "Christophe", true);
@@ -156,7 +156,7 @@ abstract public class AnnulationOuCessationSeparationEchProcessorTest extends Ab
 		final RegDate dateMariage = date(2005, 5, 5);
 		final RegDate dateSeparation = date(2008, 11, 23);
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu monsieur = addIndividu(noMonsieur, dateNaissance, "Lambert", "Christophe", true);

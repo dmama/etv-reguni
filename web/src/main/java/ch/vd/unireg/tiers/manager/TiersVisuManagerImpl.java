@@ -19,7 +19,7 @@ import ch.vd.unireg.common.pagination.WebParamPagination;
 import ch.vd.unireg.decision.aci.DecisionAciViewComparator;
 import ch.vd.unireg.di.view.DeclarationImpotListView;
 import ch.vd.unireg.interfaces.InterfaceDataException;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.mouvement.MouvementDossier;
 import ch.vd.unireg.mouvement.view.MouvementDetailView;
 import ch.vd.unireg.tiers.AutreCommunaute;
@@ -63,7 +63,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 	@Transactional(readOnly = true)
 	public TiersVisuView getView(Long numero, HistoFlags histoFlags,
 	                             boolean modeImpression, boolean forsPrincipauxPagines, boolean forsSecondairesPagines, boolean autresForsPagines, WebParamPagination webParamPagination)
-			throws AdresseException, ServiceInfrastructureException {
+			throws AdresseException, InfrastructureException {
 
 		final TiersVisuView tiersVisuView = new TiersVisuView(histoFlags);
 
@@ -278,7 +278,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 	/**
 	 * Mise à jour de la vue MouvementDetailView
 	 */
-	private List<MouvementDetailView> getMouvements(Contribuable contribuable) throws ServiceInfrastructureException {
+	private List<MouvementDetailView> getMouvements(Contribuable contribuable) throws InfrastructureException {
 
 		final List<MouvementDetailView> mvtsView = new ArrayList<>();
 		final Set<MouvementDossier> mvts = contribuable.getMouvementsDossier();

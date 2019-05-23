@@ -17,11 +17,11 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.common.NomPrenom;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -85,7 +85,7 @@ public class RoleServiceTest extends BusinessTest {
 	@Test
 	public void testRun() throws Exception {
 
-		serviceCivil.setUp(new DefaultMockServiceCivil());
+		serviceCivil.setUp(new DefaultMockIndividuConnector());
 
 		class Ids {
 			public Long paul;
@@ -316,7 +316,7 @@ public class RoleServiceTest extends BusinessTest {
 	public void testRunSourcierPartiHorsSuisseEtRevenuDansAutreCommuneLaMemeAnnee() throws Exception {
 
 		final long noIndividu = 183747L;
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Lasource", "Marie", Sexe.FEMININ);
@@ -351,7 +351,7 @@ public class RoleServiceTest extends BusinessTest {
 	public void testRunSourcierPartiDansAutreCommuneLaMemeAnneePuisRetourPremiereCommuneDebutAnneeSuivante() throws Exception {
 
 		final long noIndividu = 183747L;
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Lasource", "Marie", Sexe.FEMININ);
@@ -390,7 +390,7 @@ public class RoleServiceTest extends BusinessTest {
 	public void testRunSourcierPartiHorsSuisseEtRevenuDansAutreCommuneLaMemeAnneePuisRetourPremiereCommuneAnneeSuivante() throws Exception {
 
 		final long noIndividu = 183747L;
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividu, null, "Lasource", "Marie", Sexe.FEMININ);
@@ -432,7 +432,7 @@ public class RoleServiceTest extends BusinessTest {
 		final RegDate dateArrivee = date(pfRoles - 2, 1, 1);
 		final RegDate dateDepartHc = date(pfRoles, 3, 12);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, null, "Drüstiene", "Helmut", Sexe.MASCULIN);
@@ -494,7 +494,7 @@ public class RoleServiceTest extends BusinessTest {
 	@Test
 	public void testRunOID() throws Exception {
 
-		serviceCivil.setUp(new DefaultMockServiceCivil());
+		serviceCivil.setUp(new DefaultMockIndividuConnector());
 
 		class Ids {
 			public Long paul;
@@ -1025,7 +1025,7 @@ public class RoleServiceTest extends BusinessTest {
 		final MockCommune communeAvant = MockCommune.Villette;
 		final MockCommune communeApres = MockCommune.BourgEnLavaux;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, date(1976, 3, 11), "Dantès", "Edmond", true);
@@ -1067,7 +1067,7 @@ public class RoleServiceTest extends BusinessTest {
 		final RegDate dateAchat = date(2010, 6, 12);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, date(1976, 3, 11), "Dantès", "Edmond", true);
@@ -1111,7 +1111,7 @@ public class RoleServiceTest extends BusinessTest {
 		final RegDate dateAchat = date(2010, 6, 12);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, date(1976, 3, 11), "Dantès", "Edmond", true);
@@ -1161,7 +1161,7 @@ public class RoleServiceTest extends BusinessTest {
 		final RegDate dateMariage = date(anneeRoles, 5, 3);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu lui = addIndividu(noIndividuLui, null, "Dupont", "Philippe", Sexe.MASCULIN);
@@ -1233,7 +1233,7 @@ public class RoleServiceTest extends BusinessTest {
 		final RegDate dateDemenagement = date(anneeRoles, 10, 6);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, null, "Dupont", "Philippe", Sexe.MASCULIN);
@@ -1302,7 +1302,7 @@ public class RoleServiceTest extends BusinessTest {
 	public void testContribuableHorsSuisseAvecPlusieursImmeublesDansMemeOID() throws Exception {
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne...
@@ -1349,7 +1349,7 @@ public class RoleServiceTest extends BusinessTest {
 		final RegDate dateMariage = date(anneeRole, 2, 17);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// le contribuable est HS... rien de connu dans les contrôles des habitants vaudois
@@ -1750,7 +1750,7 @@ public class RoleServiceTest extends BusinessTest {
 		final RegDate dateFaillite = date(anneeRole, 8, 12);
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// rien du tout, c'est plus simple
@@ -1812,7 +1812,7 @@ public class RoleServiceTest extends BusinessTest {
 		final RegDate dateFaillite = date(anneeRole, 8, 12);
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// rien du tout, c'est plus simple
@@ -1874,7 +1874,7 @@ public class RoleServiceTest extends BusinessTest {
 		final long noIndividu = 34284226L;
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final RegDate dateNaissance = date(1954, 6, 21);

@@ -16,10 +16,10 @@ import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.unireg.evenement.civil.interne.HandleStatus;
-import ch.vd.unireg.interfaces.civil.cache.ServiceCivilCache;
+import ch.vd.unireg.interfaces.civil.cache.IndividuConnectorCache;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.type.ActionEvenementCivilEch;
 import ch.vd.unireg.type.EtatEvenementCivil;
@@ -183,11 +183,11 @@ public class TranslationStrategyWithRelationshipCacheCleanupFacadeTest extends A
 		final RegDate dateNaissanceFils = date(1968, 12, 9);
 
 		// créée le service civil et un cache par devant
-		final ServiceCivilCache cache = new ServiceCivilCache();
+		final IndividuConnectorCache cache = new IndividuConnectorCache();
 		cache.setCacheManager(getBean(CacheManager.class, "ehCacheManager"));
 		cache.setCacheName("serviceCivil");
 		cache.setDataEventService(getBean(DataEventService.class, "dataEventService"));
-		cache.setTarget(new MockServiceCivil() {
+		cache.setTarget(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu pere = addIndividu(noIndividuPere, dateNaissancePere, "Tartempion", "John", Sexe.MASCULIN);
@@ -298,11 +298,11 @@ public class TranslationStrategyWithRelationshipCacheCleanupFacadeTest extends A
 		final RegDate dateNaissanceFils = date(1968, 12, 9);
 
 		// créée le service civil et un cache par devant
-		final ServiceCivilCache cache = new ServiceCivilCache();
+		final IndividuConnectorCache cache = new IndividuConnectorCache();
 		cache.setCacheManager(getBean(CacheManager.class, "ehCacheManager"));
 		cache.setCacheName("serviceCivil");
 		cache.setDataEventService(getBean(DataEventService.class, "dataEventService"));
-		cache.setTarget(new MockServiceCivil() {
+		cache.setTarget(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu pere = addIndividu(noIndividuPere, dateNaissancePere, "Tartempion", "John", Sexe.MASCULIN);

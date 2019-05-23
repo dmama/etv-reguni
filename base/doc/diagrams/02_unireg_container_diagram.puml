@@ -19,11 +19,11 @@ System(systemRefSec, "RefSec", "Référentiel de sécurité")
 System(systemRCPers, "RCPers", "Registre cantonal des personnes")
 System(systemRCEnt, "RCEnt", "Registre cantonal des entreprises")
 
-Rel(uniregWeb, uniregNexus, "Appels de services", "Spring-remoting")
+Rel(uniregWeb, uniregNexus, "Appels de connecteurs", "Spring-remoting")
 Rel_R(uniregWeb, oracleDB, "Lecture/écriture", "Hibernate/JDBC")
 Rel_R(uniregWeb, uniregWS, "Emet des événements internes", "JMS")
 
-Rel(uniregWS, uniregNexus, "Appels de services", "Spring-remoting")
+Rel(uniregWS, uniregNexus, "Appels de connecteurs", "Spring-remoting")
 Rel_L(uniregWS, uniregWeb, "Recherche des tiers", "Spring-remoting")
 Rel_R(uniregWS, oracleDB, "Lecture/écriture", "Hibernate/JDBC")
 Rel_D(uniregWS, systemESB, "Emet des événements fiscaux", "JMS")

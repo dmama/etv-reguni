@@ -21,9 +21,9 @@ import ch.vd.unireg.evenement.civil.interne.MessageCollector;
 import ch.vd.unireg.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.unireg.indexer.tiers.TiersIndexedData;
 import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.TiersCriteria;
@@ -78,7 +78,7 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 	@Test
 	public void testHandle() throws Exception {
 
-		serviceCivil.setUp(new DefaultMockServiceCivil());
+		serviceCivil.setUp(new DefaultMockIndividuConnector());
 		loadDatabase(DB_UNIT_DATA_FILE);
 
 		LOGGER.debug("Test de traitement d'un événement de changement de date de naissance.");
@@ -132,7 +132,7 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 	@Test
 	public void testHandleWithErrors() throws Exception {
 
-		serviceCivil.setUp(new DefaultMockServiceCivil());
+		serviceCivil.setUp(new DefaultMockIndividuConnector());
 		loadDatabase(DB_UNIT_DATA_FILE);
 
 		LOGGER.debug("Test de traitement d'un événement de changement de date de naissance (avec erreurs).");
@@ -189,7 +189,7 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 		final long noIndJean = 1234L;
 		final RegDate dateNaissance = date(1973, 4, 27);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndJean, dateNaissance, "Jean", "De Florette", true);
@@ -258,7 +258,7 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 		final RegDate ancienneDateMajorite = ancienneDateNaissance.addYears(FiscalDateHelper.AGE_MAJORITE);
 		final RegDate dateNaissance = date(1990, 4, 27);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndHuguette, dateNaissance, "Huguette", "Marcot", true);

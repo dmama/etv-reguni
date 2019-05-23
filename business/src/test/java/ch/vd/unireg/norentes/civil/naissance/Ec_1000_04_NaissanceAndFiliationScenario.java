@@ -7,7 +7,7 @@ import org.apache.commons.collections4.Predicate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.norentes.annotation.Check;
 import ch.vd.unireg.norentes.annotation.Etape;
@@ -49,7 +49,7 @@ public class Ec_1000_04_NaissanceAndFiliationScenario extends EvenementCivilScen
 
 	@Override
 	protected void initServiceCivil() {
-		serviceCivilService.setUp(new MockServiceCivil() {
+		serviceCivilService.setUp(new MockIndividuConnector() {
 			@Override
 			public void init() {
 				MockIndividu pierre = addIndividu(123, dateNaissance, "Durand", "Pierre", true);

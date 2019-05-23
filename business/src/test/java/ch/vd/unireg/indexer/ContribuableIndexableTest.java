@@ -30,12 +30,12 @@ import ch.vd.unireg.indexer.tiers.TiersIndexable;
 import ch.vd.unireg.indexer.tiers.TiersIndexableData;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockEntrepriseCivile;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
-import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
+import ch.vd.unireg.interfaces.infra.mock.DefaultMockInfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -95,7 +95,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 	public void onSetUp() throws Exception {
 
 		serviceCivil = new ProxyServiceCivil(serviceInfra);
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 
@@ -118,7 +118,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		});
 
 		serviceEntreprise = new ProxyServiceEntreprise(serviceInfra);
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				final MockEntrepriseCivile ent = MockEntrepriseFactory.createSimpleEntrepriseRC(784512L, 7845121001L, "Pittet Levage S.A.R.L", date(1924, 4, 1), null,
@@ -140,7 +140,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		assujettissementService.setValidationService(new ValidationServiceImpl());
 		assujettissementService.afterPropertiesSet();
 
-		serviceInfra = new ServiceInfrastructureImpl(new DefaultMockServiceInfrastructureService(), tiersDAO);
+		serviceInfra = new ServiceInfrastructureImpl(new DefaultMockInfrastructureConnector(), tiersDAO);
 
 		regimeFiscalService = new RegimeFiscalServiceImpl();
 		regimeFiscalService.setServiceInfra(serviceInfra);
@@ -919,7 +919,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		final long noIndividu = 4378546L;
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, null, "Beretta", "Tim", Sexe.MASCULIN);

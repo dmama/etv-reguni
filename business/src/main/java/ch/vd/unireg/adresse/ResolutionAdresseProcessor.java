@@ -18,7 +18,7 @@ import ch.vd.unireg.common.LoggingStatusManager;
 import ch.vd.unireg.common.ParallelBatchTransactionTemplateWithResults;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.hibernate.HibernateTemplate;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
@@ -113,7 +113,7 @@ public class ResolutionAdresseProcessor {
 		try {
 			rue = infraService.getRueByNumero(numeroRueAdresse);
 		}
-		catch (ServiceInfrastructureException e) {
+		catch (InfrastructureException e) {
 			throw new RuntimeException("Tiers " + adresseSuisse.getTiers().getId() + " Impossible de trouver la rue avec le numéro  " + numeroRueAdresse + " Message d'erreur:" + e.getMessage());
 		}
 
@@ -127,7 +127,7 @@ public class ResolutionAdresseProcessor {
 		try {
 			localite = infraService.getLocaliteByONRP(numeroLocalite, adresseSuisse.getDateFin());
 		}
-		catch (ServiceInfrastructureException e) {
+		catch (InfrastructureException e) {
 			throw new RuntimeException("Tiers " + adresseSuisse.getTiers().getId() + " Impossible de trouver la localite avec le numéro  " + numeroLocalite + " Message d'erreur:" + e.getMessage());
 		}
 		if (localite == null) {

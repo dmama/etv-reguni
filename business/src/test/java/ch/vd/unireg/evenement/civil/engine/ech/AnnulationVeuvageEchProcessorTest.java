@@ -6,7 +6,7 @@ import org.junit.Test;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
@@ -30,7 +30,7 @@ public class AnnulationVeuvageEchProcessorTest extends AbstractEvenementCivilEch
 		final RegDate dateDeces = date(2012, 1, 31);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu lui = addIndividu(noIndividuLui, null, "Lesurvivant", "Ken", true);
@@ -96,7 +96,7 @@ public class AnnulationVeuvageEchProcessorTest extends AbstractEvenementCivilEch
 	    final RegDate dateDeces = date(2012, 1, 31);
 
 	    // mise en place civile
-	    serviceCivil.setUp(new MockServiceCivil() {
+	    serviceCivil.setUp(new MockIndividuConnector() {
 		    @Override
 		    protected void init() {
 			    final MockIndividu lui = addIndividu(noIndividuLui, null, "Lesurvivant", "Ken", true);

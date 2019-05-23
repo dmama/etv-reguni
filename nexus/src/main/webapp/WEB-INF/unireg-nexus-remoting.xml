@@ -6,24 +6,24 @@
 	(dont les beans de remoting ci-dessous) dans le DispatcherServlet -->
     <bean class="org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter"/>
 
-	<bean name="serviceCivilRawExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
-		<property name="service" ref="serviceCivilRaw" />
-		<property name="serviceInterface" value="ch.vd.unireg.interfaces.civil.ServiceCivilRaw" />
+	<bean name="individuConnectorExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
+		<property name="service" ref="individuConnector" />
+		<property name="serviceInterface" value="ch.vd.unireg.interfaces.civil.IndividuConnector" />
  	</bean>
 
-	<bean name="serviceEntrepriseRawExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
-		<property name="service" ref="serviceEntrepriseRaw"/>
-		<property name="serviceInterface" value="ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseRaw"/>
+	<bean name="entrepriseConnectorExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
+		<property name="service" ref="entrepriseConnector"/>
+		<property name="serviceInterface" value="ch.vd.unireg.interfaces.entreprise.EntrepriseConnector"/>
 	</bean>
 
-	<bean name="serviceUpiRawExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
-		<property name="service" ref="serviceUpiRaw"/>
-		<property name="serviceInterface" value="ch.vd.unireg.interfaces.upi.ServiceUpiRaw"/>
+	<bean name="upiConnectorExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
+		<property name="service" ref="upiConnector"/>
+		<property name="serviceInterface" value="ch.vd.unireg.interfaces.upi.UpiConnector"/>
 	</bean>
 
-	<bean name="serviceInfraRawExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
-		<property name="service" ref="serviceInfrastructureRaw" />
-		<property name="serviceInterface" value="ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw" />
+	<bean name="infraConnectorExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
+		<property name="service" ref="infrastructureConnector" />
+		<property name="serviceInterface" value="ch.vd.unireg.interfaces.infra.InfrastructureConnector" />
 	</bean>
 
 	<bean name="dataEventServiceExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
@@ -31,21 +31,21 @@
 		<property name="serviceInterface" value="ch.vd.unireg.data.CivilDataEventListener" />
 	</bean>
 
-	<bean name="refSecClientExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
-		<property name="service" ref="refSecClient"/>
-		<property name="serviceInterface" value="ch.vd.unireg.wsclient.refsec.RefSecClient"/>
+	<bean name="securiteConnectorExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
+		<property name="service" ref="securiteConnector"/>
+		<property name="serviceInterface" value="ch.vd.unireg.interfaces.securite.SecuriteConnector"/>
 	</bean>
 
 	<bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
 		<property name="urlMap">
 			<map>
 				<!-- Mapping des beans de remoting -->
-				<entry key="/serviceCivil.remoting" value-ref="serviceCivilRawExporter" />
-				<entry key="/serviceUpi.remoting" value-ref="serviceUpiRawExporter" />
-				<entry key="/serviceInfra.remoting" value-ref="serviceInfraRawExporter" />
+				<entry key="/individuConnector.remoting" value-ref="individuConnectorExporter" />
+				<entry key="/upiConnector.remoting" value-ref="upiConnectorExporter" />
+				<entry key="/infraConnector.remoting" value-ref="infraConnectorExporter" />
 				<entry key="/dataEventService.remoting" value-ref="dataEventServiceExporter" />
-				<entry key="/serviceEntreprise.remoting" value-ref="serviceEntrepriseRawExporter"/>
-				<entry key="/refSecClient.remoting" value-ref="refSecClientExporter"/>
+				<entry key="/entrepriseConnector.remoting" value-ref="entrepriseConnectorExporter"/>
+				<entry key="/securiteConnector.remoting" value-ref="securiteConnectorExporter"/>
 			</map>
 		</property>
 	</bean>

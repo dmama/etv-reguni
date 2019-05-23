@@ -222,7 +222,7 @@
 	<bean id="createNonresidentByVNRequestHandlerV1" class="ch.vd.unireg.evenement.party.CreateNonresidentByVNRequestHandlerV1">
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="securityProvider" ref="securityProviderInterface"/>
-		<property name="serviceUpi" ref="serviceUpiRaw"/>
+		<property name="upiConnector" ref="upiConnector"/>
 		<property name="tiersSearcher" ref="globalTiersSearcher"/>
 	</bean>
 

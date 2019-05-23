@@ -1,12 +1,12 @@
 package ch.vd.unireg.norentes.civil.correction.conjoint;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.unireg.norentes.annotation.Check;
 import ch.vd.unireg.norentes.annotation.Etape;
 import ch.vd.unireg.norentes.common.EvenementCivilScenario;
@@ -60,7 +60,7 @@ public class Ec_41040_01_CorrectionConjoint_MarieSeul_Scenario extends Evenement
 
 	private final MockCommune commune = MockCommune.Lausanne;
 
-	private class InternalServiceCivil extends MockServiceCivil {
+	private class InternalIndividuConnector extends MockIndividuConnector {
 
 		@Override
 		protected void init() {
@@ -88,11 +88,11 @@ public class Ec_41040_01_CorrectionConjoint_MarieSeul_Scenario extends Evenement
 		}
 	}
 
-	private InternalServiceCivil internalServiceCivil;
+	private InternalIndividuConnector internalServiceCivil;
 
 	@Override
 	protected void initServiceCivil() {
-		internalServiceCivil = new InternalServiceCivil();
+		internalServiceCivil = new InternalIndividuConnector();
 		serviceCivilService.setUp(internalServiceCivil);
 	}
 

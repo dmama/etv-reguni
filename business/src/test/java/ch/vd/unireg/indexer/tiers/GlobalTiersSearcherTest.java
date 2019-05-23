@@ -21,8 +21,8 @@ import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.common.Fuse;
 import ch.vd.unireg.indexer.EmptySearchCriteriaException;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -77,7 +77,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			long idBcv;
 		}
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(MockEntrepriseFactory.NESTLE);
@@ -85,7 +85,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			}
 		});
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// rien...
@@ -163,7 +163,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		final long noIndividuElle = 451L;
 		final RegDate dateMariage = date(2001, 1, 1);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu lui = addIndividu(noIndividuLui, null, "Bolomey", "Marcel", Sexe.MASCULIN);
@@ -263,7 +263,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		final long noIndividuLui = 481L;
 		final long noIndividuElle = 451L;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu lui = addIndividu(noIndividuLui, null, "Bolomey", "Marcel", Sexe.MASCULIN);
@@ -366,7 +366,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 
 		final long noIndividuDespont = 4278234L;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividuDespont, null, "Despont", "Alain", Sexe.MASCULIN);
@@ -434,7 +434,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		final long noIndividuAndre = 436742L;
 		final long noIndividuMartine = 81541897L;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu andre = addIndividu(noIndividuAndre, null, "Duval", "André", Sexe.MASCULIN);
@@ -467,7 +467,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		final long noIndividuRichard = 436742L;
 		final long noIndividuClaudine = 81541897L;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu richard = addIndividu(noIndividuRichard, null, "Bolomey", "Richard", Sexe.MASCULIN);
@@ -536,7 +536,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		final long noIndividuAndre = 436742L;
 		final long noIndividuMartine = 81541897L;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu andre = addIndividu(noIndividuAndre, null, "Duval", "André", Sexe.MASCULIN);
@@ -569,7 +569,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		final long noIndividuAndre = 436742L;
 		final long noIndividuMartine = 81541897L;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu andre = addIndividu(noIndividuAndre, null, "Duval", "André", Sexe.MASCULIN);
@@ -632,7 +632,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		final RegDate dateNaissanceMartine = date(1966, 4, 30);
 		final RegDate dateNaissanceFred = date(1966, 4, 22);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu andre = addIndividu(noIndividuAndre, dateNaissanceAndre, "Duval", "André", Sexe.MASCULIN);
@@ -707,7 +707,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		final long noIndividuAndre = 436742L;
 		final long noIndividuMartine = 81541897L;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu andre = addIndividu(noIndividuAndre, null, "Duval", "André", Sexe.MASCULIN);
@@ -928,7 +928,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	@Test
 	public void testSearchEntreprise() throws Exception {
 
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				addEntreprise(MockEntrepriseFactory.BANQUE_COOP);
@@ -1263,7 +1263,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 
 		final long noIndividuDespont = 4278234L;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividuDespont, null, "Despont", "Alain", Sexe.MASCULIN);
@@ -1322,7 +1322,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 
 		final long noIndividuDespont = 4278234L;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividuDespont, null, "Despont", "Alain", Sexe.MASCULIN);
@@ -1357,7 +1357,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 
 		final long noIndividuDespont = 4278234L;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividuDespont, null, "Despont", "Alain", Sexe.MASCULIN);
@@ -1390,7 +1390,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 
 		final long noIndividuDespont = 4278234L;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				addIndividu(noIndividuDespont, null, "Despont", "Alain", Sexe.MASCULIN);
@@ -1499,7 +1499,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	public void testRechercheDateNaissancePartielle() throws Exception {
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// personne...

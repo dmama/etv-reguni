@@ -34,7 +34,7 @@ import ch.vd.unireg.extraction.BaseExtractorImpl;
 import ch.vd.unireg.extraction.BatchableExtractor;
 import ch.vd.unireg.extraction.ExtractionJob;
 import ch.vd.unireg.extraction.ExtractionService;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.mouvement.BordereauMouvementDossier;
 import ch.vd.unireg.mouvement.BordereauMouvementDossierDAO;
 import ch.vd.unireg.mouvement.EnvoiDossierVersCollectiviteAdministrative;
@@ -89,7 +89,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<MouvementDetailView> find(MouvementMasseCriteriaView view, Integer noCollAdmInitiatrice, ParamPagination paramPagination, MutableInt total) throws ServiceInfrastructureException {
+	public List<MouvementDetailView> find(MouvementMasseCriteriaView view, Integer noCollAdmInitiatrice, ParamPagination paramPagination, MutableInt total) throws InfrastructureException {
 
 		if (view == null) {
 			return null;
@@ -149,7 +149,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<MouvementDetailView> find(MouvementDossierCriteria criteria) throws ServiceInfrastructureException {
+	public List<MouvementDetailView> find(MouvementDossierCriteria criteria) throws InfrastructureException {
 		final List<MouvementDossier> mvts = getMouvementDossierDAO().find(criteria, null);
 		return getViews(mvts, false, false);
 	}
@@ -225,7 +225,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 
 	@Override
 	@Transactional(readOnly = true)
-	public BordereauEnvoiReceptionView getBordereauPourReception(long idBordereau) throws ServiceInfrastructureException {
+	public BordereauEnvoiReceptionView getBordereauPourReception(long idBordereau) throws InfrastructureException {
 		final BordereauEnvoiReceptionView view = new BordereauEnvoiReceptionView();
 		final BordereauMouvementDossier bordereau = bordereauDAO.get(idBordereau);
 		fillView(bordereau, view);
@@ -256,7 +256,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 
 	@Override
 	@Transactional(readOnly = true)
-	public void refreshView(BordereauEnvoiReceptionView view) throws ServiceInfrastructureException {
+	public void refreshView(BordereauEnvoiReceptionView view) throws InfrastructureException {
 		final BordereauMouvementDossier bordereau = bordereauDAO.get(view.getId());
 		fillView(bordereau, view);
 		view.setMvts(getViews(bordereau.getContenu(), true, false));
@@ -318,7 +318,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 			final ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative ca = getServiceInfra().getCollectivite(noCa);
 			return ca.getNomCourt();
 		}
-		catch (ServiceInfrastructureException e) {
+		catch (InfrastructureException e) {
 			return String.format("Collectivité - %d", noCa);
 		}
 	}

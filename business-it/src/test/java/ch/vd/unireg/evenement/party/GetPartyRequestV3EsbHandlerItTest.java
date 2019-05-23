@@ -9,7 +9,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.unireg.common.BusinessItTest;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.service.mock.ProxyServiceCivil;
@@ -75,7 +75,7 @@ public class GetPartyRequestV3EsbHandlerItTest extends PartyRequestEsbHandlerV1I
 		handler.setSecurityProvider(new MockSecurityProvider(Role.VISU_ALL));
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Malapalud", "Alfred", Sexe.MASCULIN);
@@ -181,7 +181,7 @@ public class GetPartyRequestV3EsbHandlerItTest extends PartyRequestEsbHandlerV1I
 		handler.setSecurityProvider(new MockSecurityProvider(Role.VISU_LIMITE));
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Malapalud", "Alfred", Sexe.MASCULIN);

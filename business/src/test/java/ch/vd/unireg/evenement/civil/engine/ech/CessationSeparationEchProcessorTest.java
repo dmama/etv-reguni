@@ -10,7 +10,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchErreur;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -40,7 +40,7 @@ public class CessationSeparationEchProcessorTest extends AnnulationOuCessationSe
 		final RegDate dateSeparation = dateMariage.addMonths(8);
 		final RegDate dateReconciliation = dateSeparation.addMonths(2);
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu monsieur = addIndividu(noMonsieur, date(1923, 2, 12), "Crispus", "Santacorpus", true);
@@ -155,7 +155,7 @@ public class CessationSeparationEchProcessorTest extends AnnulationOuCessationSe
 		final RegDate dateSeparation = dateMariage.addMonths(8);
 		final RegDate dateReconciliation = dateSeparation.addMonths(2);
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				final RegDate dateNaissanceMonsieur = date(1923, 2, 12);
@@ -288,7 +288,7 @@ public class CessationSeparationEchProcessorTest extends AnnulationOuCessationSe
 		final RegDate dateSeparation = dateMariage.addMonths(8);
 		final RegDate dateReconciliation = dateSeparation.addMonths(2);
 
-		serviceCivil.setUp(new DefaultMockServiceCivil() {
+		serviceCivil.setUp(new DefaultMockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu monsieur = addIndividu(noMonsieur, date(1923, 2, 12), "Crispus", "Santacorpus", true);

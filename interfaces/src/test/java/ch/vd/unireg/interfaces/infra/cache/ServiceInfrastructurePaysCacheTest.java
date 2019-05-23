@@ -8,15 +8,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Test;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.cache.UniregCacheManagerImpl;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.data.TypeAffranchissement;
 
@@ -34,12 +33,12 @@ public class ServiceInfrastructurePaysCacheTest {
 	private static final int noOfsPaysTriste = 8889;
 	private static final String isoPaysTriste = "PT";
 
-	private ServiceInfrastructureCache cache;
-	private TestService target;
+	private InfrastructureConnectorCache cache;
+	private Test target;
 
 	private static class MockPays implements Pays {
 
-		public static final MockPays Suisse = new MockPays(ServiceInfrastructureRaw.noOfsSuisse, "CH", "Suisse");
+		public static final MockPays Suisse = new MockPays(InfrastructureConnector.noOfsSuisse, "CH", "Suisse");
 		public static final MockPays PaysEnchante = new MockPays(noOfsPaysEnchante, isoPaysEnchante, "Pays enchanté", null, DATE_FIN_PAYS_ENCHANTE);
 		public static final MockPays PaysMerveilleux = new MockPays(noOfsPaysEnchante, isoPaysEnchante, "Pays merveilleux", DATE_DEBUT_PAYS_MERVEILLEUX, null);
 		public static final MockPays PaysTriste = new MockPays(noOfsPaysTriste, isoPaysTriste, "Pays triste", null, DATE_FIN_PAYS_TRISTE);
@@ -63,7 +62,7 @@ public class ServiceInfrastructurePaysCacheTest {
 
 		@Override
 		public boolean isSuisse() {
-			return noOfs == ServiceInfrastructureRaw.noOfsSuisse;
+			return noOfs == InfrastructureConnector.noOfsSuisse;
 		}
 
 		@Override
@@ -135,7 +134,7 @@ public class ServiceInfrastructurePaysCacheTest {
 	/**
 	 * On ne connait que la Suisse et le Pays enchanté, qui a changé de nom pour devenir plus tard le Pays merveilleux
 	 */
-	private static class TestService extends NotImplementedServiceInfrastructure {
+	private static class Test extends NotImplementedInfrastructureConnector {
 
 		private AtomicInteger callsOfs = new AtomicInteger(0);
 		private AtomicInteger callsIso = new AtomicInteger(0);
@@ -154,7 +153,7 @@ public class ServiceInfrastructurePaysCacheTest {
 		}
 
 		@Override
-		public Pays getPays(int numeroOFS, @Nullable RegDate date) throws ServiceInfrastructureException {
+		public Pays getPays(int numeroOFS, @Nullable RegDate date) throws InfrastructureException {
 
 			// "null" = date du jour
 			if (date == null) {
@@ -191,7 +190,7 @@ public class ServiceInfrastructurePaysCacheTest {
 		}
 
 		@Override
-		public Pays getPays(@NotNull String codePays, @Nullable RegDate date) throws ServiceInfrastructureException {
+		public Pays getPays(@NotNull String codePays, @Nullable RegDate date) throws InfrastructureException {
 
 			// "null" = date du jour
 			if (date == null) {
@@ -230,18 +229,18 @@ public class ServiceInfrastructurePaysCacheTest {
 
 	@Before
 	public void setup() throws Exception {
-		cache = new ServiceInfrastructureCache();
+		cache = new InfrastructureConnectorCache();
 		final CacheManager manager = CacheManager.create(ResourceUtils.getFile("classpath:ut/ehcache.xml").getPath());
 		cache.setCacheManager(manager);
-		cache.setCacheName("serviceInfra");
-		cache.setShortLivedCacheName("serviceInfraShortLived");
+		cache.setCacheName("infraConnector");
+		cache.setShortLivedCacheName("infraConnectorShortLived");
 		cache.setUniregCacheManager(new UniregCacheManagerImpl());
-		target = new TestService();
+		target = new Test();
 		cache.setTarget(target);
 		cache.afterPropertiesSet();
 	}
 
-	@Test
+	@org.junit.Test
 	public void testGetPaysParNumeroOfs() throws Exception {
 		target.reset();
 
@@ -389,7 +388,7 @@ public class ServiceInfrastructurePaysCacheTest {
 		}
 	}
 
-	@Test
+	@org.junit.Test
 	public void testGetPaysParCodeIso() throws Exception {
 		target.reset();
 

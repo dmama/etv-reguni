@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdressesResolutionException;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.tiers.view.DebiteurEditView;
 import ch.vd.unireg.tiers.view.TiersEditView;
 import ch.vd.unireg.type.PeriodiciteDecompte;
@@ -25,10 +25,10 @@ public interface TiersEditManager {
 	 * @param numero
 	 * @return un objet TiersView
 	 * @throws AdressesResolutionException
-	 * @throws ServiceInfrastructureException
+	 * @throws InfrastructureException
 	 */
 	@Transactional(readOnly = true)
-	TiersEditView getCivilView(Long numero) throws AdresseException, ServiceInfrastructureException;
+	TiersEditView getCivilView(Long numero) throws AdresseException, InfrastructureException;
 
 	/**
 	 * Charge les informations dans un objet qui servira de view
@@ -36,10 +36,10 @@ public interface TiersEditManager {
 	 * @param numero numéro de tiers du débiteur recherché
 	 * @return un objet DebiteurEditView
 	 * @throws AdressesResolutionException
-	 * @throws ServiceInfrastructureException
+	 * @throws InfrastructureException
 	 */
 	@Transactional(readOnly = true)
-	DebiteurEditView getDebiteurEditView(Long numero) throws AdresseException, ServiceInfrastructureException;
+	DebiteurEditView getDebiteurEditView(Long numero) throws AdresseException, InfrastructureException;
 
 	/**
 	 * @param dpiId identifiant technique du débiteur
@@ -59,7 +59,7 @@ public interface TiersEditManager {
 	 * @throws AdressesResolutionException
 	 */
 	@Transactional(readOnly = true)
-	TiersEditView getView(Long numero) throws AdresseException, ServiceInfrastructureException;
+	TiersEditView getView(Long numero) throws AdresseException, InfrastructureException;
 
 	/**
 	 * Rafraichissement de la vue
@@ -70,7 +70,7 @@ public interface TiersEditManager {
 	 * @throws AdressesResolutionException
 	 */
 	@Transactional(readOnly = true)
-	TiersEditView refresh(TiersEditView view, Long numero) throws AdresseException, ServiceInfrastructureException;
+	TiersEditView refresh(TiersEditView view, Long numero) throws AdresseException, InfrastructureException;
 
 	/**
 	 * Cree une nouvelle instance de TiersView correspondant a une personne

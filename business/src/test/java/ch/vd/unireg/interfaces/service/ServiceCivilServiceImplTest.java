@@ -6,20 +6,20 @@ import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.adresse.HistoriqueCommune;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.common.DonneesCivilesException;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockEtatCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockEtatCivilList;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.adresse.HistoriqueCommune;
-import ch.vd.unireg.common.BusinessTest;
-import ch.vd.unireg.common.DonneesCivilesException;
 import ch.vd.unireg.interfaces.model.AdressesCiviles;
 import ch.vd.unireg.type.TypeAdresseCivil;
 
@@ -37,7 +37,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 		// Aucun état civil
 		final long noIndividu = 1;
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu momo = addIndividu(noIndividu, RegDate.get(1961, 3, 12), "Durant", "Maurice", true);
@@ -60,7 +60,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 		final MockEtatCivil ec1 = new MockEtatCivil();
 		ec1.setDateDebut(RegDate.get(1960, 3, 1));
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu momo = addIndividu(noIndividu, RegDate.get(1961, 3, 12), "Durant", "Maurice", true);
@@ -102,7 +102,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 		ec2.setDateDebut(RegDate.get(1985, 4, 21));
 		ec3.setDateDebut(RegDate.get(1973, 1, 8));
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu momo = addIndividu(noIndividu, RegDate.get(1961, 3, 12), "Durant", "Maurice", true);
@@ -151,7 +151,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 		ec2.setDateDebut(RegDate.get(1973, 1, 8));
 		ec3.setDateDebut(RegDate.get(1985, 4, 21));
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu momo = addIndividu(noIndividu, RegDate.get(1961, 3, 12), "Durant", "Maurice", true);
@@ -195,7 +195,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 		final MockEtatCivil ec1 = new MockEtatCivil();
 		ec1.setDateDebut(null);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu momo = addIndividu(noIndividu, RegDate.get(1961, 3, 12), "Durant", "Maurice", true);
@@ -231,7 +231,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 		final MockEtatCivil ec2 = new MockEtatCivil(null, TypeEtatCivil.MARIE);
 		final MockEtatCivil ec3 = new MockEtatCivil(date(2012, 1, 1), TypeEtatCivil.SEPARE);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu momo = addIndividu(noIndividu, RegDate.get(1961, 3, 12), "Durant", "Maurice", true);
@@ -269,7 +269,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 		final long noIndividu = 1;
 
 		// crée un individu avec deux adresses principales actives en même temps
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu individu = addIndividu(noIndividu, RegDate.get(1961, 3, 12), "Durant", "Maurice", true);
@@ -297,7 +297,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 		final long noIndividu = 1;
 
 		// crée un individu avec deux adresses principales actives en même temps
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				MockIndividu individu = addIndividu(noIndividu, RegDate.get(1961, 3, 12), "Durant", "Maurice", true);
@@ -332,7 +332,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 		final RegDate arriveeLeSentier = RegDate.get(1990, 4, 22);
 
 		// crée un individu avec tout un parcours (y compris HC/HS)
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, naissance, "Durant", "Maurice", true);
@@ -397,7 +397,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 		final RegDate arriveeLeSentier = RegDate.get(1990, 4, 22);
 
 		// crée un individu avec tout un parcours (y compris HC/HS)
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, naissance, "Durant", "Maurice", true);
@@ -457,7 +457,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 		final RegDate departLeSentier = RegDate.get(1999, 12, 31);
 
 		// crée un individu avec tout un parcours (y compris HC/HS)
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, naissance, "Durant", "Maurice", true);
@@ -533,7 +533,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 		final long noIndividuConjointAbsent = 3254625426L;
 		final RegDate dateMariage = date(1989, 4, 9);
 
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				final MockIndividu present = addIndividu(noIndividuPresent, null, "Flintstone", "Henry", true);

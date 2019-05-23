@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import ch.vd.evd0007.v1.Country;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessItTest;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.data.Canton;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Localite;
@@ -241,7 +241,7 @@ public class ServiceInfrastructureServiceTest extends BusinessItTest {
 		final int NB_CALLS = 1000;
 		final int[] OFS = {8212, 8215, 8100};
 		final Random rnd = new Random();
-		final ServiceInfrastructureRaw serviceAvecCache = getBean(ServiceInfrastructureRaw.class, "serviceInfrastructureCache");
+		final InfrastructureConnector serviceAvecCache = getBean(InfrastructureConnector.class, "infrastructureConnectorCache");
 
 		final class GetPays implements Runnable {
 			private final int noOfs;
@@ -279,7 +279,7 @@ public class ServiceInfrastructureServiceTest extends BusinessItTest {
 		final int NB_CALLS = 1000;
 		final int[] OFS = {8212, 8215, 8100};
 		final Random rnd = new Random();
-		final ServiceInfrastructureRaw serviceSansCache = getBean(ServiceInfrastructureRaw.class, "serviceInfrastructureMarshaller");
+		final InfrastructureConnector serviceSansCache = getBean(InfrastructureConnector.class, "infrastructureConnectorMarshaller");
 
 		final class GetPays implements Runnable {
 			private final int noOfs;

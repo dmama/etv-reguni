@@ -6,7 +6,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.evenement.civil.engine.regpp.EvenementCivilProcessor;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPPDAO;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
 import ch.vd.unireg.interfaces.service.mock.ProxyServiceCivil;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -26,7 +26,7 @@ public class IcEvtCivilNaissanceTest extends InContainerTest {
 		final long noInd = 333527L;
 
 		if (serviceCivil instanceof ProxyServiceCivil) {
-			((ProxyServiceCivil) serviceCivil).setUp(new MockServiceCivil() {
+			((ProxyServiceCivil) serviceCivil).setUp(new MockIndividuConnector() {
 				@Override
 				protected void init() {
 					addIndividu(noInd, RegDate.get(2002, 3, 2), "Annette", "Dulac", false);

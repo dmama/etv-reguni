@@ -9,7 +9,7 @@ import java.util.Map;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.common.CasePostale;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.EchangeAciCom;
 import ch.vd.unireg.type.TexteCasePostale;
@@ -25,21 +25,21 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 	public static final int noNouvelleEntite = 25;
 
 	public static final MockCollectiviteAdministrative OTG =
-			new MockCollectiviteAdministrative(ServiceInfrastructureRaw.noTuteurGeneral, new MockAdresse("Chemin de Mornex", "32", "1014", "Lausanne"), "Office Tuteur général", null, null, "OTG");
+			new MockCollectiviteAdministrative(InfrastructureConnector.noTuteurGeneral, new MockAdresse("Chemin de Mornex", "32", "1014", "Lausanne"), "Office Tuteur général", null, null, "OTG");
 	public static final MockCollectiviteAdministrative CEDI =
-			new MockCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI, new MockAdresse("", "", "1014", "Lausanne Adm cant"), "Centre d'enregistrement", "des déclarations d'impôt", null,
-					"CEDI");
+			new MockCollectiviteAdministrative(InfrastructureConnector.noCEDI, new MockAdresse("", "", "1014", "Lausanne Adm cant"), "Centre d'enregistrement", "des déclarations d'impôt", null,
+			                                   "CEDI");
 	public static final MockCollectiviteAdministrative CAT =
-			new MockCollectiviteAdministrative(ServiceInfrastructureRaw.noCAT, new MockAdresse(), "Administration cantonale des impôts", null, null, "CAT", "0213160000", "0213162140");
+			new MockCollectiviteAdministrative(InfrastructureConnector.noCAT, new MockAdresse(), "Administration cantonale des impôts", null, null, "CAT", "0213160000", "0213162140");
 	public static final MockCollectiviteAdministrative ACI =
-			new MockCollectiviteAdministrative(ServiceInfrastructureRaw.noACI, new MockAdresse("Route de Berne", "46", "1014", "Lausanne Adm cant"), "Administration cantonale des impôts", null,
-					null, "ACI");
+			new MockCollectiviteAdministrative(InfrastructureConnector.noACI, new MockAdresse("Route de Berne", "46", "1014", "Lausanne Adm cant"), "Administration cantonale des impôts", null,
+			                                   null, "ACI");
 	public static final MockCollectiviteAdministrative ACI_SECTION_DE_TAXATION =
 			new MockCollectiviteAdministrative(noNouvelleEntite, new MockAdresse("Route de Berne", "46", "1014", "Lausanne Adm cant"),
 					"Administration cantonale des impôts", "ACI - SECTION DE TAXATION", null, "ACI-SECTION-DE-TAXATION");
 	public static final MockCollectiviteAdministrative ACIIMPOTSOURCE =
-			new MockCollectiviteAdministrative(ServiceInfrastructureRaw.noACIImpotSource, new MockAdresse("Rue Caroline", "9bis", "1014", "Lausanne Adm cant"),
-					"Administration cantonale des impôts", "IMPOT A LA SOURCE", null, "ACI-IMPOT-SOURCE", "0213162065", "0213162898");
+			new MockCollectiviteAdministrative(InfrastructureConnector.noACIImpotSource, new MockAdresse("Rue Caroline", "9bis", "1014", "Lausanne Adm cant"),
+			                                   "Administration cantonale des impôts", "IMPOT A LA SOURCE", null, "ACI-IMPOT-SOURCE", "0213162065", "0213162898");
 
 	public static final class JusticePaix {
 		public static final MockCollectiviteAdministrative DistrictsJuraNordVaudoisEtGrosDeVaud =
@@ -88,7 +88,7 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 	}
 
 	/**
-	 * Crée une nouvelle collectivité administrative qui sera enregistrée automatiquement dans le mock par défaut du service infrastructure.
+	 * Crée une nouvelle collectivité administrative qui sera enregistrée automatiquement dans le mock par défaut du connecteur d'infrastructure.
 	 */
 	@SuppressWarnings({"JavaDoc"})
 	protected MockCollectiviteAdministrative(long noColAdm, Adresse adresse, String nomComplet1, String nomComplet2, String nomComplet3, String nomCourt, String noTelephone, String noFax) {
@@ -102,12 +102,12 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 		this.noFax = noFax;
 		this.isValide = true;
 
-		DefaultMockServiceInfrastructureService.addColAdm(this);
+		DefaultMockInfrastructureConnector.addColAdm(this);
 		addToAll(noColAdm, this);
 	}
 
 	/**
-	 * Crée une nouvelle collectivité administrative qui sera enregistrée automatiquement dans le mock par défaut du service infrastructure.
+	 * Crée une nouvelle collectivité administrative qui sera enregistrée automatiquement dans le mock par défaut du connecteur d'infrastructure.
 	 */
 	@SuppressWarnings({"JavaDoc"})
 	protected MockCollectiviteAdministrative(long noColAdm, Adresse adresse, String nomComplet1, String nomComplet2, String nomComplet3, String nomCourt) {
@@ -119,7 +119,7 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 		this.nomCourt = nomCourt;
 		this.isValide = true;
 
-		DefaultMockServiceInfrastructureService.addColAdm(this);
+		DefaultMockInfrastructureConnector.addColAdm(this);
 		addToAll(noColAdm, this);
 	}
 

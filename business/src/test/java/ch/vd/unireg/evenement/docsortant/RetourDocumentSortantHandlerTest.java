@@ -31,8 +31,8 @@ import ch.vd.unireg.editique.ConstantesEditique;
 import ch.vd.unireg.editique.TypeDocumentEditique;
 import ch.vd.unireg.efacture.DocumentEFacture;
 import ch.vd.unireg.efacture.DocumentEFactureDAO;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
+import ch.vd.unireg.interfaces.entreprise.mock.MockEntrepriseConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
@@ -98,7 +98,7 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 		final RegDate delaiRetour = dateEnvoiDocument.addMonths(3);
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// rien ni personne
@@ -170,7 +170,7 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 		final RegDate delaiRetour = dateEnvoiDocument.addMonths(3);
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// rien ni personne
@@ -237,7 +237,7 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 		final RegDate dateRappel = today;
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// rien ni personne
@@ -306,7 +306,7 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 		final int anneeDeclaration = 2016;
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// rien ni personne
@@ -380,7 +380,7 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 		final int anneeDeclaration = 2016;
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// rien ni personne
@@ -453,7 +453,7 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 		final int anneeDeclaration = 2016;
 
 		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
+		serviceEntreprise.setUp(new MockEntrepriseConnector() {
 			@Override
 			protected void init() {
 				// rien ni personne
@@ -526,7 +526,7 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 		final int anneeDeclaration = 2016;
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockIndividuConnector() {
 			@Override
 			protected void init() {
 				// rien ni personne

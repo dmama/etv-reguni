@@ -8,9 +8,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseException;
-import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseRaw;
-import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseWrapper;
+import ch.vd.unireg.interfaces.entreprise.EntrepriseConnector;
+import ch.vd.unireg.interfaces.entreprise.EntrepriseConnectorException;
+import ch.vd.unireg.interfaces.entreprise.EntrepriseConnectorWrapper;
 import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDE;
 import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDEQuery;
 import ch.vd.unireg.interfaces.entreprise.data.BaseAnnonceIDE;
@@ -26,9 +26,9 @@ import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
  * Proxy du service entreprise civile à enregistrer dans l'application context et permettant à chaque test unitaire de spécifier précisemment l'instance
  * du service entreprise civile à utiliser.
  */
-public class ProxyServiceEntreprise implements ServiceEntreprise, ServiceEntrepriseWrapper {
+public class ProxyServiceEntreprise implements ServiceEntreprise, EntrepriseConnectorWrapper {
 
-	private ServiceEntrepriseRaw target;
+	private EntrepriseConnector target;
 	private final ServiceEntrepriseImpl service;
 
 	public ProxyServiceEntreprise(ServiceInfrastructureService serviceInfra) {
@@ -36,44 +36,44 @@ public class ProxyServiceEntreprise implements ServiceEntreprise, ServiceEntrepr
 		this.service = new ServiceEntrepriseImpl(serviceInfra);
 	}
 
-	public void setUp(ServiceEntrepriseRaw target) {
+	public void setUp(EntrepriseConnector target) {
 		this.target = target;
-		this.service.setTarget(target);
+		this.service.setConnector(target);
 	}
 
 	@Override
-	public EntrepriseCivile getEntrepriseHistory(long noEntreprise) throws ServiceEntrepriseException {
+	public EntrepriseCivile getEntrepriseHistory(long noEntreprise) throws EntrepriseConnectorException {
 		assertTargetNotNull();
 		return service.getEntrepriseHistory(noEntreprise);
 	}
 
 	@Override
-	public Map<Long, EntrepriseCivileEvent> getEntrepriseEvent(long noEvenement) throws ServiceEntrepriseException {
+	public Map<Long, EntrepriseCivileEvent> getEntrepriseEvent(long noEvenement) throws EntrepriseConnectorException {
 		assertTargetNotNull();
 		return service.getEntrepriseEvent(noEvenement);
 	}
 
 	@Override
-	public ServiceEntrepriseRaw.Identifiers getEntrepriseIdsByNoIde(String noide) throws ServiceEntrepriseException {
+	public EntrepriseConnector.Identifiers getEntrepriseIdsByNoIde(String noide) throws EntrepriseConnectorException {
 		assertTargetNotNull();
 		return service.getEntrepriseIdsByNoIde(noide);
 	}
 
 	@Override
-	public Long getNoEntrepriseCivileFromNoEtablissementCivil(Long noEtablissement) throws ServiceEntrepriseException {
+	public Long getNoEntrepriseCivileFromNoEtablissementCivil(Long noEtablissement) throws EntrepriseConnectorException {
 		assertTargetNotNull();
 		return service.getNoEntrepriseCivileFromNoEtablissementCivil(noEtablissement);
 	}
 
 	@Override
-	public AdressesCivilesHisto getAdressesEntrepriseHisto(long noEntrepriseCivile) throws ServiceEntrepriseException {
+	public AdressesCivilesHisto getAdressesEntrepriseHisto(long noEntrepriseCivile) throws EntrepriseConnectorException {
 		assertTargetNotNull();
 		return service.getAdressesEntrepriseHisto(noEntrepriseCivile);
 	}
 
 	@Nullable
 	@Override
-	public AdressesCivilesHisto getAdressesEtablissementCivilHisto(long noEtablissementCivil) throws ServiceEntrepriseException {
+	public AdressesCivilesHisto getAdressesEtablissementCivilHisto(long noEtablissementCivil) throws EntrepriseConnectorException {
 		assertTargetNotNull();
 		return service.getAdressesEtablissementCivilHisto(noEtablissementCivil);
 	}
@@ -87,7 +87,7 @@ public class ProxyServiceEntreprise implements ServiceEntreprise, ServiceEntrepr
 
 	@NotNull
 	@Override
-	public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws ServiceEntrepriseException {
+	public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws EntrepriseConnectorException {
 		assertTargetNotNull();
 		return service.findAnnoncesIDE(query, order, pageNumber, resultsPerPage);
 	}
@@ -117,14 +117,14 @@ public class ProxyServiceEntreprise implements ServiceEntreprise, ServiceEntrepr
 	}
 
 	@Override
-	public ServiceEntrepriseRaw getTarget() {
+	public EntrepriseConnector getTarget() {
 		return target;
 	}
 
 	@Override
-	public ServiceEntrepriseRaw getUltimateTarget() {
-		if (target instanceof ServiceEntrepriseWrapper) {
-			return ((ServiceEntrepriseWrapper) target).getUltimateTarget();
+	public EntrepriseConnector getUltimateTarget() {
+		if (target instanceof EntrepriseConnectorWrapper) {
+			return ((EntrepriseConnectorWrapper) target).getUltimateTarget();
 		}
 		else {
 			return target;

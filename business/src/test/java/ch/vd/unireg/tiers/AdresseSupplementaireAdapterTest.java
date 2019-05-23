@@ -3,16 +3,16 @@ package ch.vd.unireg.tiers;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.common.CasePostale;
-import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
-import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
-import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.adresse.AdresseEtrangere;
 import ch.vd.unireg.adresse.AdresseGenerique.SourceType;
 import ch.vd.unireg.adresse.AdresseSuisse;
 import ch.vd.unireg.adresse.AdresseSupplementaireAdapter;
 import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.interfaces.common.CasePostale;
+import ch.vd.unireg.interfaces.infra.mock.DefaultMockInfrastructureConnector;
+import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
+import ch.vd.unireg.interfaces.infra.mock.MockPays;
+import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureImpl;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.type.TexteCasePostale;
@@ -24,7 +24,7 @@ import static org.junit.Assert.assertNull;
 
 public class AdresseSupplementaireAdapterTest extends WithoutSpringTest {
 
-	final ServiceInfrastructureService serviceInfra = new ServiceInfrastructureImpl(new DefaultMockServiceInfrastructureService(), new MockTiersDAO());
+	final ServiceInfrastructureService serviceInfra = new ServiceInfrastructureImpl(new DefaultMockInfrastructureConnector(), new MockTiersDAO());
 
 	/**
 	 * [SIFISC-143] test la surcharge du npa de la localité par le npa de la case postale pour les adresses suisses

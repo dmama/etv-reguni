@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.adresse.AdressesResolutionException;
 import ch.vd.unireg.common.pagination.WebParamPagination;
 import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuable;
@@ -13,6 +12,7 @@ import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribu
 import ch.vd.unireg.evenement.identification.contribuable.TypeDemande;
 import ch.vd.unireg.identification.contribuable.view.IdentificationContribuableListCriteria;
 import ch.vd.unireg.identification.contribuable.view.IdentificationMessagesResultView;
+import ch.vd.unireg.interfaces.infra.InfrastructureException;
 
 public interface IdentificationMessagesListManager {
 
@@ -22,7 +22,7 @@ public interface IdentificationMessagesListManager {
 	@Transactional(readOnly = true)
 	List<IdentificationMessagesResultView> find(IdentificationContribuableCriteria bean, WebParamPagination pagination,
 	                                            IdentificationContribuableEtatFilter filter, TypeDemande... typeDemande)
-			throws AdressesResolutionException, ServiceInfrastructureException;
+			throws AdressesResolutionException, InfrastructureException;
 
 	/**
 	 * Cherche et compte les identifications correspondant aux criteres
@@ -53,7 +53,7 @@ public interface IdentificationMessagesListManager {
 	 */
 	@Transactional(readOnly = true)
 	List<IdentificationMessagesResultView> findEncoursSeul(IdentificationContribuableCriteria bean, WebParamPagination pagination, TypeDemande... typeDemande)
-			throws AdressesResolutionException, ServiceInfrastructureException;
+			throws AdressesResolutionException, InfrastructureException;
 
 
 	/**
