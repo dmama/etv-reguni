@@ -44,7 +44,7 @@
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.unireg</groupId>
-			<artifactId>unireg-wsclient-rcpers</artifactId>
+			<artifactId>unireg-wsclient-rcpers-v5</artifactId>
 			<version>5.8-SNAPSHOT</version>
 		</dependency>
 		<dependency>
