@@ -21,8 +21,11 @@
 
 	<bean id="securityProviderCache" class="ch.vd.unireg.security.SecurityProviderCache">
 		<property name="target" ref="securityProviderImpl" />
-		<property name="cacheManager" ref="ehCacheManager" />
-		<property name="cacheName" value="securityProvider" />
+		<property name="cache">
+			<bean class="net.sf.ehcache.Ehcache" factory-bean="ehCacheManager" factory-method="getCache">
+				<constructor-arg value="securityProvider" />
+			</bean>
+		</property>
 		<property name="dataEventService" ref="dataEventService" />
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="droitAccesDAO" ref="droitAccesDAO" />

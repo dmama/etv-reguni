@@ -229,11 +229,11 @@ public class ServiceInfrastructurePaysCacheTest {
 
 	@Before
 	public void setup() throws Exception {
-		cache = new InfrastructureConnectorCache();
 		final CacheManager manager = CacheManager.create(ResourceUtils.getFile("classpath:ut/ehcache.xml").getPath());
-		cache.setCacheManager(manager);
-		cache.setCacheName("infraConnector");
-		cache.setShortLivedCacheName("infraConnectorShortLived");
+
+		cache = new InfrastructureConnectorCache();
+		cache.setCache(manager.getCache("infraConnector"));
+		cache.setShortLivedCache(manager.getCache("infraConnectorShortLived"));
 		cache.setUniregCacheManager(new UniregCacheManagerImpl());
 		target = new Test();
 		cache.setTarget(target);

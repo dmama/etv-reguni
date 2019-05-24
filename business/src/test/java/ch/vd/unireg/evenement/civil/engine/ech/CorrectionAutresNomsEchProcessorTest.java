@@ -54,10 +54,11 @@ public class CorrectionAutresNomsEchProcessorTest extends AbstractCorrectionEchP
 		final RegDate dateEvt = date(2011, 10, 31);
 		final RegDate dateNaissance = date(1956, 4, 23);
 
+		final CacheManager cacheManager = getBean(CacheManager.class, "ehCacheManager");
+
 		// créée le service civil et un cache par devant
 		final IndividuConnectorCache cache = new IndividuConnectorCache();
-		cache.setCacheManager(getBean(CacheManager.class, "ehCacheManager"));
-		cache.setCacheName("serviceCivil");
+		cache.setCache(cacheManager.getCache("serviceCivil"));
 		cache.setDataEventService(getBean(DataEventService.class, "dataEventService"));
 		cache.setTarget(new DefaultMockIndividuConnector(false) {
 			@Override

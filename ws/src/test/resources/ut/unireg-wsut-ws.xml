@@ -53,8 +53,11 @@
 
 	<bean id="partyService3Cache" class="ch.vd.unireg.webservices.party3.cache.PartyWebServiceCache">
 		<property name="target" ref="partyService3Impl" />
-		<property name="cacheManager" ref="ehCacheManager" />
-		<property name="cacheName" value="webServiceParty3" />
+		<property name="cache">
+			<bean class="net.sf.ehcache.Ehcache" factory-bean="ehCacheManager" factory-method="getCache">
+				<constructor-arg value="webServiceParty3" />
+			</bean>
+		</property>
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 	</bean>
 
@@ -76,8 +79,11 @@
 
 	<bean id="wsv5Cache" class="ch.vd.unireg.webservices.v5.cache.BusinessWebServiceCache">
 		<property name="target" ref="wsv5Business"/>
-		<property name="cacheManager" ref="ehCacheManager" />
-		<property name="cacheName" value="webService5" />
+		<property name="cache">
+			<bean class="net.sf.ehcache.Ehcache" factory-bean="ehCacheManager" factory-method="getCache">
+				<constructor-arg value="webService5" />
+			</bean>
+		</property>
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
@@ -129,8 +135,11 @@
 
 	<bean id="wsv6Cache" class="ch.vd.unireg.webservices.v6.cache.BusinessWebServiceCache">
 		<property name="target" ref="wsv6Business"/>
-		<property name="cacheManager" ref="ehCacheManager" />
-		<property name="cacheName" value="webService6" />
+		<property name="cache">
+			<bean class="net.sf.ehcache.Ehcache" factory-bean="ehCacheManager" factory-method="getCache">
+				<constructor-arg value="webService6" />
+			</bean>
+		</property>
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
@@ -182,8 +191,11 @@
 
 	<bean id="wsv7Cache" class="ch.vd.unireg.webservices.v7.cache.BusinessWebServiceCache">
 		<property name="target" ref="wsv7Business"/>
-		<property name="cacheManager" ref="ehCacheManager" />
-		<property name="cacheName" value="webService7" />
+		<property name="cache">
+			<bean class="net.sf.ehcache.Ehcache" factory-bean="ehCacheManager" factory-method="getCache">
+				<constructor-arg value="webService7" />
+			</bean>
+		</property>
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
 		<property name="securityProvider" ref="securityProviderInterface"/>

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Set;
 
 import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -97,18 +96,12 @@ public class AutorisationCacheImpl implements AutorisationCache, FiscalDataEvent
 	private PlatformTransactionManager transactionManager;
 	private DataEventService dataEventService;
 	private Cache cache;
-	private String cacheName;
-	private CacheManager cacheManager;
 	private UniregCacheManager uniregCacheManager;
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		dataEventService.register(this);
 		uniregCacheManager.register(this);
-		cache = cacheManager.getCache(cacheName);
-		if (cache == null) {
-			throw new IllegalArgumentException("Le cache avec le nom [" + cacheName + "] est inconnu.");
-		}
 	}
 
 	@Override
@@ -138,12 +131,8 @@ public class AutorisationCacheImpl implements AutorisationCache, FiscalDataEvent
 		this.dataEventService = dataEventService;
 	}
 
-	public void setCacheName(String cacheName) {
-		this.cacheName = cacheName;
-	}
-
-	public void setCacheManager(CacheManager cacheManager) {
-		this.cacheManager = cacheManager;
+	public void setCache(Cache cache) {
+		this.cache = cache;
 	}
 
 	public void setUniregCacheManager(UniregCacheManager uniregCacheManager) {

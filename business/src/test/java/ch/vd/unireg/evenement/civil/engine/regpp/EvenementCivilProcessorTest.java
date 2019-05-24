@@ -806,8 +806,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		// Initialisation du service civil avec un cache
 		final IndividuConnectorCache cache = new IndividuConnectorCache();
-		cache.setCacheManager(cacheManager);
-		cache.setCacheName("serviceCivil");
+		cache.setCache(cacheManager.getCache("serviceCivil"));
 		cache.setUniregCacheManager(uniregCacheManager);
 		cache.setDataEventService(dataEventService);
 		cache.afterPropertiesSet();
@@ -899,8 +898,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		// Initialisation du service civil avec un cache
 		final IndividuConnectorCache cache = new IndividuConnectorCache();
-		cache.setCacheManager(cacheManager);
-		cache.setCacheName("serviceCivil");
+		cache.setCache(cacheManager.getCache("serviceCivil"));
 		cache.setUniregCacheManager(uniregCacheManager);
 		cache.setDataEventService(dataEventService);
 		cache.afterPropertiesSet();
@@ -1002,8 +1000,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		// Initialisation du service civil avec un cache
 		final IndividuConnectorCache cache = new IndividuConnectorCache();
-		cache.setCacheManager(cacheManager);
-		cache.setCacheName("serviceCivil");
+		cache.setCache(cacheManager.getCache("serviceCivil"));
 		cache.setUniregCacheManager(uniregCacheManager);
 		cache.setDataEventService(dataEventService);
 		cache.afterPropertiesSet();

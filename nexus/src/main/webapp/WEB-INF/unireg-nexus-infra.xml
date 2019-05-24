@@ -26,9 +26,16 @@
 
 	<bean id="infrastructureConnectorCache" class="ch.vd.unireg.interfaces.infra.cache.InfrastructureConnectorCache">
 		<property name="target" ref="infrastructureConnectorTracing" />
-		<property name="cacheManager" ref="ehCacheManager" />
-		<property name="cacheName" value="infraConnector" />
-		<property name="shortLivedCacheName" value="infraConnectorShortLived" />
+		<property name="cache">
+			<bean class="net.sf.ehcache.Ehcache" factory-bean="ehCacheManager" factory-method="getCache">
+				<constructor-arg value="infraConnector" />
+			</bean>
+		</property>
+		<property name="shortLivedCache">
+			<bean class="net.sf.ehcache.Ehcache" factory-bean="ehCacheManager" factory-method="getCache">
+				<constructor-arg value="infraConnectorShortLived" />
+			</bean>
+		</property>
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
 	</bean>

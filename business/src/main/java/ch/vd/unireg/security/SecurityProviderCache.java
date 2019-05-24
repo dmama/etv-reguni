@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import org.slf4j.Logger;
@@ -38,8 +37,6 @@ public class SecurityProviderCache implements UniregCacheInterface, KeyDumpableC
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SecurityProviderCache.class);
 
-	private CacheManager cacheManager;
-	private String cacheName;
 	private SecurityProviderInterface target;
 	private Ehcache cache;
 	private DataEventService dataEventService;
@@ -72,16 +69,10 @@ public class SecurityProviderCache implements UniregCacheInterface, KeyDumpableC
 		this.target = target;
 	}
 
-	public void setCacheManager(CacheManager manager) {
-		this.cacheManager = manager;
+	public void setCache(Ehcache cache) {
+		this.cache = cache;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setCacheName(String cacheName) {
-		this.cacheName = cacheName;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setUniregCacheManager(UniregCacheManager uniregCacheManager) {
 		this.uniregCacheManager = uniregCacheManager;
 	}
@@ -94,12 +85,10 @@ public class SecurityProviderCache implements UniregCacheInterface, KeyDumpableC
 		this.tiersDAO = tiersDAO;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDroitAccesDAO(DroitAccesDAO droitAccesDAO) {
 		this.droitAccesDAO = droitAccesDAO;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setPreloadTiersIds(boolean preloadTiersIds) {
 		this.preloadTiersIds = preloadTiersIds;
 	}
@@ -424,10 +413,6 @@ public class SecurityProviderCache implements UniregCacheInterface, KeyDumpableC
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		cache = cacheManager.getCache(cacheName);
-		if (cache == null) {
-			throw new IllegalArgumentException("Le cache avec le nom [" + cacheName + "] est inconnu.");
-		}
 		dataEventService.register(this);
 		uniregCacheManager.register(this);
 		initCaches();
@@ -444,6 +429,10 @@ public class SecurityProviderCache implements UniregCacheInterface, KeyDumpableC
 	 * Initialise les caches.
 	 */
 	private void initCaches() {
+
+		if (cache == null) {
+			throw new IllegalArgumentException("Le cache est nul");
+		}
 
 		// cache.init() -> rien à faire sur le ehcache : il va se construire tout seul à la demande
 		tiersExistenceCache = loadTiersIds(); // l'assignement est atomique en java, pas besoin de locking

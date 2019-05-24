@@ -128,8 +128,7 @@ public class EntrepriseConnectorCacheTest extends WithoutSpringTest {
 		manager.clearAll(); // Manager is a singleton, and may exist already
 
 		cache = new EntrepriseConnectorCache();
-		cache.setCacheManager(manager);
-		cache.setCacheName("entrepriseConnector");
+		cache.setCache(manager.getCache("entrepriseConnector"));
 		cache.setUniregCacheManager(new UniregCacheManagerImpl());
 		cache.setStatsService(new MockStatsService());
 		cache.setTarget(target);

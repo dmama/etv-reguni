@@ -80,9 +80,8 @@ public class PartyWebServiceBatchTest extends WebserviceTest {
 		webService.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
 
 		cache = new PartyWebServiceCache();
-		cache.setCacheManager(manager);
+		cache.setCache(manager.getCache("webServiceParty3"));
 		cache.setTarget(webService);
-		cache.setCacheName("webServiceParty3");
 	}
 
 	/**

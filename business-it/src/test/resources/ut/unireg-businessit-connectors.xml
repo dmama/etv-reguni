@@ -16,8 +16,11 @@
 
 	<bean id="individuConnectorCache" class="ch.vd.unireg.interfaces.civil.cache.IndividuConnectorCache">
 		<property name="target" ref="individuConnectorTracing" />
-		<property name="cacheManager" ref="ehCacheManager" />
-		<property name="cacheName" value="serviceCivil" />
+		<property name="cache">
+			<bean class="net.sf.ehcache.Ehcache" factory-bean="ehCacheManager" factory-method="getCache">
+				<constructor-arg value="serviceCivil" />
+			</bean>
+		</property>
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
 		<property name="dataEventService" ref="dataEventService" />
@@ -41,8 +44,11 @@
 
 	<bean id="entrepriseConnectorCache" class="ch.vd.unireg.interfaces.entreprise.cache.EntrepriseConnectorCache">
 		<property name="target" ref="entrepriseConnectorTracing" />
-		<property name="cacheManager" ref="ehCacheManager" />
-		<property name="cacheName" value="entrepriseConnector" />
+		<property name="cache">
+			<bean class="net.sf.ehcache.Ehcache" factory-bean="ehCacheManager" factory-method="getCache">
+				<constructor-arg value="entrepriseConnector" />
+			</bean>
+		</property>
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
 		<property name="dataEventService" ref="dataEventService" />
@@ -95,9 +101,16 @@
 
 	<bean id="infrastructureConnectorCache" class="ch.vd.unireg.interfaces.infra.cache.InfrastructureConnectorCache">
 		<property name="target" ref="infrastructureConnectorTracing" />
-		<property name="cacheManager" ref="ehCacheManager" />
-		<property name="cacheName" value="infraConnector" />
-		<property name="shortLivedCacheName" value="infraConnectorShortLived" />
+		<property name="cache">
+			<bean class="net.sf.ehcache.Ehcache" factory-bean="ehCacheManager" factory-method="getCache">
+				<constructor-arg value="infraConnector" />
+			</bean>
+		</property>
+		<property name="shortLivedCache">
+			<bean class="net.sf.ehcache.Ehcache" factory-bean="ehCacheManager" factory-method="getCache">
+				<constructor-arg value="infraConnectorShortLived" />
+			</bean>
+		</property>
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
 	</bean>

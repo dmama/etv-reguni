@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import org.jetbrains.annotations.NotNull;
@@ -77,8 +76,6 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(BusinessWebServiceCache.class);
 
-	private CacheManager cacheManager;
-	private String cacheName;
 	private Ehcache cache;
 	private UniregCacheManager uniregCacheManager;
 	private StatsService statsService;
@@ -89,12 +86,8 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 		this.target = target;
 	}
 
-	public void setCacheManager(CacheManager manager) {
-		this.cacheManager = manager;
-	}
-
-	public void setCacheName(String cacheName) {
-		this.cacheName = cacheName;
+	public void setCache(Ehcache cache) {
+		this.cache = cache;
 	}
 
 	public void setUniregCacheManager(UniregCacheManager uniregCacheManager) {
@@ -116,14 +109,9 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		if (cacheManager == null || cacheName == null) {
-			throw new IllegalArgumentException("Properties cacheManager and cacheName should have been set!");
-		}
-		cache = cacheManager.getCache(cacheName);
 		if (cache == null) {
-			throw new RuntimeException("Cache could not be initialized!");
+			throw new IllegalArgumentException("Le cache est nul");
 		}
-
 		if (statsService != null) {
 			statsService.registerCache(SERVICE_NAME, this);
 		}

@@ -30,8 +30,11 @@
 
 	<bean id="serviceSecuriteCache" class="ch.vd.unireg.interfaces.service.ServiceSecuriteCache">
 		<property name="target" ref="serviceSecuriteServiceTracing" />
-		<property name="cacheManager" ref="ehCacheManager" />
-		<property name="cacheName" value="serviceSecurite" />
+		<property name="cache">
+			<bean class="net.sf.ehcache.Ehcache" factory-bean="ehCacheManager" factory-method="getCache">
+				<constructor-arg value="serviceSecurite" />
+			</bean>
+		</property>
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
 	</bean>

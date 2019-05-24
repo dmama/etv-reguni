@@ -378,8 +378,7 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 		// On setup le service civil avec un cache
 		final IndividuConnectorCache cache = new IndividuConnectorCache();
 		cache.setTarget(realService);
-		cache.setCacheManager(cacheManager);
-		cache.setCacheName("serviceCivil");
+		cache.setCache(cacheManager.getCache("serviceCivil"));
 		cache.setUniregCacheManager(uniregCacheManager);
 		cache.setDataEventService(dataEventService);
 		cache.afterPropertiesSet();

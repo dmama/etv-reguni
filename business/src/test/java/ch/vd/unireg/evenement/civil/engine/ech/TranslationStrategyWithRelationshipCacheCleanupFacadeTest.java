@@ -182,10 +182,11 @@ public class TranslationStrategyWithRelationshipCacheCleanupFacadeTest extends A
 		final RegDate dateMariage = date(1967, 5, 1);
 		final RegDate dateNaissanceFils = date(1968, 12, 9);
 
+		final CacheManager cacheManager = getBean(CacheManager.class, "ehCacheManager");
+
 		// créée le service civil et un cache par devant
 		final IndividuConnectorCache cache = new IndividuConnectorCache();
-		cache.setCacheManager(getBean(CacheManager.class, "ehCacheManager"));
-		cache.setCacheName("serviceCivil");
+		cache.setCache(cacheManager.getCache("serviceCivil"));
 		cache.setDataEventService(getBean(DataEventService.class, "dataEventService"));
 		cache.setTarget(new MockIndividuConnector() {
 			@Override
@@ -297,10 +298,11 @@ public class TranslationStrategyWithRelationshipCacheCleanupFacadeTest extends A
 		final RegDate dateMariage = date(1967, 5, 1);
 		final RegDate dateNaissanceFils = date(1968, 12, 9);
 
+		final CacheManager cacheManager = getBean(CacheManager.class, "ehCacheManager");
+
 		// créée le service civil et un cache par devant
 		final IndividuConnectorCache cache = new IndividuConnectorCache();
-		cache.setCacheManager(getBean(CacheManager.class, "ehCacheManager"));
-		cache.setCacheName("serviceCivil");
+		cache.setCache(cacheManager.getCache("serviceCivil"));
 		cache.setDataEventService(getBean(DataEventService.class, "dataEventService"));
 		cache.setTarget(new MockIndividuConnector() {
 			@Override

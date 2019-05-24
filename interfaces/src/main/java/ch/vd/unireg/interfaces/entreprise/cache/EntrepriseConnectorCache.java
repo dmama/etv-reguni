@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import org.jetbrains.annotations.NotNull;
@@ -41,8 +40,6 @@ public class EntrepriseConnectorCache implements EntrepriseConnector, UniregCach
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EntrepriseConnectorCache.class);
 
-	private CacheManager cacheManager;
-	private String cacheName;
 	private EntrepriseConnector target;
 	private Ehcache cache;
 	private UniregCacheManager uniregCacheManager;
@@ -53,17 +50,10 @@ public class EntrepriseConnectorCache implements EntrepriseConnector, UniregCach
 		this.target = target;
 	}
 
-	public void setCacheManager(CacheManager manager) {
-		this.cacheManager = manager;
-		initCache();
+	public void setCache(Ehcache cache) {
+		this.cache = cache;
 	}
 
-	public void setCacheName(String cacheName) {
-		this.cacheName = cacheName;
-		initCache();
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setUniregCacheManager(UniregCacheManager uniregCacheManager) {
 		this.uniregCacheManager = uniregCacheManager;
 	}
@@ -72,7 +62,6 @@ public class EntrepriseConnectorCache implements EntrepriseConnector, UniregCach
 		this.statsService = statsService;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDataEventService(CivilDataEventService dataEventService) {
 		this.dataEventService = dataEventService;
 	}
@@ -82,17 +71,11 @@ public class EntrepriseConnectorCache implements EntrepriseConnector, UniregCach
 		return new EhCacheStats(cache);
 	}
 
-	private void initCache() {
-		if (cacheManager != null && cacheName != null) {
-			cache = cacheManager.getCache(cacheName);
-			if (cache == null) {
-				throw new IllegalArgumentException("Le cache avec le nom [" + cacheName + "] est inconnu.");
-			}
-		}
-	}
-
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		if (cache == null) {
+			throw new IllegalArgumentException("Le cache est nul");
+		}
 		if (statsService != null) {
 			statsService.registerCache(SERVICE_NAME, this);
 		}

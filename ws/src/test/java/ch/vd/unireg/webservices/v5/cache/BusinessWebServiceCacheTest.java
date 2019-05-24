@@ -129,9 +129,8 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		implementation = buildTracingDelegator(webService, this.calls);
 
 		cache = new BusinessWebServiceCache();
-		cache.setCacheManager(manager);
+		cache.setCache(manager.getCache("webService5"));
 		cache.setTarget(implementation);
-		cache.setCacheName("webService5");
 		cache.setSecurityProvider(getBean(SecurityProviderInterface.class, "securityProviderInterface"));
 		cache.afterPropertiesSet();
 		ehcache = cache.getEhCache();

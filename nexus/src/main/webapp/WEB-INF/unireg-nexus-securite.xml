@@ -8,8 +8,11 @@
 
 	<bean id="securiteConnectorCache" class="ch.vd.unireg.interfaces.securite.cache.SecuriteConnectorCache">
 		<property name="target" ref="securiteConnectorRCPers" />
-		<property name="cacheManager" ref="ehCacheManager" />
-		<property name="cacheName" value="securiteConnector" />
+		<property name="cache">
+			<bean class="net.sf.ehcache.Ehcache" factory-bean="ehCacheManager" factory-method="getCache">
+				<constructor-arg value="securiteConnector" />
+			</bean>
+		</property>
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
 	</bean>

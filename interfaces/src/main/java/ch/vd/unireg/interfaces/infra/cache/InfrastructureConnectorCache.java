@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -54,9 +53,6 @@ public class InfrastructureConnectorCache implements InfrastructureConnector, Un
 
 	//private static final Logger LOGGER = LoggerFactory.getLogger(InfrastructureConnectorCache.class);
 
-	private CacheManager cacheManager;
-	private String cacheName;
-	private String shortLivedCacheName;
 	private InfrastructureConnector target;
 	private Ehcache cache;
 	private Ehcache shortLivedCache;
@@ -67,21 +63,14 @@ public class InfrastructureConnectorCache implements InfrastructureConnector, Un
 		this.target = target;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setCacheManager(CacheManager manager) {
-		this.cacheManager = manager;
+	public void setCache(Ehcache cache) {
+		this.cache = cache;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setCacheName(String cacheName) {
-		this.cacheName = cacheName;
+	public void setShortLivedCache(Ehcache shortLivedCache) {
+		this.shortLivedCache = shortLivedCache;
 	}
 
-	public void setShortLivedCacheName(String shortLivedCacheName) {
-		this.shortLivedCacheName = shortLivedCacheName;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setUniregCacheManager(UniregCacheManager uniregCacheManager) {
 		this.uniregCacheManager = uniregCacheManager;
 	}
@@ -95,20 +84,11 @@ public class InfrastructureConnectorCache implements InfrastructureConnector, Un
 		return new EhCacheStats(cache);
 	}
 
-	private void initCache() {
-		cache = cacheManager.getCache(cacheName);
-		if (cache == null) {
-			throw new IllegalArgumentException("Le cache avec le nom [" + cacheName + "] est inconnu.");
-		}
-		shortLivedCache = cacheManager.getCache(shortLivedCacheName);
-		if (shortLivedCache == null) {
-			throw new IllegalArgumentException();
-		}
-	}
-
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		initCache();
+		if (cache == null) {
+			throw new IllegalArgumentException("Le cache est nul");
+		}
 		if (statsService != null) {
 			statsService.registerCache(InfrastructureConnector.SERVICE_NAME, this);
 		}

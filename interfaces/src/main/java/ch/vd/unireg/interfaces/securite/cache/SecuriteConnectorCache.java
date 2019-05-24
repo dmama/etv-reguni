@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import org.jetbrains.annotations.NotNull;
@@ -29,8 +28,6 @@ public class SecuriteConnectorCache implements SecuriteConnector, UniregCacheInt
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(IndividuConnectorCache.class);
 
-	private CacheManager cacheManager;
-	private String cacheName;
 	private SecuriteConnector target;
 	private Ehcache cache;
 	private UniregCacheManager uniregCacheManager;
@@ -41,18 +38,11 @@ public class SecuriteConnectorCache implements SecuriteConnector, UniregCacheInt
 		return new EhCacheStats(cache);
 	}
 
-	private void initCache() {
-		if (cacheManager != null && cacheName != null) {
-			cache = cacheManager.getCache(cacheName);
-			if (cache == null) {
-				throw new IllegalArgumentException("Le cache avec le nom [" + cacheName + "] est inconnu.");
-			}
-		}
-	}
-
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		initCache();
+		if (cache == null) {
+			throw new IllegalArgumentException("Le cache est nul");
+		}
 		if (statsService != null) {
 			statsService.registerCache(SERVICE_NAME, this);
 		}
@@ -255,12 +245,8 @@ public class SecuriteConnectorCache implements SecuriteConnector, UniregCacheInt
 		target.ping();
 	}
 
-	public void setCacheManager(CacheManager cacheManager) {
-		this.cacheManager = cacheManager;
-	}
-
-	public void setCacheName(String cacheName) {
-		this.cacheName = cacheName;
+	public void setCache(Ehcache cache) {
+		this.cache = cache;
 	}
 
 	public void setTarget(SecuriteConnector target) {

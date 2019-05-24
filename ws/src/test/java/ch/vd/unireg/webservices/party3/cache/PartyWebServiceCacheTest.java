@@ -91,9 +91,8 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 		implementation = new PartyWebServiceTracing(webService);
 
 		cache = new PartyWebServiceCache();
-		cache.setCacheManager(manager);
+		cache.setCache(manager.getCache("webServiceParty3"));
 		cache.setTarget(implementation);
-		cache.setCacheName("webServiceParty3");
 		ehcache = cache.getEhCache();
 
 		wsCacheManager = getBean(PartyWebServiceCacheManager.class, "partyService3CacheManager");

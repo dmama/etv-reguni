@@ -698,10 +698,11 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 		final RegDate dateNaissance = date(1965, 3, 12);
 		final RegDate dateDepart = date(2011, 12, 6);
 
+		final CacheManager cacheManager = getBean(CacheManager.class, "ehCacheManager");
+
 		// créée le service civil et un cache par devant
 		final IndividuConnectorCache cache = new IndividuConnectorCache();
-		cache.setCacheManager(getBean(CacheManager.class, "ehCacheManager"));
-		cache.setCacheName("serviceCivil");
+		cache.setCache(cacheManager.getCache("serviceCivil"));
 		cache.setDataEventService(getBean(DataEventService.class, "dataEventService"));
 		cache.setTarget(new MockIndividuConnector() {
 			@Override

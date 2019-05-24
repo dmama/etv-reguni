@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import org.jetbrains.annotations.NotNull;
@@ -43,8 +42,6 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 	}
 
 
-	private CacheManager cacheManager;
-	private String cacheName;
 	private ServiceSecuriteService target;
 	private Ehcache cache;
 	private UniregCacheManager uniregCacheManager;
@@ -54,14 +51,8 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 		this.target = target;
 	}
 
-	public void setCacheManager(CacheManager manager) {
-		this.cacheManager = manager;
-		initCache();
-	}
-
-	public void setCacheName(String cacheName) {
-		this.cacheName = cacheName;
-		initCache();
+	public void setCache(Ehcache cache) {
+		this.cache = cache;
 	}
 
 	public void setUniregCacheManager(UniregCacheManager uniregCacheManager) {
@@ -77,17 +68,11 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 		return new EhCacheStats(cache);
 	}
 
-	private void initCache() {
-		if (cacheManager != null && cacheName != null) {
-			cache = cacheManager.getCache(cacheName);
-			if (cache == null) {
-				throw new IllegalArgumentException("Le cache avec le nom [" + cacheName + "] est inconnu.");
-			}
-		}
-	}
-
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		if (cache == null) {
+			throw new IllegalArgumentException("Le cache est nul");
+		}
 		if (statsService != null) {
 			statsService.registerCache(SERVICE_NAME, this);
 		}
