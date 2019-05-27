@@ -3088,7 +3088,7 @@ var Decl = {
 			for (let i in liberations) {
 				//noinspection JSUnfilteredForInLoop
 				let l = liberations[i];
-				html += '<tr class="' + (i % 2 === 0 ? 'even' : 'odd') + '">';
+				html += '<tr class="' + (i % 2 === 0 ? 'even' : 'odd') + (l.annule ? ' strike' : '') + '">';
 				html += '<td>' + RegDate.format(l.dateLiberation) + '</td>';
 				html += '<td>' + StringUtils.escapeHTML(l.logCreationUser) + '</td>';
 				html += '<td>' + StringUtils.escapeHTML(l.motif) + '</td>';

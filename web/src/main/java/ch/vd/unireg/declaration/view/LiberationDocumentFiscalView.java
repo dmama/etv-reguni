@@ -3,22 +3,25 @@ package ch.vd.unireg.declaration.view;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.Annulable;
 import ch.vd.unireg.declaration.LiberationDeclaration;
 import ch.vd.unireg.declaration.LiberationQuestionnaireSNC;
 import ch.vd.unireg.documentfiscal.LiberationDocumentFiscal;
 
-public class LiberationDocumentFiscalView implements Comparable<LiberationDocumentFiscalView> {
+public class LiberationDocumentFiscalView implements Comparable<LiberationDocumentFiscalView>, Annulable {
 
 	private Long id;
 	private final RegDate dateLiberation;
 	private final String motif;
 	private final String LogCreationUser;
 	private final String entity;
+	private final boolean annule;
 
 	public LiberationDocumentFiscalView(LiberationDocumentFiscal liberation) {
 		this.id = liberation.getId();
 		this.LogCreationUser = liberation.getLogCreationUser();
 		this.dateLiberation = liberation.getDateLiberation();
+		this.annule = liberation.isAnnule();
 		this.motif = liberation instanceof LiberationDeclaration ? ((LiberationDeclaration) liberation).getMotif() : ((LiberationQuestionnaireSNC) liberation).getMotif();
 		this.entity = liberation instanceof LiberationDeclaration ? LiberationDeclaration.class.getSimpleName() : LiberationQuestionnaireSNC.class.getSimpleName();
 	}
@@ -45,6 +48,11 @@ public class LiberationDocumentFiscalView implements Comparable<LiberationDocume
 
 	public String getEntity() {
 		return entity;
+	}
+
+	@Override
+	public boolean isAnnule() {
+		return annule;
 	}
 
 	/**
