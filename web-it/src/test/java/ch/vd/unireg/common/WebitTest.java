@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.gargoylesoftware.htmlunit.Page;
@@ -133,13 +134,14 @@ public abstract class WebitTest {
 
 		// Détermine l'URL du fichier DB unit
 		final URL dbUnitUrl = getClass().getResource(filename);
+		final String dbUnitPath = dbUnitUrl.getPath().replaceAll("%5C", "/");   // sous Windows, il faut remplacer les backslashes (%5C) par des forwardslashes pour que htmlunit retrouve ses petits...
 
 		// Charge la page d'import
 		HtmlPage page = webClient.getPage(importPageUrl);
 
 		// Rempli le champ d'import avec le chemin vers le fichier DB unit
 		HtmlFileInput file = page.getHtmlElementById("scriptData");
-		file.setValueAttribute(dbUnitUrl.getPath());
+		file.setValueAttribute(dbUnitPath);
 
 		// Exécute le formulaire
 		final HtmlElement element = page.getHtmlElementById("charger");
@@ -148,10 +150,30 @@ public abstract class WebitTest {
 
 		// Vérification que tout s'est bien passé
 		final String content = resultat.getWebResponse().getContentAsString();
-		assertContains("Les tiers suivants sont présents dans la base de données", content, "Le script DB unit ne s'est pas importé correctement ! (" + content + ")");
+		assertScriptImported(content);
 
 		// on attend que l'événement de chargement de la base arrive dans le web-service
 		Thread.sleep(500);
+	}
+
+	private static void assertScriptImported(String content) {
+		String error = null;
+		if (content == null) {
+			error = "la page est vide";
+		}
+		else if (!content.contains("Les tiers suivants sont présents dans la base de données")) {
+			Pattern flashErrorPattern = Pattern.compile(".*<div id=\"flashdisplay\" class=\"flash-error\">(.*?)</div>.*", Pattern.MULTILINE | Pattern.DOTALL);
+			final Matcher matcher = flashErrorPattern.matcher(content);
+			if (matcher.matches()) {
+				error = matcher.group(1);
+			}
+			else {
+				error = "erreur inconnue";
+			}
+		}
+		if (error != null) {
+			fail("Le script DB unit ne s'est pas importé correctement : " + error);
+		}
 	}
 
 	protected void assertNatureTiers(String nature, long tiersId) throws Exception {

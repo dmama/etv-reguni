@@ -161,8 +161,12 @@ public class TiersImportController {
 		}
 
 		// on regarde si un fichier a bien été uploadé
-		if (script.getScriptData() == null || script.getScriptData().isEmpty()) {
-			Flash.error("Aucun fichier n'a été spécifié ou il est vide !");
+		if (script.getScriptData() == null) {
+			Flash.error("Aucun fichier n'a été spécifié !");
+			return "redirect:list.do";
+		}
+		else if (script.getScriptData().isEmpty()) {
+			Flash.error("Le fichier spécifié est vide !");
 			return "redirect:list.do";
 		}
 
