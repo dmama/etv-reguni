@@ -3,6 +3,7 @@ package ch.vd.unireg.json;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -168,6 +169,7 @@ public class AutoCompleteInfraController {
 						list.add(new AutoCompleteItem(c.getNomCourt(), c.getNomCourt(), String.valueOf(c.getNoColAdm())));
 					}
 				}
+				list.sort(Comparator.comparing(AutoCompleteItem::getDesc));
 			}
 		}
 
