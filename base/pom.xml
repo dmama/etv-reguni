@@ -892,7 +892,7 @@
 		<oracle.hibernate.dialect>ch.vd.unireg.hibernate.dialect.Oracle10gDialectWithNVarChar</oracle.hibernate.dialect>
 		<oracle.hibernate.query.substitutions>true 1, false 0</oracle.hibernate.query.substitutions>
 
-		<postgresql.version>42.1.1</postgresql.version>
+		<postgresql.version>42.2.5</postgresql.version>
 		<postgresql.jdbc.dataSourceClassName>org.postgresql.xa.PGXADataSource</postgresql.jdbc.dataSourceClassName>
 		<postgresql.hibernate.dialect>org.hibernate.dialect.PostgreSQL81Dialect</postgresql.hibernate.dialect>
 		<postgresql.hibernate.query.substitutions/>
