@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -470,6 +471,42 @@ public class TacheDAOTest extends CoreDAOTest {
 		});
 	}
 
+	/**
+	 * Vérifie que la méthode 'getCommentairesDistincts' fonctionne correctement.
+	 */
+	@Test
+	public void testGetCommentairesDistincts() {
+		// on crée trois tâches, dont deux avec des commentaires
+		doInNewTransaction(status -> {
+			final PersonnePhysique ctb = addNonHabitant("Josiane", "Delevaux", RegDate.get(1970, 1, 1), Sexe.FEMININ);
+			final CollectiviteAdministrative aci = addCollAdm(22);
+			final TacheControleDossier tache1 = addTacheControleDossier(TypeEtatTache.EN_INSTANCE, RegDate.get(), ctb, aci);
+			tache1.setCommentaire("Tache 1");
+
+			final TacheControleDossier tache2 = addTacheControleDossier(TypeEtatTache.EN_INSTANCE, RegDate.get(), ctb, aci);
+
+			final TacheNouveauDossier tache3 = addTacheNouveau(ctb, TypeEtatTache.EN_INSTANCE, aci);
+			tache3.setCommentaire("Tache 3");
+			return null;
+		});
+
+		// on doit bien retrouver les commentaires
+		doInNewTransaction(status -> {
+
+			final Map<TypeTache, List<String>> map = tacheDAO.getCommentairesDistincts();
+			assertEquals(2, map.size());
+
+			final List<String> commentairesControleDossier = map.get(TypeTache.TacheControleDossier);
+			assertEquals(1, commentairesControleDossier.size());
+			assertEquals("Tache 1", commentairesControleDossier.get(0));
+
+			final List<String> commentairesNouveauDossier = map.get(TypeTache.TacheNouveauDossier);
+			assertEquals(1, commentairesNouveauDossier.size());
+			assertEquals("Tache 3", commentairesNouveauDossier.get(0));
+			return null;
+		});
+	}
+
 	private ModeleDocument addModele(PeriodeFiscale periode) {
 		ModeleDocument modele = new ModeleDocument();
 		modele.setTypeDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH);
@@ -525,7 +562,7 @@ public class TacheDAOTest extends CoreDAOTest {
 			}
 			if (typeCtb.isUsedForPM()) {
 				final ParametrePeriodeFiscalePM.ReferencePourDelai refDelaiInitial;
-				final int delaiInitialMois ;
+				final int delaiInitialMois;
 				final int toleranceJours;
 				switch (typeCtb) {
 				case UTILITE_PUBLIQUE:

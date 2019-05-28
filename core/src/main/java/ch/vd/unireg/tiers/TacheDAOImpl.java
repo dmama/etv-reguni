@@ -1,8 +1,6 @@
 package ch.vd.unireg.tiers;
 
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.FlushModeType;
-import javax.persistence.metamodel.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,7 +12,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -22,7 +19,6 @@ import org.hibernate.Session;
 import org.hibernate.engine.spi.EntityKey;
 import org.hibernate.internal.SessionImpl;
 import org.hibernate.query.Query;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.support.DataAccessUtils;
 
 import ch.vd.registre.base.date.RegDate;
@@ -33,33 +29,12 @@ import ch.vd.unireg.declaration.Declaration;
 import ch.vd.unireg.type.TypeEtatTache;
 import ch.vd.unireg.type.TypeTache;
 
-public class TacheDAOImpl extends BaseDAOImpl<Tache, Long> implements TacheDAO, InitializingBean {
-
-	/**
-	 * Mapping DISCRIMINATOR -> Type de tâche
-	 */
-	private Map<String, TypeTache> typesTachesDiscriminators;
+public class TacheDAOImpl extends BaseDAOImpl<Tache, Long> implements TacheDAO {
 
 	public TacheDAOImpl() {
 		super(Tache.class);
 	}
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		// récupération des mappings autours des tâches
-		this.typesTachesDiscriminators = getSessionFactory().getMetamodel().getManagedTypes().stream()
-				.filter(m -> m.getPersistenceType() == Type.PersistenceType.ENTITY)         // on ne s'intéresse qu'aux entités
-				.map(Type::getJavaType)                                                     // on va chercher les types java
-				.filter(type -> type.isAssignableFrom(Tache.class))                         // on ne prend que les tâches
-				.filter(clazz -> clazz.getAnnotation(DiscriminatorValue.class) != null)     // qui possèdent une annotation DiscriminatorValue
-																							// on insère tout ça dans une map (clé : discriminant, valeur : type de tâche)
-				.collect(Collectors.toMap(clazz -> clazz.getAnnotation(DiscriminatorValue.class).value(),
-				                          clazz -> TypeTache.valueOf(clazz.getSimpleName())));
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public List<Tache> find(TacheCriteria criterion) {
 		return find(criterion, false);
@@ -325,20 +300,14 @@ public class TacheDAOImpl extends BaseDAOImpl<Tache, Long> implements TacheDAO, 
 		final String hql = "select distinct type(t), t.commentaire from Tache t where t.commentaire is not null";
 		final Query query = getCurrentSession().createQuery(hql);
 
-		//noinspection unchecked
 		final Map<TypeTache, List<String>> map = new EnumMap<>(TypeTache.class);
 		final List<Object[]> commentaires = (List<Object[]>) query.list();
 		for (Object[] row : commentaires) {
-			final TypeTache type = typesTachesDiscriminators.get(row[0]);
-			final List<String> list;
-			if (map.containsKey(type)) {
-				list = map.get(type);
-			}
-			else {
-				list = new LinkedList<>();
-				map.put(type, list);
-			}
-			list.add((String) row[1]);
+			final Class<? extends Tache> classTache = (Class<? extends Tache>) row[0];
+			final String commentaire = (String) row[1];
+			final TypeTache type = TypeTache.valueOf(classTache.getSimpleName());
+			final List<String> list = map.computeIfAbsent(type, k -> new LinkedList<>());
+			list.add(commentaire);
 		}
 		for (List<String> list : map.values()) {
 			Collections.sort(list);
