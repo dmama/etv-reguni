@@ -1,7 +1,6 @@
 package ch.vd.unireg.registrefoncier.dataimport.processor;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -82,7 +81,7 @@ public class CommuneRFProcessorTest extends MutationRFProcessorTestCase {
 	}
 
 	/**
-	 * Ce test vérifie que le processing d'une mutation de création crée bien un nouvel commune dans la DB
+	 * Ce test vérifie que le processing d'une mutation de création crée bien une nouvelle commune dans la DB
 	 */
 	@Test
 	public void testProcessMutationCreation() throws Exception {
@@ -114,6 +113,45 @@ public class CommuneRFProcessorTest extends MutationRFProcessorTestCase {
 			final CommuneRF commune0 = communes.get(0);
 			assertNotNull(commune0);
 			assertEquals(246, commune0.getNoRf());
+			assertEquals("Nyon", commune0.getNomRf());
+			assertEquals(5724, commune0.getNoOfs());
+			return null;
+		});
+	}
+
+	/**
+	 * [SIFISC-30558] Ce test vérifie que le processing d'une mutation de création crée bien une nouvelle commune dans la DB lorsque le numéro de commune est un nouveau Ofs
+	 */
+	@Test
+	public void testProcessMutationCreationAvecNumeroOfs() throws Exception {
+
+		// précondition : la base est vide
+		doInNewTransaction(status -> {
+			assertEquals(0, communeRFDAO.getAll().size());
+			return null;
+		});
+
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/registrefoncier/processor/mutation_commune_ofs_rf.xml");
+		final String xml = FileUtils.readFileToString(file, "UTF-8");
+
+		// on insère la mutation dans la base
+		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1), TypeEntiteRF.COMMUNE, TypeMutationRF.CREATION, "5724", null);
+
+		// on process la mutation
+		doInNewTransaction(status -> {
+			final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
+			processor.process(mutation, false, null);
+			return null;
+		});
+
+		// postcondition : la mutation est traitée et la commune est créée en base
+		doInNewTransaction(status -> {
+			final List<CommuneRF> communes = communeRFDAO.getAll();
+			assertEquals(1, communes.size());
+
+			final CommuneRF commune0 = communes.get(0);
+			assertNotNull(commune0);
+			assertEquals(0, commune0.getNoRf());
 			assertEquals("Nyon", commune0.getNomRf());
 			assertEquals(5724, commune0.getNoOfs());
 			return null;
@@ -155,7 +193,7 @@ public class CommuneRFProcessorTest extends MutationRFProcessorTestCase {
 		doInNewTransaction(status -> {
 			final List<CommuneRF> communes = communeRFDAO.getAll();
 			assertEquals(2, communes.size());
-			Collections.sort(communes, new DateRangeComparator<>());
+			communes.sort(new DateRangeComparator<>());
 
 			// l'ancienne commune est fermée
 			final CommuneRF commune0 = communes.get(0);

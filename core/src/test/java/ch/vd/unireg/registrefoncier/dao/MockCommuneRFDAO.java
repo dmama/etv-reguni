@@ -32,10 +32,14 @@ public class MockCommuneRFDAO implements CommuneRFDAO {
 	@Override
 	public CommuneRF findActive(@NotNull CommuneRFKey communeRFKey) {
 		return db.stream()
-				.filter(c -> c.getNoRf() == communeRFKey.getNoRF())
+				.filter(c -> matches(c, communeRFKey))
 				.filter(c -> c.isValidAt(null))
 				.findFirst()
 				.orElse(null);
+	}
+
+	private static boolean matches(@NotNull CommuneRF commune, @NotNull CommuneRFKey communeRFKey) {
+		return Objects.equals(communeRFKey.getNoRF(), commune.getNoRf()) || Objects.equals(communeRFKey.getNoOfs(), commune.getNoOfs());
 	}
 
 	@Override

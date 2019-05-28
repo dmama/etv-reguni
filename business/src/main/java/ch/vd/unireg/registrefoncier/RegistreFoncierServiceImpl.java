@@ -918,7 +918,7 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 				.orElseThrow(() -> new IllegalArgumentException("L'immeuble id=[" + immeubleId + "] ne possède pas de situation"));
 
 		// on prépare les paramètres de l'URL
-		final String noCommuneRF = String.valueOf(situation.getCommune().getNoRf());
+		final String noCommuneRF = String.valueOf(situation.getCommune().getNoRf());    // FIXME (msi) ajouter une propriété pour savoir s'il faut utiliser le numéro RF ou OFS
 		final String noParcelle = String.valueOf(situation.getNoParcelle());
 		final String index1 = Optional.ofNullable(situation.getIndex1())
 				.map(String::valueOf)

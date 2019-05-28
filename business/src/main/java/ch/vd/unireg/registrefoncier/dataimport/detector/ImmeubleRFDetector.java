@@ -2,13 +2,13 @@ package ch.vd.unireg.registrefoncier.dataimport.detector;
 
 import javax.persistence.FlushModeType;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jetbrains.annotations.NotNull;
@@ -105,7 +105,7 @@ public class ImmeubleRFDetector {
 		};
 
 		final Set<String> immeubles = Collections.synchronizedSet(new HashSet<>());
-		final Map<Integer, String> communes = Collections.synchronizedMap(new HashMap<>());
+		final Map<Integer, String> communes = Collections.synchronizedMap(new TreeMap<>());
 		final AtomicInteger processed = new AtomicInteger();
 
 		// on détecte les mutations sur les immeubles
@@ -134,9 +134,9 @@ public class ImmeubleRFDetector {
 					immeubles.add(immeuble.getGrundstueckID());
 
 					// on renseigne la map des communes pour détecter les éventuelles mutations (en fin de traitement)
-					final int noRf = immeuble.getGrundstueckNummer().getBfsNr();
+					final int noCommune = immeuble.getGrundstueckNummer().getBfsNr();   // note : ce numéro peut-être un numéro RF ou un numéro Ofs
 					final String nom = immeuble.getGrundstueckNummer().getGemeindenamen();
-					communes.putIfAbsent(noRf, nom);
+					communes.putIfAbsent(noCommune, nom);
 
 					// on va voir si l'immeuble existe dans la base
 					final ImmeubleRFKey key = ImmeubleRFHelper.newImmeubleRFKey(immeuble);
@@ -223,9 +223,9 @@ public class ImmeubleRFDetector {
 		t2.execute(status -> {
 			final EvenementRFImport parentImport = evenementRFImportDAO.get(importId);
 
-			communes.forEach((noRf, nom) -> {
+			communes.forEach((noCommune, nom) -> {
 
-				final CommuneRF communeRF = communeRFDAO.findActive(new CommuneRFKey(noRf));
+				final CommuneRF communeRF = communeRFDAO.findActive(new CommuneRFKey(noCommune));
 
 				final TypeMutationRF typeMutation;
 				if (communeRF == null) {
@@ -240,14 +240,14 @@ public class ImmeubleRFDetector {
 				}
 
 				// on ajoute l'événement à traiter
-				final String communeAsXml = xmlHelperRF.toXMLString(new GrundstueckNummerElement(noRf, nom));
+				final String communeAsXml = xmlHelperRF.toXMLString(new GrundstueckNummerElement(noCommune, nom));
 
 				final EvenementRFMutation mutation = new EvenementRFMutation();
 				mutation.setParentImport(parentImport);
 				mutation.setEtat(EtatEvenementRF.A_TRAITER);
 				mutation.setTypeEntite(TypeEntiteRF.COMMUNE);
 				mutation.setTypeMutation(typeMutation);
-				mutation.setIdRF(String.valueOf(noRf));
+				mutation.setIdRF(String.valueOf(noCommune));
 				mutation.setXmlContent(communeAsXml);
 
 				evenementRFMutationDAO.save(mutation);

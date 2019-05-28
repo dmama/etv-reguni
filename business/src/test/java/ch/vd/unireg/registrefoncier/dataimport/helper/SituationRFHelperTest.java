@@ -17,7 +17,7 @@ public class SituationRFHelperTest {
 
 		// deux situations égales
 		final CommuneRF commune = new CommuneRF();
-		commune.setNoRf(2233);
+		commune.setNoRf(33);
 
 		final SituationRF situation = new SituationRF();
 		situation.setCommune(commune);
@@ -25,7 +25,7 @@ public class SituationRFHelperTest {
 		situation.setIndex1(17);
 
 		final GrundstueckNummer grundstueckNummer = new GrundstueckNummer();
-		grundstueckNummer.setBfsNr(2233);
+		grundstueckNummer.setBfsNr(33);
 		grundstueckNummer.setStammNr(109);
 		grundstueckNummer.setIndexNr1(17);
 
@@ -48,7 +48,7 @@ public class SituationRFHelperTest {
 		situation.setIndex1(17);
 
 		final GrundstueckNummer grundstueckNummer = new GrundstueckNummer();
-		grundstueckNummer.setBfsNr(2233);
+		grundstueckNummer.setBfsNr(33);
 		grundstueckNummer.setStammNr(109);
 		grundstueckNummer.setIndexNr1(17);
 
@@ -62,7 +62,7 @@ public class SituationRFHelperTest {
 	public void testDataEqualsDifferentesParcelles() throws Exception {
 
 		final CommuneRF commune = new CommuneRF();
-		commune.setNoRf(2233);
+		commune.setNoRf(33);
 
 		// deux situations avec des parcelles différentes
 		final SituationRF situation = new SituationRF();
@@ -71,7 +71,7 @@ public class SituationRFHelperTest {
 		situation.setIndex1(17);
 
 		final GrundstueckNummer grundstueckNummer = new GrundstueckNummer();
-		grundstueckNummer.setBfsNr(2233);
+		grundstueckNummer.setBfsNr(33);
 		grundstueckNummer.setStammNr(2);
 		grundstueckNummer.setIndexNr1(17);
 
@@ -85,7 +85,7 @@ public class SituationRFHelperTest {
 	public void testDataEqualsDifferentsIndexes() throws Exception {
 
 		final CommuneRF commune = new CommuneRF();
-		commune.setNoRf(2233);
+		commune.setNoRf(33);
 
 		// deux situations avec des indexes différents
 		final SituationRF situation = new SituationRF();
@@ -95,7 +95,7 @@ public class SituationRFHelperTest {
 		situation.setIndex1(9);
 
 		final GrundstueckNummer grundstueckNummer = new GrundstueckNummer();
-		grundstueckNummer.setBfsNr(2233);
+		grundstueckNummer.setBfsNr(33);
 		grundstueckNummer.setStammNr(109);
 		grundstueckNummer.setIndexNr1(17);
 
@@ -106,17 +106,17 @@ public class SituationRFHelperTest {
 	public void testNewSituationRF() throws Exception {
 
 		final GrundstueckNummer grundstueckNummer = new GrundstueckNummer();
-		grundstueckNummer.setBfsNr(2233);
+		grundstueckNummer.setBfsNr(33);
 		grundstueckNummer.setStammNr(109);
 		grundstueckNummer.setIndexNr1(17);
 		grundstueckNummer.setIndexNr2(3);
 		grundstueckNummer.setIndexNr3(122233);
 
 		final CommuneRF commune = new CommuneRF();
-		commune.setNoRf(2233);
+		commune.setNoRf(33);
 
 		final SituationRF situation = SituationRFHelper.newSituationRF(grundstueckNummer, (no) -> commune);
-		assertEquals(2233, situation.getCommune().getNoRf());
+		assertEquals(33, situation.getCommune().getNoRf());
 		assertEquals(109, situation.getNoParcelle());
 		assertEquals(Integer.valueOf(17), situation.getIndex1());
 		assertEquals(Integer.valueOf(3), situation.getIndex2());

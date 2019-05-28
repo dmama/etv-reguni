@@ -29,6 +29,8 @@ public class CommuneRF extends HibernateDateRangeEntity {
 
 	/**
 	 * Le numéro RF de la commune
+	 *
+	 * TODO (msi) : à supprimer quand le basculement aux numéros Ofs sera effectif en production (voir le SIFISC-30558)
 	 */
 	private int noRf;
 
