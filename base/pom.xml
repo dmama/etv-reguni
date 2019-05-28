@@ -753,7 +753,7 @@
 						<artifactId>maven-surefire-plugin</artifactId>
 						<version>3.0.0-M1</version>
 						<configuration>
-							<argLine>--illegal-access=permit</argLine>
+							<argLine>--illegal-access=warn</argLine>
 							<forkMode>once</forkMode>
 						</configuration>
 					</plugin>
