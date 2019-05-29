@@ -15,6 +15,7 @@
 		<property name="infraService" ref="serviceInfrastructureService"/>
 		<property name="evenementFiscalService" ref="evenementFiscalService"/>
 		<property name="transactionManager" ref="transactionManager"/>
+		<property name="uniregModeHelper" ref="uniregModeHelper"/>
 	</bean>
 
 	<bean id="communauteRFValidator" class="ch.vd.unireg.validation.registrefoncier.CommunauteRFValidator" parent="entityValidator" />

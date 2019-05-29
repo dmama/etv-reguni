@@ -7,6 +7,7 @@
 		<property name="environnement" value="${extprop.environnement}"/>
 		<property name="efactureEnabled" value="false" />
 		<property name="reqdesEnabled" value="false" />
+		<property name="noOfsCommuneRfEnabled" value="false" /> <!-- aucune importance dans Nexus -->
 	</bean>
 
 	<!-- empty in the NEXUS environment -->

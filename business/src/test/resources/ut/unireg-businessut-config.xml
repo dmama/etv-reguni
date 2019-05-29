@@ -9,6 +9,7 @@
 		<property name="environnement" value="UT" />
 		<property name="efactureEnabled" value="false" />
 		<property name="reqdesEnabled" value="true" />
+		<property name="noOfsCommuneRfEnabled" value="true" />
 	</bean>
 
 	<bean id="sourcesMonoQuittancementDi" class="ch.vd.unireg.common.TokenSetFactoryBean$StringSet"/>
