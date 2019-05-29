@@ -11,7 +11,9 @@
           http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
 
 	<!-- Filtre qui permet de bypasser en développement la sécurité IAM/RefSec en fonction des paramètres du fichier unireg.properties -->
-	<bean id="bypassSecurityFilter" class="ch.vd.unireg.security.DevSecurityBypassProcessingFilter" />
+	<bean id="bypassSecurityFilter" class="ch.vd.unireg.security.DevSecurityBypassProcessingFilter">
+		<property name="uniregModeHelper" ref="uniregModeHelper"/>
+	</bean>
 
 	<!-- Bean qui permet d'utiliser le champ 'access' dans les tags authz:authorize -->
 	<bean id="webexpressionHandler" class="org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler" />

@@ -126,6 +126,7 @@
 		<property name="tiersDAO" ref="tiersDAO"/>
 		<property name="infraService" ref="serviceInfrastructureService"/>
 		<property name="serviceCivilCacheWarmer" ref="serviceCivilCacheWarmer" />
+		<property name="uniregModeHelper" ref="uniregModeHelper" />
 	</bean>
 
 	<bean id="acomptesService" class="ch.vd.unireg.acomptes.AcomptesServiceImpl">
@@ -392,6 +393,7 @@
 		<property name="eFactureMessageSender" ref="eFactureMessageSender" />
 		<property name="eFactureClient" ref="eFactureClient" />
 		<property name="documentEFactureDAO" ref="documentEFactureDAO"/>
+		<property name="uniregModeHelper" ref="uniregModeHelper"/>
 	</bean>
 
 	<bean id="taxLiabilityControlService" class="ch.vd.unireg.evenement.party.control.TaxLiabilityControlServiceImpl">

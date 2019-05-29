@@ -22,14 +22,19 @@ public class ReadOnlyEFactureServiceImpl implements EFactureService, Initializin
 	private static final Logger LOGGER = LoggerFactory.getLogger(ReadOnlyEFactureServiceImpl.class);
 
 	private EFactureClient eFactureClient;
+	private UniregModeHelper uniregModeHelper;
 
 	public void seteFactureClient(EFactureClient eFactureClient) {
 		this.eFactureClient = eFactureClient;
 	}
 
+	public void setUniregModeHelper(UniregModeHelper uniregModeHelper) {
+		this.uniregModeHelper = uniregModeHelper;
+	}
+
 	@Override
 	public DestinataireAvecHisto getDestinataireAvecSonHistorique(long ctbId) {
-		if (UniregModeHelper.isEfactureEnabled()) {
+		if (uniregModeHelper.isEfactureEnabled()) {
 			final PayerWithHistory payerWithHistory = eFactureClient.getHistory(ctbId, ACI_BILLER_ID);
 			if (payerWithHistory == null) {
 				return null;
@@ -45,7 +50,7 @@ public class ReadOnlyEFactureServiceImpl implements EFactureService, Initializin
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		// tout ça pour ne logguer cette information que dans les web-app où elle a un sens (qu'est ce que cela veut dire dans NEXUS ?)
-		LOGGER.info(String.format("MODE E-FACTURE %s", UniregModeHelper.isEfactureEnabled() ? "ON" : "OFF"));
+		LOGGER.info(String.format("MODE E-FACTURE %s", uniregModeHelper.isEfactureEnabled() ? "ON" : "OFF"));
 	}
 
 	@Override

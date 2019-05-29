@@ -17,6 +17,7 @@ import ch.vd.unireg.listes.suisseoupermiscresident.ListeContribuablesResidentsSa
 import ch.vd.unireg.listes.suisseoupermiscresident.ListeContribuablesResidentsSansForVaudoisResults;
 import ch.vd.unireg.tiers.TiersDAO;
 import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.utils.UniregModeHelper;
 
 /**
  * Implémentation du service de génération des listes nominatives
@@ -24,18 +25,13 @@ import ch.vd.unireg.tiers.TiersService;
 public class ListesTiersServiceImpl implements ListesTiersService {
 
 	private TiersService tiersService;
-
 	private AdresseService adresseService;
-
 	private HibernateTemplate hibernateTemplate;
-
 	private PlatformTransactionManager transactionManager;
-
 	private TiersDAO tiersDAO;
-
 	private ServiceInfrastructureService infraService;
-
 	private ServiceCivilCacheWarmer serviceCivilCacheWarmer;
+	private UniregModeHelper uniregModeHelper;
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
@@ -65,10 +61,14 @@ public class ListesTiersServiceImpl implements ListesTiersService {
 		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
 	}
 
+	public void setUniregModeHelper(UniregModeHelper uniregModeHelper) {
+		this.uniregModeHelper = uniregModeHelper;
+	}
+
 	@Override
 	public ListesNominativesResults produireListesNominatives(int nbThreads, TypeAdresse adressesIncluses, boolean avecContribuablesPP, boolean avecContribuablesPM, RegDate dateTraitement,
 	                                                          boolean avecDebiteurs, StatusManager statusManager, Set<Long> tiersList) {
-		final ListesNominativesProcessor processor = new ListesNominativesProcessor(hibernateTemplate, tiersService, adresseService, transactionManager, tiersDAO, serviceCivilCacheWarmer);
+		final ListesNominativesProcessor processor = new ListesNominativesProcessor(hibernateTemplate, tiersService, adresseService, transactionManager, tiersDAO, serviceCivilCacheWarmer, uniregModeHelper);
 		return processor.run(nbThreads, adressesIncluses, avecContribuablesPP, avecContribuablesPM, tiersList, dateTraitement, avecDebiteurs, statusManager);
 	}
 

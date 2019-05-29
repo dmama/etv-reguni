@@ -16,30 +16,30 @@ public class UniregModeHelper implements InitializingBean {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(UniregModeHelper.class);
 
-	private static boolean reqdesEnabled = false;
-	private static boolean efactureEnabled = false;
-	private static boolean testMode = false;
-	private static String environnement;
+	private boolean reqdesEnabled = false;
+	private boolean efactureEnabled = false;
+	private boolean testMode = false;
+	private String environnement;
 
 	/**
 	 * @return true si la efacture est activée
 	 */
-	public static boolean isEfactureEnabled() {
+	public boolean isEfactureEnabled() {
 		return efactureEnabled;
 	}
 
-	public static boolean isReqdesEnabled() {
+	public boolean isReqdesEnabled() {
 		return reqdesEnabled;
 	}
 
 	/**
 	 * @return <i>vrai</i> si le mode testing est activé; <i>faux</i> autrement.
 	 */
-	public static boolean isTestMode() {
+	public boolean isTestMode() {
 		return testMode;
 	}
 
-	public static String getEnvironnement() {
+	public String getEnvironnement() {
 		return environnement;
 	}
 
@@ -48,15 +48,15 @@ public class UniregModeHelper implements InitializingBean {
 	}
 
 	public void setEnvironnement(String environnement) {
-		UniregModeHelper.environnement = environnement;
+		this.environnement = environnement;
 	}
 
-	public void setEfactureEnabled(boolean enabled) {
-		UniregModeHelper.efactureEnabled = enabled;
+	public void setEfactureEnabled(boolean efactureEnabled) {
+		this.efactureEnabled = efactureEnabled;
 	}
 
 	public void setReqdesEnabled(boolean reqdesEnabled) {
-		UniregModeHelper.reqdesEnabled = reqdesEnabled;
+		this.reqdesEnabled = reqdesEnabled;
 	}
 
 	@Override

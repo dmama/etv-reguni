@@ -27,6 +27,7 @@
 
 	<bean id="efactureService" class="ch.vd.unireg.efacture.ReadOnlyEFactureServiceImpl" depends-on="uniregModeHelper">
 		<property name="eFactureClient" ref="eFactureClient"/>
+		<property name="uniregModeHelper" ref="uniregModeHelper"/>
 	</bean>
 
 </beans>

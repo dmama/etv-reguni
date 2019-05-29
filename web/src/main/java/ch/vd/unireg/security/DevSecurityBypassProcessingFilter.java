@@ -37,12 +37,14 @@ public class DevSecurityBypassProcessingFilter extends GenericFilterBean {
 	
 	private static final Set<String> DEV_ENVS = new HashSet<>(Arrays.asList("Developpement", "Hudson", "Integration TE"));
 
+	private UniregModeHelper uniregModeHelper;
+
 	@Override
 	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
 
 		if (AuthenticationHelper.getAuthentication() == null && (SecurityDebugConfig.isIamDebug() || SecurityDebugConfig.isSecurityDebug())) {
 
-			final String environnement = UniregModeHelper.getEnvironnement();
+			final String environnement = uniregModeHelper.getEnvironnement();
 			if (!DEV_ENVS.contains(environnement)) {
 				LOGGER.warn("Le bypass de la sécurité n'est disponible qu'en développement. Aucune fonction bypassée.");
 			}
@@ -120,4 +122,7 @@ public class DevSecurityBypassProcessingFilter extends GenericFilterBean {
 		return new ProfileOperateurImpl(visa, listProcedure);
 	}
 
+	public void setUniregModeHelper(UniregModeHelper uniregModeHelper) {
+		this.uniregModeHelper = uniregModeHelper;
+	}
 }

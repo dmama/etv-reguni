@@ -55,6 +55,7 @@ public class DatabaseDumpController {
 	private PlatformTransactionManager transactionManager;
 	private SecurityProviderInterface securityProvider;
 	private AuditManager audit;
+	private UniregModeHelper uniregModeHelper;
 
 	@RequestMapping(value = "/dump.do", method = RequestMethod.POST)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
@@ -64,7 +65,7 @@ public class DatabaseDumpController {
 			throw new AccessDeniedException("vous ne possédez pas les droits d'administration pour l'application Unireg");
 		}
 
-		final String environnement = UniregModeHelper.getEnvironnement();
+		final String environnement = uniregModeHelper.getEnvironnement();
 		final boolean inDev = environnement.equals("Developpement");
 		if (!inDev) {
 			Flash.error("Cette fonctionalité n'est disponible qu'en développement !");
@@ -117,7 +118,7 @@ public class DatabaseDumpController {
 			throw new AccessDeniedException("vous ne possédez pas les droits d'administration pour l'application Unireg");
 		}
 
-		final String environnement = UniregModeHelper.getEnvironnement();
+		final String environnement = uniregModeHelper.getEnvironnement();
 		final boolean inDev = environnement.equals("Developpement");
 		if (!inDev) {
 			Flash.error("Cette fonctionalité n'est disponible qu'en développement !");
@@ -136,7 +137,7 @@ public class DatabaseDumpController {
 			throw new AccessDeniedException("vous ne possédez pas les droits d'administration pour l'application Unireg");
 		}
 
-		final String environnement = UniregModeHelper.getEnvironnement();
+		final String environnement = uniregModeHelper.getEnvironnement();
 		final boolean inDev = environnement.equals("Developpement");
 		if (!inDev) {
 			Flash.error("Cette fonctionalité n'est disponible qu'en développement !");
@@ -199,5 +200,9 @@ public class DatabaseDumpController {
 
 	public void setAudit(AuditManager audit) {
 		this.audit = audit;
+	}
+
+	public void setUniregModeHelper(UniregModeHelper uniregModeHelper) {
+		this.uniregModeHelper = uniregModeHelper;
 	}
 }

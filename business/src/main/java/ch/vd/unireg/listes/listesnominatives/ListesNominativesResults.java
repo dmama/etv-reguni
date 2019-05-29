@@ -22,7 +22,6 @@ import ch.vd.unireg.tiers.MenageCommun;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.tiers.TiersService;
-import ch.vd.unireg.utils.UniregModeHelper;
 
 /**
  * Tous les tiers sont placés dans la liste des tiers traités avec la meilleure estimation possible du nom.
@@ -37,19 +36,15 @@ public class ListesNominativesResults extends ListesResults<ListesNominativesRes
 	private final List<InfoTiersRpt> tiersRpt = new LinkedList<>();
 
 	private final TypeAdresse typeAdressesIncluses;
-
 	private final Set<Long> tiersList;
-
 	private final AdresseService adresseService;
-
 	private final boolean avecContribuablesPP;
-
 	private final boolean avecContribuablesPM;
-
 	private final boolean avecDebiteurs;
+	private final boolean pourRPT;
 
 	public ListesNominativesResults(RegDate dateTraitement, int nombreThreads, TypeAdresse typeAdressesIncluses, boolean avecContribuablesPP, boolean avecContribuablesPM, boolean avecDebiteurs,
-	                                Set<Long> tiersList, TiersService tiersService, AdresseService adresseService) {
+	                                Set<Long> tiersList, TiersService tiersService, AdresseService adresseService, boolean pourRPT) {
 		super(dateTraitement, nombreThreads, tiersService, adresseService);
 		this.typeAdressesIncluses = typeAdressesIncluses;
 		this.avecContribuablesPP = avecContribuablesPP;
@@ -57,6 +52,7 @@ public class ListesNominativesResults extends ListesResults<ListesNominativesRes
 		this.avecDebiteurs = avecDebiteurs;
 		this.tiersList = tiersList;
 		this.adresseService = adresseService;
+		this.pourRPT = pourRPT;
 	}
 
 	public static class InfoTiers {
@@ -131,7 +127,7 @@ public class ListesNominativesResults extends ListesResults<ListesNominativesRes
 			else {
 				addTiers(ctb.getNumero(), nomPrenom, null);
 				//Pour la RPT
-				if (UniregModeHelper.isTestMode()) {
+				if (pourRPT) {
 					final String prenom = tiersService.getDecompositionNomPrenom(pp, true).getPrenom();
 					final String nom = tiersService.getDecompositionNomPrenom(pp, true).getNom();
 					addTiersRpt(pp.getNumero(), prenom, nom, "PP");
@@ -166,7 +162,7 @@ public class ListesNominativesResults extends ListesResults<ListesNominativesRes
 					addTiers(menage.getNumero(), nomPrenomPrincipal, nomPrenomConjoint);
 
 					//Pour la RPT
-					if (UniregModeHelper.isTestMode()) {
+					if (pourRPT) {
 
 						if (principal != null) {
 							final NomPrenom nomPrenomP = tiersService.getDecompositionNomPrenom(principal, true);
@@ -364,6 +360,10 @@ public class ListesNominativesResults extends ListesResults<ListesNominativesRes
 
 	public boolean isAvecDebiteurs() {
 		return avecDebiteurs;
+	}
+
+	public boolean isPourRPT() {
+		return pourRPT;
 	}
 }
 

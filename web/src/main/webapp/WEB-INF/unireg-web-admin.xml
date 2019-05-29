@@ -9,12 +9,14 @@
 		<property name="dbService" ref="databaseService" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="audit" ref="auditManager"/>
+		<property name="uniregModeHelper" ref="uniregModeHelper"/>
 	</bean>
 
 	<bean id="databasePreviewController" class="ch.vd.unireg.admin.DatabasePreviewController">
 		<property name="tiersDao" ref="tiersDAO" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="adresseService" ref="adresseService" />
+		<property name="uniregModeHelper" ref="uniregModeHelper"/>
 	</bean>
 
 	<!-- Accès à l'inbox -->
@@ -91,6 +93,7 @@
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="audit" ref="auditManager"/>
+		<property name="uniregModeHelper" ref="uniregModeHelper"/>
 	</bean>
 
 	<!-- Gestion des documents -->

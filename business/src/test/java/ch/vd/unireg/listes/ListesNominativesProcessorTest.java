@@ -25,6 +25,7 @@ import ch.vd.unireg.transaction.TransactionManager;
 import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.PeriodeDecompte;
 import ch.vd.unireg.type.PeriodiciteDecompte;
+import ch.vd.unireg.utils.UniregModeHelper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -32,18 +33,13 @@ import static org.junit.Assert.assertNotNull;
 public class ListesNominativesProcessorTest extends BusinessTest {
 
 	private TiersService tiersService;
-
 	private HibernateTemplate hibernateTemplate;
-
 	private AdresseService adresseService;
-
 	private TiersDAO tiersDAO;
-
 	private TransactionManager transactionManager;
-
 	private ServiceCivilCacheWarmer serviceCivilCacheWarmer;
-
 	private ListesNominativesProcessor processor;
+	private UniregModeHelper uniregModeHelper;
 
 	@Before
 	public void setUp() throws Exception {
@@ -54,12 +50,14 @@ public class ListesNominativesProcessorTest extends BusinessTest {
 		this.tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 		this.transactionManager = getBean(TransactionManager.class, "transactionManager");
 		this.serviceCivilCacheWarmer = getBean(ServiceCivilCacheWarmer.class, "serviceCivilCacheWarmer");
+		this.uniregModeHelper = getBean(UniregModeHelper.class, "uniregModeHelper");
 		processor = new ListesNominativesProcessor(hibernateTemplate,
 		                                           tiersService,
 		                                           adresseService,
 		                                           transactionManager,
 		                                           tiersDAO,
-		                                           serviceCivilCacheWarmer);
+		                                           serviceCivilCacheWarmer,
+		                                           uniregModeHelper);
 	}
 
 

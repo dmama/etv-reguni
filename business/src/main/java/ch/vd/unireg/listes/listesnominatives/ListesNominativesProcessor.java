@@ -32,6 +32,7 @@ import ch.vd.unireg.tiers.MenageCommun;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.TiersDAO;
 import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.utils.UniregModeHelper;
 
 /**
  * Processor pour la génération des listes nominatives
@@ -41,29 +42,27 @@ public class ListesNominativesProcessor extends ListesProcessor<ListesNominative
 	private static final Logger LOGGER = LoggerFactory.getLogger(ListesNominativesProcessor.class);
 
 	private final HibernateTemplate hibernateTemplate;
-
 	private final TiersService tiersService;
-
 	private final PlatformTransactionManager transactionManager;
-
 	private final TiersDAO tiersDAO;
-
 	private final AdresseService adresseService;
-
 	private final ServiceCivilCacheWarmer serviceCivilCacheWarmer;
+	private final UniregModeHelper uniregModeHelper;
 
 	public ListesNominativesProcessor(HibernateTemplate hibernateTemplate,
 	                                  TiersService tiersService,
 	                                  AdresseService adresseService,
 	                                  PlatformTransactionManager transactionManager,
 	                                  TiersDAO tiersDAO,
-	                                  ServiceCivilCacheWarmer serviceCivilCacheWarmer) {
+	                                  ServiceCivilCacheWarmer serviceCivilCacheWarmer,
+	                                  UniregModeHelper uniregModeHelper) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.tiersService = tiersService;
 		this.adresseService = adresseService;
 		this.transactionManager = transactionManager;
 		this.tiersDAO = tiersDAO;
 		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
+		this.uniregModeHelper = uniregModeHelper;
 	}
 
 	/**
@@ -79,7 +78,8 @@ public class ListesNominativesProcessor extends ListesProcessor<ListesNominative
 
 			@Override
 			public ListesNominativesResults createResults(RegDate dateTraitement) {
-				return new ListesNominativesResults(dateTraitement, nbThreads, adressesIncluses, avecContribuablesPP, avecContribuablesPM, avecDebiteurs, tiersList, tiersService, adresseService);
+				final boolean avecDecompositionNomPrenom = uniregModeHelper.isTestMode(); //Pour la RPT
+				return new ListesNominativesResults(dateTraitement, nbThreads, adressesIncluses, avecContribuablesPP, avecContribuablesPM, avecDebiteurs, tiersList, tiersService, adresseService, avecDecompositionNomPrenom);
 			}
 
 			@Override
@@ -99,7 +99,8 @@ public class ListesNominativesProcessor extends ListesProcessor<ListesNominative
 				                                   interruptible,
 				                                   compteur,
 				                                   transactionManager,
-				                                   tiersDAO, hibernateTemplate);
+				                                   tiersDAO, hibernateTemplate,
+				                                   uniregModeHelper.isTestMode());
 			}
 
 			@Override

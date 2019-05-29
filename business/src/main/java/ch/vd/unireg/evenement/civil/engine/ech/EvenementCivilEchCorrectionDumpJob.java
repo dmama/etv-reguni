@@ -42,6 +42,7 @@ public class EvenementCivilEchCorrectionDumpJob extends JobDefinition {
 	private TiersService tiersService;
 	private PlatformTransactionManager transactionManager;
 	private List<IndividuComparisonStrategy> strategies;
+	private UniregModeHelper uniregModeHelper;
 
 	public EvenementCivilEchCorrectionDumpJob(int sortOrder, String description) {
 		super(NAME, JobCategory.EVENTS, sortOrder, description);
@@ -81,6 +82,11 @@ public class EvenementCivilEchCorrectionDumpJob extends JobDefinition {
 	}
 
 	@Override
+	public void setUniregModeHelper(UniregModeHelper uniregModeHelper) {
+		this.uniregModeHelper = uniregModeHelper;
+	}
+
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		super.afterPropertiesSet();
 		strategies = buildStrategies(serviceInfra);
@@ -88,7 +94,7 @@ public class EvenementCivilEchCorrectionDumpJob extends JobDefinition {
 
 	@Override
 	public boolean isVisible() {
-		final String environnement = UniregModeHelper.getEnvironnement();
+		final String environnement = uniregModeHelper.getEnvironnement();
 		return environnement.equals("Developpement");
 	}
 

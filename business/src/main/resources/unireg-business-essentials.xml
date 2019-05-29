@@ -119,6 +119,7 @@
 		<property name="parametreAppService" ref="parametreAppService" />
 		<property name="etiquetteService" ref="etiquetteService" />
 		<property name="audit" ref="auditManager"/>
+		<property name="uniregModeHelper" ref="uniregModeHelper"/>
 	</bean>
 
 	<bean id="metierServicePM" class="ch.vd.unireg.metier.MetierServicePMImpl">

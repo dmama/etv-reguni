@@ -33,10 +33,10 @@ public class ListesNominativesThread extends ListesThread<ListesNominativesResul
     public ListesNominativesThread(BlockingQueue<List<Long>> queue, RegDate dateTraitement, int nombreThreads, TypeAdresse adressesIncluses,
                                    boolean avecContribuablesPP, boolean avecContribuablesPM, boolean avecDebiteurs, Set<Long> tiersList, TiersService tiersService,
                                    AdresseService adresseService, ServiceCivilCacheWarmer serviceCivilCacheWarmer, Interruptible interruptible, AtomicInteger compteur, PlatformTransactionManager transactionManager,
-                                   TiersDAO tiersDAO, HibernateTemplate hibernateTemplate) {
+                                   TiersDAO tiersDAO, HibernateTemplate hibernateTemplate, boolean pourRPT) {
 
         super(queue, interruptible, compteur, serviceCivilCacheWarmer, transactionManager, tiersDAO, hibernateTemplate,
-                new ListesNominativesResults(dateTraitement, nombreThreads, adressesIncluses, avecContribuablesPP, avecContribuablesPM, avecDebiteurs,tiersList , tiersService, adresseService));
+                new ListesNominativesResults(dateTraitement, nombreThreads, adressesIncluses, avecContribuablesPP, avecContribuablesPM, avecDebiteurs, tiersList , tiersService, adresseService, pourRPT));
 
 	    this.adressesIncluses = adressesIncluses;
 	    if (adressesIncluses == TypeAdresse.AUCUNE) {

@@ -5,6 +5,7 @@ import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.springframework.web.context.WebApplicationContext;
 
 import ch.vd.unireg.utils.UniregModeHelper;
 
@@ -17,9 +18,11 @@ public class JspTagEnvironnement extends BodyTagSupport {
 	@Override
 	public int doStartTag() throws JspTagException {
 		try {
-			final JspWriter out = pageContext.getOut();
+			final WebApplicationContext context = JspTagHelper.getWebApplicationContext(pageContext);
+			final UniregModeHelper uniregModeHelper = context.getBean(UniregModeHelper.class, "uniregModeHelper");
 
-			out.print(StringEscapeUtils.escapeHtml(UniregModeHelper.getEnvironnement()));
+			final JspWriter out = pageContext.getOut();
+			out.print(StringEscapeUtils.escapeHtml(uniregModeHelper.getEnvironnement()));
 
 			// Skips the body.
 			return SKIP_BODY;

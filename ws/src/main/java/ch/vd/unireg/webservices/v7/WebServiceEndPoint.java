@@ -113,6 +113,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	private final ch.vd.unireg.ws.communityofheirs.v7.ObjectFactory communityOfHeirsObjectFactory = new ch.vd.unireg.ws.communityofheirs.v7.ObjectFactory();
 
 	private BusinessWebService target;
+	private UniregModeHelper uniregModeHelper;
 
 	@Override
 	public List<LoadDetail> getLoadDetails() {
@@ -126,6 +127,10 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 
 	public void setTarget(BusinessWebService target) {
 		this.target = target;
+	}
+
+	public void setUniregModeHelper(UniregModeHelper uniregModeHelper) {
+		this.uniregModeHelper = uniregModeHelper;
 	}
 
 	private static class ExecutionResult {
@@ -518,7 +523,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 		return execute(user, params, READ_ACCESS_LOG, () -> {
 
 			final RegDate today;
-			if (UniregModeHelper.isTestMode() && StringUtils.isNotBlank(todayAsString)) {
+			if (uniregModeHelper.isTestMode() && StringUtils.isNotBlank(todayAsString)) {
 				try {
 					today = dateFromString(todayAsString, false);
 				}

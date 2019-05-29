@@ -82,6 +82,7 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 
 	protected BatchScheduler batchScheduler;
 	protected AuditManager audit;
+	protected UniregModeHelper uniregModeHelper;
 
 	/**
 	 * La queue des exécutions du job en attente d'être exécutées.
@@ -365,12 +366,8 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 		this.audit = audit;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setUniregModeHelper(UniregModeHelper helper) {
-		// Note: on accède au mode helper par une méthode statique, donc on a pas besoin de le mémoriser ici. Par contre il est
-		// absolument nécessaire de garder la dépendence Spring pour être certain que le UniregModeHelper est initialisé avant les
-		// JobDefinition.
-		//this.uniregModeHelper = helper;
+	public void setUniregModeHelper(UniregModeHelper uniregModeHelper) {
+		this.uniregModeHelper = uniregModeHelper;
 	}
 
 	public int getSortOrder() {
@@ -900,8 +897,8 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 		return dateTraitement;
 	}
 
-	protected static boolean isTesting() {
-		return UniregModeHelper.isTestMode();
+	protected boolean isTesting() {
+		return uniregModeHelper.isTestMode();
 	}
 
 	public boolean isVisible() {

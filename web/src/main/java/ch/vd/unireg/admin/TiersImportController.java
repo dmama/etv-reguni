@@ -62,6 +62,7 @@ public class TiersImportController {
 	private GlobalTiersIndexer globalIndexer;
 	private SecurityProviderInterface securityProvider;
 	private AuditManager audit;
+	private UniregModeHelper uniregModeHelper;
 
 	/**
 	 * Cette méthode est appelée pour afficher la page qui liste les scripts DBUnit préxistants + le formulaire pour en uploader d'autres.
@@ -73,7 +74,7 @@ public class TiersImportController {
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String listScripts(Model model) {
 
-		if (!UniregModeHelper.isTestMode()) {
+		if (!uniregModeHelper.isTestMode()) {
 			return "redirect:/index.do";
 		}
 
@@ -111,8 +112,8 @@ public class TiersImportController {
 			throw new AccessDeniedException("vous ne possédez pas les droits d'administration pour l'application Unireg");
 		}
 
-		final String environnement = UniregModeHelper.getEnvironnement();
-		if (!"Developpement".equals(environnement) && !"Hudson".equals(environnement)) {
+		final String environnement = uniregModeHelper.getEnvironnement();
+		if (!"Developpement".equals(environnement) && !"Hudson".equals(environnement) && !"UT".equals(environnement)) {
 			Flash.error("Cette fonctionalité n'est disponible qu'en développement !");
 			return "redirect:list.do";
 		}
@@ -149,8 +150,8 @@ public class TiersImportController {
 			throw new AccessDeniedException("vous ne possédez pas les droits d'administration pour l'application Unireg");
 		}
 
-		final String environnement = UniregModeHelper.getEnvironnement();
-		if (!"Developpement".equals(environnement) && !"Hudson".equals(environnement)) {
+		final String environnement = uniregModeHelper.getEnvironnement();
+		if (!"Developpement".equals(environnement) && !"Hudson".equals(environnement) && !"UT".equals(environnement)) {
 			Flash.error("Cette fonctionalité n'est disponible qu'en développement !");
 			return "redirect:list.do";
 		}
@@ -254,7 +255,6 @@ public class TiersImportController {
 		audit.success("La base de données a été réindexée. Elle contient " + count + " entrées");
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setGlobalIndexer(GlobalTiersIndexer globalIndexer) {
 		this.globalIndexer = globalIndexer;
 	}
@@ -263,12 +263,10 @@ public class TiersImportController {
 		this.dao = dao;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDocService(DocumentService docService) {
 		this.docService = docService;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDbService(DatabaseService dbService) {
 		this.dbService = dbService;
 	}
@@ -279,5 +277,9 @@ public class TiersImportController {
 
 	public void setAudit(AuditManager audit) {
 		this.audit = audit;
+	}
+
+	public void setUniregModeHelper(UniregModeHelper uniregModeHelper) {
+		this.uniregModeHelper = uniregModeHelper;
 	}
 }

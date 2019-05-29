@@ -326,6 +326,7 @@
 
 	<bean id="wsv7EndPoint" class="ch.vd.unireg.webservices.v7.WebServiceEndPoint">
 		<property name="target" ref="wsv7Tracing"/>
+		<property name="uniregModeHelper" ref="uniregModeHelper"/>
 	</bean>
 
 	<bean id="wsv7Tracing" class="ch.vd.unireg.webservices.v7.BusinessWebServiceTracing">

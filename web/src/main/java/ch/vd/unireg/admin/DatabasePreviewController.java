@@ -33,12 +33,13 @@ public class DatabasePreviewController {
 	private TiersDAO tiersDao;
 	private AdresseService adresseService;
 	private SecurityProviderInterface securityProvider;
+	private UniregModeHelper uniregModeHelper;
 
 	@RequestMapping(value = "/admin/dbpreview.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String index(Model mav) {
 
-		if (!UniregModeHelper.isTestMode() || !SecurityHelper.isAnyGranted(securityProvider, Role.TESTER, Role.ADMIN)) {
+		if (!uniregModeHelper.isTestMode() || !SecurityHelper.isAnyGranted(securityProvider, Role.TESTER, Role.ADMIN)) {
 			Flash.warning("Vous ne possédez pas les droits suffisants pour accéder à la prévisualisation des tiers !");
 			return "redirect:/tiers/list.do";
 		}
@@ -95,5 +96,9 @@ public class DatabasePreviewController {
 
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
 		this.securityProvider = securityProvider;
+	}
+
+	public void setUniregModeHelper(UniregModeHelper uniregModeHelper) {
+		this.uniregModeHelper = uniregModeHelper;
 	}
 }

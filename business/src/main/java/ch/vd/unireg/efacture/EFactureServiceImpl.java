@@ -37,6 +37,7 @@ public class EFactureServiceImpl implements EFactureService, InitializingBean {
 	private EFactureMessageSender eFactureMessageSender;
 	private EFactureClient eFactureClient;
 	private DocumentEFactureDAO documentEFactureDAO;
+	private UniregModeHelper uniregModeHelper;
 
 	@Override
 	public String imprimerDocumentEfacture(Long ctbId, TypeDocument typeDocument, RegDate dateDemande, BigInteger noAdherent, RegDate dateDemandePrecedente, BigInteger noAdherentPrecedent) throws EditiqueException {
@@ -154,9 +155,13 @@ public class EFactureServiceImpl implements EFactureService, InitializingBean {
 		this.documentEFactureDAO = documentEFactureDAO;
 	}
 
+	public void setUniregModeHelper(UniregModeHelper uniregModeHelper) {
+		this.uniregModeHelper = uniregModeHelper;
+	}
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		// tout ça pour ne logguer cette information que dans les web-app où elle a un sens (qu'est ce que cela veut dire dans NEXUS ou WS ?)
-		LOGGER.info(String.format("MODE E-FACTURE %s", UniregModeHelper.isEfactureEnabled() ? "ON" : "OFF"));
+		LOGGER.info(String.format("MODE E-FACTURE %s", uniregModeHelper.isEfactureEnabled() ? "ON" : "OFF"));
 	}
 }

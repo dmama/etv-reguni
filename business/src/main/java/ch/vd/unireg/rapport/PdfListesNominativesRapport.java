@@ -13,7 +13,6 @@ import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TemporaryFile;
 import ch.vd.unireg.listes.listesnominatives.ListesNominativesResults;
 import ch.vd.unireg.listes.listesnominatives.TypeAdresse;
-import ch.vd.unireg.utils.UniregModeHelper;
 
 /**
  * Rapport PDF contenant les résultats du rapprochement des ctb et des propriétaires fonciers.
@@ -84,7 +83,7 @@ public class PdfListesNominativesRapport extends PdfRapport{
 		}
 
 		//Contribuables pour RPT
-		if (UniregModeHelper.isTestMode()) {
+		if (results.isPourRPT()) {
 			{
 				final String stringDate = DateHelper.dateToDashString(dateGeneration);
 				final String filename = "Unireg-Batch-TousContribuables-" + stringDate + ".csv";

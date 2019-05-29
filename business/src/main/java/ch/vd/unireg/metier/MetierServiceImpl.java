@@ -113,6 +113,7 @@ public class MetierServiceImpl implements MetierService {
 	private ParametreAppService parametreAppService;
 	private EtiquetteService etiquetteService;
 	private AuditManager audit;
+	private UniregModeHelper uniregModeHelper;
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
@@ -187,6 +188,10 @@ public class MetierServiceImpl implements MetierService {
 
 	public void setAudit(AuditManager audit) {
 		this.audit = audit;
+	}
+
+	public void setUniregModeHelper(UniregModeHelper uniregModeHelper) {
+		this.uniregModeHelper = uniregModeHelper;
 	}
 
 	private void checkRapportsMenage(PersonnePhysique pp, RegDate dateMariage, ValidationResults results) {
@@ -2671,7 +2676,7 @@ public class MetierServiceImpl implements MetierService {
 	}
 
 	private void desactiverEFacture(long ctbId, String descr) throws MetierServiceException {
-		if (!UniregModeHelper.isEfactureEnabled()) {
+		if (!uniregModeHelper.isEfactureEnabled()) {
 			return;
 		}
 
