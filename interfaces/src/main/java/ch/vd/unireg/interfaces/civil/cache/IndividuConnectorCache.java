@@ -30,7 +30,7 @@ import ch.vd.unireg.cache.UniregCacheInterface;
 import ch.vd.unireg.cache.UniregCacheManager;
 import ch.vd.unireg.common.ProgrammingException;
 import ch.vd.unireg.data.CivilDataEventListener;
-import ch.vd.unireg.data.DataEventService;
+import ch.vd.unireg.data.CivilDataEventService;
 import ch.vd.unireg.interfaces.civil.IndividuConnector;
 import ch.vd.unireg.interfaces.civil.IndividuConnectorException;
 import ch.vd.unireg.interfaces.civil.IndividuConnectorWrapper;
@@ -51,7 +51,7 @@ public class IndividuConnectorCache implements IndividuConnector, UniregCacheInt
 	private Ehcache cache;
 	private UniregCacheManager uniregCacheManager;
 	private StatsService statsService;
-	private DataEventService dataEventService;
+	private CivilDataEventService civilDataEventService;
 
 	public void setTarget(IndividuConnector target) {
 		this.target = target;
@@ -69,8 +69,8 @@ public class IndividuConnectorCache implements IndividuConnector, UniregCacheInt
 		this.statsService = statsService;
 	}
 
-	public void setDataEventService(DataEventService dataEventService) {
-		this.dataEventService = dataEventService;
+	public void setCivilDataEventService(CivilDataEventService civilDataEventService) {
+		this.civilDataEventService = civilDataEventService;
 	}
 
 	@Override
@@ -89,7 +89,7 @@ public class IndividuConnectorCache implements IndividuConnector, UniregCacheInt
 		if (uniregCacheManager != null) {
 			uniregCacheManager.register(this);
 		}
-		dataEventService.register(this);
+		civilDataEventService.register(this);
 	}
 
 	@Override
@@ -100,7 +100,7 @@ public class IndividuConnectorCache implements IndividuConnector, UniregCacheInt
 		if (uniregCacheManager != null) {
 			uniregCacheManager.unregister(this);
 		}
-		dataEventService.unregister(this);
+		civilDataEventService.unregister(this);
 	}
 
 	/**

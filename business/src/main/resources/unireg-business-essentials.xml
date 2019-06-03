@@ -258,17 +258,18 @@
 		<property name="hibernateDialect" ref="hibernateDialect" />
 		<property name="dataSource" ref="dataSource" />
 		<property name="transactionManager" ref="transactionManager" />
-		<property name="dataEventService" ref="dataEventService" />
+		<property name="fiscalDataEventService" ref="fiscalDataEventService" />
 	</bean>
 
 	<bean id="databaseChangeInterceptor" class="ch.vd.unireg.database.DatabaseChangeInterceptor">
 		<property name="parent" ref="modificationInterceptor" />
-		<property name="dataEventService" ref="dataEventService" />
+		<property name="fiscalDataEventService" ref="fiscalDataEventService" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 	</bean>
 
-	<bean id="dataEventService" class="ch.vd.unireg.data.DataEventServiceImpl" />
+	<bean id="civilDataEventService" class="ch.vd.unireg.data.CivilDataEventServiceImpl" />
+	<bean id="fiscalDataEventService" class="ch.vd.unireg.data.FiscalDataEventServiceImpl" />
 
 	<!--  Paramètres -->
 	<bean id="parametreAppService" class="ch.vd.unireg.parametrage.ParametreAppServiceImpl">

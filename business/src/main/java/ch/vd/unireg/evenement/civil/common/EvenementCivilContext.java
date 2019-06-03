@@ -2,7 +2,7 @@ package ch.vd.unireg.evenement.civil.common;
 
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.audit.AuditManager;
-import ch.vd.unireg.data.DataEventService;
+import ch.vd.unireg.data.CivilDataEventService;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
 import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
@@ -16,7 +16,7 @@ public class EvenementCivilContext {
 
 	private final ServiceCivilService serviceCivil;
 	private final ServiceInfrastructureService serviceInfra;
-	private final DataEventService dataEventService;
+	private final CivilDataEventService dataEventService;
 	private final TiersService tiersService;
 	private final TiersDAO tiersDAO;
 	private final GlobalTiersIndexer indexer;
@@ -41,7 +41,7 @@ public class EvenementCivilContext {
 		this.parametreAppService = null;
 	}
 
-	public EvenementCivilContext(ServiceCivilService serviceCivil, ServiceInfrastructureService serviceInfra, DataEventService dataEventService, TiersService tiersService, GlobalTiersIndexer indexer,
+	public EvenementCivilContext(ServiceCivilService serviceCivil, ServiceInfrastructureService serviceInfra, CivilDataEventService dataEventService, TiersService tiersService, GlobalTiersIndexer indexer,
 	                             MetierService metierService, TiersDAO tiersDAO, AdresseService adresseService, EvenementFiscalService evenementFiscalService, ParametreAppService parametreAppService, AuditManager audit) {
 		this.serviceCivil = serviceCivil;
 		this.serviceInfra = serviceInfra;
@@ -64,7 +64,7 @@ public class EvenementCivilContext {
 		return serviceInfra;
 	}
 
-	public final DataEventService getDataEventService() {
+	public final CivilDataEventService getDataEventService() {
 		return dataEventService;
 	}
 

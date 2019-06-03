@@ -10,7 +10,7 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.FormatNumeroHelper;
-import ch.vd.unireg.data.DataEventService;
+import ch.vd.unireg.data.CivilDataEventService;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchErreur;
 import ch.vd.unireg.evenement.civil.interne.depart.DepartEchTranslationStrategy;
@@ -703,7 +703,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 		// créée le service civil et un cache par devant
 		final IndividuConnectorCache cache = new IndividuConnectorCache();
 		cache.setCache(cacheManager.getCache("serviceCivil"));
-		cache.setDataEventService(getBean(DataEventService.class, "dataEventService"));
+		cache.setCivilDataEventService(getBean(CivilDataEventService.class, "civilDataEventService"));
 		cache.setTarget(new MockIndividuConnector() {
 			@Override
 			protected void init() {

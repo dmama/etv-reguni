@@ -5,7 +5,8 @@
 	<!-- [UNIREG-2399] on ne veut pas valider les événements DB parce que ça prend 60% du temps d'insertion des événements civils -->
 	<bean id="concentratingDataEventJmsSender" class="ch.vd.unireg.data.ConcentratingDataEventJmsSender">
 		<property name="evenementsFiscauxActives" value="${extprop.jms.queue.evtFiscal.enabled}"/>
-		<property name="parentService" ref="dataEventService"/>
+		<property name="civilDataEventService" ref="civilDataEventService"/>
+		<property name="fiscalDataEventService" ref="fiscalDataEventService"/>
 		<property name="sender" ref="dataEventSender"/>
 		<property name="synchronizationRegistrar" ref="transactionSynchronizationRegistrar"/>
 	</bean>

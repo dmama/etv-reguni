@@ -4,7 +4,7 @@ import org.apache.commons.lang3.mutable.MutableBoolean;
 
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BusinessTest;
-import ch.vd.unireg.data.DataEventService;
+import ch.vd.unireg.data.CivilDataEventService;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchDAO;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchProcessingMode;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchService;
@@ -18,7 +18,7 @@ public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTes
 	protected EvenementCivilEchProcessorImpl processor;
 	protected EvenementCivilEchDAO evtCivilDAO;
 	protected EvenementCivilEchService evtCivilService;
-	protected DataEventService dataEventService;
+	protected CivilDataEventService dataEventService;
 	protected ModificationInterceptor mainInterceptor;
 
 	@Override
@@ -27,7 +27,7 @@ public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTes
 
 		evtCivilDAO  = getBean(EvenementCivilEchDAO.class, "evenementCivilEchDAO");
 		evtCivilService  = getBean(EvenementCivilEchService.class, "evtCivilEchService");
-		dataEventService = getBean(DataEventService.class, "dataEventService");
+		dataEventService = getBean(CivilDataEventService.class, "civilDataEventService");
 		mainInterceptor = getBean(ModificationInterceptor.class, "modificationInterceptor");
 
 		final EvenementCivilEchTranslator translator = getBean(EvenementCivilEchTranslator.class, "evenementCivilEchTranslator");
@@ -66,7 +66,7 @@ public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTes
 		proc.setTiersService(tiersService);
 		proc.setIndexer(globalTiersIndexer);
 		proc.setServiceCivil(serviceCivil);
-		proc.setDataEventService(dataEventService);
+		proc.setCivilDataEventService(dataEventService);
 		proc.setMainInterceptor(mainInterceptor);
 		proc.setParentesSynchronizerInterceptor(parentesSynchronizer);
 		proc.setAudit(audit);
@@ -87,7 +87,7 @@ public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTes
 	protected void buildStrategyOverridingTranslatorAndProcessor(boolean restart, StrategyOverridingCallback callback) throws Exception {
 		final EvenementCivilEchTranslatorImplOverride translator = new EvenementCivilEchTranslatorImplOverride();
 		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
-		translator.setDataEventService(getBean(DataEventService.class, "dataEventService"));
+		translator.setCivilDataEventService(getBean(CivilDataEventService.class, "civilDataEventService"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
 		translator.setIndexer(globalTiersIndexer);
 		translator.setMetierService(getBean(MetierService.class, "metierService"));

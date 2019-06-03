@@ -1,6 +1,6 @@
 package ch.vd.unireg.evenement.civil.interne.correction.relation;
 
-import ch.vd.unireg.data.DataEventService;
+import ch.vd.unireg.data.CivilDataEventService;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
@@ -12,7 +12,7 @@ import ch.vd.unireg.tiers.TiersService;
 
 public class CorrectionRelationTranslationStrategy extends AbstractTranslationStrategyWithRelationshipCacheCleanup {
 
-	public CorrectionRelationTranslationStrategy(ServiceCivilService serviceCivil, DataEventService dataEventService, TiersService tiersService) {
+	public CorrectionRelationTranslationStrategy(ServiceCivilService serviceCivil, CivilDataEventService dataEventService, TiersService tiersService) {
 		super(serviceCivil, dataEventService, tiersService);
 	}
 

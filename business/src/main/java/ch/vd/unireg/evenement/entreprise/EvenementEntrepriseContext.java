@@ -2,7 +2,7 @@ package ch.vd.unireg.evenement.entreprise;
 
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.audit.AuditManager;
-import ch.vd.unireg.data.DataEventService;
+import ch.vd.unireg.data.CivilDataEventService;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
 import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.unireg.interfaces.service.ServiceEntreprise;
@@ -21,7 +21,7 @@ public class EvenementEntrepriseContext {
 	private final EvenementEntrepriseService evenementEntrepriseService;
 	private final ServiceInfrastructureService serviceInfra;
 	private final RegimeFiscalService regimeFiscalService;
-	private final DataEventService dataEventService;
+	private final CivilDataEventService dataEventService;
 	private final TiersService tiersService;
 	private final TiersDAO tiersDAO;
 	private final GlobalTiersIndexer indexer;
@@ -52,7 +52,7 @@ public class EvenementEntrepriseContext {
 	}
 
 	public EvenementEntrepriseContext(ServiceEntreprise serviceEntreprise, EvenementEntrepriseService evenementEntrepriseService, ServiceInfrastructureService serviceInfra,
-	                                  RegimeFiscalService regimeFiscalService, DataEventService dataEventService, TiersService tiersService, GlobalTiersIndexer indexer,
+	                                  RegimeFiscalService regimeFiscalService, CivilDataEventService dataEventService, TiersService tiersService, GlobalTiersIndexer indexer,
 	                                  MetierServicePM metierServicePM, TiersDAO tiersDAO, AdresseService adresseService, EvenementFiscalService evenementFiscalService,
 	                                  AssujettissementService assujettissementService,
 	                                  AppariementService appariementService, ParametreAppService parametreAppService, AuditManager audit) {
@@ -89,7 +89,7 @@ public class EvenementEntrepriseContext {
 		return regimeFiscalService;
 	}
 
-	public final DataEventService getDataEventService() {
+	public final CivilDataEventService getDataEventService() {
 		return dataEventService;
 	}
 

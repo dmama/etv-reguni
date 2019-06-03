@@ -7,15 +7,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
-import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
-import ch.vd.unireg.data.DataEventService;
+import ch.vd.unireg.data.CivilDataEventService;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterne;
+import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
 import ch.vd.unireg.tiers.TiersService;
 
@@ -25,10 +25,10 @@ import ch.vd.unireg.tiers.TiersService;
 public abstract class AbstractTranslationStrategyWithRelationshipCacheCleanup implements EvenementCivilEchTranslationStrategy {
 
 	private final ServiceCivilService serviceCivil;
-	private final DataEventService dataEventService;
+	private final CivilDataEventService dataEventService;
 	private final TiersService tiersService;
 
-	protected AbstractTranslationStrategyWithRelationshipCacheCleanup(ServiceCivilService serviceCivil, DataEventService dataEventService, TiersService tiersService) {
+	protected AbstractTranslationStrategyWithRelationshipCacheCleanup(ServiceCivilService serviceCivil, CivilDataEventService dataEventService, TiersService tiersService) {
 		this.serviceCivil = serviceCivil;
 		this.dataEventService = dataEventService;
 		this.tiersService = tiersService;

@@ -50,7 +50,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.unireg.common.StatusManager;
-import ch.vd.unireg.data.DataEventService;
+import ch.vd.unireg.data.FiscalDataEventService;
 import ch.vd.unireg.dbutils.SqlFileExecutor;
 import ch.vd.unireg.tiers.AutreCommunaute;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
@@ -65,7 +65,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 	private Dialect hibernateDialect;
 	private PlatformTransactionManager transactionManager;
 	private DataSource dataSource;
-	private DataEventService dataEventService;
+	private FiscalDataEventService fiscalDataEventService;
 
 	private static final int DEFAULT_BATCH_SIZE = 500;
 
@@ -79,14 +79,14 @@ public class DatabaseServiceImpl implements DatabaseService {
 
 	private void sendTruncateDatabaseEvent() {
 		doInNewTransaction(false, status -> {
-			dataEventService.onTruncateDatabase();
+			fiscalDataEventService.onTruncateDatabase();
 			return null;
 		});
 	}
 
 	private void sendLoadDatabaseEvent() {
 		doInNewTransaction(false, status -> {
-			dataEventService.onLoadDatabase();
+			fiscalDataEventService.onLoadDatabase();
 			return null;
 		});
 	}
@@ -691,7 +691,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 		this.dataSource = dataSource;
 	}
 
-	public void setDataEventService(DataEventService dataEventService) {
-		this.dataEventService = dataEventService;
+	public void setFiscalDataEventService(FiscalDataEventService fiscalDataEventService) {
+		this.fiscalDataEventService = fiscalDataEventService;
 	}
 }

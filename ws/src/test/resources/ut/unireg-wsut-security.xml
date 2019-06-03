@@ -26,7 +26,7 @@
 				<constructor-arg value="securityProvider" />
 			</bean>
 		</property>
-		<property name="dataEventService" ref="dataEventService" />
+		<property name="fiscalDataEventService" ref="fiscalDataEventService" />
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="droitAccesDAO" ref="droitAccesDAO" />
 		<property name="uniregCacheManager" ref="uniregCacheManager" />

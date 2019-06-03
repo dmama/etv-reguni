@@ -132,7 +132,7 @@ public class EntrepriseConnectorCacheTest extends WithoutSpringTest {
 		cache.setUniregCacheManager(new UniregCacheManagerImpl());
 		cache.setStatsService(new MockStatsService());
 		cache.setTarget(target);
-		cache.setDataEventService(dataEventService);
+		cache.setCivilDataEventService(dataEventService);
 		cache.afterPropertiesSet();
 	}
 

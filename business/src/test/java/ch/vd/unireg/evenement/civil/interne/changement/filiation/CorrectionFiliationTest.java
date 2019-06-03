@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.cache.UniregCacheManager;
-import ch.vd.unireg.data.DataEventService;
+import ch.vd.unireg.data.CivilDataEventService;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.unireg.interfaces.civil.cache.IndividuConnectorCache;
@@ -42,7 +42,7 @@ public class CorrectionFiliationTest extends AbstractEvenementCivilInterneTest {
 		final CacheManager cacheManager = getBean(CacheManager.class, "ehCacheManager");
 		assertNotNull(cacheManager);
 
-		final DataEventService dataEventService = getBean(DataEventService.class, "dataEventService");
+		final CivilDataEventService dataEventService = getBean(CivilDataEventService.class, "civilDataEventService");
 		assertNotNull(dataEventService);
 
 		final UniregCacheManager uniregCacheManager = getBean(UniregCacheManager.class, "uniregCacheManager");
@@ -52,7 +52,7 @@ public class CorrectionFiliationTest extends AbstractEvenementCivilInterneTest {
 		final IndividuConnectorCache cache = new IndividuConnectorCache();
 		cache.setCache(cacheManager.getCache("serviceCivil"));
 		cache.setUniregCacheManager(uniregCacheManager);
-		cache.setDataEventService(dataEventService);
+		cache.setCivilDataEventService(dataEventService);
 		cache.afterPropertiesSet();
 		cache.reset();
 		try {

@@ -8,32 +8,36 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.unireg.data.DataEventListener;
-import ch.vd.unireg.data.DataEventService;
+import ch.vd.unireg.data.CivilDataEventListener;
+import ch.vd.unireg.data.CivilDataEventService;
+import ch.vd.unireg.data.FiscalDataEventListener;
+import ch.vd.unireg.data.FiscalDataEventService;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.TiersDAO;
 import ch.vd.unireg.type.TypeRapportEntreTiers;
 
-public class WebServiceEventListenerAdapter implements DataEventListener, InitializingBean, DisposableBean {
+public class WebServiceEventListenerAdapter implements CivilDataEventListener, FiscalDataEventListener, InitializingBean, DisposableBean {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceEventListenerAdapter.class);
 
-	private DataEventService dataEventService;
+	private CivilDataEventService civilDataEventService;
+	private FiscalDataEventService fiscalDataEventService;
 	private List<WebServiceEventInterface> listeners;
 	private TiersDAO tiersDAO;
 
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setDataEventService(DataEventService dataEventService) {
-		this.dataEventService = dataEventService;
+	public void setCivilDataEventService(CivilDataEventService civilDataEventService) {
+		this.civilDataEventService = civilDataEventService;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
+	public void setFiscalDataEventService(FiscalDataEventService fiscalDataEventService) {
+		this.fiscalDataEventService = fiscalDataEventService;
+	}
+
 	public void setListeners(List<WebServiceEventInterface> listeners) {
 		this.listeners = listeners;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
 	}
@@ -121,12 +125,14 @@ public class WebServiceEventListenerAdapter implements DataEventListener, Initia
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		dataEventService.register(this);
+		civilDataEventService.register(this);
+		fiscalDataEventService.register(this);
 	}
 
 	@Override
 	public void destroy() throws Exception {
-		dataEventService.unregister(this);
+		civilDataEventService.unregister(this);
+		fiscalDataEventService.unregister(this);
 	}
 }
 

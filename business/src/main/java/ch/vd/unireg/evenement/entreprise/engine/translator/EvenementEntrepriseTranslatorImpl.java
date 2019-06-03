@@ -20,7 +20,7 @@ import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.common.StringRenderer;
-import ch.vd.unireg.data.DataEventService;
+import ch.vd.unireg.data.CivilDataEventService;
 import ch.vd.unireg.evenement.entreprise.EvenementEntreprise;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseCappingLevelProvider;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseContext;
@@ -112,7 +112,7 @@ public class EvenementEntrepriseTranslatorImpl implements EvenementEntrepriseTra
 	private ServiceInfrastructureService serviceInfrastructureService;
 	private RegimeFiscalService regimeFiscalService;
 	private TiersDAO tiersDAO;
-	private DataEventService dataEventService;
+	private CivilDataEventService civilDataEventService;
 	private TiersService tiersService;
 	private MetierServicePM metierServicePM;
 	private AdresseService adresseService;
@@ -145,7 +145,7 @@ public class EvenementEntrepriseTranslatorImpl implements EvenementEntrepriseTra
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		context = new EvenementEntrepriseContext(serviceEntreprise, evenementEntrepriseService, serviceInfrastructureService, regimeFiscalService, dataEventService, tiersService, indexer, metierServicePM, tiersDAO, adresseService,
+		context = new EvenementEntrepriseContext(serviceEntreprise, evenementEntrepriseService, serviceInfrastructureService, regimeFiscalService, civilDataEventService, tiersService, indexer, metierServicePM, tiersDAO, adresseService,
 		                                         evenementFiscalService, assujettissementService, appariementService, parametreAppService, audit);
 
 		// Construction des stratégies
@@ -693,8 +693,8 @@ public class EvenementEntrepriseTranslatorImpl implements EvenementEntrepriseTra
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setDataEventService(DataEventService dataEventService) {
-		this.dataEventService = dataEventService;
+	public void setCivilDataEventService(CivilDataEventService civilDataEventService) {
+		this.civilDataEventService = civilDataEventService;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

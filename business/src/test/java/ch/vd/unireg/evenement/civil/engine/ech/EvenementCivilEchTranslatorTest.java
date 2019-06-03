@@ -10,7 +10,7 @@ import org.junit.Test;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BusinessTest;
-import ch.vd.unireg.data.DataEventService;
+import ch.vd.unireg.data.CivilDataEventService;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
@@ -36,7 +36,7 @@ public class EvenementCivilEchTranslatorTest extends BusinessTest {
 		
 		translator = new EvenementCivilEchTranslatorImplOverride();
 		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
-		translator.setDataEventService(getBean(DataEventService.class, "dataEventService"));
+		translator.setCivilDataEventService(getBean(CivilDataEventService.class, "civilDataEventService"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
 		translator.setIndexer(globalTiersIndexer);
 		translator.setMetierService(getBean(MetierService.class, "metierService"));

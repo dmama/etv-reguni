@@ -44,7 +44,7 @@ public class EntrepriseConnectorCache implements EntrepriseConnector, UniregCach
 	private Ehcache cache;
 	private UniregCacheManager uniregCacheManager;
 	private StatsService statsService;
-	private CivilDataEventService dataEventService;
+	private CivilDataEventService civilDataEventService;
 
 	public void setTarget(EntrepriseConnector target) {
 		this.target = target;
@@ -62,8 +62,8 @@ public class EntrepriseConnectorCache implements EntrepriseConnector, UniregCach
 		this.statsService = statsService;
 	}
 
-	public void setDataEventService(CivilDataEventService dataEventService) {
-		this.dataEventService = dataEventService;
+	public void setCivilDataEventService(CivilDataEventService civilDataEventService) {
+		this.civilDataEventService = civilDataEventService;
 	}
 
 	@Override
@@ -82,7 +82,7 @@ public class EntrepriseConnectorCache implements EntrepriseConnector, UniregCach
 		if (uniregCacheManager != null) {
 			uniregCacheManager.register(this);
 		}
-		dataEventService.register(this);
+		civilDataEventService.register(this);
 	}
 
 	@Override
@@ -93,7 +93,7 @@ public class EntrepriseConnectorCache implements EntrepriseConnector, UniregCach
 		if (uniregCacheManager != null) {
 			uniregCacheManager.unregister(this);
 		}
-		dataEventService.unregister(this);
+		civilDataEventService.unregister(this);
 	}
 
 	/**

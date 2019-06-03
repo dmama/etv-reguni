@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ch.vd.unireg.admin.indexer.GestionIndexation;
 import ch.vd.unireg.admin.indexer.IndexDocument;
 import ch.vd.unireg.common.Flash;
-import ch.vd.unireg.data.DataEventService;
+import ch.vd.unireg.data.CivilDataEventService;
 import ch.vd.unireg.indexer.GlobalIndexInterface;
 import ch.vd.unireg.indexer.lucene.LuceneHelper;
 import ch.vd.unireg.indexer.tiers.TiersIndexableData;
@@ -44,7 +44,7 @@ public class GestionIndexationController {
 	private GlobalIndexInterface globalIndex;
 	private IndexationManager indexationManager;
 	private ServiceCivilService serviceCivil;
-	private DataEventService dataEventService;
+	private CivilDataEventService civilDataEventService;
 	private SecurityProviderInterface securityProvider;
 
 	private static final int maxHits = 100;
@@ -134,7 +134,7 @@ public class GestionIndexationController {
 
 		final Long id = data.getIndNo();
 		if (id != null) {
-			dataEventService.onIndividuChange(id);
+			civilDataEventService.onIndividuChange(id);
 			final Individu individu = serviceCivil.getIndividu(id, null);
 			if (individu == null) {
 				Flash.warning("L'individu n°" + id + " n'existe pas.");
@@ -183,8 +183,8 @@ public class GestionIndexationController {
 		this.serviceCivil = serviceCivil;
 	}
 
-	public void setDataEventService(DataEventService dataEventService) {
-		this.dataEventService = dataEventService;
+	public void setCivilDataEventService(CivilDataEventService civilDataEventService) {
+		this.civilDataEventService = civilDataEventService;
 	}
 
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {

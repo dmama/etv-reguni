@@ -4,7 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.unireg.data.DataEventService;
+import ch.vd.unireg.data.CivilDataEventService;
+import ch.vd.unireg.data.FiscalDataEventService;
 import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
@@ -17,7 +18,8 @@ public class IndexationManagerImpl implements IndexationManager {
 	private static final Logger LOGGER = LoggerFactory.getLogger(IndexationManagerImpl.class);
 
 	private GlobalTiersIndexer tiersIndexer;
-	private DataEventService dataEventService;
+	private CivilDataEventService civilDataEventService;
+	private FiscalDataEventService fiscalDataEventService;
 	private TiersDAO tiersDAO;
 
 	@Override
@@ -29,16 +31,16 @@ public class IndexationManagerImpl implements IndexationManager {
 		if (noIndividu != null) {
 			LOGGER.info("Demande de réindexation manuelle du tiers n°" + id + " (avec éviction du cache des données de l'individu n°" + noIndividu + ')');
 			// on en profite pour forcer l'éviction des données cachées pour l'individu
-			dataEventService.onIndividuChange(noIndividu);
+			civilDataEventService.onIndividuChange(noIndividu);
 		}
 		else if (noCantonal != null) {
 			LOGGER.info("Demande de réindexation manuelle du tiers n°" + id + " (avec éviction du cache des données de l'entreprise/de l'établissement civil n°" + noCantonal + ')');
-			dataEventService.onEntrepriseChange(noCantonal);
+			civilDataEventService.onEntrepriseChange(noCantonal);
 		}
 		else {
 			LOGGER.info("Demande de réindexation manuelle du tiers n°" + id);
 		}
-		dataEventService.onTiersChange(id); // on force l'éviction des donées cachées pour tous les types de tiers (pas seulement pour les habitants)
+		fiscalDataEventService.onTiersChange(id); // on force l'éviction des donées cachées pour tous les types de tiers (pas seulement pour les habitants)
 
 		// on demande la réindexation du tiers
 		tiersIndexer.schedule(id);
@@ -83,17 +85,18 @@ public class IndexationManagerImpl implements IndexationManager {
 		return noCantonal;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTiersIndexer(GlobalTiersIndexer tiersIndexer) {
 		this.tiersIndexer = tiersIndexer;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setDataEventService(DataEventService dataEventService) {
-		this.dataEventService = dataEventService;
+	public void setCivilDataEventService(CivilDataEventService civilDataEventService) {
+		this.civilDataEventService = civilDataEventService;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
+	public void setFiscalDataEventService(FiscalDataEventService fiscalDataEventService) {
+		this.fiscalDataEventService = fiscalDataEventService;
+	}
+
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
 	}

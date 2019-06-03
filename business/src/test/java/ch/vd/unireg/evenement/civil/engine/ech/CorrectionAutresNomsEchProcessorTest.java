@@ -5,7 +5,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.data.DataEventService;
+import ch.vd.unireg.data.CivilDataEventService;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.unireg.indexer.tiers.TiersIndexedData;
 import ch.vd.unireg.interfaces.civil.cache.IndividuConnectorCache;
@@ -59,7 +59,7 @@ public class CorrectionAutresNomsEchProcessorTest extends AbstractCorrectionEchP
 		// créée le service civil et un cache par devant
 		final IndividuConnectorCache cache = new IndividuConnectorCache();
 		cache.setCache(cacheManager.getCache("serviceCivil"));
-		cache.setDataEventService(getBean(DataEventService.class, "dataEventService"));
+		cache.setCivilDataEventService(getBean(CivilDataEventService.class, "civilDataEventService"));
 		cache.setTarget(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {

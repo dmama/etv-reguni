@@ -23,7 +23,7 @@
 		</property>
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
-		<property name="dataEventService" ref="dataEventService" />
+		<property name="civilDataEventService" ref="civilDataEventService" />
 	</bean>
 
 	<alias alias="individuConnector" name="individuConnectorCache"/>
@@ -51,7 +51,7 @@
 		</property>
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
-		<property name="dataEventService" ref="dataEventService" />
+		<property name="civilDataEventService" ref="civilDataEventService" />
 	</bean>
 
 	<alias alias="entrepriseConnector" name="entrepriseConnectorCache"/>

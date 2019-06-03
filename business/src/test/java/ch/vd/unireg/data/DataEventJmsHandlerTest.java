@@ -24,7 +24,7 @@ public class DataEventJmsHandlerTest extends BusinessTest {
 		super.onSetUp();
 
 		handler = new DataEventJmsHandler();
-		handler.setDataEventService(new MockDataEventService());
+		handler.setFiscalDataEventService(new MockFiscalDataEventService());
 		handler.setEvenementFiscalSender(new MockEvenementFiscalSender());
 		handler.setHibernateTemplate(hibernateTemplate);
 		handler.afterPropertiesSet();

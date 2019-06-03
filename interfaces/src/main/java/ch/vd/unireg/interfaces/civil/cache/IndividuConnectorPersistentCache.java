@@ -48,7 +48,7 @@ public class IndividuConnectorPersistentCache implements IndividuConnector, Unir
 	private IndividuConnector target;
 	private UniregCacheManager uniregCacheManager;
 	private StatsService statsService;
-	private CivilDataEventService dataEventService;
+	private CivilDataEventService civilDataEventService;
 
 	public void setTarget(IndividuConnector target) {
 		this.target = target;
@@ -69,8 +69,8 @@ public class IndividuConnectorPersistentCache implements IndividuConnector, Unir
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setDataEventService(CivilDataEventService dataEventService) {
-		this.dataEventService = dataEventService;
+	public void setCivilDataEventService(CivilDataEventService civilDataEventService) {
+		this.civilDataEventService = civilDataEventService;
 	}
 
 	@Override
@@ -84,7 +84,7 @@ public class IndividuConnectorPersistentCache implements IndividuConnector, Unir
 			statsService.registerCache(CACHE_NAME, this);
 		}
 		uniregCacheManager.register(this);
-		dataEventService.register(this);
+		civilDataEventService.register(this);
 	}
 
 	@Override
@@ -93,7 +93,7 @@ public class IndividuConnectorPersistentCache implements IndividuConnector, Unir
 		if (statsService != null) {
 			statsService.unregisterCache(CACHE_NAME);
 		}
-		dataEventService.unregister(this);
+		civilDataEventService.unregister(this);
 	}
 
 	/**

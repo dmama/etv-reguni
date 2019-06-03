@@ -39,7 +39,7 @@
 
 	<!-- Bridge qui transmet au cache centralisé Nexus les notifications lors des changements sur les individus et les entreprises -->
 	<bean id="nexusCivilDataEventBridge" class="ch.vd.unireg.data.CivilDataEventBridge">
-		<property name="master" ref="dataEventService"/>
+		<property name="master" ref="civilDataEventService"/>
 		<property name="slave" ref="nexusCivilDataEventTracing"/>
 	</bean>
 
@@ -65,7 +65,7 @@
 		</property>
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
-		<property name="dataEventService" ref="dataEventService" />
+		<property name="civilDataEventService" ref="civilDataEventService" />
 	</bean>
 
 	<alias alias="individuConnector" name="individuConnectorCache"/>
@@ -94,7 +94,7 @@
 <!--		<property name="cache" value="#{ehCacheManager.getCache('entrepriseConnector')}"/>-->
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
-		<property name="dataEventService" ref="dataEventService" />
+		<property name="civilDataEventService" ref="civilDataEventService" />
 	</bean>
 
 	<alias alias="entrepriseConnector" name="entrepriseConnectorCache" />

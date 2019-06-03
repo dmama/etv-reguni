@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessTest;
-import ch.vd.unireg.data.DataEventService;
+import ch.vd.unireg.data.CivilDataEventService;
 import ch.vd.unireg.evenement.entreprise.EvenementEntreprise;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseDAO;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseProcessingMode;
@@ -28,7 +28,7 @@ public abstract class AbstractEvenementEntrepriseCivileProcessorTest extends Bus
 	protected EvenementEntrepriseDAO evtEntrepriseDAO;
 	protected EvenementEntrepriseService evtEntrepriseService;
 	protected RegimeFiscalService regimeFiscalService;
-	protected DataEventService dataEventService;
+	protected CivilDataEventService dataEventService;
 	protected ModificationInterceptor mainInterceptor;
 
 	@Override
@@ -38,7 +38,7 @@ public abstract class AbstractEvenementEntrepriseCivileProcessorTest extends Bus
 		evtEntrepriseDAO = getBean(EvenementEntrepriseDAO.class, "evenementEntrepriseDAO");
 		evtEntrepriseService = getBean(EvenementEntrepriseService.class, "evtEntrepriseService");
 		regimeFiscalService  = getBean(RegimeFiscalService.class, "regimeFiscalService");
-		dataEventService = getBean(DataEventService.class, "dataEventService");
+		dataEventService = getBean(CivilDataEventService.class, "civilDataEventService");
 		mainInterceptor = getBean(ModificationInterceptor.class, "modificationInterceptor");
 
 		final EvenementEntrepriseTranslator translator = getBean(EvenementEntrepriseTranslator.class, "evenementEntrepriseTranslator");
@@ -91,7 +91,7 @@ public abstract class AbstractEvenementEntrepriseCivileProcessorTest extends Bus
 		internal.setTranslator(translator);
 		internal.setTiersService(tiersService);
 		internal.setIndexer(globalTiersIndexer);
-		internal.setDataEventService(dataEventService);
+		internal.setCivilDataEventService(dataEventService);
 		internal.setAudit(audit);
 		internal.afterPropertiesSet();
 

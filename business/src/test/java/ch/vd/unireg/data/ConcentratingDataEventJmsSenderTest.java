@@ -30,7 +30,8 @@ public class ConcentratingDataEventJmsSenderTest extends BusinessTest {
 	private void buildConcentrator(DataEventSender sender, boolean enabled) throws Exception {
 		final ConcentratingDataEventJmsSender concentrator = new ConcentratingDataEventJmsSender();
 		concentrator.setEvenementsFiscauxActives(enabled);
-		concentrator.setParentService(getBean(DataEventService.class, "dataEventService"));
+		concentrator.setCivilDataEventService(getBean(CivilDataEventService.class, "civilDataEventService"));
+		concentrator.setFiscalDataEventService(getBean(FiscalDataEventService.class, "fiscalDataEventService"));
 		concentrator.setSynchronizationRegistrar(getBean(TransactionSynchronizationRegistrar.class, "transactionSynchronizationRegistrar"));
 		concentrator.setSender(sender);
 		concentrator.afterPropertiesSet();

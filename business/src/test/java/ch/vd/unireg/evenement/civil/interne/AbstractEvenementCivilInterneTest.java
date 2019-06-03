@@ -6,7 +6,7 @@ import org.junit.Assert;
 
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BusinessTest;
-import ch.vd.unireg.data.DataEventService;
+import ch.vd.unireg.data.CivilDataEventService;
 import ch.vd.unireg.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.unireg.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
@@ -26,7 +26,7 @@ public abstract class AbstractEvenementCivilInterneTest extends BusinessTest {
 	protected MetierService metierService;
 
 	protected EvenementCivilContext context;
-	protected DataEventService dataEventService;
+	protected CivilDataEventService dataEventService;
 	protected EvenementFiscalService evenementFiscalService;
 	protected EvenementCivilOptions options;
 	protected ParametreAppService parametreAppService;
@@ -37,7 +37,7 @@ public abstract class AbstractEvenementCivilInterneTest extends BusinessTest {
 
 		eventSender = getBean(CollectingEvenementFiscalSender.class, "evenementFiscalSender");
 		metierService = getBean(MetierService.class, "metierService");
-		dataEventService = getBean(DataEventService.class, "dataEventService");
+		dataEventService = getBean(CivilDataEventService.class, "civilDataEventService");
 		evenementFiscalService = getBean(EvenementFiscalService.class, "evenementFiscalService");
 		parametreAppService = getBean(ParametreAppService.class, "parametreAppService");
 		eventSender.reset();

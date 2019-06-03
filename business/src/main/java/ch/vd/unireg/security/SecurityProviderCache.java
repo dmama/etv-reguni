@@ -26,8 +26,8 @@ import ch.vd.unireg.cache.UniregCacheInterface;
 import ch.vd.unireg.cache.UniregCacheManager;
 import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.common.TiersNotFoundException;
-import ch.vd.unireg.data.DataEventService;
 import ch.vd.unireg.data.FiscalDataEventListener;
+import ch.vd.unireg.data.FiscalDataEventService;
 import ch.vd.unireg.tiers.TiersDAO;
 import ch.vd.unireg.type.Niveau;
 import ch.vd.unireg.type.TypeRapportEntreTiers;
@@ -39,7 +39,7 @@ public class SecurityProviderCache implements UniregCacheInterface, KeyDumpableC
 
 	private SecurityProviderInterface target;
 	private Ehcache cache;
-	private DataEventService dataEventService;
+	private FiscalDataEventService fiscalDataEventService;
 	private TiersDAO tiersDAO;
 	private DroitAccesDAO droitAccesDAO;
 	private UniregCacheManager uniregCacheManager;
@@ -77,8 +77,8 @@ public class SecurityProviderCache implements UniregCacheInterface, KeyDumpableC
 		this.uniregCacheManager = uniregCacheManager;
 	}
 
-	public void setDataEventService(DataEventService dataEventService) {
-		this.dataEventService = dataEventService;
+	public void setFiscalDataEventService(FiscalDataEventService fiscalDataEventService) {
+		this.fiscalDataEventService = fiscalDataEventService;
 	}
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
@@ -413,7 +413,7 @@ public class SecurityProviderCache implements UniregCacheInterface, KeyDumpableC
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		dataEventService.register(this);
+		fiscalDataEventService.register(this);
 		uniregCacheManager.register(this);
 		initCaches();
 	}
@@ -421,7 +421,7 @@ public class SecurityProviderCache implements UniregCacheInterface, KeyDumpableC
 	@Override
 	public void destroy() throws Exception {
 		cache = null;
-		dataEventService.unregister(this);
+		fiscalDataEventService.unregister(this);
 		uniregCacheManager.unregister(this);
 	}
 

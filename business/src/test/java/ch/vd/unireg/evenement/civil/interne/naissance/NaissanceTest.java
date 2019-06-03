@@ -380,7 +380,7 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 		cache.setTarget(realService);
 		cache.setCache(cacheManager.getCache("serviceCivil"));
 		cache.setUniregCacheManager(uniregCacheManager);
-		cache.setDataEventService(dataEventService);
+		cache.setCivilDataEventService(dataEventService);
 		cache.afterPropertiesSet();
 		cache.reset();
 		try {

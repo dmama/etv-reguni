@@ -9,7 +9,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.audit.AuditManager;
-import ch.vd.unireg.data.DataEventService;
+import ch.vd.unireg.data.CivilDataEventService;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
@@ -277,7 +277,7 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 	private ServiceCivilService serviceCivilService;
 	private ServiceInfrastructureService serviceInfrastructureService;
 	private TiersDAO tiersDAO;
-	private DataEventService dataEventService;
+	private CivilDataEventService civilDataEventService;
 	private TiersService tiersService;
 	private MetierService metierService;
 	private AdresseService adresseService;
@@ -333,7 +333,7 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		context = new EvenementCivilContext(serviceCivilService, serviceInfrastructureService, dataEventService, tiersService, indexer, metierService, tiersDAO, adresseService, evenementFiscalService, parametreAppService, audit);
+		context = new EvenementCivilContext(serviceCivilService, serviceInfrastructureService, civilDataEventService, tiersService, indexer, metierService, tiersDAO, adresseService, evenementFiscalService, parametreAppService, audit);
 		strategies = buildStrategies(context, parameters);
 
 		// TODO [ech99] jde : à enlever dès que possible
@@ -356,8 +356,8 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setDataEventService(DataEventService dataEventService) {
-		this.dataEventService = dataEventService;
+	public void setCivilDataEventService(CivilDataEventService civilDataEventService) {
+		this.civilDataEventService = civilDataEventService;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

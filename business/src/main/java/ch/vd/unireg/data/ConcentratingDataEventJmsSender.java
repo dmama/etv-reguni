@@ -41,7 +41,7 @@ import ch.vd.unireg.xml.event.data.v1.RelationChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.Relationship;
 import ch.vd.unireg.xml.event.data.v1.TiersChangeEvent;
 
-public class ConcentratingDataEventJmsSender implements InitializingBean, DisposableBean, EvenementFiscalSender, DataEventListener, TransactionSynchronizationSupplier {
+public class ConcentratingDataEventJmsSender implements InitializingBean, DisposableBean, EvenementFiscalSender, CivilDataEventListener, FiscalDataEventListener, TransactionSynchronizationSupplier {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ConcentratingDataEventJmsSender.class);
 
@@ -52,7 +52,8 @@ public class ConcentratingDataEventJmsSender implements InitializingBean, Dispos
 
 	private TransactionSynchronizationRegistrar synchronizationRegistrar;
 	private DataEventSender sender;
-	private DataEventService parentService;
+	private CivilDataEventService civilDataEventService;
+	private FiscalDataEventService fiscalDataEventService;
 	private boolean evenementsFiscauxActives;
 
 	public void setSynchronizationRegistrar(TransactionSynchronizationRegistrar synchronizationRegistrar) {
@@ -63,8 +64,12 @@ public class ConcentratingDataEventJmsSender implements InitializingBean, Dispos
 		this.sender = sender;
 	}
 
-	public void setParentService(DataEventService parentService) {
-		this.parentService = parentService;
+	public void setCivilDataEventService(CivilDataEventService civilDataEventService) {
+		this.civilDataEventService = civilDataEventService;
+	}
+
+	public void setFiscalDataEventService(FiscalDataEventService fiscalDataEventService) {
+		this.fiscalDataEventService = fiscalDataEventService;
 	}
 
 	public void setEvenementsFiscauxActives(boolean evenementsFiscauxActives) {
@@ -463,14 +468,16 @@ public class ConcentratingDataEventJmsSender implements InitializingBean, Dispos
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		parentService.register(this);
+		civilDataEventService.register(this);
+		fiscalDataEventService.register(this);
 		synchronizationRegistrar.registerSynchronizationSupplier(this);
 	}
 
 	@Override
 	public void destroy() throws Exception {
 		synchronizationRegistrar.unregisterSynchronizationSupplier(this);
-		parentService.unregister(this);
+		fiscalDataEventService.unregister(this);
+		civilDataEventService.unregister(this);
 	}
 
 	@Override

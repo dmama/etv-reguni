@@ -68,13 +68,14 @@
 		<property name="globalIndex" ref="globalTiersIndex" />
 		<property name="indexationManager" ref="indexationManager" />
 		<property name="serviceCivil" ref="serviceCivilService" />
-		<property name="dataEventService" ref="dataEventService" />
+		<property name="civilDataEventService" ref="civilDataEventService" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
 	<bean id="indexationManager" class="ch.vd.unireg.admin.IndexationManagerImpl">
 		<property name="tiersIndexer" ref="globalTiersIndexer" />
-		<property name="dataEventService" ref="dataEventService"/>
+		<property name="civilDataEventService" ref="civilDataEventService"/>
+		<property name="fiscalDataEventService" ref="fiscalDataEventService"/>
 		<property name="tiersDAO" ref="tiersDAO" />
 	</bean>
 
@@ -108,14 +109,14 @@
 	<bean id="recalculParentesController" class="ch.vd.unireg.admin.RecalculParentesController">
 		<property name="tiersService" ref="tiersService"/>
 		<property name="securityProvider" ref="securityProviderInterface"/>
-		<property name="dataEventService" ref="dataEventService"/>
+		<property name="civilDataEventService" ref="civilDataEventService"/>
 	</bean>
 
 	<!-- Gestion du recalcul du flag habitant -->
 	<bean id="recalculFlagHabitant" class="ch.vd.unireg.admin.RecalculFlagHabitantController">
 		<property name="tiersService" ref="tiersService"/>
 		<property name="securityProvider" ref="securityProviderInterface"/>
-		<property name="dataEventService" ref="dataEventService"/>
+		<property name="civilDataEventService" ref="civilDataEventService"/>
 	</bean>
 
 	<!-- Indexer flusher -->

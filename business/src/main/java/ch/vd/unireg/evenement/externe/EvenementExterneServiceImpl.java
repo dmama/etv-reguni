@@ -7,7 +7,8 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.data.DataEventService;
+import ch.vd.unireg.data.CivilDataEventService;
+import ch.vd.unireg.data.FiscalDataEventService;
 import ch.vd.unireg.declaration.DeclarationImpotSource;
 import ch.vd.unireg.declaration.EtatDeclaration;
 import ch.vd.unireg.declaration.EtatDeclarationRetournee;
@@ -22,9 +23,9 @@ public class EvenementExterneServiceImpl implements EvenementExterneService {
 	private EvenementExterneDAO evenementExterneDAO;
 	private TiersDAO tiersDAO;
 
-	private DataEventService dataEventService;
+	private CivilDataEventService civilDataEventService;
+	private FiscalDataEventService fiscalDataEventService;
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEvenementExterneDAO(EvenementExterneDAO evenementExterneDAO) {
 		this.evenementExterneDAO = evenementExterneDAO;
 	}
@@ -33,8 +34,12 @@ public class EvenementExterneServiceImpl implements EvenementExterneService {
 		this.tiersDAO = tiersDAO;
 	}
 
-	public void setDataEventService(DataEventService dataEventService) {
-		this.dataEventService = dataEventService;
+	public void setCivilDataEventService(CivilDataEventService civilDataEventService) {
+		this.civilDataEventService = civilDataEventService;
+	}
+
+	public void setFiscalDataEventService(FiscalDataEventService fiscalDataEventService) {
+		this.fiscalDataEventService = fiscalDataEventService;
 	}
 
 	/**
@@ -186,7 +191,7 @@ public class EvenementExterneServiceImpl implements EvenementExterneService {
 		}
 
 		// [UNIREG-1947] ne pas oublier d'invalider le cache du tiers!
-		dataEventService.onTiersChange(declarationImpotSource.getTiers().getNumero());
+		fiscalDataEventService.onTiersChange(declarationImpotSource.getTiers().getNumero());
 	}
 
 }

@@ -36,7 +36,7 @@ import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.HibernateEntity;
 import ch.vd.unireg.common.LengthConstants;
 import ch.vd.unireg.common.PollingThread;
-import ch.vd.unireg.data.DataEventService;
+import ch.vd.unireg.data.CivilDataEventService;
 import ch.vd.unireg.evenement.EvenementCivilHelper;
 import ch.vd.unireg.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.unireg.evenement.civil.EvenementCivilMessageCollector;
@@ -76,7 +76,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 	private PlatformTransactionManager transactionManager;
 	private EvenementCivilEchDAO evtCivilDAO;
 	private EvenementCivilEchTranslator translator;
-	private DataEventService dataEventService;
+	private CivilDataEventService civilDataEventService;
 
 	private GlobalTiersIndexer indexer;
 	private TiersService tiersService;
@@ -127,8 +127,8 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 		this.serviceCivil = serviceCivil;
 	}
 
-	public void setDataEventService(DataEventService dataEventService) {
-		this.dataEventService = dataEventService;
+	public void setCivilDataEventService(CivilDataEventService civilDataEventService) {
+		this.civilDataEventService = civilDataEventService;
 	}
 
 	public void setMainInterceptor(ModificationInterceptor mainInterceptor) {
@@ -389,7 +389,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 			return doInNewTransaction(status -> {
 
 				// première chose, on invalide le cache de l'individu (afin que les stratégies aient déjà une version à jour des individus)
-				dataEventService.onIndividuChange(info.getNoIndividu());
+				civilDataEventService.onIndividuChange(info.getNoIndividu());
 
 				final EvenementCivilEch evt = fetchDatabaseEvent(info);
 				if (evt.getEtat().isTraite()) {

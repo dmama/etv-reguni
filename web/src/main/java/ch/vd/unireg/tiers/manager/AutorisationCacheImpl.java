@@ -24,8 +24,8 @@ import ch.vd.unireg.cache.KeyDumpableCache;
 import ch.vd.unireg.cache.KeyValueDumpableCache;
 import ch.vd.unireg.cache.UniregCacheInterface;
 import ch.vd.unireg.cache.UniregCacheManager;
-import ch.vd.unireg.data.DataEventService;
 import ch.vd.unireg.data.FiscalDataEventListener;
+import ch.vd.unireg.data.FiscalDataEventService;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.MenageCommun;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -94,13 +94,13 @@ public class AutorisationCacheImpl implements AutorisationCache, FiscalDataEvent
 	private TiersService tiersService;
 	private AutorisationManager autorisationManager;
 	private PlatformTransactionManager transactionManager;
-	private DataEventService dataEventService;
+	private FiscalDataEventService fiscalDataEventService;
 	private Cache cache;
 	private UniregCacheManager uniregCacheManager;
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		dataEventService.register(this);
+		fiscalDataEventService.register(this);
 		uniregCacheManager.register(this);
 	}
 
@@ -108,7 +108,7 @@ public class AutorisationCacheImpl implements AutorisationCache, FiscalDataEvent
 	public void destroy() throws Exception {
 		cache = null;
 		uniregCacheManager.unregister(this);
-		dataEventService.unregister(this);
+		fiscalDataEventService.unregister(this);
 	}
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
@@ -127,8 +127,8 @@ public class AutorisationCacheImpl implements AutorisationCache, FiscalDataEvent
 		this.transactionManager = transactionManager;
 	}
 
-	public void setDataEventService(DataEventService dataEventService) {
-		this.dataEventService = dataEventService;
+	public void setFiscalDataEventService(FiscalDataEventService fiscalDataEventService) {
+		this.fiscalDataEventService = fiscalDataEventService;
 	}
 
 	public void setCache(Cache cache) {

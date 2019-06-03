@@ -8,7 +8,7 @@ Container_Boundary(uniregWeb, "Unireg Web") {
     Container(webEvtCivilEchProcessor, "evtCivilEchProcessor", "EvenementCivilEchProcessorImpl", "Processeur des événements civils des individus")
     Container(webEvtEntrepriseProcessor, "evtEntrepriseProcessorInternal", "EvenementEntrepriseProcessorInternal", "Processeur des événements civils des entreprises")
 
-    Container(webDataEventService, "dataEventService", "DataEventServiceImpl", "Service des data events")
+    Container(webDataEventService, "civilDataEventService", "DataEventServiceImpl", "Service des data events")
 
 	Container(webNexusCivilDataEventBridge, "nexusCivilDataEventBridge", "CivilDataEventBridge", "Bridge qui envoie les événements de Web vers Nexus")
     Container(webIndividuConnectorCache, "individuConnectorCache", "IndividuConnectorCache", "Cache mémoire des données des individus")
@@ -34,8 +34,8 @@ Container_Boundary(uniregWeb, "Unireg Web") {
 
 Container_Boundary(uniregNexus, "Unireg Nexus") {
 
-    Container(nexusCivilDataEventRemoteExporter, "dataEventServiceExporter", "HttpInvokerServiceExporter", "Exporter Spring-remoting")
-	Container(wsDataEventService, "dataEventService", "DataEventServiceImpl", "Service des data events")
+    Container(nexusCivilDataEventRemoteExporter, "civilDataEventServiceExporter", "HttpInvokerServiceExporter", "Exporter Spring-remoting")
+	Container(wsDataEventService, "civilDataEventService", "DataEventServiceImpl", "Service des data events")
     Container(wsEntrepriseConnectorCache, "entrepriseConnectorCache", "EntrepriseConnectorPersistentCache", "Cache persistent des données des entreprises")
     Container(wsIndividuConnectorCache, "individuConnectorCache", "IndividuConnectorPersistentCache", "Cache persistent des données des individus")
 

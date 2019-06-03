@@ -6,7 +6,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.data.DataEventService;
+import ch.vd.unireg.data.CivilDataEventService;
 import ch.vd.unireg.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.unireg.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
@@ -187,7 +187,7 @@ public class TranslationStrategyWithRelationshipCacheCleanupFacadeTest extends A
 		// créée le service civil et un cache par devant
 		final IndividuConnectorCache cache = new IndividuConnectorCache();
 		cache.setCache(cacheManager.getCache("serviceCivil"));
-		cache.setDataEventService(getBean(DataEventService.class, "dataEventService"));
+		cache.setCivilDataEventService(getBean(CivilDataEventService.class, "civilDataEventService"));
 		cache.setTarget(new MockIndividuConnector() {
 			@Override
 			protected void init() {
@@ -303,7 +303,7 @@ public class TranslationStrategyWithRelationshipCacheCleanupFacadeTest extends A
 		// créée le service civil et un cache par devant
 		final IndividuConnectorCache cache = new IndividuConnectorCache();
 		cache.setCache(cacheManager.getCache("serviceCivil"));
-		cache.setDataEventService(getBean(DataEventService.class, "dataEventService"));
+		cache.setCivilDataEventService(getBean(CivilDataEventService.class, "civilDataEventService"));
 		cache.setTarget(new MockIndividuConnector() {
 			@Override
 			protected void init() {

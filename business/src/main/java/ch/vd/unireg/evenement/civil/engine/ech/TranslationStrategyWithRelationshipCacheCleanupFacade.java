@@ -1,6 +1,6 @@
 package ch.vd.unireg.evenement.civil.engine.ech;
 
-import ch.vd.unireg.data.DataEventService;
+import ch.vd.unireg.data.CivilDataEventService;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
@@ -17,7 +17,7 @@ public class TranslationStrategyWithRelationshipCacheCleanupFacade extends Abstr
 
 	private final EvenementCivilEchTranslationStrategy target;
 
-	public TranslationStrategyWithRelationshipCacheCleanupFacade(EvenementCivilEchTranslationStrategy target, ServiceCivilService serviceCivil, DataEventService dataEventService,
+	public TranslationStrategyWithRelationshipCacheCleanupFacade(EvenementCivilEchTranslationStrategy target, ServiceCivilService serviceCivil, CivilDataEventService dataEventService,
 	                                                             TiersService tiersService) {
 		super(serviceCivil, dataEventService, tiersService);
 		this.target = target;

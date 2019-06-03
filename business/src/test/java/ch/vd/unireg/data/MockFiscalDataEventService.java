@@ -7,22 +7,12 @@ import org.apache.commons.lang3.NotImplementedException;
 
 import ch.vd.unireg.type.TypeRapportEntreTiers;
 
-public class MockDataEventService implements DataEventService {
+public class MockFiscalDataEventService implements FiscalDataEventService {
 
 	public final Set<Long> changedTiers = new HashSet<>();
 	public final Set<Long> changedImmeubles = new HashSet<>();
 	public final Set<Long> changedBatiments = new HashSet<>();
 	public final Set<Long> changedCommunautes = new HashSet<>();
-
-	@Override
-	public void register(CivilDataEventListener listener) {
-		throw new NotImplementedException("");
-	}
-
-	@Override
-	public void unregister(CivilDataEventListener listener) {
-		throw new NotImplementedException("");
-	}
 
 	@Override
 	public void register(FiscalDataEventListener listener) {
@@ -44,15 +34,6 @@ public class MockDataEventService implements DataEventService {
 	@Override
 	public void onTiersChange(long id) {
 		changedTiers.add(id);
-	}
-
-	@Override
-	public void onIndividuChange(long id) {
-	}
-
-	@Override
-	public void onEntrepriseChange(long id) {
-
 	}
 
 	@Override

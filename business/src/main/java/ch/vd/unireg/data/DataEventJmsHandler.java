@@ -55,7 +55,8 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DataEventJmsHandler.class);
 
-	private DataEventService dataEventService;
+	private CivilDataEventService civilDataEventService;
+	private FiscalDataEventService fiscalDataEventService;
 	private EvenementFiscalSender evenementFiscalSender;
 	private HibernateTemplate hibernateTemplate;
 
@@ -110,7 +111,7 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Réception d'un événement de chargement de la database");
 			}
-			dataEventService.onLoadDatabase();
+			fiscalDataEventService.onLoadDatabase();
 		}
 	}
 
@@ -120,7 +121,7 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Réception d'un événement de truncate de la database");
 			}
-			dataEventService.onTruncateDatabase();
+			fiscalDataEventService.onTruncateDatabase();
 		}
 	}
 
@@ -130,7 +131,7 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Traitement d'un événement db de changement sur les droits d'accès du tiers n°" + event.getId());
 			}
-			dataEventService.onDroitAccessChange(event.getId());
+			fiscalDataEventService.onDroitAccessChange(event.getId());
 		}
 	}
 
@@ -140,7 +141,7 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Traitement d'un événement db de changement sur l'individu n°" + event.getId());
 			}
-			dataEventService.onIndividuChange(event.getId());
+			civilDataEventService.onIndividuChange(event.getId());
 		}
 	}
 
@@ -150,7 +151,7 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Traitement d'un événement db de changement sur l'entreprise n°" + event.getId());
 			}
-			dataEventService.onEntrepriseChange(event.getId());
+			civilDataEventService.onEntrepriseChange(event.getId());
 		}
 	}
 
@@ -160,7 +161,7 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Traitement d'un événement db de changement sur le tiers n°" + event.getId());
 			}
-			dataEventService.onTiersChange(event.getId());
+			fiscalDataEventService.onTiersChange(event.getId());
 		}
 	}
 
@@ -232,7 +233,7 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 			default:
 				throw new IllegalArgumentException("Type de relation inconnu : " + event.getRelationType());
 			}
-			dataEventService.onRelationshipChange(type, event.getSujetId(), event.getObjetId());
+			fiscalDataEventService.onRelationshipChange(type, event.getSujetId(), event.getObjetId());
 		}
 	}
 
@@ -242,7 +243,7 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Traitement d'un événement db de changement sur l'immeuble n°" + event.getId());
 			}
-			dataEventService.onImmeubleChange(event.getId());
+			fiscalDataEventService.onImmeubleChange(event.getId());
 		}
 	}
 
@@ -252,7 +253,7 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Traitement d'un événement db de changement sur le bâtiment n°" + event.getId());
 			}
-			dataEventService.onBatimentChange(event.getId());
+			fiscalDataEventService.onBatimentChange(event.getId());
 		}
 	}
 
@@ -262,7 +263,7 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Traitement d'un événement db de changement sur la communauté n°" + event.getId());
 			}
-			dataEventService.onCommunauteChange(event.getId());
+			fiscalDataEventService.onCommunauteChange(event.getId());
 		}
 	}
 
@@ -284,8 +285,12 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 		}
 	}
 
-	public void setDataEventService(DataEventService dataEventService) {
-		this.dataEventService = dataEventService;
+	public void setCivilDataEventService(CivilDataEventService civilDataEventService) {
+		this.civilDataEventService = civilDataEventService;
+	}
+
+	public void setFiscalDataEventService(FiscalDataEventService fiscalDataEventService) {
+		this.fiscalDataEventService = fiscalDataEventService;
 	}
 
 	public void setEvenementFiscalSender(EvenementFiscalSender evenementFiscalSender) {

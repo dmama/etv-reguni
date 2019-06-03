@@ -12,7 +12,8 @@
 	</bean>
 
 	<bean id="dataEventJmsHandler" class="ch.vd.unireg.data.DataEventJmsHandler">
-		<property name="dataEventService" ref="dataEventService" />
+		<property name="civilDataEventService" ref="civilDataEventService" />
+		<property name="fiscalDataEventService" ref="fiscalDataEventService" />
 		<property name="evenementFiscalSender" ref="evenementFiscalSender"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 	</bean>

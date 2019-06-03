@@ -6,7 +6,7 @@ import org.junit.Assert;
 
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BusinessTest;
-import ch.vd.unireg.data.DataEventService;
+import ch.vd.unireg.data.CivilDataEventService;
 import ch.vd.unireg.evenement.common.EvenementErreur;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseContext;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseException;
@@ -31,7 +31,7 @@ public abstract class AbstractEvenementEntrepriseCivileInterneTest extends Busin
 
 	protected EvenementEntrepriseContext context;
 	protected EvenementEntrepriseService evenementEntrepriseService;
-	protected DataEventService dataEventService;
+	protected CivilDataEventService dataEventService;
 	protected EvenementFiscalService evenementFiscalService;
 	protected AssujettissementService assujettissementService;
 	protected AppariementService appariementService;
@@ -45,7 +45,7 @@ public abstract class AbstractEvenementEntrepriseCivileInterneTest extends Busin
 		evenementEntrepriseService = getBean(EvenementEntrepriseService.class, "evtEntrepriseService");
 		eventSender = getBean(CollectingEvenementFiscalSender.class, "evenementFiscalSender");
 		metierService = getBean(MetierServicePM.class, "metierServicePM");
-		dataEventService = getBean(DataEventService.class, "dataEventService");
+		dataEventService = getBean(CivilDataEventService.class, "civilDataEventService");
 		evenementFiscalService = getBean(EvenementFiscalService.class, "evenementFiscalService");
 		assujettissementService = getBean(AssujettissementService.class, "assujettissementService");
 		appariementService = getBean(AppariementService.class, "appariementService");

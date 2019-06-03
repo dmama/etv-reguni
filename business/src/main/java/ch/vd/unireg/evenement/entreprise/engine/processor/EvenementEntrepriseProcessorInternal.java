@@ -18,7 +18,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.AuthenticationHelper;
-import ch.vd.unireg.data.DataEventService;
+import ch.vd.unireg.data.CivilDataEventService;
 import ch.vd.unireg.evenement.EvenementCivilHelper;
 import ch.vd.unireg.evenement.entreprise.EvenementEntreprise;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseAbortException;
@@ -55,7 +55,7 @@ public class EvenementEntrepriseProcessorInternal implements ProcessorInternal, 
 	private PlatformTransactionManager transactionManager;
 	private EvenementEntrepriseDAO evtEntrepriseDAO;
 	private EvenementEntrepriseTranslator translator;
-	private DataEventService dataEventService;
+	private CivilDataEventService civilDataEventService;
 
 	private GlobalTiersIndexer indexer;
 	private TiersService tiersService;
@@ -88,8 +88,8 @@ public class EvenementEntrepriseProcessorInternal implements ProcessorInternal, 
 		this.tiersService = tiersService;
 	}
 
-	public void setDataEventService(DataEventService dataEventService) {
-		this.dataEventService = dataEventService;
+	public void setCivilDataEventService(CivilDataEventService civilDataEventService) {
+		this.civilDataEventService = civilDataEventService;
 	}
 
 	public void setAudit(AuditManager audit) {
@@ -147,7 +147,7 @@ public class EvenementEntrepriseProcessorInternal implements ProcessorInternal, 
 			return doInNewTransaction(status -> {
 
 				// première chose, on invalide le cache de l'entreprise (afin que les stratégies aient déjà une version à jour de l'entreprise)
-				dataEventService.onEntrepriseChange(info.getNoEntrepriseCivile());
+				civilDataEventService.onEntrepriseChange(info.getNoEntrepriseCivile());
 
 				// Detecter les événements déjà traités
 				final EvenementEntreprise evt = fetchDatabaseEvent(info);

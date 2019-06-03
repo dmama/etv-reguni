@@ -26,8 +26,8 @@
 		<property name="serviceInterface" value="ch.vd.unireg.interfaces.infra.InfrastructureConnector" />
 	</bean>
 
-	<bean name="dataEventServiceExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
-		<property name="service" ref="dataEventService" />
+	<bean name="civilDataEventServiceExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
+		<property name="service" ref="civilDataEventService" />
 		<property name="serviceInterface" value="ch.vd.unireg.data.CivilDataEventListener" />
 	</bean>
 
@@ -43,7 +43,7 @@
 				<entry key="/individuConnector.remoting" value-ref="individuConnectorExporter" />
 				<entry key="/upiConnector.remoting" value-ref="upiConnectorExporter" />
 				<entry key="/infraConnector.remoting" value-ref="infraConnectorExporter" />
-				<entry key="/dataEventService.remoting" value-ref="dataEventServiceExporter" />
+				<entry key="/dataEventService.remoting" value-ref="civilDataEventServiceExporter" />
 				<entry key="/entrepriseConnector.remoting" value-ref="entrepriseConnectorExporter"/>
 				<entry key="/securiteConnector.remoting" value-ref="securiteConnectorExporter"/>
 			</map>

@@ -13,8 +13,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.WithoutSpringTest;
 import ch.vd.unireg.data.CivilDataEventListener;
-import ch.vd.unireg.data.DataEventService;
-import ch.vd.unireg.data.FiscalDataEventListener;
+import ch.vd.unireg.data.CivilDataEventService;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.unireg.evenement.civil.interne.arrivee.ArriveePrincipale;
@@ -33,7 +32,6 @@ import ch.vd.unireg.tiers.MockTiersDAO;
 import ch.vd.unireg.type.EtatEvenementCivil;
 import ch.vd.unireg.type.TypeAdresseCivil;
 import ch.vd.unireg.type.TypeEvenementCivil;
-import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 public class EvenementCivilInterneTest extends WithoutSpringTest {
 
@@ -153,7 +151,7 @@ public class EvenementCivilInterneTest extends WithoutSpringTest {
 		}
 	}
 
-	private static final class MyDataEventService implements DataEventService {
+	private static final class MyDataEventService implements CivilDataEventService {
 
 		private final Set<Long> tiersChanged = new HashSet<>();
 		private final Set<Long> individusChanged = new HashSet<>();
@@ -168,54 +166,12 @@ public class EvenementCivilInterneTest extends WithoutSpringTest {
 		}
 
 		@Override
-		public void register(FiscalDataEventListener listener) {
-		}
-
-		@Override
-		public void unregister(FiscalDataEventListener listener) {
-		}
-
-		@Override
-		public void onTiersChange(long id) {
-			tiersChanged.add(id);
-		}
-
-		@Override
 		public void onIndividuChange(long id) {
 			individusChanged.add(id);
 		}
 
 		@Override
 		public void onEntrepriseChange(long id) {
-		}
-
-		@Override
-		public void onDroitAccessChange(long id) {
-			droitsChanged.add(id);
-		}
-
-		@Override
-		public void onRelationshipChange(TypeRapportEntreTiers type, long sujetId, long objetId) {
-		}
-
-		@Override
-		public void onImmeubleChange(long immeubleId) {
-		}
-
-		@Override
-		public void onBatimentChange(long batimentId) {
-		}
-
-		@Override
-		public void onCommunauteChange(long communauteId) {
-		}
-
-		@Override
-		public void onLoadDatabase() {
-		}
-
-		@Override
-		public void onTruncateDatabase() {
 		}
 
 		public Set<Long> getTiersChanged() {

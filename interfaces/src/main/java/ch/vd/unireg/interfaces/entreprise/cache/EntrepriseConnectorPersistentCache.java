@@ -41,7 +41,7 @@ public class EntrepriseConnectorPersistentCache implements EntrepriseConnector, 
 	private EntrepriseConnector target;
 	private UniregCacheManager uniregCacheManager;
 	private StatsService statsService;
-	private CivilDataEventService dataEventService;
+	private CivilDataEventService civilDataEventService;
 
 	public void setTarget(EntrepriseConnector target) {
 		this.target = target;
@@ -67,8 +67,8 @@ public class EntrepriseConnectorPersistentCache implements EntrepriseConnector, 
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setDataEventService(CivilDataEventService dataEventService) {
-		this.dataEventService = dataEventService;
+	public void setCivilDataEventService(CivilDataEventService civilDataEventService) {
+		this.civilDataEventService = civilDataEventService;
 	}
 
 	@Override
@@ -82,7 +82,7 @@ public class EntrepriseConnectorPersistentCache implements EntrepriseConnector, 
 			statsService.registerCache(CACHE_NAME, this);
 		}
 		uniregCacheManager.register(this);
-		dataEventService.register(this);
+		civilDataEventService.register(this);
 	}
 
 	@Override
@@ -91,7 +91,7 @@ public class EntrepriseConnectorPersistentCache implements EntrepriseConnector, 
 		if (statsService != null) {
 			statsService.unregisterCache(CACHE_NAME);
 		}
-		dataEventService.unregister(this);
+		civilDataEventService.unregister(this);
 	}
 
 	/**

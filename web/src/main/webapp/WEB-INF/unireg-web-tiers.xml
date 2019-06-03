@@ -23,7 +23,7 @@
 		<property name="tiersService" ref="tiersService" />
 		<property name="autorisationManager" ref="autorisationManager" />
 		<property name="transactionManager" ref="transactionManager" />
-		<property name="dataEventService" ref="dataEventService" />
+		<property name="fiscalDataEventService" ref="fiscalDataEventService" />
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="cache">
 			<bean class="net.sf.ehcache.Ehcache" factory-bean="ehCacheManager" factory-method="getCache">

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.unireg.common.Flash;
 import ch.vd.unireg.common.FormatNumeroHelper;
-import ch.vd.unireg.data.DataEventService;
+import ch.vd.unireg.data.CivilDataEventService;
 import ch.vd.unireg.security.AccessDeniedException;
 import ch.vd.unireg.security.Role;
 import ch.vd.unireg.security.SecurityHelper;
@@ -27,7 +27,7 @@ public class RecalculFlagHabitantController {
 
 	private TiersService tiersService;
 	private SecurityProviderInterface securityProvider;
-	private DataEventService dataEventService;
+	private CivilDataEventService civilDataEventService;
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
@@ -37,8 +37,8 @@ public class RecalculFlagHabitantController {
 		this.securityProvider = securityProvider;
 	}
 
-	public void setDataEventService(DataEventService dataEventService) {
-		this.dataEventService = dataEventService;
+	public void setCivilDataEventService(CivilDataEventService civilDataEventService) {
+		this.civilDataEventService = civilDataEventService;
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
@@ -54,7 +54,7 @@ public class RecalculFlagHabitantController {
 			final PersonnePhysique pp = (PersonnePhysique) tiers;
 
 			LOGGER.info(String.format("Demande de recalcul manuel du flag 'habitant' du contribuable %d (avec éviction du cache des données de l'individu %d)", pp.getNumero(), pp.getNumeroIndividu()));
-			dataEventService.onIndividuChange(pp.getNumeroIndividu());
+			civilDataEventService.onIndividuChange(pp.getNumeroIndividu());
 
 			try {
 				final TiersService.UpdateHabitantFlagResultat res = tiersService.updateHabitantFlag(pp, pp.getNumeroIndividu(), null);
