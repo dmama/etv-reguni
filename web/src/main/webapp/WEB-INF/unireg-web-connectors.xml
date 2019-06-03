@@ -25,22 +25,22 @@
 	<!-- Gestion de la cohérence des données du cache centralisé -->
 
 	<!-- Data Event Service du cache centralisé Nexus -->
-	<bean id="nexusDataEventService" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
+	<bean id="nexusCivilDataEventRemote" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
 		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/dataEventService.remoting" />
 		<property name="serviceInterface" value="ch.vd.unireg.data.CivilDataEventListener"/>
 		<property name="executor" ref="nexusHttpRequestExecutor" />
 	</bean>
 
-	<bean id="nexusDataEventTracing" class="ch.vd.unireg.data.CivilDataEventTracing">
-		<property name="target" ref="nexusDataEventService"/>
+	<bean id="nexusCivilDataEventTracing" class="ch.vd.unireg.data.CivilDataEventTracing">
+		<property name="target" ref="nexusCivilDataEventRemote"/>
 		<property name="statsService" ref="statsService"/>
 		<property name="serviceName" value="NexusDataEvent"/>
 	</bean>
 
-	<!-- Listener qui permet au cache centralisé Nexus de recevoir les notifications lors des changements sur les individus et les entreprises -->
-	<bean id="nexusDataEventListener" class="ch.vd.unireg.data.CivilDataEventSlaveServiceListener">
+	<!-- Bridge qui transmet au cache centralisé Nexus les notifications lors des changements sur les individus et les entreprises -->
+	<bean id="nexusCivilDataEventBridge" class="ch.vd.unireg.data.CivilDataEventBridge">
 		<property name="master" ref="dataEventService"/>
-		<property name="slave" ref="nexusDataEventTracing"/>
+		<property name="slave" ref="nexusCivilDataEventTracing"/>
 	</bean>
 
 	<!-- Connnecteur individu -->

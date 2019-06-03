@@ -10,11 +10,11 @@ Container_Boundary(uniregWeb, "Unireg Web") {
 
     Container(webDataEventService, "dataEventService", "DataEventServiceImpl", "Service des data events")
 
-	Container(webNexusDataEventListener, "nexusDataEventListener", "CivilDataEventSlaveServiceListener", "Bridge qui envoie les événements de Web vers Nexus")
+	Container(webNexusCivilDataEventBridge, "nexusCivilDataEventBridge", "CivilDataEventBridge", "Bridge qui envoie les événements de Web vers Nexus")
     Container(webIndividuConnectorCache, "individuConnectorCache", "IndividuConnectorCache", "Cache mémoire des données des individus")
     Container(webEntrepriseConnectorCache, "entrepriseConnectorCache", "EntrepriseConnectorCache", "Cache mémoire des données des entreprises")
-	Container(webNexusDataEventTracing, "nexusDataEventTracing", "CivilDataEventTracing", "Tracing des appels")
-	Container(webNexusDataEventService, "nexusDataEventService", "BasicAuthHttpInvokerProxyFactoryBean", "Invoker Spring-remoting")
+	Container(webNexusCivilDataEventTracing, "nexusCivilDataEventTracing", "CivilDataEventTracing", "Tracing des appels")
+	Container(webNexusCivilDataEventService, "nexusCivilDataEventRemote", "BasicAuthHttpInvokerProxyFactoryBean", "Invoker Spring-remoting")
     Container(webConcentratingDataEventJmsSender, "concentratingDataEventJmsSender", "ConcentratingDataEventJmsSender", "Regroupe les événements civils pour les émettre au commit de la transaction")
     Container(webDataEventSender, "dataEventSender", "DataEventSenderImpl", "Construit et envoie des événements XML internes à travers l'ESB")
 
@@ -23,24 +23,24 @@ Container_Boundary(uniregWeb, "Unireg Web") {
 
 	Rel(webDataEventService, webEntrepriseConnectorCache, "Propage les événements")
 	Rel(webDataEventService, webIndividuConnectorCache, "Propage les événements")
-	Rel(webDataEventService, webNexusDataEventListener, "Propage les événements")
+	Rel(webDataEventService, webNexusCivilDataEventBridge, "Propage les événements")
 	Rel(webDataEventService, webConcentratingDataEventJmsSender, "Propage les événements")
 
-	Rel(webNexusDataEventListener, webNexusDataEventTracing, "Propage les événements à Nexus")
-	Rel_R(webNexusDataEventTracing, webNexusDataEventService, "Délègue")
+	Rel(webNexusCivilDataEventBridge, webNexusCivilDataEventTracing, "Propage les événements à Nexus")
+	Rel_R(webNexusCivilDataEventTracing, webNexusCivilDataEventService, "Délègue")
 
 	Rel(webConcentratingDataEventJmsSender, webDataEventSender, "Emet les événements vers WS")
 }
 
 Container_Boundary(uniregNexus, "Unireg Nexus") {
 
-    Container(nexusDataEventServiceExporter, "dataEventServiceExporter", "HttpInvokerServiceExporter", "Exporter Spring-remoting")
+    Container(nexusCivilDataEventRemoteExporter, "dataEventServiceExporter", "HttpInvokerServiceExporter", "Exporter Spring-remoting")
 	Container(wsDataEventService, "dataEventService", "DataEventServiceImpl", "Service des data events")
     Container(wsEntrepriseConnectorCache, "entrepriseConnectorCache", "EntrepriseConnectorPersistentCache", "Cache persistent des données des entreprises")
     Container(wsIndividuConnectorCache, "individuConnectorCache", "IndividuConnectorPersistentCache", "Cache persistent des données des individus")
 
 
-	Rel(nexusDataEventServiceExporter, wsDataEventService, "Propage les appels de méthodes")
+	Rel(nexusCivilDataEventRemoteExporter, wsDataEventService, "Propage les appels de méthodes")
 	Rel(wsDataEventService, wsEntrepriseConnectorCache, "Propage les événements")
 	Rel(wsDataEventService, wsIndividuConnectorCache, "Propage les événements")
 }
@@ -62,7 +62,7 @@ Container_Boundary(uniregWS, "Unireg WS") {
 	Rel(wsEventDataListenerAdapter, wsv7CacheEventListener, "Propage les événements")
 }
 
-Rel_D(webNexusDataEventService, nexusDataEventServiceExporter, "Appelle (synchrone)", "Spring-remoting/HTTP")
+Rel_D(webNexusCivilDataEventService, nexusCivilDataEventRemoteExporter, "Appelle (synchrone)", "Spring-remoting/HTTP")
 Rel_D(webDataEventSender, wsDataEventJmsHandler, "Envoie (asynchrone)", "ESB/XML")
 
 @enduml

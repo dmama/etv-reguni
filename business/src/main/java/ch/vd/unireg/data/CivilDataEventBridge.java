@@ -4,9 +4,9 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
- * Ce listener s'enregistre dans un service maître, et délégue tous les appels à un listener esclave.
+ * Cette classe s'enregistre comme listener dans un service maître et délégue tous les appels à un listener esclave.
  */
-public class CivilDataEventSlaveServiceListener implements CivilDataEventListener, InitializingBean, DisposableBean {
+public class CivilDataEventBridge implements CivilDataEventListener, InitializingBean, DisposableBean {
 
 	private CivilDataEventService master;
 	private CivilDataEventListener slave;
