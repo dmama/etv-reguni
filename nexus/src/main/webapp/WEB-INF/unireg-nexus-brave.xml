@@ -4,7 +4,7 @@
 
 	<!-- la configuration de brave : stockage des traces id dans le MDC de slf4j -->
 
-	<bean id="braveTraceContext" class="brave.context.slf4j.MDCCurrentTraceContext" factory-method="create"/>
+	<bean id="braveTraceContext" class="ch.vd.unireg.servlet.tracing.BraveMDCCurrentTraceContextFactoryBean"/>
 
 	<bean id="braveTracing" class="brave.spring.beans.TracingFactoryBean">
 		<property name="localServiceName" value="unireg-nexus"/>
