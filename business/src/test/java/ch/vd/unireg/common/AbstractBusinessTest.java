@@ -162,6 +162,7 @@ import static org.junit.Assert.assertNull;
         BusinessTestingConstants.UNIREG_BUSINESS_EVT_ENTREPRISE,
         BusinessTestingConstants.UNIREG_BUSINESS_EVT_FISCAL,
         BusinessTestingConstants.UNIREG_BUSINESS_ANNONCE_IDE,
+        BusinessTestingConstants.UNIREG_BUSINESS_UT_DATA_EVENT,
         BusinessTestingConstants.UNIREG_BUSINESS_UT_EDITIQUE,
         BusinessTestingConstants.UNIREG_BUSINESS_UT_INTERFACES,
 		BusinessTestingConstants.UNIREG_BUSINESS_UT_EVT_ENTREPRISE,

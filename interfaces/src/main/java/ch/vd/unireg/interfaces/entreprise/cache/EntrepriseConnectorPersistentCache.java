@@ -19,7 +19,6 @@ import ch.vd.unireg.cache.PersistentCache;
 import ch.vd.unireg.cache.UniregCacheInterface;
 import ch.vd.unireg.cache.UniregCacheManager;
 import ch.vd.unireg.data.CivilDataEventListener;
-import ch.vd.unireg.data.CivilDataEventService;
 import ch.vd.unireg.interfaces.entreprise.EntrepriseConnector;
 import ch.vd.unireg.interfaces.entreprise.EntrepriseConnectorException;
 import ch.vd.unireg.interfaces.entreprise.EntrepriseConnectorWrapper;
@@ -41,34 +40,25 @@ public class EntrepriseConnectorPersistentCache implements EntrepriseConnector, 
 	private EntrepriseConnector target;
 	private UniregCacheManager uniregCacheManager;
 	private StatsService statsService;
-	private CivilDataEventService civilDataEventService;
 
 	public void setTarget(EntrepriseConnector target) {
 		this.target = target;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setCache(PersistentCache<EntrepriseDataCache> cache) {
 		this.cache = cache;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEtablissementCache(PersistentCache<Long> etablissementCache) {
 		this.etablissementCache = etablissementCache;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setUniregCacheManager(UniregCacheManager uniregCacheManager) {
 		this.uniregCacheManager = uniregCacheManager;
 	}
 
 	public void setStatsService(StatsService statsService) {
 		this.statsService = statsService;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setCivilDataEventService(CivilDataEventService civilDataEventService) {
-		this.civilDataEventService = civilDataEventService;
 	}
 
 	@Override
@@ -82,7 +72,6 @@ public class EntrepriseConnectorPersistentCache implements EntrepriseConnector, 
 			statsService.registerCache(CACHE_NAME, this);
 		}
 		uniregCacheManager.register(this);
-		civilDataEventService.register(this);
 	}
 
 	@Override
@@ -91,7 +80,6 @@ public class EntrepriseConnectorPersistentCache implements EntrepriseConnector, 
 		if (statsService != null) {
 			statsService.unregisterCache(CACHE_NAME);
 		}
-		civilDataEventService.unregister(this);
 	}
 
 	/**

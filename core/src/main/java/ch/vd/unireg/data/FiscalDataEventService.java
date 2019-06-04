@@ -9,20 +9,6 @@ import ch.vd.unireg.type.TypeRapportEntreTiers;
 public interface FiscalDataEventService {
 
 	/**
-	 * Enregistre un listener.
-	 *
-	 * @param listener le listener à enregistrer
-	 */
-	void register(FiscalDataEventListener listener);
-
-	/**
-	 * Dés-enregistre un listener.
-	 *
-	 * @param listener le listener à dés-enregistrer
-	 */
-	void unregister(FiscalDataEventListener listener);
-
-	/**
 	 * Notifie à tous les listeners qu'un tiers à été changé dans la base de données.
 	 *
 	 * @param id l'id du tiers changé

@@ -5,21 +5,6 @@ package ch.vd.unireg.data;
  * provient des données civiles
  */
 public interface CivilDataEventService {
-
-	/**
-	 * Enregistre un listener.
-	 *
-	 * @param listener le listener à enregistrer
-	 */
-	void register(CivilDataEventListener listener);
-
-	/**
-	 * Dés-enregistre un listener.
-	 *
-	 * @param listener le listener à dés-enregistrer
-	 */
-	void unregister(CivilDataEventListener listener);
-
 	/**
 	 * Notifie à tous les listeners qu'un individu à été changé dans le registre civil.
 	 *
@@ -33,5 +18,4 @@ public interface CivilDataEventService {
 	 * @param id le numéro de l'entreprise changée
 	 */
 	void onEntrepriseChange(long id);
-
 }

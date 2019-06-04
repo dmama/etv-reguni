@@ -5,34 +5,20 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.unireg.data.CivilDataEventListener;
-import ch.vd.unireg.data.CivilDataEventService;
 import ch.vd.unireg.data.FiscalDataEventListener;
-import ch.vd.unireg.data.FiscalDataEventService;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.TiersDAO;
 import ch.vd.unireg.type.TypeRapportEntreTiers;
 
-public class WebServiceEventListenerAdapter implements CivilDataEventListener, FiscalDataEventListener, InitializingBean, DisposableBean {
+public class WebServiceEventListenerAdapter implements CivilDataEventListener, FiscalDataEventListener {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceEventListenerAdapter.class);
 
-	private CivilDataEventService civilDataEventService;
-	private FiscalDataEventService fiscalDataEventService;
 	private List<WebServiceEventInterface> listeners;
 	private TiersDAO tiersDAO;
-
-	public void setCivilDataEventService(CivilDataEventService civilDataEventService) {
-		this.civilDataEventService = civilDataEventService;
-	}
-
-	public void setFiscalDataEventService(FiscalDataEventService fiscalDataEventService) {
-		this.fiscalDataEventService = fiscalDataEventService;
-	}
 
 	public void setListeners(List<WebServiceEventInterface> listeners) {
 		this.listeners = listeners;
@@ -121,18 +107,6 @@ public class WebServiceEventListenerAdapter implements CivilDataEventListener, F
 				LOGGER.error("L'exception ci-après a été ignorée car levée dans un listener", e);
 			}
 		}
-	}
-
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		civilDataEventService.register(this);
-		fiscalDataEventService.register(this);
-	}
-
-	@Override
-	public void destroy() throws Exception {
-		civilDataEventService.unregister(this);
-		fiscalDataEventService.unregister(this);
 	}
 }
 

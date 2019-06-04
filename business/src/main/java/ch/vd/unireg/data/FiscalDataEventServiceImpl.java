@@ -1,10 +1,7 @@
 package ch.vd.unireg.data;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
-import ch.vd.unireg.common.LockHelper;
 import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 /**
@@ -12,60 +9,49 @@ import ch.vd.unireg.type.TypeRapportEntreTiers;
  */
 public class FiscalDataEventServiceImpl implements FiscalDataEventService, FiscalDataEventListener {
 
-	private final List<FiscalDataEventListener> listeners = new ArrayList<>();
-	private final LockHelper lockHelper = new LockHelper();
+	private final List<FiscalDataEventListener> listeners;
 
-	@Override
-	public void register(FiscalDataEventListener listener) {
-		lockHelper.doInWriteLock(() -> listeners.add(listener));
-	}
-
-	@Override
-	public void unregister(FiscalDataEventListener listener) {
-		lockHelper.doInWriteLock(() -> listeners.removeIf(x -> x == listener));
-	}
-
-	private void dispatch(Consumer<? super FiscalDataEventListener> dispatcher) {
-		lockHelper.doInReadLock(() -> DataEventServiceHelper.dispatch(listeners, dispatcher));
+	public FiscalDataEventServiceImpl(List<FiscalDataEventListener> listeners) {
+		this.listeners = listeners;
 	}
 
 	@Override
 	public void onTiersChange(long id) {
-		dispatch(listener -> listener.onTiersChange(id));
+		listeners.forEach(listener -> listener.onTiersChange(id));
 	}
 
 	@Override
 	public void onDroitAccessChange(long id) {
-		dispatch(listener -> listener.onDroitAccessChange(id));
+		listeners.forEach(listener -> listener.onDroitAccessChange(id));
 	}
 
 	@Override
 	public void onImmeubleChange(long immeubleId) {
-		dispatch(listener -> listener.onImmeubleChange(immeubleId));
+		listeners.forEach(listener -> listener.onImmeubleChange(immeubleId));
 	}
 
 	@Override
 	public void onBatimentChange(long batimentId) {
-		dispatch(listener -> listener.onBatimentChange(batimentId));
+		listeners.forEach(listener -> listener.onBatimentChange(batimentId));
 	}
 
 	@Override
 	public void onCommunauteChange(long communauteId) {
-		dispatch(listener -> listener.onCommunauteChange(communauteId));
+		listeners.forEach(listener -> listener.onCommunauteChange(communauteId));
 	}
 
 	@Override
 	public void onRelationshipChange(TypeRapportEntreTiers type, long sujetId, long objetId) {
-		dispatch(listener -> listener.onRelationshipChange(type, sujetId, objetId));
+		listeners.forEach(listener -> listener.onRelationshipChange(type, sujetId, objetId));
 	}
 
 	@Override
 	public void onLoadDatabase() {
-		dispatch(FiscalDataEventListener::onLoadDatabase);
+		listeners.forEach(FiscalDataEventListener::onLoadDatabase);
 	}
 
 	@Override
 	public void onTruncateDatabase() {
-		dispatch(FiscalDataEventListener::onTruncateDatabase);
+		listeners.forEach(FiscalDataEventListener::onTruncateDatabase);
 	}
 }

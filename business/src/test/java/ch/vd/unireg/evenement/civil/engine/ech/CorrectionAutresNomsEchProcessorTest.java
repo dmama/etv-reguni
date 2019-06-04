@@ -1,11 +1,14 @@
 package ch.vd.unireg.evenement.civil.engine.ech;
 
+import java.util.Collections;
+
 import net.sf.ehcache.CacheManager;
 import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.data.CivilDataEventService;
+import ch.vd.unireg.data.CivilDataEventServiceImpl;
+import ch.vd.unireg.data.PluggableCivilDataEventService;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.unireg.indexer.tiers.TiersIndexedData;
 import ch.vd.unireg.interfaces.civil.cache.IndividuConnectorCache;
@@ -25,6 +28,20 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class CorrectionAutresNomsEchProcessorTest extends AbstractCorrectionEchProcessorTest {
+
+	private PluggableCivilDataEventService pluggableCivilDataEventService;
+
+	@Override
+	public void onSetUp() throws Exception {
+		super.onSetUp();
+		this.pluggableCivilDataEventService = getBean(PluggableCivilDataEventService.class, "civilDataEventService");
+	}
+
+	@Override
+	public void onTearDown() throws Exception {
+		this.pluggableCivilDataEventService.setTarget(null);
+		super.onTearDown();
+	}
 
 	@Test(timeout = 10000L)
 	public void testCorrectionAutresNoms() throws Exception {
@@ -59,7 +76,6 @@ public class CorrectionAutresNomsEchProcessorTest extends AbstractCorrectionEchP
 		// créée le service civil et un cache par devant
 		final IndividuConnectorCache cache = new IndividuConnectorCache();
 		cache.setCache(cacheManager.getCache("serviceCivil"));
-		cache.setCivilDataEventService(getBean(CivilDataEventService.class, "civilDataEventService"));
 		cache.setTarget(new DefaultMockIndividuConnector(false) {
 			@Override
 			protected void init() {
@@ -68,6 +84,8 @@ public class CorrectionAutresNomsEchProcessorTest extends AbstractCorrectionEchP
 			}
 		});
 		cache.afterPropertiesSet();
+		this.pluggableCivilDataEventService.setTarget(new CivilDataEventServiceImpl(Collections.singletonList(cache)));
+
 		try {
 			serviceCivil.setUp(cache);
 

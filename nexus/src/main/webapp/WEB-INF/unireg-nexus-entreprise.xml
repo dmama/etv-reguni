@@ -30,7 +30,6 @@
 		<property name="etablissementCache" ref="etablissementCivilPersistentCache" />
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
-		<property name="civilDataEventService" ref="civilDataEventService" />
 	</bean>
 
 	<bean id="entrepriseConnectorEndPoint" class="ch.vd.unireg.interfaces.entreprise.EntrepriseConnectorEndPoint">

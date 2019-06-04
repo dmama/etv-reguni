@@ -37,12 +37,6 @@
 		<property name="serviceName" value="NexusDataEvent"/>
 	</bean>
 
-	<!-- Bridge qui transmet au cache centralisé Nexus les notifications lors des changements sur les individus et les entreprises -->
-	<bean id="nexusCivilDataEventBridge" class="ch.vd.unireg.data.CivilDataEventBridge">
-		<property name="master" ref="civilDataEventService"/>
-		<property name="slave" ref="nexusCivilDataEventTracing"/>
-	</bean>
-
 	<!-- Connnecteur individu -->
 
 	<bean id="individuConnectorRemote" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
@@ -65,7 +59,6 @@
 		</property>
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
-		<property name="civilDataEventService" ref="civilDataEventService" />
 	</bean>
 
 	<alias alias="individuConnector" name="individuConnectorCache"/>
@@ -91,10 +84,8 @@
 				<constructor-arg value="entrepriseConnector" />
 			</bean>
 		</property>
-<!--		<property name="cache" value="#{ehCacheManager.getCache('entrepriseConnector')}"/>-->
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
-		<property name="civilDataEventService" ref="civilDataEventService" />
 	</bean>
 
 	<alias alias="entrepriseConnector" name="entrepriseConnectorCache" />

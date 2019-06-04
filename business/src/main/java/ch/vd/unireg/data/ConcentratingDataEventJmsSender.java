@@ -52,8 +52,6 @@ public class ConcentratingDataEventJmsSender implements InitializingBean, Dispos
 
 	private TransactionSynchronizationRegistrar synchronizationRegistrar;
 	private DataEventSender sender;
-	private CivilDataEventService civilDataEventService;
-	private FiscalDataEventService fiscalDataEventService;
 	private boolean evenementsFiscauxActives;
 
 	public void setSynchronizationRegistrar(TransactionSynchronizationRegistrar synchronizationRegistrar) {
@@ -62,14 +60,6 @@ public class ConcentratingDataEventJmsSender implements InitializingBean, Dispos
 
 	public void setSender(DataEventSender sender) {
 		this.sender = sender;
-	}
-
-	public void setCivilDataEventService(CivilDataEventService civilDataEventService) {
-		this.civilDataEventService = civilDataEventService;
-	}
-
-	public void setFiscalDataEventService(FiscalDataEventService fiscalDataEventService) {
-		this.fiscalDataEventService = fiscalDataEventService;
 	}
 
 	public void setEvenementsFiscauxActives(boolean evenementsFiscauxActives) {
@@ -468,16 +458,12 @@ public class ConcentratingDataEventJmsSender implements InitializingBean, Dispos
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		civilDataEventService.register(this);
-		fiscalDataEventService.register(this);
 		synchronizationRegistrar.registerSynchronizationSupplier(this);
 	}
 
 	@Override
 	public void destroy() throws Exception {
 		synchronizationRegistrar.unregisterSynchronizationSupplier(this);
-		fiscalDataEventService.unregister(this);
-		civilDataEventService.unregister(this);
 	}
 
 	@Override

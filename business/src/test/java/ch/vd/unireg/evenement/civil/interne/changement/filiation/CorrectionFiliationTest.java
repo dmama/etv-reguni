@@ -1,11 +1,15 @@
 package ch.vd.unireg.evenement.civil.interne.changement.filiation;
 
+import java.util.Collections;
+
 import net.sf.ehcache.CacheManager;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.cache.UniregCacheManager;
 import ch.vd.unireg.data.CivilDataEventService;
+import ch.vd.unireg.data.CivilDataEventServiceImpl;
+import ch.vd.unireg.data.PluggableCivilDataEventService;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.unireg.interfaces.civil.cache.IndividuConnectorCache;
@@ -20,8 +24,21 @@ import ch.vd.unireg.type.MotifFor;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-@SuppressWarnings({"JavaDoc"})
 public class CorrectionFiliationTest extends AbstractEvenementCivilInterneTest {
+
+	private PluggableCivilDataEventService pluggableCivilDataEventService;
+
+	@Override
+	public void onSetUp() throws Exception {
+		super.onSetUp();
+		this.pluggableCivilDataEventService = getBean(PluggableCivilDataEventService.class, "civilDataEventService");
+	}
+
+	@Override
+	public void onTearDown() throws Exception {
+		this.pluggableCivilDataEventService.setTarget(null);
+		super.onTearDown();
+	}
 
 	@Override
 	protected EvenementCivilOptions buildOptions() {
@@ -52,9 +69,10 @@ public class CorrectionFiliationTest extends AbstractEvenementCivilInterneTest {
 		final IndividuConnectorCache cache = new IndividuConnectorCache();
 		cache.setCache(cacheManager.getCache("serviceCivil"));
 		cache.setUniregCacheManager(uniregCacheManager);
-		cache.setCivilDataEventService(dataEventService);
 		cache.afterPropertiesSet();
 		cache.reset();
+		pluggableCivilDataEventService.setTarget(new CivilDataEventServiceImpl(Collections.singletonList(cache)));
+
 		try {
 			serviceCivil.setUp(cache);
 

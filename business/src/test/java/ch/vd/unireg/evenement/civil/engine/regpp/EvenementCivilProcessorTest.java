@@ -16,6 +16,8 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.cache.UniregCacheManager;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.data.CivilDataEventService;
+import ch.vd.unireg.data.CivilDataEventServiceImpl;
+import ch.vd.unireg.data.PluggableCivilDataEventService;
 import ch.vd.unireg.evenement.civil.EvenementCivilCriteria;
 import ch.vd.unireg.evenement.civil.interne.testing.Testing;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
@@ -65,6 +67,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 	private TiersDAO tiersDAO;
 	private GlobalTiersSearcher searcher;
 	private DefaultMockIndividuConnector mockServiceCivil;
+	private PluggableCivilDataEventService pluggableCivilDataEventService;
 
 	/**
 	 * Crée la connexion à la base de données
@@ -80,6 +83,13 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 		evenementCivilRegPPDAO = getBean(EvenementCivilRegPPDAO.class, "evenementCivilRegPPDAO");
 		searcher = getBean(GlobalTiersSearcher.class, "globalTiersSearcher");
+		pluggableCivilDataEventService = getBean(PluggableCivilDataEventService.class, "civilDataEventService");
+	}
+
+	@Override
+	public void onTearDown() throws Exception {
+		this.pluggableCivilDataEventService.setTarget(null);
+		super.onTearDown();
 	}
 
 	@Test
@@ -808,9 +818,10 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		final IndividuConnectorCache cache = new IndividuConnectorCache();
 		cache.setCache(cacheManager.getCache("serviceCivil"));
 		cache.setUniregCacheManager(uniregCacheManager);
-		cache.setCivilDataEventService(dataEventService);
 		cache.afterPropertiesSet();
 		cache.reset();
+		pluggableCivilDataEventService.setTarget(new CivilDataEventServiceImpl(Collections.singletonList(cache)));
+
 		try {
 			serviceCivil.setUp(cache);
 
@@ -900,9 +911,10 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		final IndividuConnectorCache cache = new IndividuConnectorCache();
 		cache.setCache(cacheManager.getCache("serviceCivil"));
 		cache.setUniregCacheManager(uniregCacheManager);
-		cache.setCivilDataEventService(dataEventService);
 		cache.afterPropertiesSet();
 		cache.reset();
+		pluggableCivilDataEventService.setTarget(new CivilDataEventServiceImpl(Collections.singletonList(cache)));
+
 		try {
 			serviceCivil.setUp(cache);
 
@@ -1002,9 +1014,10 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		final IndividuConnectorCache cache = new IndividuConnectorCache();
 		cache.setCache(cacheManager.getCache("serviceCivil"));
 		cache.setUniregCacheManager(uniregCacheManager);
-		cache.setCivilDataEventService(dataEventService);
 		cache.afterPropertiesSet();
 		cache.reset();
+		pluggableCivilDataEventService.setTarget(new CivilDataEventServiceImpl(Collections.singletonList(cache)));
+
 		try {
 			serviceCivil.setUp(cache);
 

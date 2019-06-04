@@ -12,7 +12,6 @@ import org.mockito.Mockito;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.WithoutSpringTest;
-import ch.vd.unireg.data.CivilDataEventListener;
 import ch.vd.unireg.data.CivilDataEventService;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
@@ -156,14 +155,6 @@ public class EvenementCivilInterneTest extends WithoutSpringTest {
 		private final Set<Long> tiersChanged = new HashSet<>();
 		private final Set<Long> individusChanged = new HashSet<>();
 		private final Set<Long> droitsChanged = new HashSet<>();
-
-		@Override
-		public void register(CivilDataEventListener listener) {
-		}
-
-		@Override
-		public void unregister(CivilDataEventListener listener) {
-		}
 
 		@Override
 		public void onIndividuChange(long id) {

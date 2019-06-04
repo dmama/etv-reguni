@@ -10,10 +10,9 @@ Container_Boundary(uniregWeb, "Unireg Web") {
 
     Container(webCivilDataEventService, "civilDataEventService", "DataEventServiceImpl", "Service des civil data events")
 
-	Container(webNexusCivilDataEventBridge, "nexusCivilDataEventBridge", "CivilDataEventBridge", "Bridge qui envoie les événements de Web vers Nexus")
+	Container(webNexusCivilDataEventTracing, "nexusCivilDataEventTracing", "CivilDataEventTracing", "Tracing des appels")
     Container(webIndividuConnectorCache, "individuConnectorCache", "IndividuConnectorCache", "Cache mémoire des données des individus")
     Container(webEntrepriseConnectorCache, "entrepriseConnectorCache", "EntrepriseConnectorCache", "Cache mémoire des données des entreprises")
-	Container(webNexusCivilDataEventTracing, "nexusCivilDataEventTracing", "CivilDataEventTracing", "Tracing des appels")
 	Container(webNexusCivilDataEventService, "nexusCivilDataEventRemote", "BasicAuthHttpInvokerProxyFactoryBean", "Invoker Spring-remoting")
     Container(webConcentratingDataEventJmsSender, "concentratingDataEventJmsSender", "ConcentratingDataEventJmsSender", "Regroupe les événements civils pour les émettre au commit de la transaction")
     Container(webDataEventSender, "dataEventSender", "DataEventSenderImpl", "Emetteur des événements JMS vers WS")
@@ -23,11 +22,10 @@ Container_Boundary(uniregWeb, "Unireg Web") {
 
 	Rel(webCivilDataEventService, webEntrepriseConnectorCache, "Propage les événements")
 	Rel(webCivilDataEventService, webIndividuConnectorCache, "Propage les événements")
-	Rel(webCivilDataEventService, webNexusCivilDataEventBridge, "Propage les événements")
+	Rel(webCivilDataEventService, webNexusCivilDataEventTracing, "Propage les événements")
 	Rel(webCivilDataEventService, webConcentratingDataEventJmsSender, "Propage les événements")
 
-	Rel(webNexusCivilDataEventBridge, webNexusCivilDataEventTracing, "Propage les événements à Nexus")
-	Rel_R(webNexusCivilDataEventTracing, webNexusCivilDataEventService, "Délègue")
+	Rel(webNexusCivilDataEventTracing, webNexusCivilDataEventService, "Délègue")
 
 	Rel(webConcentratingDataEventJmsSender, webDataEventSender, "Emet les événements vers WS")
 }

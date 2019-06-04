@@ -25,28 +25,17 @@ import static org.junit.Assert.assertNotNull;
 
 public class ConcentratingDataEventJmsSenderTest extends BusinessTest {
 
+	private PluggableCivilDataEventService pluggableCivilDataEventService;
+	private PluggableFiscalDataEventService pluggableFiscalDataEventService;
+
 	private ConcentratingDataEventJmsSender concentrator;
-
-	private void buildConcentrator(DataEventSender sender, boolean enabled) throws Exception {
-		final ConcentratingDataEventJmsSender concentrator = new ConcentratingDataEventJmsSender();
-		concentrator.setEvenementsFiscauxActives(enabled);
-		concentrator.setCivilDataEventService(getBean(CivilDataEventService.class, "civilDataEventService"));
-		concentrator.setFiscalDataEventService(getBean(FiscalDataEventService.class, "fiscalDataEventService"));
-		concentrator.setSynchronizationRegistrar(getBean(TransactionSynchronizationRegistrar.class, "transactionSynchronizationRegistrar"));
-		concentrator.setSender(sender);
-		concentrator.afterPropertiesSet();
-		this.concentrator = concentrator;
-	}
-
-	@NotNull
-	private static DataEventSender buildCollectingSender(List<List<DataEvent>> destinationCollection) {
-		return destinationCollection::add;
-	}
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 		this.concentrator = null;               // pour en avoir un, il faut appeler buildConcentrator()
+		this.pluggableCivilDataEventService = getBean(PluggableCivilDataEventService.class, "civilDataEventService");
+		this.pluggableFiscalDataEventService = getBean(PluggableFiscalDataEventService.class, "fiscalDataEventService");
 	}
 
 	@Override
@@ -55,7 +44,27 @@ public class ConcentratingDataEventJmsSenderTest extends BusinessTest {
 			concentrator.destroy();
 			concentrator = null;
 		}
+		this.pluggableCivilDataEventService.setTarget(null);
+		this.pluggableFiscalDataEventService.setTarget(null);
 		super.onTearDown();
+	}
+
+	private void buildConcentrator(DataEventSender sender, boolean enabled) throws Exception {
+		final ConcentratingDataEventJmsSender concentrator = new ConcentratingDataEventJmsSender();
+		concentrator.setEvenementsFiscauxActives(enabled);
+		concentrator.setSynchronizationRegistrar(getBean(TransactionSynchronizationRegistrar.class, "transactionSynchronizationRegistrar"));
+		concentrator.setSender(sender);
+		concentrator.afterPropertiesSet();
+		this.concentrator = concentrator;
+
+		// on enregistre le concentrator comme listener des data event services
+		this.pluggableCivilDataEventService.setTarget(new CivilDataEventServiceImpl(Collections.singletonList(concentrator)));
+		this.pluggableFiscalDataEventService.setTarget(new FiscalDataEventServiceImpl(Collections.singletonList(concentrator)));
+	}
+
+	@NotNull
+	private static DataEventSender buildCollectingSender(List<List<DataEvent>> destinationCollection) {
+		return destinationCollection::add;
 	}
 
 	@Test

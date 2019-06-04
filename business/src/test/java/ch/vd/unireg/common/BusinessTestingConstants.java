@@ -15,6 +15,7 @@ public class BusinessTestingConstants {
 	public static final String UNIREG_BUSINESS_ANNONCE_IDE = "classpath:unireg-business-annonce-ide.xml";
 	public static final String UNIREG_BUSINESS_JOBS = "classpath:unireg-business-jobs.xml";
 	public static final String UNIREG_BUSINESS_UT_CACHE = "classpath:ut/unireg-businessut-cache.xml";
+	public static final String UNIREG_BUSINESS_UT_DATA_EVENT = "classpath:ut/unireg-businessut-data-event.xml";
 	public static final String UNIREG_BUSINESS_UT_EVT_ENTREPRISE = "classpath:ut/unireg-businessut-evtentreprise.xml";
 	public static final String UNIREG_BUSINESS_UT_SERVICES = "classpath:ut/unireg-businessut-services.xml";
 	public static final String UNIREG_BUSINESS_UT_INTERFACES = "classpath:ut/unireg-businessut-interfaces.xml";

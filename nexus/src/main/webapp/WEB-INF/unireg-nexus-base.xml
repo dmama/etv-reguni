@@ -6,6 +6,13 @@
 
 	<bean id="uniregCacheManager" class="ch.vd.unireg.cache.UniregCacheManagerImpl" />
 
-	<bean id="civilDataEventService" class="ch.vd.unireg.data.CivilDataEventServiceImpl" />
+	<bean id="civilDataEventService" class="ch.vd.unireg.data.CivilDataEventServiceImpl">
+		<constructor-arg>
+			<list>
+				<ref bean="individuConnectorCache" />
+				<ref bean="entrepriseConnectorCache" />
+			</list>
+		</constructor-arg>
+	</bean>
 
 </beans>

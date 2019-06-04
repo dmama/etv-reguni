@@ -1,12 +1,15 @@
 package ch.vd.unireg.evenement.civil.engine.ech;
 
+import java.util.Collections;
+
 import net.sf.ehcache.CacheManager;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.data.CivilDataEventService;
+import ch.vd.unireg.data.CivilDataEventServiceImpl;
+import ch.vd.unireg.data.PluggableCivilDataEventService;
 import ch.vd.unireg.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.unireg.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
@@ -27,6 +30,20 @@ import ch.vd.unireg.type.Sexe;
 import ch.vd.unireg.type.TypeEvenementCivilEch;
 
 public class TranslationStrategyWithRelationshipCacheCleanupFacadeTest extends AbstractEvenementCivilEchProcessorTest {
+
+	private PluggableCivilDataEventService pluggableCivilDataEventService;
+
+	@Override
+	public void onSetUp() throws Exception {
+		super.onSetUp();
+		this.pluggableCivilDataEventService = getBean(PluggableCivilDataEventService.class, "civilDataEventService");
+	}
+
+	@Override
+	public void onTearDown() throws Exception {
+		this.pluggableCivilDataEventService.setTarget(null);
+		super.onTearDown();
+	}
 
 	@Test
 	public void testNettoyageCacheCivilSurEvenementTraite() throws Exception {
@@ -187,7 +204,6 @@ public class TranslationStrategyWithRelationshipCacheCleanupFacadeTest extends A
 		// créée le service civil et un cache par devant
 		final IndividuConnectorCache cache = new IndividuConnectorCache();
 		cache.setCache(cacheManager.getCache("serviceCivil"));
-		cache.setCivilDataEventService(getBean(CivilDataEventService.class, "civilDataEventService"));
 		cache.setTarget(new MockIndividuConnector() {
 			@Override
 			protected void init() {
@@ -201,6 +217,8 @@ public class TranslationStrategyWithRelationshipCacheCleanupFacadeTest extends A
 			}
 		});
 		cache.afterPropertiesSet();
+		this.pluggableCivilDataEventService.setTarget(new CivilDataEventServiceImpl(Collections.singletonList(cache)));
+
 		try {
 			cache.reset();      // to make sure the cache is empty...
 			serviceCivil.setUp(cache);
@@ -303,7 +321,6 @@ public class TranslationStrategyWithRelationshipCacheCleanupFacadeTest extends A
 		// créée le service civil et un cache par devant
 		final IndividuConnectorCache cache = new IndividuConnectorCache();
 		cache.setCache(cacheManager.getCache("serviceCivil"));
-		cache.setCivilDataEventService(getBean(CivilDataEventService.class, "civilDataEventService"));
 		cache.setTarget(new MockIndividuConnector() {
 			@Override
 			protected void init() {
@@ -317,6 +334,8 @@ public class TranslationStrategyWithRelationshipCacheCleanupFacadeTest extends A
 			}
 		});
 		cache.afterPropertiesSet();
+		this.pluggableCivilDataEventService.setTarget(new CivilDataEventServiceImpl(Collections.singletonList(cache)));
+
 		try {
 			cache.reset();      // to make sure the cache is empty...
 			serviceCivil.setUp(cache);

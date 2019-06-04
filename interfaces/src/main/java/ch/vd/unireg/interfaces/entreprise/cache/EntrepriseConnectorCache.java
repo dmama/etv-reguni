@@ -23,7 +23,6 @@ import ch.vd.unireg.cache.KeyDumpableCache;
 import ch.vd.unireg.cache.UniregCacheInterface;
 import ch.vd.unireg.cache.UniregCacheManager;
 import ch.vd.unireg.data.CivilDataEventListener;
-import ch.vd.unireg.data.CivilDataEventService;
 import ch.vd.unireg.interfaces.civil.IndividuConnectorException;
 import ch.vd.unireg.interfaces.entreprise.EntrepriseConnector;
 import ch.vd.unireg.interfaces.entreprise.EntrepriseConnectorException;
@@ -44,7 +43,6 @@ public class EntrepriseConnectorCache implements EntrepriseConnector, UniregCach
 	private Ehcache cache;
 	private UniregCacheManager uniregCacheManager;
 	private StatsService statsService;
-	private CivilDataEventService civilDataEventService;
 
 	public void setTarget(EntrepriseConnector target) {
 		this.target = target;
@@ -60,10 +58,6 @@ public class EntrepriseConnectorCache implements EntrepriseConnector, UniregCach
 
 	public void setStatsService(StatsService statsService) {
 		this.statsService = statsService;
-	}
-
-	public void setCivilDataEventService(CivilDataEventService civilDataEventService) {
-		this.civilDataEventService = civilDataEventService;
 	}
 
 	@Override
@@ -82,7 +76,6 @@ public class EntrepriseConnectorCache implements EntrepriseConnector, UniregCach
 		if (uniregCacheManager != null) {
 			uniregCacheManager.register(this);
 		}
-		civilDataEventService.register(this);
 	}
 
 	@Override
@@ -93,7 +86,6 @@ public class EntrepriseConnectorCache implements EntrepriseConnector, UniregCach
 		if (uniregCacheManager != null) {
 			uniregCacheManager.unregister(this);
 		}
-		civilDataEventService.unregister(this);
 	}
 
 	/**

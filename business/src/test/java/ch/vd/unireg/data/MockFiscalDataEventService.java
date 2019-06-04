@@ -3,8 +3,6 @@ package ch.vd.unireg.data;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.lang3.NotImplementedException;
-
 import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 public class MockFiscalDataEventService implements FiscalDataEventService {
@@ -13,16 +11,6 @@ public class MockFiscalDataEventService implements FiscalDataEventService {
 	public final Set<Long> changedImmeubles = new HashSet<>();
 	public final Set<Long> changedBatiments = new HashSet<>();
 	public final Set<Long> changedCommunautes = new HashSet<>();
-
-	@Override
-	public void register(FiscalDataEventListener listener) {
-		throw new NotImplementedException("");
-	}
-
-	@Override
-	public void unregister(FiscalDataEventListener listener) {
-		throw new NotImplementedException("");
-	}
 
 	public void clear() {
 		changedTiers.clear();

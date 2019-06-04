@@ -22,6 +22,7 @@ import ch.vd.unireg.security.Role;
 @ContextConfiguration(locations = {
 		BusinessTestingConstants.UNIREG_BUSINESS_UT_CONFIG,
 		WebserviceTestingConstants.UNIREG_WSUT_WS,
+		WebserviceTestingConstants.UNIREG_WSUT_DATA_EVENT,
 		WebserviceTestingConstants.UNIREG_WSUT_SERVICES,
 		WebserviceTestingConstants.UNIREG_WSUT_SECURITY
 })

@@ -16,8 +16,6 @@ import org.springframework.util.ResourceUtils;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.cache.UniregCacheManagerImpl;
 import ch.vd.unireg.common.WithoutSpringTest;
-import ch.vd.unireg.data.CivilDataEventListener;
-import ch.vd.unireg.data.CivilDataEventService;
 import ch.vd.unireg.interfaces.entreprise.EntrepriseConnector;
 import ch.vd.unireg.interfaces.entreprise.EntrepriseConnectorException;
 import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDE;
@@ -41,24 +39,6 @@ public class EntrepriseConnectorCacheTest extends WithoutSpringTest {
 
 	private CallCounterEntrepriseConnector target;
 	private EntrepriseConnectorCache cache;
-
-	private final CivilDataEventService dataEventService = new CivilDataEventService() {
-		@Override
-		public void register(CivilDataEventListener listener) {
-		}
-
-		@Override
-		public void unregister(CivilDataEventListener listener) {
-		}
-
-		@Override
-		public void onIndividuChange(long id) {
-		}
-
-		@Override
-		public void onEntrepriseChange(long id) {
-		}
-	};
 
 	private class CallCounterEntrepriseConnector implements EntrepriseConnector {
 
@@ -132,7 +112,6 @@ public class EntrepriseConnectorCacheTest extends WithoutSpringTest {
 		cache.setUniregCacheManager(new UniregCacheManagerImpl());
 		cache.setStatsService(new MockStatsService());
 		cache.setTarget(target);
-		cache.setCivilDataEventService(dataEventService);
 		cache.afterPropertiesSet();
 	}
 

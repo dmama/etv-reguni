@@ -1,10 +1,14 @@
 package ch.vd.unireg.tiers.manager;
 
+import java.util.Collections;
+
 import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.WebTest;
+import ch.vd.unireg.data.FiscalDataEventServiceImpl;
+import ch.vd.unireg.data.PluggableFiscalDataEventService;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
@@ -32,6 +36,7 @@ import static org.junit.Assert.assertTrue;
 public class AutorisationCacheTest extends WebTest {
 
 	private AutorisationCacheImpl cache;
+	private PluggableFiscalDataEventService pluggableFiscalDataEventService;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -39,6 +44,15 @@ public class AutorisationCacheTest extends WebTest {
 
 		cache = getBean(AutorisationCacheImpl.class, "autorisationCache");
 		cache.reset();
+
+		pluggableFiscalDataEventService = getBean(PluggableFiscalDataEventService.class, "fiscalDataEventService");
+		pluggableFiscalDataEventService.setTarget(new FiscalDataEventServiceImpl(Collections.singletonList(cache)));
+	}
+
+	@Override
+	public void onTearDown() throws Exception {
+		pluggableFiscalDataEventService.setTarget(null);
+		super.onTearDown();
 	}
 
 	/**
