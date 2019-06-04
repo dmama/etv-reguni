@@ -8,7 +8,7 @@ Container_Boundary(uniregWeb, "Unireg Web") {
     Container(webEvtCivilEchProcessor, "evtCivilEchProcessor", "EvenementCivilEchProcessorImpl", "Processeur des événements civils des individus")
     Container(webEvtEntrepriseProcessor, "evtEntrepriseProcessorInternal", "EvenementEntrepriseProcessorInternal", "Processeur des événements civils des entreprises")
 
-    Container(webDataEventService, "civilDataEventService", "DataEventServiceImpl", "Service des data events")
+    Container(webCivilDataEventService, "civilDataEventService", "DataEventServiceImpl", "Service des civil data events")
 
 	Container(webNexusCivilDataEventBridge, "nexusCivilDataEventBridge", "CivilDataEventBridge", "Bridge qui envoie les événements de Web vers Nexus")
     Container(webIndividuConnectorCache, "individuConnectorCache", "IndividuConnectorCache", "Cache mémoire des données des individus")
@@ -16,15 +16,15 @@ Container_Boundary(uniregWeb, "Unireg Web") {
 	Container(webNexusCivilDataEventTracing, "nexusCivilDataEventTracing", "CivilDataEventTracing", "Tracing des appels")
 	Container(webNexusCivilDataEventService, "nexusCivilDataEventRemote", "BasicAuthHttpInvokerProxyFactoryBean", "Invoker Spring-remoting")
     Container(webConcentratingDataEventJmsSender, "concentratingDataEventJmsSender", "ConcentratingDataEventJmsSender", "Regroupe les événements civils pour les émettre au commit de la transaction")
-    Container(webDataEventSender, "dataEventSender", "DataEventSenderImpl", "Construit et envoie des événements XML internes à travers l'ESB")
+    Container(webDataEventSender, "dataEventSender", "DataEventSenderImpl", "Emetteur des événements JMS vers WS")
 
-	Rel(webEvtCivilEchProcessor, webDataEventService, "Emet des événements")
-	Rel(webEvtEntrepriseProcessor, webDataEventService, "Emet des événements")
+	Rel(webEvtCivilEchProcessor, webCivilDataEventService, "Emet des événements")
+	Rel(webEvtEntrepriseProcessor, webCivilDataEventService, "Emet des événements")
 
-	Rel(webDataEventService, webEntrepriseConnectorCache, "Propage les événements")
-	Rel(webDataEventService, webIndividuConnectorCache, "Propage les événements")
-	Rel(webDataEventService, webNexusCivilDataEventBridge, "Propage les événements")
-	Rel(webDataEventService, webConcentratingDataEventJmsSender, "Propage les événements")
+	Rel(webCivilDataEventService, webEntrepriseConnectorCache, "Propage les événements")
+	Rel(webCivilDataEventService, webIndividuConnectorCache, "Propage les événements")
+	Rel(webCivilDataEventService, webNexusCivilDataEventBridge, "Propage les événements")
+	Rel(webCivilDataEventService, webConcentratingDataEventJmsSender, "Propage les événements")
 
 	Rel(webNexusCivilDataEventBridge, webNexusCivilDataEventTracing, "Propage les événements à Nexus")
 	Rel_R(webNexusCivilDataEventTracing, webNexusCivilDataEventService, "Délègue")
@@ -35,31 +35,38 @@ Container_Boundary(uniregWeb, "Unireg Web") {
 Container_Boundary(uniregNexus, "Unireg Nexus") {
 
     Container(nexusCivilDataEventRemoteExporter, "civilDataEventServiceExporter", "HttpInvokerServiceExporter", "Exporter Spring-remoting")
-	Container(wsDataEventService, "civilDataEventService", "DataEventServiceImpl", "Service des data events")
-    Container(wsEntrepriseConnectorCache, "entrepriseConnectorCache", "EntrepriseConnectorPersistentCache", "Cache persistent des données des entreprises")
-    Container(wsIndividuConnectorCache, "individuConnectorCache", "IndividuConnectorPersistentCache", "Cache persistent des données des individus")
+	Container(nexusCivilDataEventService, "civilDataEventService", "DataEventServiceImpl", "Service des civil data events")
+    Container(nexusEntrepriseConnectorCache, "entrepriseConnectorCache", "EntrepriseConnectorPersistentCache", "Cache persistent des données des entreprises")
+    Container(nexuIndividuConnectorCache, "individuConnectorCache", "IndividuConnectorPersistentCache", "Cache persistent des données des individus")
 
 
-	Rel(nexusCivilDataEventRemoteExporter, wsDataEventService, "Propage les appels de méthodes")
-	Rel(wsDataEventService, wsEntrepriseConnectorCache, "Propage les événements")
-	Rel(wsDataEventService, wsIndividuConnectorCache, "Propage les événements")
+	Rel(nexusCivilDataEventRemoteExporter, nexusCivilDataEventService, "Propage les appels de méthodes")
+	Rel(nexusCivilDataEventService, nexusEntrepriseConnectorCache, "Propage les événements")
+	Rel(nexusCivilDataEventService, nexuIndividuConnectorCache, "Propage les événements")
 }
 
 Container_Boundary(uniregWS, "Unireg WS") {
 
-    Container(wsDataEventJmsHandler, "dataEventJmsHandler", "DataEventJmsHandler", "Listener JMS des événements XML internes")
-    Container(wsEventDataListenerAdapter, "wsEventDataListenerAdapter", "WebServiceEventListenerAdapter", "Exporter Spring-remoting")
-    
+    Container(wsDataEventJmsHandler, "dataEventJmsHandler", "DataEventJmsHandler", "Listener des événements JMS en provenance de Web")
+	Container(wsCivilDataEventService, "civilDataEventService", "DataEventServiceImpl", "Service des civil data events")
+
+    Container(wsIndividuConnectorCache, "individuConnectorCache", "IndividuConnectorCache", "Cache mémoire des données des individus")
+    Container(wsEntrepriseConnectorCache, "entrepriseConnectorCache", "EntrepriseConnectorCache", "Cache mémoire des données des entreprises")
+    Container(wsEventDataListenerAdapter, "wsEventDataListenerAdapter", "WebServiceEventListenerAdapter", "Gestionnaire des caches des WS")
+
     Container(wsPartyService3CacheManager, "partyService3CacheManager", "PartyWebServiceCacheManager", "Manager du cache du WS party3")
     Container(wsv5CacheEventListener, "wsv5CacheEventListener", "BusinessWebServiceCacheEventListener", "Manager du cache du WS v5")
     Container(wsv6CacheEventListener, "wsv6CacheEventListener", "BusinessWebServiceCacheEventListener", "Manager du cache du WS v6")
     Container(wsv7CacheEventListener, "wsv7CacheEventListener", "BusinessWebServiceCacheEventListener", "Manager du cache du WS v7")
 
-	Rel(wsDataEventJmsHandler, wsEventDataListenerAdapter, "Réémet les événements")
-	Rel(wsEventDataListenerAdapter, wsPartyService3CacheManager, "Propage les événements")
-	Rel(wsEventDataListenerAdapter, wsv5CacheEventListener, "Propage les événements")
-	Rel(wsEventDataListenerAdapter, wsv6CacheEventListener, "Propage les événements")
-	Rel(wsEventDataListenerAdapter, wsv7CacheEventListener, "Propage les événements")
+	Rel(wsDataEventJmsHandler, wsCivilDataEventService, "Réémet les événements")
+	Rel(wsCivilDataEventService, wsEventDataListenerAdapter, "Propage les événements")
+	Rel(wsCivilDataEventService, wsIndividuConnectorCache, "Propage les événements")
+	Rel(wsCivilDataEventService, wsEntrepriseConnectorCache, "Propage les événements")
+	Rel(wsEventDataListenerAdapter, wsPartyService3CacheManager, "Invalide les caches")
+	Rel(wsEventDataListenerAdapter, wsv5CacheEventListener, "Invalide les caches")
+	Rel(wsEventDataListenerAdapter, wsv6CacheEventListener, "Invalide les caches")
+	Rel(wsEventDataListenerAdapter, wsv7CacheEventListener, "Invalide les caches")
 }
 
 Rel_D(webNexusCivilDataEventService, nexusCivilDataEventRemoteExporter, "Appelle (synchrone)", "Spring-remoting/HTTP")
