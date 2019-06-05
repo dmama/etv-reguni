@@ -7,9 +7,9 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.cache.UniregCacheManager;
-import ch.vd.unireg.data.CivilDataEventService;
-import ch.vd.unireg.data.CivilDataEventServiceImpl;
-import ch.vd.unireg.data.PluggableCivilDataEventService;
+import ch.vd.unireg.data.CivilDataEventNotifier;
+import ch.vd.unireg.data.CivilDataEventNotifierImpl;
+import ch.vd.unireg.data.PluggableCivilDataEventNotifier;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.unireg.interfaces.civil.cache.IndividuConnectorCache;
@@ -26,17 +26,17 @@ import static org.junit.Assert.assertNotNull;
 
 public class CorrectionFiliationTest extends AbstractEvenementCivilInterneTest {
 
-	private PluggableCivilDataEventService pluggableCivilDataEventService;
+	private PluggableCivilDataEventNotifier pluggableCivilDataEventNotifier;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		this.pluggableCivilDataEventService = getBean(PluggableCivilDataEventService.class, "civilDataEventService");
+		this.pluggableCivilDataEventNotifier = getBean(PluggableCivilDataEventNotifier.class, "civilDataEventNotifier");
 	}
 
 	@Override
 	public void onTearDown() throws Exception {
-		this.pluggableCivilDataEventService.setTarget(null);
+		this.pluggableCivilDataEventNotifier.setTarget(null);
 		super.onTearDown();
 	}
 
@@ -59,8 +59,8 @@ public class CorrectionFiliationTest extends AbstractEvenementCivilInterneTest {
 		final CacheManager cacheManager = getBean(CacheManager.class, "ehCacheManager");
 		assertNotNull(cacheManager);
 
-		final CivilDataEventService dataEventService = getBean(CivilDataEventService.class, "civilDataEventService");
-		assertNotNull(dataEventService);
+		final CivilDataEventNotifier civilDataEventNotifier = getBean(CivilDataEventNotifier.class, "civilDataEventNotifier");
+		assertNotNull(civilDataEventNotifier);
 
 		final UniregCacheManager uniregCacheManager = getBean(UniregCacheManager.class, "uniregCacheManager");
 		assertNotNull(uniregCacheManager);
@@ -71,7 +71,7 @@ public class CorrectionFiliationTest extends AbstractEvenementCivilInterneTest {
 		cache.setUniregCacheManager(uniregCacheManager);
 		cache.afterPropertiesSet();
 		cache.reset();
-		pluggableCivilDataEventService.setTarget(new CivilDataEventServiceImpl(Collections.singletonList(cache)));
+		pluggableCivilDataEventNotifier.setTarget(new CivilDataEventNotifierImpl(Collections.singletonList(cache)));
 
 		try {
 			serviceCivil.setUp(cache);

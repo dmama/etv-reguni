@@ -5,7 +5,7 @@ import java.util.Set;
 
 import ch.vd.unireg.type.TypeRapportEntreTiers;
 
-public class MockFiscalDataEventService implements FiscalDataEventService {
+public class MockFiscalDataEventNotifier implements FiscalDataEventNotifier {
 
 	public final Set<Long> changedTiers = new HashSet<>();
 	public final Set<Long> changedImmeubles = new HashSet<>();
@@ -20,38 +20,38 @@ public class MockFiscalDataEventService implements FiscalDataEventService {
 	}
 
 	@Override
-	public void onTiersChange(long id) {
+	public void notifyTiersChange(long id) {
 		changedTiers.add(id);
 	}
 
 	@Override
-	public void onRelationshipChange(TypeRapportEntreTiers type, long sujetId, long objetId) {
+	public void notifyRelationshipChange(TypeRapportEntreTiers type, long sujetId, long objetId) {
 	}
 
 	@Override
-	public void onImmeubleChange(long immeubleId) {
+	public void notifyImmeubleChange(long immeubleId) {
 		changedImmeubles.add(immeubleId);
 	}
 
 	@Override
-	public void onBatimentChange(long batimentId) {
+	public void notifyBatimentChange(long batimentId) {
 		changedBatiments.add(batimentId);
 	}
 
 	@Override
-	public void onCommunauteChange(long communauteId) {
+	public void notifyCommunauteChange(long communauteId) {
 		changedCommunautes.add(communauteId);
 	}
 
 	@Override
-	public void onDroitAccessChange(long id) {
+	public void notifyDroitAccessChange(long id) {
 	}
 
 	@Override
-	public void onLoadDatabase() {
+	public void notifyLoadDatabase() {
 	}
 
 	@Override
-	public void onTruncateDatabase() {
+	public void notifyTruncateDatabase() {
 	}
 }

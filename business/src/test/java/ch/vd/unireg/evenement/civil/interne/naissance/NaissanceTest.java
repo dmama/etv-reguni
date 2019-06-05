@@ -14,8 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.cache.UniregCacheManager;
-import ch.vd.unireg.data.CivilDataEventServiceImpl;
-import ch.vd.unireg.data.PluggableCivilDataEventService;
+import ch.vd.unireg.data.CivilDataEventNotifierImpl;
+import ch.vd.unireg.data.PluggableCivilDataEventNotifier;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
 import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.unireg.evenement.civil.interne.HandleStatus;
@@ -53,7 +53,7 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 	private EvenementFiscalDAO evenementFiscalDAO;
 	private CacheManager cacheManager;
 	private UniregCacheManager uniregCacheManager;
-	private PluggableCivilDataEventService pluggableCivilDataEventService;
+	private PluggableCivilDataEventNotifier pluggableCivilDataEventNotifier;
 
 	public NaissanceTest() {
 		setWantSynchroParentes(true);
@@ -68,12 +68,12 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 
 		cacheManager = getBean(CacheManager.class, "ehCacheManager");
 		uniregCacheManager = getBean(UniregCacheManager.class, "uniregCacheManager");
-		pluggableCivilDataEventService = getBean(PluggableCivilDataEventService.class, "civilDataEventService");
+		pluggableCivilDataEventNotifier = getBean(PluggableCivilDataEventNotifier.class, "civilDataEventNotifier");
 	}
 
 	@Override
 	public void onTearDown() throws Exception {
-		this.pluggableCivilDataEventService.setTarget(null);
+		this.pluggableCivilDataEventNotifier.setTarget(null);
 		super.onTearDown();
 	}
 
@@ -391,7 +391,7 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 		cache.setUniregCacheManager(uniregCacheManager);
 		cache.afterPropertiesSet();
 		cache.reset();
-		pluggableCivilDataEventService.setTarget(new CivilDataEventServiceImpl(Collections.singletonList(cache)));
+		pluggableCivilDataEventNotifier.setTarget(new CivilDataEventNotifierImpl(Collections.singletonList(cache)));
 
 		try {
 			serviceCivil.setUp(cache);

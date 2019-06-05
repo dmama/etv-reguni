@@ -52,7 +52,7 @@ public class CorrectionFiliation extends ChangementBase {
 		final List<RelationVersIndividu> parents = getIndividu().getParents();
 		if (parents != null) {
 			for (RelationVersIndividu parent : parents) {
-				context.getDataEventService().onIndividuChange(parent.getNumeroAutreIndividu());
+				context.getCivilDataEventNotifier().notifyIndividuChange(parent.getNumeroAutreIndividu());
 			}
 		}
 

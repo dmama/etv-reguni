@@ -15,7 +15,7 @@ import ch.vd.unireg.common.HibernateEntity;
 import ch.vd.unireg.common.linkedentity.LinkedEntity;
 import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
 import ch.vd.unireg.common.linkedentity.LinkedEntityPhase;
-import ch.vd.unireg.data.FiscalDataEventService;
+import ch.vd.unireg.data.FiscalDataEventNotifier;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.hibernate.interceptor.ModificationInterceptor;
 import ch.vd.unireg.hibernate.interceptor.ModificationSubInterceptor;
@@ -37,7 +37,7 @@ import ch.vd.unireg.type.TypeRapportEntreTiers;
 public class DatabaseChangeInterceptor implements ModificationSubInterceptor, InitializingBean, DisposableBean {
 
 	private ModificationInterceptor parent;
-	private FiscalDataEventService fiscalDataEventService;
+	private FiscalDataEventNotifier fiscalDataEventNotifier;
 	private TiersService tiersService;
 	private HibernateTemplate hibernateTemplate;
 
@@ -45,8 +45,8 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 		this.parent = parent;
 	}
 
-	public void setFiscalDataEventService(FiscalDataEventService fiscalDataEventService) {
-		this.fiscalDataEventService = fiscalDataEventService;
+	public void setFiscalDataEventNotifier(FiscalDataEventNotifier fiscalDataEventNotifier) {
+		this.fiscalDataEventNotifier = fiscalDataEventNotifier;
 	}
 
 	public void setTiersService(TiersService tiersService) {
@@ -83,7 +83,7 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 			final Tiers tiers = (Tiers) entity;
 			final Long numero = tiers.getNumero();
 			if (numero != null) {
-				fiscalDataEventService.onTiersChange(numero);
+				fiscalDataEventNotifier.notifyTiersChange(numero);
 			}
 		}
 		else if (entity instanceof ImmeubleRF) {
@@ -91,7 +91,7 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 			final ImmeubleRF immeuble = (ImmeubleRF) entity;
 			final Long i = immeuble.getId();
 			if (i != null) {
-				fiscalDataEventService.onImmeubleChange(i);
+				fiscalDataEventNotifier.notifyImmeubleChange(i);
 			}
 		}
 		else if (entity instanceof BatimentRF) {
@@ -99,7 +99,7 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 			final BatimentRF batiment = (BatimentRF) entity;
 			final Long i = batiment.getId();
 			if (i != null) {
-				fiscalDataEventService.onBatimentChange(i);
+				fiscalDataEventNotifier.notifyBatimentChange(i);
 			}
 		}
 		else if (entity instanceof CommunauteRF) {
@@ -107,12 +107,12 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 			final CommunauteRF communaute = (CommunauteRF) entity;
 			final Long i = communaute.getId();
 			if (i != null) {
-				fiscalDataEventService.onCommunauteChange(i);
+				fiscalDataEventNotifier.notifyCommunauteChange(i);
 			}
 		}
 		else if (entity instanceof RapportEntreTiers) {
 			final RapportEntreTiers ret = (RapportEntreTiers) entity;
-			fiscalDataEventService.onRelationshipChange(ret.getType(), ret.getSujetId(), ret.getObjetId());
+			fiscalDataEventNotifier.notifyRelationshipChange(ret.getType(), ret.getSujetId(), ret.getObjetId());
 			handleLinkedEntity(ret, isAnnulation);
 		}
 		else if (entity instanceof LinkedEntity) { // [UNIREG-2581] on doit remonter sur le tiers en cas de changement sur les classes satellites
@@ -135,16 +135,16 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 		                                                                   isAnnulation);
 		for (HibernateEntity e : linked) {
 			if (e instanceof Tiers) {
-				fiscalDataEventService.onTiersChange(((Tiers) e).getNumero());
+				fiscalDataEventNotifier.notifyTiersChange(((Tiers) e).getNumero());
 			}
 			else if (e instanceof ImmeubleRF) {
-				fiscalDataEventService.onImmeubleChange(((ImmeubleRF) e).getId());
+				fiscalDataEventNotifier.notifyImmeubleChange(((ImmeubleRF) e).getId());
 			}
 			else if (e instanceof BatimentRF) {
-				fiscalDataEventService.onBatimentChange(((BatimentRF) e).getId());
+				fiscalDataEventNotifier.notifyBatimentChange(((BatimentRF) e).getId());
 			}
 			else if (e instanceof CommunauteRF) {
-				fiscalDataEventService.onCommunauteChange(((CommunauteRF) e).getId());
+				fiscalDataEventNotifier.notifyCommunauteChange(((CommunauteRF) e).getId());
 			}
 			else {
 				throw new IllegalArgumentException("Type d'entité inconnu = [" + e.getClass() + "]");
@@ -158,7 +158,7 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 		// le tiers lui-même
 		final Long numero = ctb.getNumero();
 		if (numero != null) {
-			fiscalDataEventService.onDroitAccessChange(numero);
+			fiscalDataEventNotifier.notifyDroitAccessChange(numero);
 		}
 
 		// tous les ménages communs auxquel il a pu appartenir, ou les établissements liés
@@ -168,7 +168,7 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 			                                                            TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE);
 			for (RapportEntreTiers r : rapports) {
 				if (!r.isAnnule() && typesPropages.contains(r.getType())) {
-					fiscalDataEventService.onDroitAccessChange(r.getObjetId());
+					fiscalDataEventNotifier.notifyDroitAccessChange(r.getObjetId());
 				}
 			}
 		}

@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import ch.vd.unireg.data.CivilDataEventService;
+import ch.vd.unireg.data.CivilDataEventNotifier;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
@@ -25,12 +25,12 @@ import ch.vd.unireg.tiers.TiersService;
 public abstract class AbstractTranslationStrategyWithRelationshipCacheCleanup implements EvenementCivilEchTranslationStrategy {
 
 	private final ServiceCivilService serviceCivil;
-	private final CivilDataEventService dataEventService;
+	private final CivilDataEventNotifier civilDataEventNotifier;
 	private final TiersService tiersService;
 
-	protected AbstractTranslationStrategyWithRelationshipCacheCleanup(ServiceCivilService serviceCivil, CivilDataEventService dataEventService, TiersService tiersService) {
+	protected AbstractTranslationStrategyWithRelationshipCacheCleanup(ServiceCivilService serviceCivil, CivilDataEventNotifier civilDataEventNotifier, TiersService tiersService) {
 		this.serviceCivil = serviceCivil;
-		this.dataEventService = dataEventService;
+		this.civilDataEventNotifier = civilDataEventNotifier;
 		this.tiersService = tiersService;
 	}
 
@@ -57,7 +57,7 @@ public abstract class AbstractTranslationStrategyWithRelationshipCacheCleanup im
 	private void invalidateCache(Set<Long> individus) {
 		if (individus != null && individus.size() > 0) {
 			for (Long noIndividu : individus) {
-				dataEventService.onIndividuChange(noIndividu);
+				civilDataEventNotifier.notifyIndividuChange(noIndividu);
 			}
 		}
 	}

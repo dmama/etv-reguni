@@ -6,15 +6,15 @@ import org.springframework.beans.factory.InitializingBean;
 import ch.vd.unireg.stats.ServiceTracing;
 import ch.vd.unireg.stats.StatsService;
 
-public class CivilDataEventTracing implements CivilDataEventListener, InitializingBean, DisposableBean {
+public class CivilDataEventNotifierTracing implements CivilDataEventNotifier, InitializingBean, DisposableBean {
 
-	private CivilDataEventListener target;
+	private CivilDataEventNotifier target;
 	private StatsService statsService;
 	private String serviceName;
 
 	private ServiceTracing tracing;
 
-	public void setTarget(CivilDataEventListener target) {
+	public void setTarget(CivilDataEventNotifier target) {
 		this.target = target;
 	}
 
@@ -42,34 +42,34 @@ public class CivilDataEventTracing implements CivilDataEventListener, Initializi
 	}
 
 	@Override
-	public void onEntrepriseChange(final long id) {
+	public void notifyEntrepriseChange(final long id) {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			target.onEntrepriseChange(id);
+			target.notifyEntrepriseChange(id);
 		}
 		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "onEntrepriseChange", () -> String.format("id=%d", id));
+			tracing.end(time, t, "notifyEntrepriseChange", () -> String.format("id=%d", id));
 		}
 	}
 
 	@Override
-	public void onIndividuChange(long id) {
+	public void notifyIndividuChange(long id) {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			target.onIndividuChange(id);
+			target.notifyIndividuChange(id);
 		}
 		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "onIndividuChange", () -> String.format("id=%d", id));
+			tracing.end(time, t, "notifyIndividuChange", () -> String.format("id=%d", id));
 		}
 	}
 }

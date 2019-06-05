@@ -7,8 +7,8 @@ import java.util.List;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.data.FiscalDataEventServiceImpl;
-import ch.vd.unireg.data.PluggableFiscalDataEventService;
+import ch.vd.unireg.data.FiscalDataEventNotifierImpl;
+import ch.vd.unireg.data.PluggableFiscalDataEventNotifier;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -37,20 +37,20 @@ import static org.junit.Assert.assertNull;
 public class SecurityProviderCacheTest extends SecurityTest {
 
 	private SecurityProviderCache cache;
-	private PluggableFiscalDataEventService pluggableFiscalDataEventService;
+	private PluggableFiscalDataEventNotifier pluggableFiscalDataEventNotifier;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 		cache = getBean(SecurityProviderCache.class, "securityProviderCache");
 		cache.reset();
-		pluggableFiscalDataEventService = getBean(PluggableFiscalDataEventService.class, "fiscalDataEventService");
-		pluggableFiscalDataEventService.setTarget(new FiscalDataEventServiceImpl(Collections.singletonList(cache)));
+		pluggableFiscalDataEventNotifier = getBean(PluggableFiscalDataEventNotifier.class, "fiscalDataEventNotifier");
+		pluggableFiscalDataEventNotifier.setTarget(new FiscalDataEventNotifierImpl(Collections.singletonList(cache)));
 	}
 
 	@Override
 	public void onTearDown() throws Exception {
-		pluggableFiscalDataEventService.setTarget(null);
+		pluggableFiscalDataEventNotifier.setTarget(null);
 		super.onTearDown();
 	}
 

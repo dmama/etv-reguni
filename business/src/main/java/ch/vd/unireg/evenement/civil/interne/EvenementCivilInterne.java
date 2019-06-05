@@ -125,7 +125,7 @@ public abstract class EvenementCivilInterne {
 		this.numeroEvenement = 0L;
 		this.numeroOfsCommuneAnnonce = numeroOfsCommuneAnnonce;
 
-		if (noIndividu != null && context.getDataEventService() != null) {
+		if (noIndividu != null && context.getCivilDataEventNotifier() != null) {
 			refreshIndividuCache(noIndividu, context);
 		}
 	}
@@ -133,7 +133,7 @@ public abstract class EvenementCivilInterne {
 	private void refreshIndividuCache(Long noIndividu, EvenementCivilContext context) {
 
 		// on doit d'abord invalider le cache de l'individu de l'événement afin que l'appel à getIndividu() soit pertinent
-		context.getDataEventService().onIndividuChange(noIndividu);
+		context.getCivilDataEventNotifier().notifyIndividuChange(noIndividu);
 
 		// éventuellement, on rafraîchit également le cache des individus conjoints
 		refreshConjointCache(noIndividu, context);
@@ -150,7 +150,7 @@ public abstract class EvenementCivilInterne {
 			// nettoyage du cache pour tous ces individus
 			if (conjoints != null && conjoints.size() > 0) {
 				for (Long noInd : conjoints) {
-					context.getDataEventService().onIndividuChange(noInd);
+					context.getCivilDataEventNotifier().notifyIndividuChange(noInd);
 				}
 			}
 		}

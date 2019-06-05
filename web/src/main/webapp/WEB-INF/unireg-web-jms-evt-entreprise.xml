@@ -50,7 +50,7 @@
 		<property name="translator" ref="evenementEntrepriseTranslator"/>
 		<property name="tiersService" ref="tiersService"/>
 		<property name="indexer" ref="globalTiersIndexer"/>
-		<property name="civilDataEventService" ref="civilDataEventService"/>
+		<property name="civilDataEventNotifier" ref="civilDataEventNotifier"/>
 		<property name="audit" ref="auditManager"/>
 	</bean>
 

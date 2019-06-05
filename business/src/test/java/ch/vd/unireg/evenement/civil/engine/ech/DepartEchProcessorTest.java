@@ -11,8 +11,8 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.FormatNumeroHelper;
-import ch.vd.unireg.data.CivilDataEventServiceImpl;
-import ch.vd.unireg.data.PluggableCivilDataEventService;
+import ch.vd.unireg.data.CivilDataEventNotifierImpl;
+import ch.vd.unireg.data.PluggableCivilDataEventNotifier;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchErreur;
 import ch.vd.unireg.evenement.civil.interne.depart.DepartEchTranslationStrategy;
@@ -53,17 +53,17 @@ import static org.junit.Assert.assertNotNull;
 
 public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTest {
 
-	private PluggableCivilDataEventService pluggableCivilDataEventService;
+	private PluggableCivilDataEventNotifier pluggableCivilDataEventNotifier;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		this.pluggableCivilDataEventService = getBean(PluggableCivilDataEventService.class, "civilDataEventService");
+		this.pluggableCivilDataEventNotifier = getBean(PluggableCivilDataEventNotifier.class, "civilDataEventNotifier");
 	}
 
 	@Override
 	public void onTearDown() throws Exception {
-		this.pluggableCivilDataEventService.setTarget(null);
+		this.pluggableCivilDataEventNotifier.setTarget(null);
 		super.onTearDown();
 	}
 
@@ -727,7 +727,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			}
 		});
 		cache.afterPropertiesSet();
-		this.pluggableCivilDataEventService.setTarget(new CivilDataEventServiceImpl(Collections.singletonList(cache)));
+		this.pluggableCivilDataEventNotifier.setTarget(new CivilDataEventNotifierImpl(Collections.singletonList(cache)));
 
 		try {
 			serviceCivil.setUp(cache);

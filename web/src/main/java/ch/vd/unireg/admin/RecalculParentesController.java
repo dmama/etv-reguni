@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.unireg.common.Flash;
 import ch.vd.unireg.common.FormatNumeroHelper;
-import ch.vd.unireg.data.CivilDataEventService;
+import ch.vd.unireg.data.CivilDataEventNotifier;
 import ch.vd.unireg.security.AccessDeniedException;
 import ch.vd.unireg.security.Role;
 import ch.vd.unireg.security.SecurityHelper;
@@ -26,7 +26,7 @@ public class RecalculParentesController {
 
 	private TiersService tiersService;
 	private SecurityProviderInterface securityProvider;
-	private CivilDataEventService civilDataEventService;
+	private CivilDataEventNotifier civilDataEventNotifier;
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
@@ -36,8 +36,8 @@ public class RecalculParentesController {
 		this.securityProvider = securityProvider;
 	}
 
-	public void setCivilDataEventService(CivilDataEventService civilDataEventService) {
-		this.civilDataEventService = civilDataEventService;
+	public void setCivilDataEventNotifier(CivilDataEventNotifier civilDataEventNotifier) {
+		this.civilDataEventNotifier = civilDataEventNotifier;
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
@@ -55,7 +55,7 @@ public class RecalculParentesController {
 			final Long noIndividu = ((PersonnePhysique) tiers).getNumeroIndividu();
 			if (noIndividu != null) {
 				LOGGER.info(String.format("Demande manuelle de rafraîchissement des relations de parenté du tiers %d (avec éviction du cache des données de l'individu %d)", tiers.getNumero(), noIndividu));
-				civilDataEventService.onIndividuChange(noIndividu);
+				civilDataEventNotifier.notifyIndividuChange(noIndividu);
 			}
 			else {
 				LOGGER.info(String.format("Demande manuelle de rafraîchissement des relations de parenté du tiers %d", tiers.getNumero()));

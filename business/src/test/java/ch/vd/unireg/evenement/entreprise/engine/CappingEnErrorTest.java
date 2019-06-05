@@ -10,7 +10,7 @@ import org.junit.Test;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.FormatNumeroHelper;
-import ch.vd.unireg.data.CivilDataEventService;
+import ch.vd.unireg.data.CivilDataEventNotifier;
 import ch.vd.unireg.evenement.entreprise.EvenementEntreprise;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseErreur;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseService;
@@ -98,7 +98,7 @@ public class CappingEnErrorTest extends AbstractEvenementEntrepriseCivileProcess
 		translator.setServiceInfrastructureService(getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService"));
 		translator.setRegimeFiscalService(getBean(RegimeFiscalService.class, "regimeFiscalService"));
 		translator.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
-		translator.setCivilDataEventService(getBean(CivilDataEventService.class, "civilDataEventService"));
+		translator.setCivilDataEventNotifier(getBean(CivilDataEventNotifier.class, "civilDataEventNotifier"));
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));
 		translator.setMetierServicePM(getBean(MetierServicePM.class, "metierServicePM"));
 		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));

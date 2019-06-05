@@ -25,8 +25,8 @@ import static org.junit.Assert.assertNotNull;
 
 public class ConcentratingDataEventJmsSenderTest extends BusinessTest {
 
-	private PluggableCivilDataEventService pluggableCivilDataEventService;
-	private PluggableFiscalDataEventService pluggableFiscalDataEventService;
+	private PluggableCivilDataEventNotifier pluggableCivilDataEventNotifier;
+	private PluggableFiscalDataEventNotifier pluggableFiscalDataEventNotifier;
 
 	private ConcentratingDataEventJmsSender concentrator;
 
@@ -34,8 +34,8 @@ public class ConcentratingDataEventJmsSenderTest extends BusinessTest {
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 		this.concentrator = null;               // pour en avoir un, il faut appeler buildConcentrator()
-		this.pluggableCivilDataEventService = getBean(PluggableCivilDataEventService.class, "civilDataEventService");
-		this.pluggableFiscalDataEventService = getBean(PluggableFiscalDataEventService.class, "fiscalDataEventService");
+		this.pluggableCivilDataEventNotifier = getBean(PluggableCivilDataEventNotifier.class, "civilDataEventNotifier");
+		this.pluggableFiscalDataEventNotifier = getBean(PluggableFiscalDataEventNotifier.class, "fiscalDataEventNotifier");
 	}
 
 	@Override
@@ -44,8 +44,8 @@ public class ConcentratingDataEventJmsSenderTest extends BusinessTest {
 			concentrator.destroy();
 			concentrator = null;
 		}
-		this.pluggableCivilDataEventService.setTarget(null);
-		this.pluggableFiscalDataEventService.setTarget(null);
+		this.pluggableCivilDataEventNotifier.setTarget(null);
+		this.pluggableFiscalDataEventNotifier.setTarget(null);
 		super.onTearDown();
 	}
 
@@ -58,8 +58,8 @@ public class ConcentratingDataEventJmsSenderTest extends BusinessTest {
 		this.concentrator = concentrator;
 
 		// on enregistre le concentrator comme listener des data event services
-		this.pluggableCivilDataEventService.setTarget(new CivilDataEventServiceImpl(Collections.singletonList(concentrator)));
-		this.pluggableFiscalDataEventService.setTarget(new FiscalDataEventServiceImpl(Collections.singletonList(concentrator)));
+		this.pluggableCivilDataEventNotifier.setTarget(new CivilDataEventNotifierImpl(Collections.singletonList(concentrator)));
+		this.pluggableFiscalDataEventNotifier.setTarget(new FiscalDataEventNotifierImpl(Collections.singletonList(concentrator)));
 	}
 
 	@NotNull

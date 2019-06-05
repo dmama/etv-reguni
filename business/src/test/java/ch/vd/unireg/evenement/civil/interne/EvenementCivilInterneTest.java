@@ -12,7 +12,7 @@ import org.mockito.Mockito;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.WithoutSpringTest;
-import ch.vd.unireg.data.CivilDataEventService;
+import ch.vd.unireg.data.CivilDataEventNotifier;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.unireg.evenement.civil.interne.arrivee.ArriveePrincipale;
@@ -116,7 +116,7 @@ public class EvenementCivilInterneTest extends WithoutSpringTest {
 				marieIndividus(pierre, julie, dateMariage);
 			}
 		});
-		final MyDataEventService dataEventService = new MyDataEventService();
+		final MyDataEventNotifier dataEventNotifier = new MyDataEventNotifier();
 
 		/*
 		 * Création d'un événement civil de mariage
@@ -125,13 +125,13 @@ public class EvenementCivilInterneTest extends WithoutSpringTest {
 				evtMariage = new EvenementCivilRegPP(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER, dateMariage, noIndMonsieur, null, MockCommune.Lausanne.getNoOFS(), null);
 
 		// passage dans l'init de l'adapter
-		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, dataEventService, null, null, null, tiersDAO, null, null, null, audit);
+		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, dataEventNotifier, null, null, null, tiersDAO, null, null, null, audit);
 		final EvenementCivilOptions options = new EvenementCivilOptions(true);
 		final EvenementCivilInterne adapter = new Mariage(evtMariage, context, options);
 
-		checkSetContent(Collections.<Long>emptySet(), dataEventService.getTiersChanged());
-		checkSetContent(Collections.<Long>emptySet(), dataEventService.getDroitsChanged());
-		checkSetContent(new HashSet<>(Arrays.asList(noIndMadame, noIndMonsieur)), dataEventService.getIndividusChanged());
+		checkSetContent(Collections.<Long>emptySet(), dataEventNotifier.getTiersChanged());
+		checkSetContent(Collections.<Long>emptySet(), dataEventNotifier.getDroitsChanged());
+		checkSetContent(new HashSet<>(Arrays.asList(noIndMadame, noIndMonsieur)), dataEventNotifier.getIndividusChanged());
 	}
 
 	private static void checkSetContent(Set<Long> expected, Set<Long> found) {
@@ -150,19 +150,19 @@ public class EvenementCivilInterneTest extends WithoutSpringTest {
 		}
 	}
 
-	private static final class MyDataEventService implements CivilDataEventService {
+	private static final class MyDataEventNotifier implements CivilDataEventNotifier {
 
 		private final Set<Long> tiersChanged = new HashSet<>();
 		private final Set<Long> individusChanged = new HashSet<>();
 		private final Set<Long> droitsChanged = new HashSet<>();
 
 		@Override
-		public void onIndividuChange(long id) {
+		public void notifyIndividuChange(long id) {
 			individusChanged.add(id);
 		}
 
 		@Override
-		public void onEntrepriseChange(long id) {
+		public void notifyEntrepriseChange(long id) {
 		}
 
 		public Set<Long> getTiersChanged() {

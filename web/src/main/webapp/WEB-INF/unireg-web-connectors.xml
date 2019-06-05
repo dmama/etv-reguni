@@ -26,15 +26,19 @@
 
 	<!-- Data Event Service du cache centralisé Nexus -->
 	<bean id="nexusCivilDataEventRemote" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
-		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/dataEventService.remoting" />
-		<property name="serviceInterface" value="ch.vd.unireg.data.CivilDataEventListener"/>
+		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/civilDataEventNotifier.remoting" />
+		<property name="serviceInterface" value="ch.vd.unireg.data.CivilDataEventNotifier"/>
 		<property name="executor" ref="nexusHttpRequestExecutor" />
 	</bean>
 
-	<bean id="nexusCivilDataEventTracing" class="ch.vd.unireg.data.CivilDataEventTracing">
+	<bean id="nexusCivilDataEventTracing" class="ch.vd.unireg.data.CivilDataEventNotifierTracing">
 		<property name="target" ref="nexusCivilDataEventRemote"/>
 		<property name="statsService" ref="statsService"/>
 		<property name="serviceName" value="NexusDataEvent"/>
+	</bean>
+
+	<bean id="nexusCivilDataEventBridge" class="ch.vd.unireg.data.CivilDataEventListenerToNotifierBridge">
+		<property name="target" ref="nexusCivilDataEventTracing"/>
 	</bean>
 
 	<!-- Connnecteur individu -->

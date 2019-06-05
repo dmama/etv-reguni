@@ -6,7 +6,7 @@ import org.junit.Assert;
 
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BusinessTest;
-import ch.vd.unireg.data.CivilDataEventService;
+import ch.vd.unireg.data.CivilDataEventNotifier;
 import ch.vd.unireg.evenement.common.EvenementErreur;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseContext;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseException;
@@ -31,7 +31,7 @@ public abstract class AbstractEvenementEntrepriseCivileInterneTest extends Busin
 
 	protected EvenementEntrepriseContext context;
 	protected EvenementEntrepriseService evenementEntrepriseService;
-	protected CivilDataEventService dataEventService;
+	protected CivilDataEventNotifier civilDataEventNotifier;
 	protected EvenementFiscalService evenementFiscalService;
 	protected AssujettissementService assujettissementService;
 	protected AppariementService appariementService;
@@ -45,7 +45,7 @@ public abstract class AbstractEvenementEntrepriseCivileInterneTest extends Busin
 		evenementEntrepriseService = getBean(EvenementEntrepriseService.class, "evtEntrepriseService");
 		eventSender = getBean(CollectingEvenementFiscalSender.class, "evenementFiscalSender");
 		metierService = getBean(MetierServicePM.class, "metierServicePM");
-		dataEventService = getBean(CivilDataEventService.class, "civilDataEventService");
+		civilDataEventNotifier = getBean(CivilDataEventNotifier.class, "civilDataEventNotifier");
 		evenementFiscalService = getBean(EvenementFiscalService.class, "evenementFiscalService");
 		assujettissementService = getBean(AssujettissementService.class, "assujettissementService");
 		appariementService = getBean(AppariementService.class, "appariementService");
@@ -53,7 +53,7 @@ public abstract class AbstractEvenementEntrepriseCivileInterneTest extends Busin
 		eventSender.reset();
 
 		final AdresseService adresseService = getBean(AdresseService.class, "adresseService");
-		context = new EvenementEntrepriseContext(serviceEntreprise, evenementEntrepriseService, serviceInfra, regimeFiscalService, dataEventService, tiersService, globalTiersIndexer, metierService, tiersDAO, adresseService, evenementFiscalService, assujettissementService, appariementService, parametreAppService,
+		context = new EvenementEntrepriseContext(serviceEntreprise, evenementEntrepriseService, serviceInfra, regimeFiscalService, civilDataEventNotifier, tiersService, globalTiersIndexer, metierService, tiersDAO, adresseService, evenementFiscalService, assujettissementService, appariementService, parametreAppService,
 		                                         audit);
 		options = buildOptions();
 	}

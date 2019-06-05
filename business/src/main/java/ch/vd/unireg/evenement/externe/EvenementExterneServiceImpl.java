@@ -7,8 +7,8 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.data.CivilDataEventService;
-import ch.vd.unireg.data.FiscalDataEventService;
+import ch.vd.unireg.data.CivilDataEventNotifier;
+import ch.vd.unireg.data.FiscalDataEventNotifier;
 import ch.vd.unireg.declaration.DeclarationImpotSource;
 import ch.vd.unireg.declaration.EtatDeclaration;
 import ch.vd.unireg.declaration.EtatDeclarationRetournee;
@@ -23,8 +23,8 @@ public class EvenementExterneServiceImpl implements EvenementExterneService {
 	private EvenementExterneDAO evenementExterneDAO;
 	private TiersDAO tiersDAO;
 
-	private CivilDataEventService civilDataEventService;
-	private FiscalDataEventService fiscalDataEventService;
+	private CivilDataEventNotifier civilDataEventNotifier;
+	private FiscalDataEventNotifier fiscalDataEventNotifier;
 
 	public void setEvenementExterneDAO(EvenementExterneDAO evenementExterneDAO) {
 		this.evenementExterneDAO = evenementExterneDAO;
@@ -34,12 +34,12 @@ public class EvenementExterneServiceImpl implements EvenementExterneService {
 		this.tiersDAO = tiersDAO;
 	}
 
-	public void setCivilDataEventService(CivilDataEventService civilDataEventService) {
-		this.civilDataEventService = civilDataEventService;
+	public void setCivilDataEventNotifier(CivilDataEventNotifier civilDataEventNotifier) {
+		this.civilDataEventNotifier = civilDataEventNotifier;
 	}
 
-	public void setFiscalDataEventService(FiscalDataEventService fiscalDataEventService) {
-		this.fiscalDataEventService = fiscalDataEventService;
+	public void setFiscalDataEventNotifier(FiscalDataEventNotifier fiscalDataEventNotifier) {
+		this.fiscalDataEventNotifier = fiscalDataEventNotifier;
 	}
 
 	/**
@@ -191,7 +191,7 @@ public class EvenementExterneServiceImpl implements EvenementExterneService {
 		}
 
 		// [UNIREG-1947] ne pas oublier d'invalider le cache du tiers!
-		fiscalDataEventService.onTiersChange(declarationImpotSource.getTiers().getNumero());
+		fiscalDataEventNotifier.notifyTiersChange(declarationImpotSource.getTiers().getNumero());
 	}
 
 }

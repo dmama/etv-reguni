@@ -19,7 +19,7 @@
 		<property name="serviceCivilService" ref="serviceCivilService" />
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
 		<property name="tiersDAO" ref="tiersDAO" />
-		<property name="civilDataEventService" ref="civilDataEventService"/>
+		<property name="civilDataEventNotifier" ref="civilDataEventNotifier"/>
 		<property name="tiersService" ref="tiersService" />
 		<property name="metierService" ref="metierService" />
 		<property name="adresseService" ref="adresseService"/>
@@ -35,7 +35,7 @@
 		<property name="serviceCivilService" ref="serviceCivilService" />
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
 		<property name="tiersDAO" ref="tiersDAO" />
-		<property name="civilDataEventService" ref="civilDataEventService"/>
+		<property name="civilDataEventNotifier" ref="civilDataEventNotifier"/>
 		<property name="tiersService" ref="tiersService" />
 		<property name="metierService" ref="metierService" />
 		<property name="adresseService" ref="adresseService"/>

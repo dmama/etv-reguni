@@ -7,7 +7,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.audit.AuditManager;
-import ch.vd.unireg.data.CivilDataEventService;
+import ch.vd.unireg.data.CivilDataEventNotifier;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
@@ -141,7 +141,7 @@ public class EvenementCivilTranslatorImpl implements EvenementCivilTranslator, I
 	private ServiceCivilService serviceCivilService;
 	private ServiceInfrastructureService serviceInfrastructureService;
 	private TiersDAO tiersDAO;
-	private CivilDataEventService civilDataEventService;
+	private CivilDataEventNotifier civilDataEventNotifier;
 	private TiersService tiersService;
 	private MetierService metierService;
 	private AdresseService adresseService;
@@ -163,7 +163,7 @@ public class EvenementCivilTranslatorImpl implements EvenementCivilTranslator, I
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		context = new EvenementCivilContext(serviceCivilService, serviceInfrastructureService, civilDataEventService, tiersService, indexer, metierService, tiersDAO, adresseService, evenementFiscalService, parametreAppService, audit);
+		context = new EvenementCivilContext(serviceCivilService, serviceInfrastructureService, civilDataEventNotifier, tiersService, indexer, metierService, tiersDAO, adresseService, evenementFiscalService, parametreAppService, audit);
 	}
 
 	public void setServiceCivilService(ServiceCivilService serviceCivilService) {
@@ -178,8 +178,8 @@ public class EvenementCivilTranslatorImpl implements EvenementCivilTranslator, I
 		this.tiersDAO = tiersDAO;
 	}
 
-	public void setCivilDataEventService(CivilDataEventService civilDataEventService) {
-		this.civilDataEventService = civilDataEventService;
+	public void setCivilDataEventNotifier(CivilDataEventNotifier civilDataEventNotifier) {
+		this.civilDataEventNotifier = civilDataEventNotifier;
 	}
 
 	public void setTiersService(TiersService tiersService) {

@@ -6,7 +6,7 @@
 
 	<bean id="uniregCacheManager" class="ch.vd.unireg.cache.UniregCacheManagerImpl" />
 
-	<bean id="civilDataEventService" class="ch.vd.unireg.data.CivilDataEventServiceImpl">
+	<bean id="civilDataEventNotifier" class="ch.vd.unireg.data.CivilDataEventNotifierImpl">
 		<constructor-arg>
 			<list>
 				<ref bean="individuConnectorCache" />

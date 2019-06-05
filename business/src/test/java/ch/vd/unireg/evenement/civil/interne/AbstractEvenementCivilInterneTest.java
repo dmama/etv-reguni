@@ -6,7 +6,7 @@ import org.junit.Assert;
 
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BusinessTest;
-import ch.vd.unireg.data.CivilDataEventService;
+import ch.vd.unireg.data.CivilDataEventNotifier;
 import ch.vd.unireg.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.unireg.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
@@ -26,7 +26,7 @@ public abstract class AbstractEvenementCivilInterneTest extends BusinessTest {
 	protected MetierService metierService;
 
 	protected EvenementCivilContext context;
-	protected CivilDataEventService dataEventService;
+	protected CivilDataEventNotifier civilDataEventNotifier;
 	protected EvenementFiscalService evenementFiscalService;
 	protected EvenementCivilOptions options;
 	protected ParametreAppService parametreAppService;
@@ -37,13 +37,13 @@ public abstract class AbstractEvenementCivilInterneTest extends BusinessTest {
 
 		eventSender = getBean(CollectingEvenementFiscalSender.class, "evenementFiscalSender");
 		metierService = getBean(MetierService.class, "metierService");
-		dataEventService = getBean(CivilDataEventService.class, "civilDataEventService");
+		civilDataEventNotifier = getBean(CivilDataEventNotifier.class, "civilDataEventNotifier");
 		evenementFiscalService = getBean(EvenementFiscalService.class, "evenementFiscalService");
 		parametreAppService = getBean(ParametreAppService.class, "parametreAppService");
 		eventSender.reset();
 
 		final AdresseService adresseService = getBean(AdresseService.class, "adresseService");
-		context = new EvenementCivilContext(serviceCivil, serviceInfra, dataEventService, tiersService, globalTiersIndexer, metierService, tiersDAO, adresseService, evenementFiscalService, parametreAppService, audit);
+		context = new EvenementCivilContext(serviceCivil, serviceInfra, civilDataEventNotifier, tiersService, globalTiersIndexer, metierService, tiersDAO, adresseService, evenementFiscalService, parametreAppService, audit);
 		options = buildOptions();
 	}
 

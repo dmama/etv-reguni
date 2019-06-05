@@ -55,8 +55,8 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DataEventJmsHandler.class);
 
-	private CivilDataEventService civilDataEventService;
-	private FiscalDataEventService fiscalDataEventService;
+	private CivilDataEventNotifier civilDataEventNotifier;
+	private FiscalDataEventNotifier fiscalDataEventNotifier;
 	private EvenementFiscalSender evenementFiscalSender;
 	private HibernateTemplate hibernateTemplate;
 
@@ -111,7 +111,7 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Réception d'un événement de chargement de la database");
 			}
-			fiscalDataEventService.onLoadDatabase();
+			fiscalDataEventNotifier.notifyLoadDatabase();
 		}
 	}
 
@@ -121,7 +121,7 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Réception d'un événement de truncate de la database");
 			}
-			fiscalDataEventService.onTruncateDatabase();
+			fiscalDataEventNotifier.notifyTruncateDatabase();
 		}
 	}
 
@@ -131,7 +131,7 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Traitement d'un événement db de changement sur les droits d'accès du tiers n°" + event.getId());
 			}
-			fiscalDataEventService.onDroitAccessChange(event.getId());
+			fiscalDataEventNotifier.notifyDroitAccessChange(event.getId());
 		}
 	}
 
@@ -141,7 +141,7 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Traitement d'un événement db de changement sur l'individu n°" + event.getId());
 			}
-			civilDataEventService.onIndividuChange(event.getId());
+			civilDataEventNotifier.notifyIndividuChange(event.getId());
 		}
 	}
 
@@ -151,7 +151,7 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Traitement d'un événement db de changement sur l'entreprise n°" + event.getId());
 			}
-			civilDataEventService.onEntrepriseChange(event.getId());
+			civilDataEventNotifier.notifyEntrepriseChange(event.getId());
 		}
 	}
 
@@ -161,7 +161,7 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Traitement d'un événement db de changement sur le tiers n°" + event.getId());
 			}
-			fiscalDataEventService.onTiersChange(event.getId());
+			fiscalDataEventNotifier.notifyTiersChange(event.getId());
 		}
 	}
 
@@ -233,7 +233,7 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 			default:
 				throw new IllegalArgumentException("Type de relation inconnu : " + event.getRelationType());
 			}
-			fiscalDataEventService.onRelationshipChange(type, event.getSujetId(), event.getObjetId());
+			fiscalDataEventNotifier.notifyRelationshipChange(type, event.getSujetId(), event.getObjetId());
 		}
 	}
 
@@ -243,7 +243,7 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Traitement d'un événement db de changement sur l'immeuble n°" + event.getId());
 			}
-			fiscalDataEventService.onImmeubleChange(event.getId());
+			fiscalDataEventNotifier.notifyImmeubleChange(event.getId());
 		}
 	}
 
@@ -253,7 +253,7 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Traitement d'un événement db de changement sur le bâtiment n°" + event.getId());
 			}
-			fiscalDataEventService.onBatimentChange(event.getId());
+			fiscalDataEventNotifier.notifyBatimentChange(event.getId());
 		}
 	}
 
@@ -263,7 +263,7 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Traitement d'un événement db de changement sur la communauté n°" + event.getId());
 			}
-			fiscalDataEventService.onCommunauteChange(event.getId());
+			fiscalDataEventNotifier.notifyCommunauteChange(event.getId());
 		}
 	}
 
@@ -285,12 +285,12 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 		}
 	}
 
-	public void setCivilDataEventService(CivilDataEventService civilDataEventService) {
-		this.civilDataEventService = civilDataEventService;
+	public void setCivilDataEventNotifier(CivilDataEventNotifier civilDataEventNotifier) {
+		this.civilDataEventNotifier = civilDataEventNotifier;
 	}
 
-	public void setFiscalDataEventService(FiscalDataEventService fiscalDataEventService) {
-		this.fiscalDataEventService = fiscalDataEventService;
+	public void setFiscalDataEventNotifier(FiscalDataEventNotifier fiscalDataEventNotifier) {
+		this.fiscalDataEventNotifier = fiscalDataEventNotifier;
 	}
 
 	public void setEvenementFiscalSender(EvenementFiscalSender evenementFiscalSender) {

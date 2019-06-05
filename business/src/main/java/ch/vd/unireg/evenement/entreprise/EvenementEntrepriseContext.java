@@ -2,7 +2,7 @@ package ch.vd.unireg.evenement.entreprise;
 
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.audit.AuditManager;
-import ch.vd.unireg.data.CivilDataEventService;
+import ch.vd.unireg.data.CivilDataEventNotifier;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
 import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.unireg.interfaces.service.ServiceEntreprise;
@@ -21,7 +21,7 @@ public class EvenementEntrepriseContext {
 	private final EvenementEntrepriseService evenementEntrepriseService;
 	private final ServiceInfrastructureService serviceInfra;
 	private final RegimeFiscalService regimeFiscalService;
-	private final CivilDataEventService dataEventService;
+	private final CivilDataEventNotifier civilDataEventNotifier;
 	private final TiersService tiersService;
 	private final TiersDAO tiersDAO;
 	private final GlobalTiersIndexer indexer;
@@ -40,7 +40,7 @@ public class EvenementEntrepriseContext {
 		this.evenementEntrepriseService = null;
 		this.serviceInfra = serviceInfra;
 		this.tiersDAO = tiersDAO;
-		this.dataEventService = null;
+		this.civilDataEventNotifier = null;
 		this.tiersService = null;
 		this.indexer = null;
 		this.metierServicePM = null;
@@ -52,7 +52,7 @@ public class EvenementEntrepriseContext {
 	}
 
 	public EvenementEntrepriseContext(ServiceEntreprise serviceEntreprise, EvenementEntrepriseService evenementEntrepriseService, ServiceInfrastructureService serviceInfra,
-	                                  RegimeFiscalService regimeFiscalService, CivilDataEventService dataEventService, TiersService tiersService, GlobalTiersIndexer indexer,
+	                                  RegimeFiscalService regimeFiscalService, CivilDataEventNotifier civilDataEventNotifier, TiersService tiersService, GlobalTiersIndexer indexer,
 	                                  MetierServicePM metierServicePM, TiersDAO tiersDAO, AdresseService adresseService, EvenementFiscalService evenementFiscalService,
 	                                  AssujettissementService assujettissementService,
 	                                  AppariementService appariementService, ParametreAppService parametreAppService, AuditManager audit) {
@@ -60,7 +60,7 @@ public class EvenementEntrepriseContext {
 		this.evenementEntrepriseService = evenementEntrepriseService;
 		this.serviceInfra = serviceInfra;
 		this.regimeFiscalService = regimeFiscalService;
-		this.dataEventService = dataEventService;
+		this.civilDataEventNotifier = civilDataEventNotifier;
 		this.tiersService = tiersService;
 		this.indexer = indexer;
 		this.metierServicePM = metierServicePM;
@@ -89,8 +89,8 @@ public class EvenementEntrepriseContext {
 		return regimeFiscalService;
 	}
 
-	public final CivilDataEventService getDataEventService() {
-		return dataEventService;
+	public final CivilDataEventNotifier getCivilDataEventNotifier() {
+		return civilDataEventNotifier;
 	}
 
 	public GlobalTiersIndexer getIndexer() {

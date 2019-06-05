@@ -9,7 +9,7 @@ import org.junit.Test;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseSuisse;
 import ch.vd.unireg.common.BusinessTest;
-import ch.vd.unireg.data.MockFiscalDataEventService;
+import ch.vd.unireg.data.MockFiscalDataEventNotifier;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 import ch.vd.unireg.declaration.ModeleDocument;
 import ch.vd.unireg.declaration.PeriodeFiscale;
@@ -71,17 +71,17 @@ import static org.junit.Assert.assertTrue;
  */
 public class DatabaseChangeInterceptorTest extends BusinessTest {
 
-	private MockFiscalDataEventService eventService;
+	private MockFiscalDataEventNotifier eventService;
 	private DatabaseChangeInterceptor interceptor;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
-		eventService = new MockFiscalDataEventService();
+		eventService = new MockFiscalDataEventNotifier();
 
 		interceptor = new DatabaseChangeInterceptor();
-		interceptor.setFiscalDataEventService(eventService);
+		interceptor.setFiscalDataEventNotifier(eventService);
 		interceptor.setTiersService(getBean(TiersService.class, "tiersService"));
 		interceptor.setParent(getBean(ModificationInterceptor.class, "modificationInterceptor"));
 		interceptor.setHibernateTemplate(hibernateTemplate);

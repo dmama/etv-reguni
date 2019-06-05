@@ -155,8 +155,8 @@
 	<bean id="evenementExterneService" class="ch.vd.unireg.evenement.externe.EvenementExterneServiceImpl">
 		<property name="evenementExterneDAO" ref="evenementExterneDAO"/>
 		<property name="tiersDAO" ref="tiersDAO"/>
-		<property name="civilDataEventService" ref="civilDataEventService"/>
-		<property name="fiscalDataEventService" ref="fiscalDataEventService"/>
+		<property name="civilDataEventNotifier" ref="civilDataEventNotifier"/>
+		<property name="fiscalDataEventNotifier" ref="fiscalDataEventNotifier"/>
 	</bean>
 
 	<!-- Section Evenement CEDI (= retour de scan de DI PP) -->

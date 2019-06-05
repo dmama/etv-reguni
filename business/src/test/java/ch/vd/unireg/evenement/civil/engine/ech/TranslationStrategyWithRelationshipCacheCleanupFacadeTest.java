@@ -8,8 +8,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.data.CivilDataEventServiceImpl;
-import ch.vd.unireg.data.PluggableCivilDataEventService;
+import ch.vd.unireg.data.CivilDataEventNotifierImpl;
+import ch.vd.unireg.data.PluggableCivilDataEventNotifier;
 import ch.vd.unireg.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.unireg.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
@@ -31,17 +31,17 @@ import ch.vd.unireg.type.TypeEvenementCivilEch;
 
 public class TranslationStrategyWithRelationshipCacheCleanupFacadeTest extends AbstractEvenementCivilEchProcessorTest {
 
-	private PluggableCivilDataEventService pluggableCivilDataEventService;
+	private PluggableCivilDataEventNotifier pluggableCivilDataEventNotifier;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		this.pluggableCivilDataEventService = getBean(PluggableCivilDataEventService.class, "civilDataEventService");
+		this.pluggableCivilDataEventNotifier = getBean(PluggableCivilDataEventNotifier.class, "civilDataEventNotifier");
 	}
 
 	@Override
 	public void onTearDown() throws Exception {
-		this.pluggableCivilDataEventService.setTarget(null);
+		this.pluggableCivilDataEventNotifier.setTarget(null);
 		super.onTearDown();
 	}
 
@@ -217,7 +217,7 @@ public class TranslationStrategyWithRelationshipCacheCleanupFacadeTest extends A
 			}
 		});
 		cache.afterPropertiesSet();
-		this.pluggableCivilDataEventService.setTarget(new CivilDataEventServiceImpl(Collections.singletonList(cache)));
+		this.pluggableCivilDataEventNotifier.setTarget(new CivilDataEventNotifierImpl(Collections.singletonList(cache)));
 
 		try {
 			cache.reset();      // to make sure the cache is empty...
@@ -261,7 +261,7 @@ public class TranslationStrategyWithRelationshipCacheCleanupFacadeTest extends A
 			Assert.assertEquals("Rita", serviceCivil.getIndividu(noIndividuMere, null).getPrenomUsuel());
 
 			// mise en place de la stratégie
-			final EvenementCivilEchTranslationStrategy strategy = new TranslationStrategyWithRelationshipCacheCleanupFacade(finalStrategy, serviceCivil, dataEventService, tiersService);
+			final EvenementCivilEchTranslationStrategy strategy = new TranslationStrategyWithRelationshipCacheCleanupFacade(finalStrategy, serviceCivil, civilDataEventNotifier, tiersService);
 			buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {
 				@Override
 				public void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator) {
@@ -334,7 +334,7 @@ public class TranslationStrategyWithRelationshipCacheCleanupFacadeTest extends A
 			}
 		});
 		cache.afterPropertiesSet();
-		this.pluggableCivilDataEventService.setTarget(new CivilDataEventServiceImpl(Collections.singletonList(cache)));
+		this.pluggableCivilDataEventNotifier.setTarget(new CivilDataEventNotifierImpl(Collections.singletonList(cache)));
 
 		try {
 			cache.reset();      // to make sure the cache is empty...
@@ -381,7 +381,7 @@ public class TranslationStrategyWithRelationshipCacheCleanupFacadeTest extends A
 			Assert.assertEquals("Rita", serviceCivil.getIndividu(noIndividuMere, null).getPrenomUsuel());
 
 			// mise en place de la stratégie
-			final EvenementCivilEchTranslationStrategy strategy = new TranslationStrategyWithRelationshipCacheCleanupFacade(finalStrategy, serviceCivil, dataEventService, tiersService);
+			final EvenementCivilEchTranslationStrategy strategy = new TranslationStrategyWithRelationshipCacheCleanupFacade(finalStrategy, serviceCivil, civilDataEventNotifier, tiersService);
 			buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {
 				@Override
 				public void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator) {

@@ -4,54 +4,51 @@ import java.util.List;
 
 import ch.vd.unireg.type.TypeRapportEntreTiers;
 
-/**
- * Partie "fisale" du service de notification des modifications de données
- */
-public class FiscalDataEventServiceImpl implements FiscalDataEventService, FiscalDataEventListener {
+public class FiscalDataEventNotifierImpl implements FiscalDataEventNotifier {
 
 	private final List<FiscalDataEventListener> listeners;
 
-	public FiscalDataEventServiceImpl(List<FiscalDataEventListener> listeners) {
+	public FiscalDataEventNotifierImpl(List<FiscalDataEventListener> listeners) {
 		this.listeners = listeners;
 	}
 
 	@Override
-	public void onTiersChange(long id) {
+	public void notifyTiersChange(long id) {
 		listeners.forEach(listener -> listener.onTiersChange(id));
 	}
 
 	@Override
-	public void onDroitAccessChange(long id) {
+	public void notifyDroitAccessChange(long id) {
 		listeners.forEach(listener -> listener.onDroitAccessChange(id));
 	}
 
 	@Override
-	public void onImmeubleChange(long immeubleId) {
+	public void notifyImmeubleChange(long immeubleId) {
 		listeners.forEach(listener -> listener.onImmeubleChange(immeubleId));
 	}
 
 	@Override
-	public void onBatimentChange(long batimentId) {
+	public void notifyBatimentChange(long batimentId) {
 		listeners.forEach(listener -> listener.onBatimentChange(batimentId));
 	}
 
 	@Override
-	public void onCommunauteChange(long communauteId) {
+	public void notifyCommunauteChange(long communauteId) {
 		listeners.forEach(listener -> listener.onCommunauteChange(communauteId));
 	}
 
 	@Override
-	public void onRelationshipChange(TypeRapportEntreTiers type, long sujetId, long objetId) {
+	public void notifyRelationshipChange(TypeRapportEntreTiers type, long sujetId, long objetId) {
 		listeners.forEach(listener -> listener.onRelationshipChange(type, sujetId, objetId));
 	}
 
 	@Override
-	public void onLoadDatabase() {
+	public void notifyLoadDatabase() {
 		listeners.forEach(FiscalDataEventListener::onLoadDatabase);
 	}
 
 	@Override
-	public void onTruncateDatabase() {
+	public void notifyTruncateDatabase() {
 		listeners.forEach(FiscalDataEventListener::onTruncateDatabase);
 	}
 }

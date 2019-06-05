@@ -63,7 +63,7 @@ public class Naissance extends EvenementCivilInterne {
 		final Set<Long> parents = context.getServiceCivil().getNumerosIndividusParents(noInd);
 		if (parents != null) {
 			for (Long noParent : parents) {
-				context.getDataEventService().onIndividuChange(noParent);
+				context.getCivilDataEventNotifier().notifyIndividuChange(noParent);
 			}
 		}
 	}

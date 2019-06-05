@@ -5,23 +5,23 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Partie "civile" du service de notification des modifications de données
+ * Service de notification des modifications sur les données civiles.
  */
-public class CivilDataEventServiceImpl implements CivilDataEventService, CivilDataEventListener {
+public class CivilDataEventNotifierImpl implements CivilDataEventNotifier {
 
 	private final List<CivilDataEventListener> listeners;
 
-	public CivilDataEventServiceImpl(@NotNull List<CivilDataEventListener> listeners) {
+	public CivilDataEventNotifierImpl(@NotNull List<CivilDataEventListener> listeners) {
 		this.listeners = listeners;
 	}
 
 	@Override
-	public void onIndividuChange(long id) {
+	public void notifyIndividuChange(long id) {
 		listeners.forEach(listener -> listener.onIndividuChange(id));
 	}
 
 	@Override
-	public void onEntrepriseChange(long id) {
+	public void notifyEntrepriseChange(long id) {
 		listeners.forEach(listener -> listener.onEntrepriseChange(id));
 	}
 }

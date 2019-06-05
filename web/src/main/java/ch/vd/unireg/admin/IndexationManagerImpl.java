@@ -4,8 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.unireg.data.CivilDataEventService;
-import ch.vd.unireg.data.FiscalDataEventService;
+import ch.vd.unireg.data.CivilDataEventNotifier;
+import ch.vd.unireg.data.FiscalDataEventNotifier;
 import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
@@ -18,8 +18,8 @@ public class IndexationManagerImpl implements IndexationManager {
 	private static final Logger LOGGER = LoggerFactory.getLogger(IndexationManagerImpl.class);
 
 	private GlobalTiersIndexer tiersIndexer;
-	private CivilDataEventService civilDataEventService;
-	private FiscalDataEventService fiscalDataEventService;
+	private CivilDataEventNotifier civilDataEventNotifier;
+	private FiscalDataEventNotifier fiscalDataEventNotifier;
 	private TiersDAO tiersDAO;
 
 	@Override
@@ -31,16 +31,16 @@ public class IndexationManagerImpl implements IndexationManager {
 		if (noIndividu != null) {
 			LOGGER.info("Demande de réindexation manuelle du tiers n°" + id + " (avec éviction du cache des données de l'individu n°" + noIndividu + ')');
 			// on en profite pour forcer l'éviction des données cachées pour l'individu
-			civilDataEventService.onIndividuChange(noIndividu);
+			civilDataEventNotifier.notifyIndividuChange(noIndividu);
 		}
 		else if (noCantonal != null) {
 			LOGGER.info("Demande de réindexation manuelle du tiers n°" + id + " (avec éviction du cache des données de l'entreprise/de l'établissement civil n°" + noCantonal + ')');
-			civilDataEventService.onEntrepriseChange(noCantonal);
+			civilDataEventNotifier.notifyEntrepriseChange(noCantonal);
 		}
 		else {
 			LOGGER.info("Demande de réindexation manuelle du tiers n°" + id);
 		}
-		fiscalDataEventService.onTiersChange(id); // on force l'éviction des donées cachées pour tous les types de tiers (pas seulement pour les habitants)
+		fiscalDataEventNotifier.notifyTiersChange(id); // on force l'éviction des donées cachées pour tous les types de tiers (pas seulement pour les habitants)
 
 		// on demande la réindexation du tiers
 		tiersIndexer.schedule(id);
@@ -89,12 +89,12 @@ public class IndexationManagerImpl implements IndexationManager {
 		this.tiersIndexer = tiersIndexer;
 	}
 
-	public void setCivilDataEventService(CivilDataEventService civilDataEventService) {
-		this.civilDataEventService = civilDataEventService;
+	public void setCivilDataEventNotifier(CivilDataEventNotifier civilDataEventNotifier) {
+		this.civilDataEventNotifier = civilDataEventNotifier;
 	}
 
-	public void setFiscalDataEventService(FiscalDataEventService fiscalDataEventService) {
-		this.fiscalDataEventService = fiscalDataEventService;
+	public void setFiscalDataEventNotifier(FiscalDataEventNotifier fiscalDataEventNotifier) {
+		this.fiscalDataEventNotifier = fiscalDataEventNotifier;
 	}
 
 	public void setTiersDAO(TiersDAO tiersDAO) {

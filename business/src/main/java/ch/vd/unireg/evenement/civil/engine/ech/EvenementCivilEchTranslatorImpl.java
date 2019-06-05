@@ -9,7 +9,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.audit.AuditManager;
-import ch.vd.unireg.data.CivilDataEventService;
+import ch.vd.unireg.data.CivilDataEventNotifier;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
@@ -128,7 +128,7 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 
 		final EvenementCivilEchTranslationStrategy defaultCorrectionStrategy = new DefaultCorrectionCivilEchTranslationStrategy(context.getServiceCivil(), context.getServiceInfra(), context.getTiersService());
 		final EvenementCivilEchTranslationStrategy cacheCleaningCorrectionStrategy = embedInRelationshipCacheCleanupStrategy(defaultCorrectionStrategy, context);
-		final EvenementCivilEchTranslationStrategy correctionRelationTranslationStrategy = new CorrectionRelationTranslationStrategy(context.getServiceCivil(), context.getDataEventService(), context.getTiersService());
+		final EvenementCivilEchTranslationStrategy correctionRelationTranslationStrategy = new CorrectionRelationTranslationStrategy(context.getServiceCivil(), context.getCivilDataEventNotifier(), context.getTiersService());
 
 		final Map<EventTypeKey, EvenementCivilEchTranslationStrategy> strategies = new HashMap<>();
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new NaissanceTranslationStrategy());
@@ -271,13 +271,13 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 	}
 
 	private static EvenementCivilEchTranslationStrategy embedInRelationshipCacheCleanupStrategy(EvenementCivilEchTranslationStrategy strategy, EvenementCivilContext context) {
-		return new TranslationStrategyWithRelationshipCacheCleanupFacade(strategy, context.getServiceCivil(), context.getDataEventService(), context.getTiersService());
+		return new TranslationStrategyWithRelationshipCacheCleanupFacade(strategy, context.getServiceCivil(), context.getCivilDataEventNotifier(), context.getTiersService());
 	}
 
 	private ServiceCivilService serviceCivilService;
 	private ServiceInfrastructureService serviceInfrastructureService;
 	private TiersDAO tiersDAO;
-	private CivilDataEventService civilDataEventService;
+	private CivilDataEventNotifier civilDataEventNotifier;
 	private TiersService tiersService;
 	private MetierService metierService;
 	private AdresseService adresseService;
@@ -333,7 +333,7 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		context = new EvenementCivilContext(serviceCivilService, serviceInfrastructureService, civilDataEventService, tiersService, indexer, metierService, tiersDAO, adresseService, evenementFiscalService, parametreAppService, audit);
+		context = new EvenementCivilContext(serviceCivilService, serviceInfrastructureService, civilDataEventNotifier, tiersService, indexer, metierService, tiersDAO, adresseService, evenementFiscalService, parametreAppService, audit);
 		strategies = buildStrategies(context, parameters);
 
 		// TODO [ech99] jde : à enlever dès que possible
@@ -356,8 +356,8 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setCivilDataEventService(CivilDataEventService civilDataEventService) {
-		this.civilDataEventService = civilDataEventService;
+	public void setCivilDataEventNotifier(CivilDataEventNotifier civilDataEventNotifier) {
+		this.civilDataEventNotifier = civilDataEventNotifier;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

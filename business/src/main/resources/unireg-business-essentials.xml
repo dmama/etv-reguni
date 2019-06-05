@@ -258,12 +258,12 @@
 		<property name="hibernateDialect" ref="hibernateDialect" />
 		<property name="dataSource" ref="dataSource" />
 		<property name="transactionManager" ref="transactionManager" />
-		<property name="fiscalDataEventService" ref="fiscalDataEventService" />
+		<property name="fiscalDataEventNotifier" ref="fiscalDataEventNotifier" />
 	</bean>
 
 	<bean id="databaseChangeInterceptor" class="ch.vd.unireg.database.DatabaseChangeInterceptor">
 		<property name="parent" ref="modificationInterceptor" />
-		<property name="fiscalDataEventService" ref="fiscalDataEventService" />
+		<property name="fiscalDataEventNotifier" ref="fiscalDataEventNotifier" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 	</bean>

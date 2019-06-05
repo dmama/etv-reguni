@@ -8,8 +8,6 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.civil.data.EtatCivil;
-import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.common.EtatCivilHelper;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.evenement.civil.EvenementCivilErreurCollector;
@@ -21,6 +19,8 @@ import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.unireg.evenement.civil.interne.HandleStatus;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.interfaces.civil.data.EtatCivil;
+import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
 import ch.vd.unireg.metier.MetierServiceException;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
@@ -119,7 +119,7 @@ public class AnnulationMariage extends EvenementCivilInterne {
 
 		// On signale que le conjoint a changé dans le registre civil (=> va rafraîchir le cache des individus)
 		if (conjoint != null && conjoint.isHabitantVD()) {
-			context.getDataEventService().onIndividuChange(conjoint.getNumeroIndividu());
+			context.getCivilDataEventNotifier().notifyIndividuChange(conjoint.getNumeroIndividu());
 		}
 		return HandleStatus.TRAITE;
 	}
