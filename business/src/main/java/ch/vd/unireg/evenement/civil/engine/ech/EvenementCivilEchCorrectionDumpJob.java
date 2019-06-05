@@ -42,7 +42,6 @@ public class EvenementCivilEchCorrectionDumpJob extends JobDefinition {
 	private TiersService tiersService;
 	private PlatformTransactionManager transactionManager;
 	private List<IndividuComparisonStrategy> strategies;
-	private UniregModeHelper uniregModeHelper;
 
 	public EvenementCivilEchCorrectionDumpJob(int sortOrder, String description) {
 		super(NAME, JobCategory.EVENTS, sortOrder, description);

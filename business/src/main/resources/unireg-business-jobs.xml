@@ -256,7 +256,6 @@
 		<property name="serviceInfra" ref="serviceInfrastructureService"/>
 		<property name="tiersService" ref="tiersService"/>
 		<property name="transactionManager" ref="transactionManager"/>
-		<property name="uniregModeHelper" ref="uniregModeHelper"/>
 	</bean>
 
 	<bean id="evenementReqDesHandlerJob" parent="schedulerJob" class="ch.vd.unireg.evenement.reqdes.engine.EvenementReqDesHandlerJob">
