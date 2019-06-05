@@ -17,11 +17,11 @@ public class CivilDataEventNotifierImpl implements CivilDataEventNotifier {
 
 	@Override
 	public void notifyIndividuChange(long id) {
-		listeners.forEach(listener -> listener.onIndividuChange(id));
+		DataEventNotifierHelper.dispatch(listeners, listener -> listener.onIndividuChange(id));
 	}
 
 	@Override
 	public void notifyEntrepriseChange(long id) {
-		listeners.forEach(listener -> listener.onEntrepriseChange(id));
+		DataEventNotifierHelper.dispatch(listeners, listener -> listener.onEntrepriseChange(id));
 	}
 }

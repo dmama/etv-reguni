@@ -14,41 +14,41 @@ public class FiscalDataEventNotifierImpl implements FiscalDataEventNotifier {
 
 	@Override
 	public void notifyTiersChange(long id) {
-		listeners.forEach(listener -> listener.onTiersChange(id));
+		DataEventNotifierHelper.dispatch(listeners, listener -> listener.onTiersChange(id));
 	}
 
 	@Override
 	public void notifyDroitAccessChange(long id) {
-		listeners.forEach(listener -> listener.onDroitAccessChange(id));
+		DataEventNotifierHelper.dispatch(listeners, listener -> listener.onDroitAccessChange(id));
 	}
 
 	@Override
 	public void notifyImmeubleChange(long immeubleId) {
-		listeners.forEach(listener -> listener.onImmeubleChange(immeubleId));
+		DataEventNotifierHelper.dispatch(listeners, listener -> listener.onImmeubleChange(immeubleId));
 	}
 
 	@Override
 	public void notifyBatimentChange(long batimentId) {
-		listeners.forEach(listener -> listener.onBatimentChange(batimentId));
+		DataEventNotifierHelper.dispatch(listeners, listener -> listener.onBatimentChange(batimentId));
 	}
 
 	@Override
 	public void notifyCommunauteChange(long communauteId) {
-		listeners.forEach(listener -> listener.onCommunauteChange(communauteId));
+		DataEventNotifierHelper.dispatch(listeners, listener -> listener.onCommunauteChange(communauteId));
 	}
 
 	@Override
 	public void notifyRelationshipChange(TypeRapportEntreTiers type, long sujetId, long objetId) {
-		listeners.forEach(listener -> listener.onRelationshipChange(type, sujetId, objetId));
+		DataEventNotifierHelper.dispatch(listeners, listener -> listener.onRelationshipChange(type, sujetId, objetId));
 	}
 
 	@Override
 	public void notifyLoadDatabase() {
-		listeners.forEach(FiscalDataEventListener::onLoadDatabase);
+		DataEventNotifierHelper.dispatch(listeners, FiscalDataEventListener::onLoadDatabase);
 	}
 
 	@Override
 	public void notifyTruncateDatabase() {
-		listeners.forEach(FiscalDataEventListener::onTruncateDatabase);
+		DataEventNotifierHelper.dispatch(listeners, FiscalDataEventListener::onTruncateDatabase);
 	}
 }
