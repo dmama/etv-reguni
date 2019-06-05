@@ -58,6 +58,7 @@ import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.RapportEntreTiers;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.utils.UniregModeHelper;
 
 public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 
@@ -72,6 +73,7 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 	private ServiceInfrastructureService infraService;
 	private EvenementFiscalService evenementFiscalService;
 	private PlatformTransactionManager transactionManager;
+	private UniregModeHelper uniregModeHelper;
 
 	public void setDroitRFDAO(DroitRFDAO droitRFDAO) {
 		this.droitRFDAO = droitRFDAO;
@@ -115,6 +117,10 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
+	}
+
+	public void setUniregModeHelper(UniregModeHelper uniregModeHelper) {
+		this.uniregModeHelper = uniregModeHelper;
 	}
 
 	@Override
@@ -917,8 +923,12 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 				.max(Comparator.naturalOrder())
 				.orElseThrow(() -> new IllegalArgumentException("L'immeuble id=[" + immeubleId + "] ne possède pas de situation"));
 
+		// on va chercher le numéro de commune qui va bien (voir SIFISC-30558)
+		final CommuneRF commune = situation.getCommune();
+		final int noCommune = (uniregModeHelper.isNoOfsCommuneRfEnabled() ? commune.getNoOfs() : commune.getNoRf());
+
 		// on prépare les paramètres de l'URL
-		final String noCommuneRF = String.valueOf(situation.getCommune().getNoRf());
+		final String noCommuneRF = String.valueOf(noCommune);
 		final String noParcelle = String.valueOf(situation.getNoParcelle());
 		final String index1 = Optional.ofNullable(situation.getIndex1())
 				.map(String::valueOf)

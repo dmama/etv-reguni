@@ -7,6 +7,7 @@
 		<property name="environnement" value="${extprop.environnement}"/>
 		<property name="efactureEnabled" value="${extprop.efacture.enabled}" />
 		<property name="reqdesEnabled" value="false" />
+		<property name="noOfsCommuneRfEnabled" value="${extprop.rf.commune.ofs.enabled}" />
 	</bean>
 
 	<bean id="sourcesMonoQuittancementDi" class="ch.vd.unireg.common.TokenSetFactoryBean$StringSet">

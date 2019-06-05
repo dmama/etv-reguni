@@ -7,6 +7,7 @@
 		<property name="environnement" value="${extprop.environnement}"/>
 		<property name="efactureEnabled" value="${extprop.efacture.enabled}" />
 		<property name="reqdesEnabled" value="${extprop.reqdes.enabled}" />
+		<property name="noOfsCommuneRfEnabled" value="${extprop.rf.commune.ofs.enabled}" />
 	</bean>
 
 	<bean class="org.springframework.web.context.support.ServletContextAttributeExporter">

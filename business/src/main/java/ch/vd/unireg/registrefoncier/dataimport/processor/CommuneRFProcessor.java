@@ -9,10 +9,10 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.capitastra.grundstueck.GrundstueckNummer;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.unireg.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.unireg.evenement.registrefoncier.TypeEntiteRF;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.registrefoncier.CommuneRF;
 import ch.vd.unireg.registrefoncier.dao.CommuneRFDAO;
@@ -98,9 +98,10 @@ public class CommuneRFProcessor implements MutationRFProcessor {
 	private void processModification(@NotNull RegDate dateValeur, @NotNull CommuneRF commune) {
 
 		// on va chercher la commune persistée
-		final CommuneRF persisted = communeRFDAO.findActive(new CommuneRFKey(commune.getNoRf()));
+		final CommuneRFKey key = new CommuneRFKey(commune);
+		final CommuneRF persisted = communeRFDAO.findActive(key);
 		if (persisted == null) {
-			throw new IllegalArgumentException("La commune noRF=[" + commune.getNoOfs() + "] n'existe pas dans la DB.");
+			throw new IllegalArgumentException("La commune avec la clé = [" + key + "] n'existe pas dans la DB.");
 		}
 
 		// on ferme l'ancienne valeur

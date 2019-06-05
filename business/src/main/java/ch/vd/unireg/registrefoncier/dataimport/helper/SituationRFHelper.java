@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.capitastra.grundstueck.GrundstueckNummer;
 import ch.vd.unireg.registrefoncier.CommuneRF;
 import ch.vd.unireg.registrefoncier.SituationRF;
+import ch.vd.unireg.registrefoncier.key.CommuneNoType;
 
 public abstract class SituationRFHelper {
 
@@ -23,17 +24,30 @@ public abstract class SituationRFHelper {
 	 * Provider de commune simplifié au maximum pour retourner une commune avec juste le noRf de renseigné de manière à permettre le test d'égalité.
 	 */
 	@Nullable
-	private static CommuneRF simplisticCommuneProvider(@Nullable Integer noRf) {
-		if (noRf == null) {
+	private static CommuneRF simplisticCommuneProvider(@Nullable Integer numero) {
+		if (numero == null) {
 			return null;
 		}
+
+		final CommuneNoType typeNumero = CommuneNoType.detect(numero);
+
 		final CommuneRF c = new CommuneRF();
-		c.setNoRf(noRf);
+		switch (typeNumero) {
+		case RF:
+			c.setNoRf(numero);
+			break;
+		case OFS:
+			c.setNoOfs(numero);
+			break;
+		default:
+			throw new IllegalArgumentException("Type de numéro inconnu = [" + typeNumero + "]");
+		}
+
 		return c;
 	}
 
 	public static boolean dataEquals(@NotNull SituationRF left, @NotNull SituationRF right) {
-		return Objects.equals(left.getCommune().getNoRf(), right.getCommune().getNoRf()) &&
+		return CommuneRFHelper.dataEquals(left.getCommune(), right.getCommune()) &&
 				left.getNoParcelle() == right.getNoParcelle() &&
 				Objects.equals(left.getIndex1(), right.getIndex1()) &&
 				Objects.equals(left.getIndex2(), right.getIndex2()) &&

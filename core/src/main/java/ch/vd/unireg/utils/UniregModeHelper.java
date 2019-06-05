@@ -18,6 +18,7 @@ public class UniregModeHelper implements InitializingBean {
 
 	private boolean reqdesEnabled = false;
 	private boolean efactureEnabled = false;
+	private boolean noOfsCommuneRfEnabled = false;
 	private boolean testMode = false;
 	private String environnement;
 
@@ -30,6 +31,13 @@ public class UniregModeHelper implements InitializingBean {
 
 	public boolean isReqdesEnabled() {
 		return reqdesEnabled;
+	}
+
+	/**
+	 * @return <i>vrai</i> si l'identifiant des communes du registre foncier est le numéro Ofs (SIFISC-30558) ; <i>faux</i> si c'est le numéro propre au registre foncier (legacy).
+	 */
+	public boolean isNoOfsCommuneRfEnabled() {
+		return noOfsCommuneRfEnabled;
 	}
 
 	/**
@@ -57,6 +65,10 @@ public class UniregModeHelper implements InitializingBean {
 
 	public void setReqdesEnabled(boolean reqdesEnabled) {
 		this.reqdesEnabled = reqdesEnabled;
+	}
+
+	public void setNoOfsCommuneRfEnabled(boolean noOfsCommuneRfEnabled) {
+		this.noOfsCommuneRfEnabled = noOfsCommuneRfEnabled;
 	}
 
 	@Override

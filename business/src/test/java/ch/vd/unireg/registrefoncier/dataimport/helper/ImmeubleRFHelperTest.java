@@ -45,7 +45,7 @@ public class ImmeubleRFHelperTest {
 	public void testCurrentDataEquals() throws Exception {
 
 		final CommuneRF commune = new CommuneRF();
-		commune.setNoRf(2233);
+		commune.setNoRf(33);
 
 		final SituationRF situation = new SituationRF();
 		situation.setCommune(commune);
@@ -71,7 +71,7 @@ public class ImmeubleRFHelperTest {
 		immeuble.addSurfaceTotale(surfaceTotale);
 
 		final GrundstueckNummer grundstueckNummer = new GrundstueckNummer();
-		grundstueckNummer.setBfsNr(2233);
+		grundstueckNummer.setBfsNr(33);
 		grundstueckNummer.setStammNr(109);
 		grundstueckNummer.setIndexNr1(17);
 
@@ -102,7 +102,7 @@ public class ImmeubleRFHelperTest {
 	public void testCurrentDataEqualsImmeubleRadie() throws Exception {
 
 		final CommuneRF commune = new CommuneRF();
-		commune.setNoRf(2233);
+		commune.setNoRf(33);
 
 		final SituationRF situation = new SituationRF();
 		situation.setCommune(commune);
@@ -129,7 +129,7 @@ public class ImmeubleRFHelperTest {
 		immeuble.setDateRadiation(RegDate.get(2017, 1, 1)); // <---- immeuble radié
 
 		final GrundstueckNummer grundstueckNummer = new GrundstueckNummer();
-		grundstueckNummer.setBfsNr(2233);
+		grundstueckNummer.setBfsNr(33);
 		grundstueckNummer.setStammNr(109);
 		grundstueckNummer.setIndexNr1(17);
 
@@ -315,7 +315,7 @@ public class ImmeubleRFHelperTest {
 	public void testCurrentDataEqualsSansEstimation() throws Exception {
 
 		final CommuneRF commune = new CommuneRF();
-		commune.setNoRf(2233);
+		commune.setNoRf(33);
 
 		final SituationRF situation = new SituationRF();
 		situation.setCommune(commune);
@@ -331,7 +331,7 @@ public class ImmeubleRFHelperTest {
 		immeuble.setSurfacesTotales(new HashSet<>());
 
 		final GrundstueckNummer grundstueckNummer = new GrundstueckNummer();
-		grundstueckNummer.setBfsNr(2233);
+		grundstueckNummer.setBfsNr(33);
 		grundstueckNummer.setStammNr(109);
 		grundstueckNummer.setIndexNr1(17);
 
@@ -351,7 +351,7 @@ public class ImmeubleRFHelperTest {
 	public void testCurrentDataEqualsPPEQuotePart() throws Exception {
 
 		final CommuneRF commune = new CommuneRF();
-		commune.setNoRf(2233);
+		commune.setNoRf(33);
 
 		final SituationRF situation = new SituationRF();
 		situation.setCommune(commune);
@@ -368,7 +368,7 @@ public class ImmeubleRFHelperTest {
 		immeuble.setSurfacesTotales(new HashSet<>());
 
 		final GrundstueckNummer grundstueckNummer = new GrundstueckNummer();
-		grundstueckNummer.setBfsNr(2233);
+		grundstueckNummer.setBfsNr(33);
 		grundstueckNummer.setStammNr(109);
 		grundstueckNummer.setIndexNr1(17);
 
@@ -393,7 +393,7 @@ public class ImmeubleRFHelperTest {
 	public void testCurrentDataEqualsPartCoproQuotePart() throws Exception {
 
 		final CommuneRF commune = new CommuneRF();
-		commune.setNoRf(2233);
+		commune.setNoRf(33);
 
 		final SituationRF situation = new SituationRF();
 		situation.setCommune(commune);
@@ -410,7 +410,7 @@ public class ImmeubleRFHelperTest {
 		immeuble.setSurfacesTotales(new HashSet<>());
 
 		final GrundstueckNummer grundstueckNummer = new GrundstueckNummer();
-		grundstueckNummer.setBfsNr(2233);
+		grundstueckNummer.setBfsNr(33);
 		grundstueckNummer.setStammNr(109);
 		grundstueckNummer.setIndexNr1(17);
 

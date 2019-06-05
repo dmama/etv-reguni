@@ -45,6 +45,7 @@ import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.type.Sexe;
 import ch.vd.unireg.type.TypeAdresseCivil;
 import ch.vd.unireg.type.TypeRapprochementRF;
+import ch.vd.unireg.utils.UniregModeHelper;
 
 import static ch.vd.unireg.registrefoncier.processor.MutationRFProcessorTestCase.assertRaisonAcquisition;
 import static org.junit.Assert.assertEquals;
@@ -62,6 +63,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 	private RegistreFoncierServiceImpl serviceRF;
 	private ModeleCommunauteRFDAO modeleCommunauteRFDAO;
 	private EvenementFiscalDAO evenementFiscalDAO;
+	private UniregModeHelper uniregModeHelper;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -71,6 +73,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 		serviceRF = (RegistreFoncierServiceImpl) getBean(RegistreFoncierService.class, "serviceRF");
 		modeleCommunauteRFDAO = getBean(ModeleCommunauteRFDAO.class, "modeleCommunauteRFDAO");
 		evenementFiscalDAO = getBean(EvenementFiscalDAO.class, "evenementFiscalDAO");
+		uniregModeHelper = getBean(UniregModeHelper.class, "uniregModeHelper");
 
 		serviceInfra.setUp(new DefaultMockInfrastructureConnector() {
 			@Override
@@ -1455,8 +1458,22 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 
 		// appel du service
 		doInNewTransactionAndSession(transactionStatus -> {
-			assertEquals("https://secure.vd.ch/territoire/intercapi/faces?bfs=61&kr=0&n1=579&n2=&n3=&n4=&type=grundstueck_grundbuch_auszug", serviceRF.getCapitastraURL(ids.bienFonds));
-			assertEquals("https://secure.vd.ch/territoire/intercapi/faces?bfs=242&kr=0&n1=4298&n2=3&n3=&n4=&type=grundstueck_grundbuch_auszug", serviceRF.getCapitastraURL(ids.ppe));
+
+			final boolean modeInitial = uniregModeHelper.isNoOfsCommuneRfEnabled();
+			try {
+				// en mode numéro de commune RF (legacy)
+				uniregModeHelper.setNoOfsCommuneRfEnabled(false);
+				assertEquals("https://secure.vd.ch/territoire/intercapi/faces?bfs=61&kr=0&n1=579&n2=&n3=&n4=&type=grundstueck_grundbuch_auszug", serviceRF.getCapitastraURL(ids.bienFonds));
+				assertEquals("https://secure.vd.ch/territoire/intercapi/faces?bfs=242&kr=0&n1=4298&n2=3&n3=&n4=&type=grundstueck_grundbuch_auszug", serviceRF.getCapitastraURL(ids.ppe));
+
+				// [SIFISC-30558] en mode numéro de commune noOfs
+				uniregModeHelper.setNoOfsCommuneRfEnabled(true);
+				assertEquals("https://secure.vd.ch/territoire/intercapi/faces?bfs=5498&kr=0&n1=579&n2=&n3=&n4=&type=grundstueck_grundbuch_auszug", serviceRF.getCapitastraURL(ids.bienFonds));
+				assertEquals("https://secure.vd.ch/territoire/intercapi/faces?bfs=5721&kr=0&n1=4298&n2=3&n3=&n4=&type=grundstueck_grundbuch_auszug", serviceRF.getCapitastraURL(ids.ppe));
+			}
+			finally {
+				uniregModeHelper.setNoOfsCommuneRfEnabled(modeInitial);
+			}
 			return null;
 		});
 	}
@@ -1490,8 +1507,8 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 
 		// appel du service
 		doInNewTransactionAndSession(transactionStatus -> {
-			assertEquals("https://secure.vd.ch/territoire/intercapi/faces?bfs=61&kr=0&n1=579&n2=&n3=&n4=&type=grundstueck_grundbuch_auszug", serviceRF.getCapitastraURL(ids.bienFonds));
-			assertEquals("https://secure.vd.ch/territoire/intercapi/faces?bfs=242&kr=0&n1=4298&n2=3&n3=&n4=&type=grundstueck_grundbuch_auszug", serviceRF.getCapitastraURL(ids.ppe));
+			assertEquals("https://secure.vd.ch/territoire/intercapi/faces?bfs=5498&kr=0&n1=579&n2=&n3=&n4=&type=grundstueck_grundbuch_auszug", serviceRF.getCapitastraURL(ids.bienFonds));
+			assertEquals("https://secure.vd.ch/territoire/intercapi/faces?bfs=5721&kr=0&n1=4298&n2=3&n3=&n4=&type=grundstueck_grundbuch_auszug", serviceRF.getCapitastraURL(ids.ppe));
 			return null;
 		});
 	}
