@@ -1,5 +1,6 @@
 package ch.vd.unireg.interfaces.infra.cache;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -184,7 +185,7 @@ public class NotImplementedInfrastructureConnector implements InfrastructureConn
 	}
 
 	@Override
-	public List<CollectiviteAdministrative> findCollectivitesAdministratives(List<Integer> codeCollectivites, boolean inactif) {
+	public List<CollectiviteAdministrative> findCollectivitesAdministratives(@NotNull Collection<Integer> codeCollectivites, boolean inactif) {
 		throw new NotImplementedException("");
 	}
 

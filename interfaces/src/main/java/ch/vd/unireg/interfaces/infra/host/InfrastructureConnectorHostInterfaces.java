@@ -1,6 +1,7 @@
 package ch.vd.unireg.interfaces.infra.host;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -332,7 +333,7 @@ public class InfrastructureConnectorHostInterfaces implements InfrastructureConn
 	}
 
 	@Override
-	public List<CollectiviteAdministrative> findCollectivitesAdministratives(List<Integer> codeCollectivites, boolean inactif) {
+	public List<CollectiviteAdministrative> findCollectivitesAdministratives(@NotNull Collection<Integer> codeCollectivites, boolean inactif) {
 		throw new NotImplementedException("La méthode 'findCollectivitesAdministratives' ne doit pas être appelée sur le service host-interface.");
 	}
 

@@ -1,5 +1,6 @@
 package ch.vd.unireg.interfaces.infra;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -197,7 +198,7 @@ public class InfrastructureConnectorMarshaller implements InfrastructureConnecto
 	}
 
 	@Override
-	public List<CollectiviteAdministrative> findCollectivitesAdministratives(List<Integer> codeCollectivites, boolean inactif) {
+	public List<CollectiviteAdministrative> findCollectivitesAdministratives(@NotNull Collection<Integer> codeCollectivites, boolean inactif) {
 		return fidorConnector.findCollectivitesAdministratives(codeCollectivites, inactif);
 	}
 

@@ -1,6 +1,5 @@
 package ch.vd.unireg.interfaces.service;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
@@ -88,7 +87,7 @@ public class ServiceSecuriteImpl implements ServiceSecuriteService {
 		}
 		try {
 			final Set<Integer> codeCollectivites = securiteConnector.getCollectivitesOperateur(visa);
-			final List<CollectiviteAdministrative> collectivitesAdministratives = serviceInfrastructureService.findCollectivitesAdministratives(new ArrayList<>(codeCollectivites), false);
+			final List<CollectiviteAdministrative> collectivitesAdministratives = serviceInfrastructureService.findCollectivitesAdministratives(codeCollectivites, false);
 			return filtreCollectiviteAdministrativeParTypeCommunicationACI(collectivitesAdministratives)
 					.sorted(Comparator.comparing(CollectiviteAdministrative::getNomCourt))
 					.collect(Collectors.toList());

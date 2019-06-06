@@ -1,5 +1,6 @@
 package ch.vd.unireg.interfaces.infra;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -277,11 +278,11 @@ public interface InfrastructureConnector {
 	List<GenreImpotMandataire> getTousLesGenresImpotMandataires();
 
 	/**
-	 * @param codeCollectivites, liste des identifiants de collectivités.
-	 * @param inactif,           filtre sur les collectivités à remontés.
+	 * @param codeCollectivites liste des identifiants de collectivités.
+	 * @param inactif           filtre sur les collectivités à remontés.
 	 * @return la liste des collectivités correspondantes aux identofiants
 	 */
-	List<CollectiviteAdministrative> findCollectivitesAdministratives(List<Integer> codeCollectivites, boolean inactif);
+	List<CollectiviteAdministrative> findCollectivitesAdministratives(@NotNull Collection<Integer> codeCollectivites, boolean inactif);
 
 	/**
 	 * Méthode qui permet de tester que le connecteur d'infrastructure répond bien. Cette méthode est insensible aux caches.

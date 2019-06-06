@@ -2,6 +2,7 @@ package ch.vd.unireg.interfaces.infra.fidor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -377,7 +378,7 @@ public class InfrastructureConnectorFidor implements InfrastructureConnector, Un
 		}
 	}
 
-	public List<CollectiviteAdministrative> findCollectivitesAdministratives(List<Integer> codeCollectivites, boolean b) {
+	public List<CollectiviteAdministrative> findCollectivitesAdministratives(@NotNull Collection<Integer> codeCollectivites, boolean b) {
 		try {
 			return fidorClient.findCollectivitesAdministratives(codeCollectivites, null, null, null, b).stream()
 					.map(this::getCollectiviteAdministrative)

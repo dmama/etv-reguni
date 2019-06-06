@@ -1,5 +1,6 @@
 package ch.vd.unireg.civil;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -498,7 +499,7 @@ public class InfraGetPaysSimpleCache implements InfrastructureConnector {
 	}
 
 	@Override
-	public List<CollectiviteAdministrative> findCollectivitesAdministratives(List<Integer> codeCollectivites, boolean inactif) {
+	public List<CollectiviteAdministrative> findCollectivitesAdministratives(@NotNull Collection<Integer> codeCollectivites, boolean inactif) {
 		return target.findCollectivitesAdministratives(codeCollectivites, inactif);
 	}
 

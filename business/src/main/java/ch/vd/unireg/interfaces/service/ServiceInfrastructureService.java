@@ -303,11 +303,11 @@ public interface ServiceInfrastructureService {
 	CollectiviteAdministrative getRC() throws InfrastructureException;
 
 	/**
-	 * @param codeCollectivites: liste des identifiants de collectivites.
-	 * @param inactif:           filtre sur les collectivités.
+	 * @param codeCollectivites liste des identifiants de collectivites.
+	 * @param inactif           filtre sur les collectivités.
 	 * @return la liste des collectivités administratives.
 	 */
-	List<CollectiviteAdministrative> findCollectivitesAdministratives(List<Integer> codeCollectivites, boolean inactif);
+	List<CollectiviteAdministrative> findCollectivitesAdministratives(@NotNull Collection<Integer> codeCollectivites, boolean inactif);
 
 	/**
 	 * @param oid l'id d'un office d'impôt

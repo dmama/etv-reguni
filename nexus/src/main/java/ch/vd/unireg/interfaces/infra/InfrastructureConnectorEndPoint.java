@@ -1,5 +1,6 @@
 package ch.vd.unireg.interfaces.infra;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -392,7 +393,7 @@ public class InfrastructureConnectorEndPoint implements InfrastructureConnector,
 	}
 
 	@Override
-	public List<CollectiviteAdministrative> findCollectivitesAdministratives(List<Integer> codeCollectivites, boolean inactif) {
+	public List<CollectiviteAdministrative> findCollectivitesAdministratives(@NotNull Collection<Integer> codeCollectivites, boolean inactif) {
 		loadMeter.start(new MethodCallDescriptor("findCollectivitesAdministratives"));
 		try {
 			return target.findCollectivitesAdministratives(codeCollectivites, inactif);

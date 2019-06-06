@@ -1,5 +1,6 @@
 package ch.vd.unireg.interfaces.infra;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -617,7 +618,7 @@ public class InfrastructureConnectorTracing implements InfrastructureConnector, 
 	}
 
 	@Override
-	public List<CollectiviteAdministrative> findCollectivitesAdministratives(List<Integer> codeCollectivites, boolean inactif) {
+	public List<CollectiviteAdministrative> findCollectivitesAdministratives(@NotNull Collection<Integer> codeCollectivites, boolean inactif) {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {

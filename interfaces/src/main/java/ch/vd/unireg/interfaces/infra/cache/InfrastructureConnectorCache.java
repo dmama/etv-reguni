@@ -1702,7 +1702,7 @@ public class InfrastructureConnectorCache implements InfrastructureConnector, Un
 	}
 
 	@Override
-	public List<CollectiviteAdministrative> findCollectivitesAdministratives(List<Integer> codeCollectivites, boolean inactif) {
+	public List<CollectiviteAdministrative> findCollectivitesAdministratives(@NotNull Collection<Integer> codeCollectivites, boolean inactif) {
 
 		final List<CollectiviteAdministrative> resultats;
 

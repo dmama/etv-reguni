@@ -2,6 +2,7 @@ package ch.vd.unireg.interfaces.infra.mock;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -194,7 +195,7 @@ public abstract class MockInfrastructureConnector implements InfrastructureConne
 	}
 
 	@Override
-	public List<CollectiviteAdministrative> findCollectivitesAdministratives(List<Integer> codeCollectivites, boolean inactif) {
+	public List<CollectiviteAdministrative> findCollectivitesAdministratives(@NotNull Collection<Integer> codeCollectivites, boolean inactif) {
 		throw new org.apache.commons.lang3.NotImplementedException("findCollectivitesAdministratives");
 	}
 

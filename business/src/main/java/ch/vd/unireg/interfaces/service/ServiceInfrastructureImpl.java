@@ -194,8 +194,8 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	}
 
 	@Override
-	public List<CollectiviteAdministrative> findCollectivitesAdministratives(List<Integer> codeCollectivites, boolean b) {
-		return connector.findCollectivitesAdministratives(codeCollectivites, b);
+	public List<CollectiviteAdministrative> findCollectivitesAdministratives(@NotNull Collection<Integer> codeCollectivites, boolean inactif) {
+		return connector.findCollectivitesAdministratives(codeCollectivites, inactif);
 	}
 
 	@Override
