@@ -37,10 +37,6 @@ public class PeriodeFiscaleDAOImpl extends BaseDAOImpl< PeriodeFiscale, Long> im
 		return find(query, null);
 	}
 
-
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public PeriodeFiscale getPeriodeFiscaleByYear(final int year) {
 

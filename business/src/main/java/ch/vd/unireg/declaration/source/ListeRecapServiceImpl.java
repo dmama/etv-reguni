@@ -96,9 +96,6 @@ public class ListeRecapServiceImpl implements ListeRecapService {
 		return processor.run(dateFinPeriode, status);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public EnvoiSommationLRsResults sommerAllLR(CategorieImpotSource categorie, RegDate dateFinPeriode, RegDate dateTraitement, StatusManager status) {
 		final EnvoiSommationLRsEnMasseProcessor processor = new EnvoiSommationLRsEnMasseProcessor(transactionManager, hibernateTemplate, this, delaisService, tiersService, adresseService);
@@ -190,9 +187,6 @@ public class ListeRecapServiceImpl implements ListeRecapService {
 		evenementFiscalService.publierEvenementFiscalSommationListeRecapitulative(lr, etat.getDateObtention());
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public List<DateRange> findLRsManquantes(DebiteurPrestationImposable dpi, RegDate dateFinPeriode, List<DateRange> lrTrouveesOut) {
 		// l'algo est le suivant :

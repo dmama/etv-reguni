@@ -44,9 +44,6 @@ public final class EvenementEntrepriseInterneComposite extends EvenementEntrepri
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public final EvenementEntrepriseInterne seulementEvenementsFiscaux() throws EvenementEntrepriseException {
 		/*

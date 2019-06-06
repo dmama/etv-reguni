@@ -179,9 +179,6 @@ public class AdresseTiersCivileAdapter extends AdresseAdapter {
 		return isDefault;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean isValidAt(RegDate date) {
 		// les adresses annulées ne doivent pas être considérées comme valides

@@ -176,9 +176,6 @@ public abstract class Contribuable extends Tiers {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean equalsTo(Tiers obj) {
 		if (this == obj)

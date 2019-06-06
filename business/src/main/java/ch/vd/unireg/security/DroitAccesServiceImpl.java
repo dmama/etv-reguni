@@ -59,9 +59,6 @@ public class DroitAccesServiceImpl implements DroitAccesService, ApplicationCont
 		this.transactionManager = transactionManager;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public DroitAcces ajouteDroitAcces(@NotNull String visaOperateur, long tiersId, TypeDroitAcces type, Niveau niveau) throws DroitAccesException {
 
@@ -262,9 +259,6 @@ public class DroitAccesServiceImpl implements DroitAccesService, ApplicationCont
 		return false;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void annuleDroitAcces(long id) throws DroitAccesException {
 

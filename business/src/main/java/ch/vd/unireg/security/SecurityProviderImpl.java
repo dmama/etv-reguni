@@ -29,9 +29,6 @@ public class SecurityProviderImpl implements SecurityProviderInterface, Initiali
 	private AuditManager audit;
 	private boolean bypassUnitTest;
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean isGranted(Role role, String visaOperateur, int codeCollectivite) {
 
@@ -43,9 +40,6 @@ public class SecurityProviderImpl implements SecurityProviderInterface, Initiali
 		return securiteService.isGranted(role, visaOperateur, codeCollectivite);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Niveau getDroitAcces(String visaOperateur, long tiersId) throws ObjectNotFoundException {
 
@@ -57,10 +51,6 @@ public class SecurityProviderImpl implements SecurityProviderInterface, Initiali
 		return securiteDossierService.getAcces(visaOperateur, tiersId);
 	}
 
-
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public List<Niveau> getDroitsAcces(String visa, List<Long> ids) {
 

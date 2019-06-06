@@ -85,25 +85,16 @@ public class IndividuConnectorPersistentCache implements IndividuConnector, Unir
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getDescription() {
 		return "connecteur persistent des individus";
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getName() {
 		return "INDIVIDU-PERSISTENT";
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void reset() {
 		cache.clear();
@@ -130,9 +121,6 @@ public class IndividuConnectorPersistentCache implements IndividuConnector, Unir
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Individu getIndividu(final long noIndividu, AttributeIndividu... parties) throws IndividuConnectorException {
 
@@ -173,9 +161,6 @@ public class IndividuConnectorPersistentCache implements IndividuConnector, Unir
 		return individu;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public List<Individu> getIndividus(Collection<Long> nosIndividus, AttributeIndividu... parties) throws IndividuConnectorException {
 
@@ -255,17 +240,11 @@ public class IndividuConnectorPersistentCache implements IndividuConnector, Unir
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean isWarmable() {
 		return true;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void onIndividuChange(long numero) {
 

@@ -59,18 +59,11 @@ public class InfrastructureConnectorHostInterfaces implements InfrastructureConn
 		this.client = client;
 	}
 
-
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public List<Canton> getAllCantons() throws InfrastructureException {
 		throw new NotImplementedException("La méthode 'getAllCantons' ne doit pas être appelée sur le service host-interfaces.");
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public List<Commune> getListeCommunes(final Canton canton) throws InfrastructureException {
 		throw new NotImplementedException("La méthode 'getListeCommunes' ne doit pas être appelée sur le service host-interfaces.");
@@ -81,9 +74,6 @@ public class InfrastructureConnectorHostInterfaces implements InfrastructureConn
 		throw new NotImplementedException("La méthode 'getCommuneByEgid' ne doit pas être appelée sur le service host-interfaces.");
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	@SuppressWarnings({"unchecked"})
 	public List<Commune> getCommunesVD() throws InfrastructureException {
@@ -95,9 +85,6 @@ public class InfrastructureConnectorHostInterfaces implements InfrastructureConn
 		throw new NotImplementedException("La méthode 'getListeCommunesFaitieres' ne doit pas être appelée sur le service host-interfaces.");
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public List<Commune> getCommunes() throws InfrastructureException {
 		throw new NotImplementedException("La méthode 'getCommunes' ne doit pas être appelée sur le service host-interfaces.");
@@ -113,9 +100,6 @@ public class InfrastructureConnectorHostInterfaces implements InfrastructureConn
 		throw new NotImplementedException("La méthode 'getCommuneHistoByNumeroOfs' ne doit pas être appelée sur le service host-interfaces.");
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public List<Pays> getPays() throws InfrastructureException {
 		throw new NotImplementedException("La méthode 'getPays' ne doit pas être appelée sur le service host-interfaces.");
@@ -136,9 +120,6 @@ public class InfrastructureConnectorHostInterfaces implements InfrastructureConn
 		throw new NotImplementedException("La méthode 'getPays' ne doit pas être appelée sur le service host-interfaces.");
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Commune getCommuneByLocalite(Localite localite) throws InfrastructureException {
 		throw new NotImplementedException("La méthode 'getCommuneByLocalite' ne doit pas être appelée sur le service host-interfaces.");
@@ -150,18 +131,12 @@ public class InfrastructureConnectorHostInterfaces implements InfrastructureConn
 		throw new NotImplementedException("La méthode 'findCommuneByNomOfficiel' ne doit pas être appelée sur le service host-interfaces.");
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public List<Localite> getLocalites() throws InfrastructureException {
 
 		throw new NotImplementedException("La méthode 'getLocalites' ne doit pas être appelée sur le service host-interfaces.");
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public List<Rue> getRues(Localite localite) throws InfrastructureException {
 		throw new NotImplementedException("La méthode 'getRues' ne doit pas être appelée sur le service host-interfaces.");
@@ -172,17 +147,11 @@ public class InfrastructureConnectorHostInterfaces implements InfrastructureConn
 		throw new NotImplementedException("La méthode 'getRuesHisto' ne doit pas être appelée sur le service host-interfaces.");
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Rue getRueByNumero(int numero, RegDate date) throws InfrastructureException {
 		throw new NotImplementedException("La méthode 'getRueByNumero' ne doit pas être appelée sur le service host-interfaces.");
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public List<Localite> getLocalitesByONRP(int numeroOrdre) throws InfrastructureException {
 		throw new NotImplementedException("La méthode 'getLocalitesByONRP' ne doit pas être appelée sur le service host-interfaces.");
@@ -193,9 +162,6 @@ public class InfrastructureConnectorHostInterfaces implements InfrastructureConn
 		throw new NotImplementedException("La méthode 'getLocaliteByONRP' ne doit pas être appelée sur le service host-interfaces.");
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public CollectiviteAdministrative getCollectivite(int noColAdm) throws InfrastructureException {
 		try {
@@ -206,9 +172,6 @@ public class InfrastructureConnectorHostInterfaces implements InfrastructureConn
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public List<OfficeImpot> getOfficesImpot() throws InfrastructureException {
 
@@ -245,9 +208,6 @@ public class InfrastructureConnectorHostInterfaces implements InfrastructureConn
 		return valide;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	@SuppressWarnings({"unchecked"})
 	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws InfrastructureException {
@@ -266,9 +226,6 @@ public class InfrastructureConnectorHostInterfaces implements InfrastructureConn
 
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	@SuppressWarnings({"unchecked"})
 	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<ch.vd.unireg.interfaces.infra.data.TypeCollectivite> typesCollectivite)

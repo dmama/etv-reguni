@@ -42,11 +42,6 @@ public class EvenementExterneServiceImpl implements EvenementExterneService {
 		this.fiscalDataEventNotifier = fiscalDataEventNotifier;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @param event
-	 */
 	@Override
 	public void onEvent(EvenementExterne event) throws EvenementExterneException {
 

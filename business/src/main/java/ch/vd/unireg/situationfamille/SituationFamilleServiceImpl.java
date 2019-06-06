@@ -116,9 +116,6 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public VueSituationFamille getVue(Contribuable contribuable, RegDate date, boolean yComprisCivil) {
 
@@ -135,9 +132,6 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 		return null;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public List<VueSituationFamille> getVueHisto(Contribuable contribuable) {
 		return getVueHisto(contribuable, true);
@@ -537,9 +531,6 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 		this.situationFamilleDAO = situationFamilleDAO;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public ReinitialiserBaremeDoubleGainResults reinitialiserBaremeDoubleGain(RegDate dateTraitement, StatusManager statusManager) {
 		final ReinitialiserBaremeDoubleGainProcessor processor = new ReinitialiserBaremeDoubleGainProcessor(this, hibernateTemplate, transactionManager, tiersService, adresseService);

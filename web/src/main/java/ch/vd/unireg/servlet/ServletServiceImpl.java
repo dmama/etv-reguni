@@ -14,9 +14,6 @@ public class ServletServiceImpl implements ServletService, ServletContextAware {
 
 	private ServletContext servletContext;
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void downloadAsFile(String fileName, InputStream is, Integer contentLength, HttpServletResponse response) throws IOException {
 		final String mimetype = servletContext.getMimeType(fileName);
@@ -40,9 +37,6 @@ public class ServletServiceImpl implements ServletService, ServletContextAware {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void downloadAsFile(String fileName, byte[] bytes, HttpServletResponse response) throws IOException {
 		try (InputStream in = new ByteArrayInputStream(bytes)) {
@@ -50,9 +44,6 @@ public class ServletServiceImpl implements ServletService, ServletContextAware {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void downloadAsFile(String fileName, String content, HttpServletResponse response) throws IOException {
 		downloadAsFile(fileName, content.getBytes("ISO-8859-1"), response);

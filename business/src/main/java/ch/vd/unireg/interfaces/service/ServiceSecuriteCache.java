@@ -388,25 +388,16 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 		target.ping();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getDescription() {
 		return "service securité";
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getName() {
 		return "SECURITE";
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void reset() {
 		cache.removeAll();

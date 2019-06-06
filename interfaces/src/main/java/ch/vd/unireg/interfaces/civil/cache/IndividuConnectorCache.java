@@ -95,25 +95,16 @@ public class IndividuConnectorCache implements IndividuConnector, UniregCacheInt
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getDescription() {
 		return "connecteur des individus";
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getName() {
 		return "INDIVIDU";
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void reset() {
 		cache.removeAll();
@@ -152,9 +143,6 @@ public class IndividuConnectorCache implements IndividuConnector, UniregCacheInt
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Individu getIndividu(final long noIndividu, AttributeIndividu... parties) throws IndividuConnectorException {
 
@@ -196,9 +184,6 @@ public class IndividuConnectorCache implements IndividuConnector, UniregCacheInt
 		return individu;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public List<Individu> getIndividus(Collection<Long> nosIndividus, AttributeIndividu... parties) throws IndividuConnectorException {
 
@@ -279,17 +264,11 @@ public class IndividuConnectorCache implements IndividuConnector, UniregCacheInt
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean isWarmable() {
 		return true;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void onIndividuChange(long numero) {
 

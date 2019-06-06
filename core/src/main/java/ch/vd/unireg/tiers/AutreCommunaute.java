@@ -68,9 +68,6 @@ public class AutreCommunaute extends ContribuableImpositionPersonnesMorales {
 		return TypeTiers.AUTRE_COMMUNAUTE;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean equalsTo(Tiers obj) {
 		if (this == obj)

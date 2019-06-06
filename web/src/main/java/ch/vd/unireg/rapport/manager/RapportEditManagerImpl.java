@@ -427,9 +427,6 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 		return tiersEditView;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	@Transactional(readOnly = true)
 	public TiersEditView getRapportsPrestationView(Long numero, WebParamPagination webParamPagination, boolean rapportsPrestationHisto) throws AdresseException, InfrastructureException {

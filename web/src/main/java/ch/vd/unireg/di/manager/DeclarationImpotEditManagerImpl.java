@@ -153,9 +153,6 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	private Map<Class<? extends Tiers>, DeclarationImpotGenerator> diGenerators;
 	private Map<Class<? extends DeclarationImpotOrdinaire>, DeclarationSummoner<?>> summoners;
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public List<PeriodeImposition> calculateRangesProchainesDIs(Long numero) throws ValidationException {
 
@@ -671,9 +668,6 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public EditiqueResultat envoieImpressionLocalLettreDecisionDelaiPP(Long idDI, Long idDelai) throws EditiqueException {
 		try {

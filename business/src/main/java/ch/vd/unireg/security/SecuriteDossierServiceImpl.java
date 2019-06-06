@@ -46,9 +46,6 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 	private TiersDAO tiersDAO;
 	private DroitAccesDAO droitAccesDAO;
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	@Transactional(readOnly = true)
 	public Niveau getAcces(long tiersId) throws ObjectNotFoundException {
@@ -60,9 +57,6 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 		return getAcces(tiers);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	@Transactional(readOnly = true)
 	public Niveau getAcces(Tiers tiers) {
@@ -82,9 +76,6 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 		return getAcces(operateur, tiers);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	@Transactional(readOnly = true)
 	public Niveau getAcces(@NotNull String visaOperateur, long tiersId) {
@@ -104,9 +95,6 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 		return getAcces(operateur, tiers);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	@Transactional(readOnly = true)
 	public List<Niveau> getAcces(@NotNull String visa, List<Long> ids) {

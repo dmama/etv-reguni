@@ -50,9 +50,6 @@ public class RapportEntreTiersDAOImpl extends BaseDAOImpl<RapportEntreTiers, Lon
 		            mode);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<RapportPrestationImposable> getRapportsPrestationImposable(final Long numeroDebiteur, ParamPagination paramPagination, boolean activesOnly) {
@@ -94,9 +91,6 @@ public class RapportEntreTiersDAOImpl extends BaseDAOImpl<RapportEntreTiers, Lon
 		return queryObject.list();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public int countRapportsPrestationImposable(Long numeroDebiteur, boolean activesOnly) {
 

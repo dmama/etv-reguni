@@ -218,9 +218,6 @@ public abstract class AdresseFiscaleAdapter<T extends HibernateDateRangeEntity &
 		return noLocalite;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean isValidAt(RegDate date) {
 		// [UNIREG-2895] on ignore les adresses annulées ne doivent pas être considérées comme valides

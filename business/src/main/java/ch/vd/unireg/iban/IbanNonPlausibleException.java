@@ -19,9 +19,6 @@ public class IbanNonPlausibleException extends IbanValidationException {
 		super("Le code IBAN n'est pas plausible");
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public IbanNonPlausibleException(String msg) {
 		super("Le code IBAN n'est pas plausible : " + msg);
 	}

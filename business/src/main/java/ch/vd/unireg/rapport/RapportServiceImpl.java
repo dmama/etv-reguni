@@ -186,9 +186,6 @@ import ch.vd.unireg.tiers.rattrapage.etatdeclaration.CorrectionEtatDeclarationRe
 import ch.vd.unireg.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
 import ch.vd.unireg.validation.ValidationJobResults;
 
-/**
- * {@inheritDoc}
- */
 public class RapportServiceImpl implements RapportService, ApplicationContextAware {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(RapportServiceImpl.class);
@@ -216,9 +213,6 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		this.applicationContext = applicationContext;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public DeterminationDIsPPRapport generateRapport(final DeterminationDIsPPResults results, StatusManager s) throws DeclarationException {
 
@@ -269,9 +263,6 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public EnvoiDIsPPRapport generateRapport(final EnvoiDIsPPResults results, StatusManager s) throws DeclarationException {
 
@@ -361,9 +352,6 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public MajoriteRapport generateRapport(final OuvertureForsResults results, StatusManager s) {
 
@@ -388,9 +376,6 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public FusionDeCommunesRapport generateRapport(final FusionDeCommunesResults results, StatusManager s) {
 
@@ -486,9 +471,6 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public RolesCommunesPPRapport generateRapport(final ProduireRolesPPCommunesResults results, final StatusManager s) {
 
@@ -512,9 +494,6 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public RolesCommunesPMRapport generateRapport(final ProduireRolesPMCommunesResults results, final StatusManager s) {
 
@@ -595,9 +574,6 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public StatistiquesDIsRapport generateRapport(final StatistiquesDIs results, final StatusManager status) {
 		final String nom = "RapportStatsDIs" + results.dateTraitement.index();
@@ -618,9 +594,6 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public StatistiquesCtbsRapport generateRapport(final StatistiquesCtbs results, final StatusManager status) {
 		final String nom = "RapportStatsCtbs" + results.dateTraitement.index();
@@ -827,9 +800,6 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public EchoirDIsPPRapport generateRapport(final EchoirDIsPPResults results, StatusManager s) {
 
@@ -878,9 +848,6 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public ReinitialiserBaremeDoubleGainRapport generateRapport(final ReinitialiserBaremeDoubleGainResults results, StatusManager s) {
 
@@ -947,9 +914,6 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public DemandeDelaiCollectiveRapport generateRapport(final DemandeDelaiCollectiveResults results, StatusManager s) {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);

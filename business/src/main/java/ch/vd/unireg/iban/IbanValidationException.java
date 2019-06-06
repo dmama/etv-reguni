@@ -12,30 +12,18 @@ public class IbanValidationException extends Exception {
 	 */
 	private static final long serialVersionUID = 6593811050546878237L;
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public IbanValidationException() {
 		super();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public IbanValidationException(String arg0) {
 		super(arg0);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public IbanValidationException(Throwable arg0) {
 		super(arg0);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public IbanValidationException(String arg0, Throwable arg1) {
 		super(arg0, arg1);
 	}

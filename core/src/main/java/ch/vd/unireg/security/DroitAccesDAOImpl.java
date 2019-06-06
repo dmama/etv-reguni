@@ -111,9 +111,6 @@ public class DroitAccesDAOImpl extends BaseDAOImpl<DroitAcces, Long> implements 
 		return find(query, buildNamedParameters(Pair.of("visaOperateur", visaOperateur.toLowerCase())), null);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<DroitAcces> getDroitsAccessTiers(long tiersId) {
@@ -137,9 +134,6 @@ public class DroitAccesDAOImpl extends BaseDAOImpl<DroitAcces, Long> implements 
 		            null);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<DroitAcces> getDroitsAccessTiers(final Set<Long> ids, final RegDate date) {
@@ -153,9 +147,6 @@ public class DroitAccesDAOImpl extends BaseDAOImpl<DroitAcces, Long> implements 
 		return query.list();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public Set<Long> getContribuablesControles() {

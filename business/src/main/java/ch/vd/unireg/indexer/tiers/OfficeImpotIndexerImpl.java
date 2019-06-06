@@ -45,18 +45,12 @@ public class OfficeImpotIndexerImpl implements OfficeImpotIndexer {
 		this.validationInterceptor = validationInterceptor;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void indexTiersAvecOfficeImpotInconnu(final StatusManager status) {
 		final List<Long> ids = getIdsTiersWithNullOID();
 		processAllTiers(ids, status);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void indexTousLesTiers(final StatusManager status) {
 		final List<Long> ids = getIdsAllTiers();

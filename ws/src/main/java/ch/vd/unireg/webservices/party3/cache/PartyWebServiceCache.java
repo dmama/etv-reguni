@@ -428,25 +428,16 @@ public class PartyWebServiceCache implements UniregCacheInterface, KeyDumpableCa
 		cache.removeAll();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getDescription() {
 		return "web-service party v3";
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getName() {
 		return "WS-PARTY-3";
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void reset() {
 		cache.removeAll();

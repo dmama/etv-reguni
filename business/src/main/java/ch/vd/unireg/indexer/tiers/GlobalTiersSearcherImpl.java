@@ -251,9 +251,6 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean exists(Long numero) throws IndexerException {
 		if (numero == null) {
@@ -283,9 +280,6 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 		return results.exists;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public TiersIndexedData get(final Long numero) throws IndexerException {
 		if (numero == null) {
@@ -331,9 +325,6 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 		return results.data;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Set<Long> getAllIds() {
 
@@ -352,9 +343,6 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 		return ids;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void checkCoherenceIndex(final Set<Long> existingIds, final StatusManager statusManager, final CheckCallback callback) {
 

@@ -157,9 +157,6 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public PartyType getPartyType(GetPartyTypeRequest params) throws WebServiceException {
 		checkServiceAvailability();
@@ -197,9 +194,6 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Party getParty(GetPartyRequest params) throws WebServiceException {
 		checkServiceAvailability();
@@ -381,9 +375,6 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public SearchCorporationEventsResponse searchCorporationEvents(SearchCorporationEventsRequest params) throws WebServiceException {
 		checkServiceAvailability();

@@ -128,9 +128,6 @@ public class Periodicite extends HibernateEntity implements CollatableDateRange<
 		return id;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean isValidAt(RegDate date) {
 		return !isAnnule() && CollatableDateRange.super.isValidAt(date);

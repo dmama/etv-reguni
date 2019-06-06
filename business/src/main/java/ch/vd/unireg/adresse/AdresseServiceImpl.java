@@ -360,9 +360,6 @@ public class AdresseServiceImpl implements AdresseService {
 		return new EnvoiInfo(destinataire, destination, avecPourAdresse, sourceType);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public AdresseEnvoiDetaillee getAdresseEnvoi(Individu individu, RegDate date, boolean strict) throws AdresseException {
 		return createAdresseEnvoi(individu, null, strict);
@@ -630,9 +627,6 @@ public class AdresseServiceImpl implements AdresseService {
 		return adresse;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Nullable
 	@Override
 	public FormulePolitesse getFormulePolitesse(Tiers tiers, @Nullable RegDate date) {
@@ -1248,9 +1242,6 @@ public class AdresseServiceImpl implements AdresseService {
 		return null;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public AdresseGenerique getAdresseRepresentant(Tiers tiers, TypeAdresseRepresentant type, RegDate date, boolean strict)
 			throws AdresseException {
@@ -1577,9 +1568,6 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public AdressesFiscales getAdressesFiscales(Tiers tiers, RegDate date, boolean strict) throws AdresseException {
 
@@ -1591,9 +1579,6 @@ public class AdresseServiceImpl implements AdresseService {
 		return adressesHisto.at(date);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public AdresseGenerique getAdresseFiscale(Tiers tiers, TypeAdresseFiscale type, RegDate date, boolean strict) throws AdresseException {
 
@@ -1661,9 +1646,6 @@ public class AdresseServiceImpl implements AdresseService {
 		return principalOuVaudois;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public AdressesCiviles getAdressesCiviles(Tiers tiers, RegDate date, boolean strict) throws AdresseException {
 		final AdressesCiviles adressesCiviles;
@@ -2078,9 +2060,6 @@ public class AdresseServiceImpl implements AdresseService {
 		adresses.addCouche(nomCouche, adresseSurchargeesGeneriques, sourceSurcharge, defaultSurcharge);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Tiers addAdresse(Tiers tiers, AdresseTiers adresse) {
 
@@ -2103,9 +2082,6 @@ public class AdresseServiceImpl implements AdresseService {
 		return tiersDAO.save(tiers);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void annulerAdresse(AdresseTiers adresse) {
 
@@ -2150,9 +2126,6 @@ public class AdresseServiceImpl implements AdresseService {
 		return string != null && string.trim().length() > 0;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public List<String> getNomCourrier(Tiers tiers, RegDate date, boolean strict) {
 
@@ -2211,9 +2184,6 @@ public class AdresseServiceImpl implements AdresseService {
 		return null;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public AdressesFiscalesHisto getAdressesTiers(Tiers tiers) throws AdresseException {
 

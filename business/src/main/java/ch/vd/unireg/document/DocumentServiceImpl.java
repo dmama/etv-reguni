@@ -22,9 +22,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 
-/**
- * {@inheritDoc}
- */
 public class DocumentServiceImpl implements DocumentService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DocumentServiceImpl.class);
@@ -62,9 +59,6 @@ public class DocumentServiceImpl implements DocumentService {
 		this.repository = dir;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Collection<Document> ramasseDocs() {
 		List<Document> docs = new ArrayList<>();
@@ -132,17 +126,11 @@ public class DocumentServiceImpl implements DocumentService {
 		docs.add(doc);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Document get(Long id) throws Exception {
 		return hibernateTemplate.get(Document.class, id);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void delete(final Document doc) throws Exception {
 		if (doc == null) {
@@ -165,9 +153,6 @@ public class DocumentServiceImpl implements DocumentService {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public Collection<Document> getDocuments() throws Exception {
@@ -180,9 +165,6 @@ public class DocumentServiceImpl implements DocumentService {
 		return hibernateTemplate.find("FROM " + clazz.getSimpleName() + " AS doc WHERE doc.annulationDate IS null", null);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	private String getFilePath(Document doc) {
 		String path = getFileDir(doc);
 		path = addPath(path, doc.getFileName());
@@ -211,9 +193,6 @@ public class DocumentServiceImpl implements DocumentService {
 		return path;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T extends Document> T newDoc(Class<T> clazz, String nom, String description, String fileExtension, WriteDocCallback<T> callback)
@@ -249,9 +228,6 @@ public class DocumentServiceImpl implements DocumentService {
 		return hibernateTemplate.merge(doc);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public <T extends Document> void readDoc(T doc, ReadDocCallback<T> callback) throws Exception {
 

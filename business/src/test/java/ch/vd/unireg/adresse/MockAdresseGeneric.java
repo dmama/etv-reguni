@@ -33,9 +33,6 @@ final class MockAdresseGeneric implements AdresseGenerique {
 		return false;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean isValidAt(RegDate date) {
 		// les adresses annulées ne doivent pas être considérées comme valides

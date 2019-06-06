@@ -18,10 +18,7 @@ public class IbanUnknownCountryException extends IbanValidationException {
 	public IbanUnknownCountryException() {
 		super("Le code Pays est inconnu");
 	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
+
 	public IbanUnknownCountryException(String msg) {
 		super("Le code Pays est inconnu : " + msg);
 	}

@@ -389,9 +389,6 @@ public class DebiteurPrestationImposable extends Tiers {
 		return periodiciteAt;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean equalsTo(Tiers obj) {
 		if (this == obj)

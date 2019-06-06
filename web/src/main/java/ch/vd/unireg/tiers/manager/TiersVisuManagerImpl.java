@@ -56,9 +56,6 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 		this.mouvementVisuManager = mouvementVisuManager;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	@Transactional(readOnly = true)
 	public TiersVisuView getView(Long numero, HistoFlags histoFlags,

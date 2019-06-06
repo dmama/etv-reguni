@@ -96,9 +96,6 @@ public class EvenementEntrepriseProcessorInternal implements ProcessorInternal, 
 		this.audit = audit;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public boolean processEventAndDoPostProcessingOnError(EvenementEntrepriseBasicInfo evt, List<EvenementEntrepriseBasicInfo> evts, int pointer) {
 		AuthenticationHelper.pushPrincipal(String.format("%s-%d", EVT_ENTREPRISE_PRINCIPAL, evt.getNoEvenement()));
 		try {
@@ -113,9 +110,6 @@ public class EvenementEntrepriseProcessorInternal implements ProcessorInternal, 
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public boolean forceEvent(EvenementEntrepriseBasicInfo evt) {
 		if (evt.getEtat().isTraite() && evt.getEtat() != EtatEvenementEntreprise.A_VERIFIER) {
 			throw new IllegalArgumentException("L'état de l'événement " + evt.getId() + " (rcent: " + evt.getNoEvenement() + ") ne lui permet pas d'être forcé");

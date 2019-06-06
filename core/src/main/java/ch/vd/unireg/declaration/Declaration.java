@@ -146,9 +146,6 @@ public abstract class Declaration extends DocumentFiscal implements DateRange {
 		super.addDelai(delai);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean isValidAt(RegDate date) {
 		return !isAnnule() && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);

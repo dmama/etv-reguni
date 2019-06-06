@@ -805,9 +805,6 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		return (RapportEntreTiers) saveObjectWithMerge(object);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public PersonnePhysique getHabitantByNumeroIndividu(long numeroIndividu) {
 		return getHabitantByNumeroIndividu(numeroIndividu, false);
@@ -1177,9 +1174,6 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public CollectiviteAdministrative getCollectiviteAdministrativesByNumeroTechnique(int numeroTechnique) {
 		return getCollectiviteAdministrativesByNumeroTechnique(numeroTechnique, false);
@@ -1346,9 +1340,6 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		return (T) save(tiers);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public <T extends ForFiscal> T addAndSave(Tiers tiers, T forFiscal) {
 		return AddAndSaveHelper.addAndSave(tiers, forFiscal, this::saveTiers, new ForFiscalAccessor<>());
@@ -1435,9 +1426,6 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		}
 	};
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public SituationFamille addAndSave(ContribuableImpositionPersonnesPhysiques contribuable, SituationFamille situation) {
 		return AddAndSaveHelper.addAndSave(contribuable, situation, this::saveTiers, SITUATION_FAMILLE_ACCESSOR);
@@ -1465,9 +1453,6 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		}
 	};
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public AdresseTiers addAndSave(Tiers tiers, AdresseTiers adresse) {
 		return AddAndSaveHelper.addAndSave(tiers, adresse, this::saveTiers, ADRESSE_TIERS_ACCESSOR);

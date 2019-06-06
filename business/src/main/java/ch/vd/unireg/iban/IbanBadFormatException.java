@@ -19,9 +19,6 @@ public class IbanBadFormatException extends IbanValidationException {
 		super("Le format est incorrect");
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public IbanBadFormatException(String msg) {
 		super("Le format est incorrect : " + msg);
 	}

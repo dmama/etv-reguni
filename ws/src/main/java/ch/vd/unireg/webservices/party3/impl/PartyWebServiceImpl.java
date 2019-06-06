@@ -325,9 +325,6 @@ public class PartyWebServiceImpl implements PartyWebService {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public BatchParty getBatchParty(final GetBatchPartyRequest params) throws WebServiceException {
 		try {
@@ -554,9 +551,6 @@ public class PartyWebServiceImpl implements PartyWebService {
 		return coreParts;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public PartyType getPartyType(GetPartyTypeRequest params) throws WebServiceException {
@@ -597,9 +591,6 @@ public class PartyWebServiceImpl implements PartyWebService {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void setAutomaticReimbursementBlocking(final SetAutomaticReimbursementBlockingRequest params) throws WebServiceException {
@@ -619,9 +610,6 @@ public class PartyWebServiceImpl implements PartyWebService {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public SearchCorporationEventsResponse searchCorporationEvents(SearchCorporationEventsRequest params) throws WebServiceException {
 		return new SearchCorporationEventsResponse();

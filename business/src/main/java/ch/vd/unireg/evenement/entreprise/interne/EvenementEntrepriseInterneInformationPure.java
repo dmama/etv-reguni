@@ -23,9 +23,6 @@ public abstract class EvenementEntrepriseInterneInformationPure extends Evenemen
 		super(evenement, entrepriseCivile, entreprise, context, options);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public final EvenementEntrepriseInterne seulementEvenementsFiscaux() {
 		// On est générateur direct d'événements fiscaux seulement.

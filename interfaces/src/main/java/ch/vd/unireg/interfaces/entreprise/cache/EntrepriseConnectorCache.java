@@ -88,25 +88,16 @@ public class EntrepriseConnectorCache implements EntrepriseConnector, UniregCach
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getDescription() {
 		return "connecteur des entreprises";
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getName() {
 		return "ENTREPRISE";
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void reset() {
 		cache.removeAll();
@@ -194,9 +185,6 @@ public class EntrepriseConnectorCache implements EntrepriseConnector, UniregCach
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public EntrepriseCivile getEntrepriseHistory(final long noEntreprise) throws EntrepriseConnectorException {
 
@@ -293,9 +281,6 @@ public class EntrepriseConnectorCache implements EntrepriseConnector, UniregCach
 		target.ping();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void onIndividuChange(long numero) {
 		// rien à faire

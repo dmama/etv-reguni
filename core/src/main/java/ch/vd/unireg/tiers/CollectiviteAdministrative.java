@@ -71,9 +71,6 @@ public class CollectiviteAdministrative extends Contribuable {
 		this.identifiantRegionFiscale = identifiantRegionFiscale;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean equalsTo(Tiers obj) {
 		if (this == obj)

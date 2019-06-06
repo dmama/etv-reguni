@@ -143,9 +143,6 @@ public class SecurityProviderCache implements UniregCacheInterface, KeyDumpableC
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Niveau getDroitAcces(String visaOperateur, long tiersId) throws ObjectNotFoundException {
 
@@ -168,9 +165,6 @@ public class SecurityProviderCache implements UniregCacheInterface, KeyDumpableC
 		return resultat;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public List<Niveau> getDroitsAcces(String visa, List<Long> ids) {
 
@@ -305,9 +299,6 @@ public class SecurityProviderCache implements UniregCacheInterface, KeyDumpableC
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean isGranted(Role role, String visaOperateur, int codeCollectivite) {
 		final Boolean resultat;
@@ -498,25 +489,16 @@ public class SecurityProviderCache implements UniregCacheInterface, KeyDumpableC
 		dossiersControles = newDossiers; // l'assignement est atomique en java, pas besoin de locking
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getDescription() {
 		return "security provider";
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getName() {
 		return "SECURITY-PROVIDER";
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void reset() {
 		resetCaches();

@@ -8,7 +8,9 @@ import java.util.List;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 
+import ch.vd.unireg.common.EtatCivilHelper;
 import ch.vd.unireg.common.NomPrenom;
+import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.Individu;
@@ -18,8 +20,6 @@ import ch.vd.unireg.interfaces.civil.data.Origine;
 import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.unireg.interfaces.civil.data.PermisList;
 import ch.vd.unireg.interfaces.civil.data.StatutIndividu;
-import ch.vd.unireg.common.EtatCivilHelper;
-import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
 import ch.vd.unireg.utils.WebContextUtils;
 
@@ -43,10 +43,6 @@ public class WebCivilServiceImpl implements WebCivilService, MessageSourceAware 
 		this.messageSource = messageSource;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 * @throws ch.vd.unireg.common.ObjectNotFoundException si on ne retrouve pas d'individu correspondant
-	 */
 	@Override
 	public IndividuView getIndividu(Long numeroIndividu) {
 		final Individu indSource = serviceCivilService.getIndividu(numeroIndividu, null, AttributeIndividu.NATIONALITES, AttributeIndividu.PERMIS, AttributeIndividu.ORIGINE);
@@ -58,10 +54,6 @@ public class WebCivilServiceImpl implements WebCivilService, MessageSourceAware 
 		return alimenteIndividuView(indSource);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 * @throws ch.vd.unireg.common.ObjectNotFoundException Si on ne trouve l'individu ni pas son numero ou par un numero d'evt
-	 */
 	@Override
 	public IndividuView getIndividu(Long numeroIndividu, Long numeroEvenement) {
 		IndividuView individuView = null;

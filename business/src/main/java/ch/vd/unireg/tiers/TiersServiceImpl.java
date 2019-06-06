@@ -1380,17 +1380,11 @@ public class TiersServiceImpl implements TiersService {
         return sexe;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Sexe getSexe(PersonnePhysique pp) {
         return getSexe(pp, individuProviderWithoutDate);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isMemeSexe(PersonnePhysique pp1, PersonnePhysique pp2) {
         final Sexe sexeHabitant = getSexe(pp1);
@@ -1494,18 +1488,12 @@ public class TiersServiceImpl implements TiersService {
         return !permisC;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isAvecPermisC(Individu individu) {
         RegDate maintenant = RegDate.get();
         return isAvecPermisC(individu, maintenant);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isAvecPermisC(Individu individu, RegDate date) {
         final Permis permis = individu.getPermis().getPermisActif(date);
@@ -1550,9 +1538,6 @@ public class TiersServiceImpl implements TiersService {
 		return !isIndividuEtrangerAvecOuSansPermisC(numeroIndividu, false /* sans permis */, date);
 	}
 
-	/**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isSuisse(Individu individu, @Nullable RegDate date) throws TiersException {
 	    final Nationalite nationalite = NationaliteHelper.refAt(individu.getNationalites(), date);
@@ -1641,9 +1626,6 @@ public class TiersServiceImpl implements TiersService {
 			    .orElse(null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public PersonnePhysique getPrincipal(MenageCommun menageCommun) {
         final Set<PersonnePhysique> personnes = getPersonnesPhysiques(menageCommun);
@@ -1661,9 +1643,6 @@ public class TiersServiceImpl implements TiersService {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public EnsembleTiersCouple getEnsembleTiersCouple(MenageCommun menageCommun, @Nullable RegDate date) {
 
@@ -1676,9 +1655,6 @@ public class TiersServiceImpl implements TiersService {
         return construitEnsembleTiersCouple(menageCommun, personnes);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public EnsembleTiersCouple getEnsembleTiersCouple(MenageCommun menageCommun, int anneePeriode) {
 
@@ -2976,9 +2952,6 @@ public class TiersServiceImpl implements TiersService {
         return autoriteParentale;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ForFiscalSecondaire openForFiscalSecondaire(Contribuable contribuable, final RegDate dateOuverture,
                                                        MotifRattachement motifRattachement, int numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale,
@@ -3019,9 +2992,6 @@ public class TiersServiceImpl implements TiersService {
 		return nouveauForFiscal;
 	}
 
-	/**
-     * {@inheritDoc}
-     */
     @Override
     public ForFiscalAutreImpot openForFiscalAutreImpot(Contribuable contribuable, GenreImpot genreImpot, final RegDate dateImpot, int numeroOfsAutoriteFiscale) {
 
@@ -3044,9 +3014,6 @@ public class TiersServiceImpl implements TiersService {
 	    return nouveauForFiscal;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ForDebiteurPrestationImposable openForDebiteurPrestationImposable(DebiteurPrestationImposable debiteur, RegDate dateOuverture, MotifFor motifOuverture, int numeroOfsAutoriteFiscale,
                                                                              TypeAutoriteFiscale typeAutoriteFiscale) {
@@ -3393,10 +3360,6 @@ public class TiersServiceImpl implements TiersService {
 	    resetFlagBlocageRemboursementAutomatiqueSelonFors(contribuable);
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ForFiscalPrincipalPP changeModeImposition(ContribuableImpositionPersonnesPhysiques contribuable, RegDate dateChangementModeImposition, ModeImposition modeImposition, MotifFor motifFor) {
 
@@ -3592,9 +3555,6 @@ public class TiersServiceImpl implements TiersService {
 	    return forCorrige;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ForFiscalPrincipalPP addForPrincipal(ContribuableImpositionPersonnesPhysiques contribuable, RegDate dateDebut, MotifFor motifOuverture, RegDate dateFin, MotifFor motifFermeture, MotifRattachement motifRattachement,
                                                 int autoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale, ModeImposition modeImposition) {
@@ -3622,9 +3582,6 @@ public class TiersServiceImpl implements TiersService {
         return forRtr;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ForFiscalPrincipalPM addForPrincipal(ContribuableImpositionPersonnesMorales contribuable, RegDate dateDebut, MotifFor motifOuverture, RegDate dateFin, MotifFor motifFermeture, MotifRattachement motifRattachement,
                                                 int autoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale, GenreImpot genreImpot) {
@@ -3739,9 +3696,6 @@ public class TiersServiceImpl implements TiersService {
         resetFlagBlocageRemboursementAutomatiqueSelonFors(contribuable);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Periodicite addPeriodicite(DebiteurPrestationImposable debiteur, PeriodiciteDecompte periodiciteDecompte, PeriodeDecompte periodeDecompte, RegDate dateDebut, RegDate dateFin) {
 
@@ -3855,9 +3809,6 @@ public class TiersServiceImpl implements TiersService {
 		return openForFiscalAutreElementImposable(contribuable, dateDebut, motifOuverture, dateFin, motifFermeture, motifRattachement, autoriteFiscale);
 	}
 
-	/**
-     * {@inheritDoc}
-     */
     @Override
     public ForDebiteurPrestationImposable addForDebiteur(DebiteurPrestationImposable debiteur, RegDate dateDebut, MotifFor motifOuverture,
                                                          RegDate dateFin, MotifFor motifFermeture, TypeAutoriteFiscale typeAutoriteFiscale, int autoriteFiscale) {
@@ -4099,9 +4050,6 @@ public class TiersServiceImpl implements TiersService {
 		return nomPrenom.getPrenom();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getNomPrenom(Individu individu) {
         return serviceCivilService.getNomPrenom(individu);
@@ -4112,9 +4060,6 @@ public class TiersServiceImpl implements TiersService {
         return serviceCivilService.getDecompositionNomPrenom(individu, false);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public RegDate getDateNaissance(PersonnePhysique pp) {
 	    if (pp == null) {
@@ -4149,9 +4094,6 @@ public class TiersServiceImpl implements TiersService {
 	    return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public RegDate getDateDeces(@Nullable PersonnePhysique pp) {
         if (pp == null)
@@ -4196,17 +4138,11 @@ public class TiersServiceImpl implements TiersService {
 		}
 	}
 
-	/**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isDecede(PersonnePhysique pp) {
         return getDateDeces(pp) != null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getNumeroAssureSocial(PersonnePhysique pp) {
         if (pp.isHabitantVD()) {
@@ -4220,9 +4156,6 @@ public class TiersServiceImpl implements TiersService {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getAncienNumeroAssureSocial(PersonnePhysique pp) {
         if (pp.isHabitantVD()) {
@@ -4244,17 +4177,11 @@ public class TiersServiceImpl implements TiersService {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Integer getOfficeImpotId(Tiers tiers) {
         return getOfficeImpotIdAt(tiers, null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Integer getOfficeImpotIdAt(Tiers tiers, @Nullable RegDate date) {
         Integer oid = tiers.getOfficeImpotId();
@@ -4350,9 +4277,6 @@ public class TiersServiceImpl implements TiersService {
         return oid;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ForFiscal annuleForFiscal(ForFiscal forFiscal) throws ValidationException {
 
@@ -4444,10 +4368,6 @@ public class TiersServiceImpl implements TiersService {
 	    return forReouvert;
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void annuleTiers(Tiers tiers) {
 	    if (tiers == null) {
@@ -4460,9 +4380,6 @@ public class TiersServiceImpl implements TiersService {
 	    }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ForGestion getDernierForGestionConnu(Tiers tiers, @Nullable RegDate date) {
 
@@ -4521,9 +4438,6 @@ public class TiersServiceImpl implements TiersService {
 		return DataHelper.getForsFiscauxVirtuels(tiers, doNotAutoflush, hibernateTemplate);
 	}
 
-	/**
-     * {@inheritDoc}
-     */
     @Override
     public ForGestion getForGestionActif(Tiers tiers, RegDate date) {
 
@@ -4724,10 +4638,6 @@ public class TiersServiceImpl implements TiersService {
 		return isDepartHorsCantonDansPeriode || isMariageDansPeriode || isSeparationDansPeriode;
 	}
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public List<ForGestion> getForsGestionHisto(Tiers tiers) {
 
@@ -4790,9 +4700,6 @@ public class TiersServiceImpl implements TiersService {
         this.situationFamilleService = situationFamilleService;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public List<AdresseTiers> fermeAdresseTiersTemporaire(Tiers tiers, RegDate date) {
         final List<AdresseTiers> listeDesAdressesFermees = new ArrayList<>();
@@ -4810,9 +4717,6 @@ public class TiersServiceImpl implements TiersService {
         return listeDesAdressesFermees;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getRoleAssujettissement(Tiers tiers, @Nullable RegDate date) {
         String str = null;
@@ -4890,18 +4794,12 @@ public class TiersServiceImpl implements TiersService {
 		return bouclementService.getExerciceCommercialAt(entreprise, date);
 	}
 
-	/**
-     * {@inheritDoc}
-     */
     @Override
     public ExclureContribuablesEnvoiResults setDateLimiteExclusion(List<Long> ctbIds, RegDate dateLimite, StatusManager s) {
         final ExclureContribuablesEnvoiProcessor processor = new ExclureContribuablesEnvoiProcessor(hibernateTemplate, transactionManager, this, adresseService);
         return processor.run(ctbIds, dateLimite, s);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public CorrectionFlagHabitantResults corrigeFlagHabitantSurPersonnesPhysiques(int nbThreads, StatusManager statusManager) {
         final CorrectionFlagHabitantProcessor processor = new CorrectionFlagHabitantProcessor(hibernateTemplate, this, transactionManager, statusManager, adresseService);

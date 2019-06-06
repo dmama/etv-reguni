@@ -231,9 +231,6 @@ public abstract class BaseAdresseGeneriqueAdapter implements AdresseGenerique {
 		return isDefault;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean isValidAt(RegDate date) {
 		// [UNIREG-2895] les adresses annulées ne doivent pas être considérées comme valides

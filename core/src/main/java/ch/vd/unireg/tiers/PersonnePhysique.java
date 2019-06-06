@@ -495,9 +495,6 @@ public class PersonnePhysique extends ContribuableImpositionPersonnesPhysiques {
 		this.prenomsMere = StringUtils.trimToNull(prenomsMere);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean equalsTo(Tiers obj) {
 		if (this == obj)

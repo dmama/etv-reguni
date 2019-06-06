@@ -467,9 +467,6 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public EditiqueResultat envoiDuplicataDIOnline(DeclarationImpotOrdinairePP declaration, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws DeclarationException {
 		try {
@@ -668,9 +665,6 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		evenementFiscalService.publierEvenementFiscalSommationDeclarationImpot(declaration, dateTraitement);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void echoirDI(DeclarationImpotOrdinaire declaration, RegDate dateTraitement) {
 		final EtatDeclaration etat = new EtatDeclarationEchue();
@@ -770,9 +764,6 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public EnvoiSommationsDIsPPResults envoyerSommationsPP(RegDate dateTraitement, boolean miseSousPliImpossible, int nombreMax, StatusManager statusManager) {
 		final DeclarationImpotService diService = this;
@@ -837,9 +828,6 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		this.diDAO = diDAO;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public DemandeDelaiCollectiveResults traiterDemandeDelaiCollective(List<Long> ids, int pf, RegDate dateDelai,
 	                                                                   RegDate dateTraitement, StatusManager s) {
@@ -854,9 +842,6 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		return processor.run(infos,dateDelai,dateTraitement,s);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public ListeNoteResults produireListeNote(RegDate dateTraitement, int nbThreads, Integer annee, StatusManager statusManager) {
 		final ListeNoteProcessor processor = new ListeNoteProcessor(hibernateTemplate, transactionManager, tiersService, adresseService, infraService);

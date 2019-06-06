@@ -101,18 +101,12 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public int getExactDocCount() {
 		optimize();
 		return getApproxDocCount();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	@SuppressWarnings({"UnnecessaryLocalVariable"})
 	public int getApproxDocCount() {
@@ -122,9 +116,6 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 		return count;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void optimize() throws IndexerException {
 		LOGGER.trace("Optimizing indexer...");
@@ -145,9 +136,6 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 		LOGGER.trace("Indexer optimized");
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void flush() throws IndexerException {
 		LOGGER.trace("Flushing indexer...");
@@ -168,9 +156,6 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 		LOGGER.trace("Indexer flushed");
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void removeThenIndexEntity(final IndexableData data) {
 		if (data == null) {
@@ -205,9 +190,6 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void removeThenIndexEntities(final List<IndexableData> data) {
 		if (data == null) {
@@ -244,9 +226,6 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void indexEntity(final IndexableData data) {
 		if (data == null) {
@@ -280,9 +259,6 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void indexEntities(final List<IndexableData> data) {
 		if (data == null) {
@@ -345,9 +321,6 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 		return count;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void removeEntity(final Long id) throws IndexerException {
 
@@ -407,9 +380,6 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void search(final Query query, final int maxHits, final SearchCallback callback) throws IndexerException {
 
@@ -445,9 +415,6 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void search(final Query query, final int maxHits, final Sort sort, final SearchCallback callback) throws IndexerException {
 
@@ -483,9 +450,6 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void search(final String query, final int maxHits, final SearchCallback callback) throws IndexerException {
 
@@ -556,9 +520,6 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getIndexPath() {
 		return provider.getIndexPath();

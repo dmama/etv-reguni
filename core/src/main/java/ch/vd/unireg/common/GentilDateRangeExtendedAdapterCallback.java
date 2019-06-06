@@ -15,17 +15,11 @@ import ch.vd.registre.base.date.RegDate;
  */
 public class GentilDateRangeExtendedAdapterCallback<T extends DateRange & Duplicable<T> & Rerangeable<T>> implements DateRangeHelper.AdapterCallbackExtended<T> {
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public T duplicate(T range) {
 		return range.duplicate();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public T adapt(T range, RegDate debut, T sourceSurchargeDebut, RegDate fin, T sourceSurchargeFin) {
 		final DateRange cropRange = new DateRangeHelper.Range(sourceSurchargeDebut != null ? debut : range.getDateDebut(),
@@ -33,9 +27,6 @@ public class GentilDateRangeExtendedAdapterCallback<T extends DateRange & Duplic
 		return range.rerange(cropRange);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public T adapt(T range, RegDate debut, RegDate fin) {
 		final DateRange cropRange = new DateRangeHelper.Range(debut, fin);

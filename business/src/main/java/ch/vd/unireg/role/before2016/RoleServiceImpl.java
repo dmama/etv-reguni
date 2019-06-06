@@ -64,36 +64,24 @@ public class RoleServiceImpl implements RoleService {
 		return new ProduireRolesProcessor(hibernateTemplate, infraService, tiersDAO, transactionManager, adresseService, tiersService, serviceCivilService, validationService, assujettissementService);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public ProduireRolesPPCommunesResults produireRolesPPPourToutesCommunes(int anneePeriode, int nbThreads, StatusManager status) throws ServiceException {
 		final ProduireRolesProcessor processor = createProcessor();
 		return processor.runPPPourToutesCommunes(anneePeriode, nbThreads, status);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public ProduireRolesPPCommunesResults produireRolesPPPourUneCommune(int anneePeriode, int noOfsCommune, int nbThreads, StatusManager status) throws ServiceException {
 		final ProduireRolesProcessor processor = createProcessor();
 		return processor.runPPPourUneCommune(anneePeriode, noOfsCommune, nbThreads, status);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public ProduireRolesOIDsResults produireRolesPourUnOfficeImpot(int anneePeriode, int oid, int nbThreads, StatusManager status) throws ServiceException {
 		final ProduireRolesProcessor processor = createProcessor();
 		return processor.runPourUnOfficeImpot(anneePeriode, oid, nbThreads, status);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public ProduireRolesOIDsResults[] produireRolesPourTousOfficesImpot(int anneePeriode, int nbThreads, StatusManager status) throws ServiceException {
 		final ProduireRolesProcessor processor = createProcessor();

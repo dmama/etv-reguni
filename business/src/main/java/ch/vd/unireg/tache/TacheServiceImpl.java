@@ -510,9 +510,6 @@ public class TacheServiceImpl implements TacheService {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void genereTachesDepuisAnnulationDeFor(Contribuable contribuable) {
 		// [UNIREG-2322] appelé de manière automatique par le TacheSynchronizerInterceptor
@@ -1696,27 +1693,18 @@ public class TacheServiceImpl implements TacheService {
 		// [UNIREG-2322] appelé de manière automatique par le TacheSynchronizerInterceptor
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public int getTachesEnInstanceCount(Integer oid) {
 		final TacheStats stats = tacheStatsPerOid.get(oid);
 		return stats == null ? 0: stats.tachesEnInstance;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public int getDossiersEnInstanceCount(Integer oid) {
 		final TacheStats stats = tacheStatsPerOid.get(oid);
 		return stats == null ? 0: stats.dossiersEnInstance;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void onAnnulationContribuable(Contribuable contribuable) {
 

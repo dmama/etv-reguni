@@ -1385,34 +1385,22 @@ public class InfrastructureConnectorCache implements InfrastructureConnector, Un
 		return resultat;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getDescription() {
 		return "connecteur d'infrastructure";
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getName() {
 		return "INFRA";
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void reset() {
 		cache.removeAll();
 		shortLivedCache.removeAll();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public List<Localite> getLocalitesByNPA(int npa, RegDate dateReference) throws InfrastructureException {
 		return target.getLocalitesByNPA(npa, dateReference);

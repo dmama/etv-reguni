@@ -82,25 +82,16 @@ public class EntrepriseConnectorPersistentCache implements EntrepriseConnector, 
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getDescription() {
 		return "connecteur persistent des entreprises";
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getName() {
 		return "ENTREPRISE-PERSISTENT";
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void reset() {
 		cache.clear();
@@ -128,10 +119,6 @@ public class EntrepriseConnectorPersistentCache implements EntrepriseConnector, 
 		}
 	}
 
-
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public EntrepriseCivile getEntrepriseHistory(long noEntreprise) throws EntrepriseConnectorException {
 
@@ -216,9 +203,6 @@ public class EntrepriseConnectorPersistentCache implements EntrepriseConnector, 
 		target.ping();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void onEntrepriseChange(final long numero) {
 		if (LOGGER.isInfoEnabled()) {

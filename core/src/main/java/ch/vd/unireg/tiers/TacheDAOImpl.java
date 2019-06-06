@@ -40,9 +40,6 @@ public class TacheDAOImpl extends BaseDAOImpl<Tache, Long> implements TacheDAO {
 		return find(criterion, false);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<Tache> find(TacheCriteria criterion, boolean doNotAutoFlush) {
@@ -54,9 +51,6 @@ public class TacheDAOImpl extends BaseDAOImpl<Tache, Long> implements TacheDAO {
 		return find(query, params, mode);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<Tache> find(long noContribuable) {
@@ -90,26 +84,17 @@ public class TacheDAOImpl extends BaseDAOImpl<Tache, Long> implements TacheDAO {
 		return queryObject.list();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public int count(TacheCriteria criterion) {
 		return count(criterion, false);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public int count(long noContribuable) {
 		final String query = "select count(*) from Tache t where t.contribuable.id=" + noContribuable;
 		return DataAccessUtils.intResult(find(query, null));
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public int count(TacheCriteria criterion, boolean doNotAutoFlush) {
 		final Map<String, Object> params = new HashMap<>();

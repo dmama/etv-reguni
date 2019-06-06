@@ -112,9 +112,6 @@ public abstract class ContribuableImpositionPersonnesPhysiques extends Contribua
 		this.situationsFamille.add(nouvelleSituationFamille);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean equalsTo(Tiers obj) {
 		if (this == obj)
