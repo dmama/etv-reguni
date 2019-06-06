@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.dataimport.helper;
+package ch.vd.unireg.registrefoncier.dataimport.helper;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -7,7 +7,6 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.registrefoncier.RaisonAcquisitionRF;
-import ch.vd.unireg.registrefoncier.dataimport.helper.RaisonAcquisitionRFHelper;
 
 import static org.junit.Assert.assertTrue;
 
