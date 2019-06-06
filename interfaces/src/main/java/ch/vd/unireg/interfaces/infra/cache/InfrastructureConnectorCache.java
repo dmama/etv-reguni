@@ -1,18 +1,16 @@
 package ch.vd.unireg.interfaces.infra.cache;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeSet;
 
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -1671,37 +1669,52 @@ public class InfrastructureConnectorCache implements InfrastructureConnector, Un
 		return resultat;
 	}
 
-	private static class KeyGetToutesLesCollectiviteAdministrative {
-		@Override
-		public int hashCode() {
-			return HashCodeBuilder.reflectionHashCode(this);
+	private static class KeyFindCollectivitesAdministratives {
+		private final Set<Integer> codeCollectivites;
+		private final boolean inactif;
+
+		public KeyFindCollectivitesAdministratives(Collection<Integer> codeCollectivites, boolean inactif) {
+			this.codeCollectivites = new TreeSet<>(codeCollectivites);
+			this.inactif = inactif;
 		}
 
 		@Override
-		public boolean equals(Object obj) {
-			return EqualsBuilder.reflectionEquals(this, obj);
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (!(o instanceof KeyFindCollectivitesAdministratives)) return false;
+			final KeyFindCollectivitesAdministratives that = (KeyFindCollectivitesAdministratives) o;
+			return inactif == that.inactif &&
+					Objects.equals(codeCollectivites, that.codeCollectivites);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(codeCollectivites, inactif);
 		}
 
 		@Override
 		public String toString() {
-			return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+			return "KeyFindCollectivitesAdministratives{" +
+					"codeCollectivites=" + codeCollectivites +
+					", inactif=" + inactif +
+					'}';
 		}
 	}
-
 
 	@Override
 	public List<CollectiviteAdministrative> findCollectivitesAdministratives(List<Integer> codeCollectivites, boolean inactif) {
 
 		final List<CollectiviteAdministrative> resultats;
 
-		final KeyGetToutesLesCollectiviteAdministrative key = new KeyGetToutesLesCollectiviteAdministrative();
+		final KeyFindCollectivitesAdministratives key = new KeyFindCollectivitesAdministratives(codeCollectivites, inactif);
 		final Element element = cache.get(key);
 		if (element == null) {
 			resultats = target.findCollectivitesAdministratives(codeCollectivites, inactif);
 			cache.put(new Element(key, resultats));
 		}
 		else {
-			resultats = target.findCollectivitesAdministratives(codeCollectivites, inactif);
+			//noinspection unchecked
+			resultats = (List<CollectiviteAdministrative>) element.getObjectValue();
 		}
 
 		return resultats;
