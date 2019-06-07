@@ -9,12 +9,14 @@ import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
 
 public class ServiceSecuriteChecker implements StatusChecker {
 
+	public static final String NAME = "serviceSecurite";
+
 	private ServiceSecuriteService serviceSecuriteRaw;
 
 	@NotNull
 	@Override
 	public String getName() {
-		return "serviceSecurite";
+		return NAME;
 	}
 
 	@Override

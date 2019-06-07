@@ -8,12 +8,14 @@ import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 
 public class ServiceInfraChecker implements StatusChecker {
 
+	public static final String NAME = "serviceInfra";
+
 	private InfrastructureConnector infraConnector;
 
 	@NotNull
 	@Override
 	public String getName() {
-		return "serviceInfra";
+		return NAME;
 	}
 
 	@Override

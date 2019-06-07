@@ -8,12 +8,14 @@ import ch.vd.unireg.webservice.sipf.BVRPlusClient;
 
 public class ServiceBVRChecker implements StatusChecker {
 
+	public static final String NAME = "serviceBVRPlus";
+
 	private BVRPlusClient bvrClient;
 
 	@NotNull
 	@Override
 	public String getName() {
-		return "serviceBVRPlus";
+		return NAME;
 	}
 
 	@Override

@@ -4,17 +4,19 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.shared.statusmanager.CheckerException;
 import ch.vd.shared.statusmanager.StatusChecker;
-import ch.vd.unireg.wsclient.efacture.EFactureClient;
 import ch.vd.unireg.efacture.EFactureService;
+import ch.vd.unireg.wsclient.efacture.EFactureClient;
 
 public class ServiceEFactureChecker implements StatusChecker {
+
+	public static final String NAME = "serviceEFacture";
 
 	private EFactureClient efactureClient;
 
 	@NotNull
 	@Override
 	public String getName() {
-		return "serviceEFacture";
+		return NAME;
 	}
 
 	@Override

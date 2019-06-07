@@ -17,42 +17,30 @@
 		</property>
 		<property name="criticalCheckers">
 			<list>
-				<ref bean="serviceCivilChecker" />
-				<ref bean="serviceEntrepriseChecker" />
-				<ref bean="serviceInfraChecker" />
-				<ref bean="serviceSecuriteChecker" />
+				<bean class="ch.vd.unireg.checker.ServiceCivilChecker">
+					<property name="individuConnector" ref="individuConnectorTracing" />
+				</bean>
+				<bean class="ch.vd.unireg.checker.ServiceEntrepriseChecker">
+					<property name="entrepriseConnector" ref="entrepriseConnectorTracing" />
+				</bean>
+				<bean class="ch.vd.unireg.checker.ServiceInfraChecker">
+					<property name="infraConnector" ref="infrastructureConnectorTracing" />
+				</bean>
+				<bean class="ch.vd.unireg.checker.ServiceSecuriteChecker">
+					<property name="serviceSecuriteRaw" ref="serviceSecuriteServiceTracing" />
+				</bean>
 			</list>
 		</property>
 		<property name="nonCriticalCheckers">
 			<list>
-				<ref bean="serviceBVRChecker" />
-				<ref bean="serviceEFactureChecker" />
+				<bean class="ch.vd.unireg.checker.ServiceBVRChecker">
+					<property name="bvrClient" ref="bvrPlusClient" />
+				</bean>
+				<bean class="ch.vd.unireg.checker.ServiceEFactureChecker">
+					<property name="efactureClient" ref="eFactureClient" />
+				</bean>
 			</list>
 		</property>
-	</bean>
-
-	<bean id="serviceCivilChecker" class="ch.vd.unireg.checker.ServiceCivilChecker">
-		<property name="individuConnector" ref="individuConnectorTracing" />
-	</bean>
-
-	<bean id="serviceEntrepriseChecker" class="ch.vd.unireg.checker.ServiceEntrepriseChecker">
-		<property name="entrepriseConnector" ref="entrepriseConnectorTracing" />
-	</bean>
-
-	<bean id="serviceInfraChecker" class="ch.vd.unireg.checker.ServiceInfraChecker">
-		<property name="infraConnector" ref="infrastructureConnectorTracing" />
-	</bean>
-
-	<bean id="serviceSecuriteChecker" class="ch.vd.unireg.checker.ServiceSecuriteChecker">
-		<property name="serviceSecuriteRaw" ref="serviceSecuriteServiceTracing" />
-	</bean>
-
-	<bean id="serviceBVRChecker" class="ch.vd.unireg.checker.ServiceBVRChecker">
-		<property name="bvrClient" ref="bvrPlusClient" />
-	</bean>
-
-	<bean id="serviceEFactureChecker" class="ch.vd.unireg.checker.ServiceEFactureChecker">
-		<property name="efactureClient" ref="eFactureClient" />
 	</bean>
 
 </beans>

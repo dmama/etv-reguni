@@ -11,7 +11,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import ch.vd.shared.statusmanager.StatusChecker;
+import ch.vd.shared.statusmanager.StatusManager;
+import ch.vd.unireg.checker.ServiceBVRChecker;
+import ch.vd.unireg.checker.ServiceCivilChecker;
+import ch.vd.unireg.checker.ServiceEFactureChecker;
+import ch.vd.unireg.checker.ServiceEntrepriseChecker;
+import ch.vd.unireg.checker.ServiceInfraChecker;
+import ch.vd.unireg.checker.ServiceSecuriteChecker;
 import ch.vd.unireg.common.HtmlHelper;
 import ch.vd.unireg.evenement.identification.contribuable.IdentCtbDAO;
 import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuable;
@@ -39,15 +45,8 @@ public class StatusController {
 
 	private CacheManager cacheManager;
 	private StatsService statsService;
+	private StatusManager statusManager;
 
-	private StatusChecker serviceCivilChecker;
-	private StatusChecker serviceEntrepriseChecker;
-	private StatusChecker serviceInfraChecker;
-	private StatusChecker serviceSecuriteChecker;
-	private StatusChecker serviceBVRChecker;
-	private StatusChecker serviceEFactureChecker;
-
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTiersSearcher(GlobalTiersSearcher tiersSearcher) {
 		this.tiersSearcher = tiersSearcher;
 	}
@@ -64,43 +63,16 @@ public class StatusController {
 		this.identSearcher = identSearcher;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setCacheManager(CacheManager cacheManager) {
 		this.cacheManager = cacheManager;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setStatsService(StatsService statsService) {
 		this.statsService = statsService;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setServiceCivilChecker(StatusChecker serviceCivilChecker) {
-		this.serviceCivilChecker = serviceCivilChecker;
-	}
-
-	public void setServiceEntrepriseChecker(StatusChecker serviceEntrepriseChecker) {
-		this.serviceEntrepriseChecker = serviceEntrepriseChecker;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setServiceInfraChecker(StatusChecker serviceInfraChecker) {
-		this.serviceInfraChecker = serviceInfraChecker;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setServiceSecuriteChecker(StatusChecker serviceSecuriteChecker) {
-		this.serviceSecuriteChecker = serviceSecuriteChecker;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setServiceBVRChecker(StatusChecker serviceBVRChecker) {
-		this.serviceBVRChecker = serviceBVRChecker;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setServiceEFactureChecker(StatusChecker serviceEFactureChecker) {
-		this.serviceEFactureChecker = serviceEFactureChecker;
+	public void setStatusManager(StatusManager statusManager) {
+		this.statusManager = statusManager;
 	}
 
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
@@ -118,37 +90,37 @@ public class StatusController {
 	@ResponseBody
 	@RequestMapping(value = "/admin/status/civil.do", method = RequestMethod.GET)
 	public ServiceStatusView civilStatus() {
-		return new ServiceStatusView(serviceCivilChecker);
+		return new ServiceStatusView(statusManager, ServiceCivilChecker.NAME);
 	}
 
 	@ResponseBody
 	@RequestMapping(value = "/admin/status/entreprise.do", method = RequestMethod.GET)
 	public ServiceStatusView entrepriseStatus() {
-		return new ServiceStatusView(serviceEntrepriseChecker);
+		return new ServiceStatusView(statusManager, ServiceEntrepriseChecker.NAME);
 	}
 
 	@ResponseBody
 	@RequestMapping(value = "/admin/status/infra.do", method = RequestMethod.GET)
 	public ServiceStatusView infraStatus() {
-		return new ServiceStatusView(serviceInfraChecker);
+		return new ServiceStatusView(statusManager, ServiceInfraChecker.NAME);
 	}
 
 	@ResponseBody
 	@RequestMapping(value = "/admin/status/securite.do", method = RequestMethod.GET)
 	public ServiceStatusView securiteStatus() {
-		return new ServiceStatusView(serviceSecuriteChecker);
+		return new ServiceStatusView(statusManager, ServiceSecuriteChecker.NAME);
 	}
 
 	@ResponseBody
 	@RequestMapping(value = "/admin/status/bvr.do", method = RequestMethod.GET)
 	public ServiceStatusView bvrPlusStatus() {
-		return new ServiceStatusView(serviceBVRChecker);
+		return new ServiceStatusView(statusManager, ServiceBVRChecker.NAME);
 	}
 
 	@ResponseBody
 	@RequestMapping(value = "/admin/status/efacture.do", method = RequestMethod.GET)
 	public ServiceStatusView efactureStatus() {
-		return new ServiceStatusView(serviceEFactureChecker);
+		return new ServiceStatusView(statusManager, ServiceEFactureChecker.NAME);
 	}
 
 	private String getTiersIndexCount() {

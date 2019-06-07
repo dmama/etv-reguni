@@ -8,12 +8,14 @@ import ch.vd.unireg.interfaces.civil.IndividuConnector;
 
 public class ServiceCivilChecker implements StatusChecker {
 
+	public static final String NAME = "serviceCivil";
+
 	private IndividuConnector individuConnector;
 
 	@NotNull
 	@Override
 	public String getName() {
-		return "serviceCivil";
+		return NAME;
 	}
 
 	@Override

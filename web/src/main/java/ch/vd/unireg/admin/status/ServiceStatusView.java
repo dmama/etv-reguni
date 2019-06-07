@@ -1,6 +1,8 @@
 package ch.vd.unireg.admin.status;
 
-import ch.vd.shared.statusmanager.StatusChecker;
+import org.jetbrains.annotations.NotNull;
+
+import ch.vd.shared.statusmanager.StatusManager;
 import ch.vd.unireg.common.HtmlHelper;
 
 public class ServiceStatusView {
@@ -9,22 +11,17 @@ public class ServiceStatusView {
 	private final String code;
 	private final String description;
 
-	public ServiceStatusView(StatusChecker checker) {
-		this.name = checker.getName();
-
-		String code;
-		String description;
-		try {
-			checker.check();
-			code = "OK";
-			description = null;
+	public ServiceStatusView(@NotNull StatusManager statusManager, @NotNull String checkerName) {
+		this.name = checkerName;
+		final String status = statusManager.getDetailedStatus().get(checkerName);
+		if ("OK".equals(status)) {
+			this.code = "OK";
+			this.description = null;
 		}
-		catch (Exception e) {
-			code = "KO";
-			description = HtmlHelper.renderMultilines(e.getMessage());
+		else {
+			this.code = "KO";
+			this.description = HtmlHelper.renderMultilines(status);
 		}
-		this.code = code;
-		this.description = description;
 	}
 
 	public String getName() {

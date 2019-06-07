@@ -9,12 +9,7 @@
 		<property name="identCtbDAO" ref="identCtbDAO"/>
 		<property name="cacheManager" ref="ehCacheManager" />
 		<property name="statsService" ref="statsService" />
-		<property name="serviceCivilChecker" ref="serviceCivilChecker" />
-		<property name="serviceEntrepriseChecker" ref="serviceEntrepriseChecker"/>
-		<property name="serviceInfraChecker" ref="serviceInfraChecker" />
-		<property name="serviceSecuriteChecker" ref="serviceSecuriteChecker" />
-		<property name="serviceBVRChecker" ref="serviceBVRChecker" />
-		<property name="serviceEFactureChecker" ref="serviceEFactureChecker" />
+		<property name="statusManager" ref="statusManager" />
 	</bean>
 
 	<bean id="autoCompleteInfraController" class="ch.vd.unireg.json.AutoCompleteInfraController">

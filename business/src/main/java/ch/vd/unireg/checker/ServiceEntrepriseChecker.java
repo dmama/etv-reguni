@@ -8,12 +8,14 @@ import ch.vd.unireg.interfaces.entreprise.EntrepriseConnector;
 
 public class ServiceEntrepriseChecker implements StatusChecker {
 
+	public static final String NAME = "serviceEntreprise";
+
 	private EntrepriseConnector entrepriseConnector;
 
 	@NotNull
 	@Override
 	public String getName() {
-		return "serviceEntreprise";
+		return NAME;
 	}
 
 	@Override
