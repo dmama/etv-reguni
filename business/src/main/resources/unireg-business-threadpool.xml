@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<!-- pool de threads à disposition des services de business -->
+
+	<bean id="businessRawThreadPool" class="org.springframework.scheduling.concurrent.ThreadPoolExecutorFactoryBean">
+		<property name="corePoolSize" value="4"/> <!-- nombre minimum de threads -->
+		<property name="maxPoolSize" value="4"/> <!-- nombre maximum de threads -->
+	</bean>
+
+	<bean id="businessBraveThreadPool" class="ch.vd.shared.brave.BraveAwareExecutorServiceFactoryBean">
+		<property name="traceContext" ref="braveTraceContext"/>
+		<property name="target" ref="businessRawThreadPool"/>
+	</bean>
+
+	<alias alias="businessThreadPool" name="businessBraveThreadPool"/>
+
+</beans>

@@ -4,6 +4,6 @@
 
 	<!-- la configuration de brave : stockage des traces id dans le MDC de slf4j -->
 
-	<bean id="braveTraceContext" class="ch.vd.unireg.servlet.tracing.BraveMDCCurrentTraceContextFactoryBean"/>
+	<bean id="braveTraceContext" class="ch.vd.shared.brave.BraveMDCCurrentTraceContextFactoryBean"/>
 
 </beans>

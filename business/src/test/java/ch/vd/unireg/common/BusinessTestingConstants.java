@@ -25,6 +25,7 @@ public class BusinessTestingConstants {
 	public static final String UNIREG_BUSINESS_UT_CLIENT_WEBSERVICE = "classpath:ut/unireg-businessut-client-ws.xml";
 	public static final String UNIREG_BUSINESS_UT_CONFIG = "classpath:ut/unireg-businessut-config.xml";
 	public static final String UNIREG_BUSINESS_UT_TACHES = "classpath:ut/unireg-businessut-taches.xml";
+	public static final String UNIREG_BUSINESS_UT_THREADPOOL = "classpath:ut/unireg-businessut-threadpool.xml";
 	public static final String UNIREG_BUSINESS_UT_ADRESSES = "classpath:ut/unireg-businessut-adresses.xml";
 	public static final String UNIREG_BUSINESS_UT_REGISTREFONCIER_IMPORT = "classpath:ut/unireg-businessut-registrefoncier-import.xml";
 	public static final String UNIREG_BUSINESS_UT_REGIME_FISCAL = "classpath:ut/unireg-businessut-regimefiscal.xml";

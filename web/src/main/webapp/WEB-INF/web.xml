@@ -31,6 +31,7 @@
 			classpath*:/unireg-business-jobs4webit.xml,
 			classpath*:/unireg-business-registrefoncier.xml,
 			classpath*:/unireg-business-registrefoncier-import.xml,
+			classpath*:/unireg-business-threadpool.xml,
 			/WEB-INF/unireg-web-*.xml
 		</param-value>
 	</context-param>

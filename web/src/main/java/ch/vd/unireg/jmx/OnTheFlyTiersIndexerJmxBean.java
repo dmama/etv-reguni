@@ -11,7 +11,4 @@ public interface OnTheFlyTiersIndexerJmxBean {
 
 	@ManagedAttribute(description = "Nombre de tiers en attente d'indexation asynchrone.")
 	int getQueueSize();
-
-	@ManagedAttribute(description = "Nombre de threads d'indexation actuellement activés.")
-	int getThreadNumber();
 }

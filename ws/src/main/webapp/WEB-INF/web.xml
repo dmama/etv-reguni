@@ -13,11 +13,12 @@
 		<param-value>
 			classpath*:/unireg-core-dao.xml,
 			classpath*:/unireg-core-sf.xml,
-			classpath*:/unireg-business-essentials.xml;
-			classpath*:/unireg-business-cxf.xml;
+			classpath*:/unireg-business-essentials.xml,
+			classpath*:/unireg-business-cxf.xml,
 			classpath*:/unireg-business-interfaces.xml,
 			classpath*:/unireg-business-evtfiscal.xml,
 			classpath*:/unireg-business-registrefoncier.xml,
+			classpath*:/unireg-business-threadpool.xml,
 			/WEB-INF/unireg-ws-*.xml
 		</param-value>
 	</context-param>

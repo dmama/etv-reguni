@@ -109,9 +109,4 @@ public interface GlobalTiersIndexer {
 	 * @return le nombre de tiers actuellement en attente d'indexation dans le mode "on-the-fly"
 	 */
 	int getOnTheFlyQueueSize();
-
-	/**
-	 * @return le nombre de threads actuellement activés pour le traitement des indexations "on-the-fly"
-	 */
-	int getOnTheFlyThreadNumber();
 }

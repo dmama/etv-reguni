@@ -19,10 +19,4 @@ public class OnTheFlyTiersIndexerJmxBeanImpl implements OnTheFlyTiersIndexerJmxB
 	public int getQueueSize() {
 		return globalTiersIndexer.getOnTheFlyQueueSize();
 	}
-
-	@ManagedAttribute(description = "Nombre de threads d'indexation actuellement activés.")
-	@Override
-	public int getThreadNumber() {
-		return globalTiersIndexer.getOnTheFlyThreadNumber();
-	}
 }

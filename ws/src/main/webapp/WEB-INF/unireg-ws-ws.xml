@@ -19,7 +19,7 @@
 		<property name="maxPoolSize" value="${extprop.webservice.threadpool.maxSize}"/> <!-- nombre maximum de threads -->
 	</bean>
 
-	<bean id="wsBraveThreadPool" class="ch.vd.unireg.servlet.tracing.BraveAwareExecutorServiceFactoryBean">
+	<bean id="wsBraveThreadPool" class="ch.vd.shared.brave.BraveAwareExecutorServiceFactoryBean">
 		<property name="traceContext" ref="braveTraceContext"/>
 		<property name="target" ref="wsRawThreadPool"/>
 	</bean>

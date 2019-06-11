@@ -79,8 +79,8 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 	private AvatarService avatarService;
 	private StatsService statsService;
 	private AuditManager audit;
-
 	private OnTheFlyTiersIndexer onTheFlyTiersIndexer;
+
 	private LoadAverager onTheFlyLoadAverager;
 	private final ThreadSwitch onTheFlyIndexation = new ThreadSwitch(true);
 
@@ -377,7 +377,6 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		onTheFlyTiersIndexer = new OnTheFlyTiersIndexer(this, transactionManager, sessionFactory, tiersDAO);
 		if (statsService != null) {
 
 			// façade de monitoring sur la queue d'indexation on-the-fly, où la charge est définie comme le nombre de tiers en attente d'indexation
@@ -394,7 +393,6 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 
 	@Override
 	public void destroy() throws Exception {
-		onTheFlyTiersIndexer.destroy();
 		if (onTheFlyLoadAverager != null) {
 			onTheFlyLoadAverager.stop();
 			onTheFlyLoadAverager = null;
@@ -414,12 +412,6 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 		return onTheFlyTiersIndexer.getQueueSize();
 	}
 
-	@Override
-	public int getOnTheFlyThreadNumber() {
-		return onTheFlyTiersIndexer.getActiveThreadNumber();
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
     public void setGlobalIndex(GlobalIndexInterface globalIndex) {
         this.globalIndex = globalIndex;
     }
@@ -436,7 +428,6 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
     public void setServiceInfra(ServiceInfrastructureService serviceInfra) {
         this.serviceInfra = serviceInfra;
     }
@@ -461,12 +452,10 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
         this.transactionManager = transactionManager;
     }
 
-    @SuppressWarnings({"UnusedDeclaration"})
     public void setSessionFactory(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
 
-    @SuppressWarnings({"UnusedDeclaration"})
     public void setTiersSearcher(GlobalTiersSearcher tiersSearcher) {
         this.tiersSearcher = tiersSearcher;
 	}
@@ -477,6 +466,10 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 
 	public void setServiceEntreprise(ServiceEntreprise serviceEntreprise) {
 		this.serviceEntreprise = serviceEntreprise;
+	}
+
+	public void setOnTheFlyTiersIndexer(OnTheFlyTiersIndexer onTheFlyTiersIndexer) {
+		this.onTheFlyTiersIndexer = onTheFlyTiersIndexer;
 	}
 
 	public void setAudit(AuditManager audit) {

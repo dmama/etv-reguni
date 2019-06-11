@@ -19,6 +19,15 @@
 		<property name="sessionFactory"  ref="sessionFactory"/>
 		<property name="statsService" ref="statsService" />
 		<property name="audit" ref="auditManager"/>
+		<property name="onTheFlyTiersIndexer" ref="onTheFlyIndexer"/>
+	</bean>
+
+	<bean id="onTheFlyIndexer" class="ch.vd.unireg.indexer.async.OnTheFlyTiersIndexer">
+		<property name="tiersDAO" ref="tiersDAO"/>
+		<property name="indexer" ref="globalTiersIndexer"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="sessionFactory" ref="sessionFactory"/>
+		<property name="executorService" ref="businessThreadPool"/>
 	</bean>
 
 	<bean id="globalTiersSearcher" class="ch.vd.unireg.indexer.tiers.GlobalTiersSearcherImpl">

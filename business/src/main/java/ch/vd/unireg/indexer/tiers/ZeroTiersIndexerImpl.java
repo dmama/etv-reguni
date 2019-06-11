@@ -62,9 +62,4 @@ public class ZeroTiersIndexerImpl implements GlobalTiersIndexer {
 	public int getOnTheFlyQueueSize() {
 		return 0;
 	}
-
-	@Override
-	public int getOnTheFlyThreadNumber() {
-		return 0;
-	}
 }
