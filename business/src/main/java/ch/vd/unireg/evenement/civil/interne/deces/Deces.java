@@ -120,7 +120,7 @@ public class Deces extends EvenementCivilInterne {
 			/*
 			 * Obtention du tiers correspondant au veuf.
 			 */
-			PersonnePhysique veuf = context.getTiersService().getPersonnePhysiqueByNumeroIndividu(getConjointSurvivant().getNoTechnique() );
+			PersonnePhysique veuf = context.getTiersService().getPersonnePhysiqueByNumeroIndividu(getConjointSurvivant().getNoTechnique(), true);
 
 			verifierPresenceDecisionEnCours(veuf,defunt,getDate());
 

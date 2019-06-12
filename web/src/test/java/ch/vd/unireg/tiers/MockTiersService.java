@@ -87,6 +87,11 @@ public class MockTiersService implements TiersService {
 	}
 
 	@Override
+	public PersonnePhysique getPersonnePhysiqueByNumeroIndividu(long numeroIndividu, boolean doNotAutoFlush) {
+		return null;
+	}
+
+	@Override
 	public Entreprise getEntrepriseByNoEntrepriseCivile(long numeroEntrepriseCivile) {
 		return null;
 	}

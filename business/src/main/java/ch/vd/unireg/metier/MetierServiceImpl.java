@@ -2357,7 +2357,7 @@ public class MetierServiceImpl implements MetierService {
 		}
 
 		// recherche des étiquettes disponibles et construction des manquantes
-		etiquetteService.getAllEtiquettes().stream()
+		etiquetteService.getAllEtiquettes(true).stream()
 				.filter(Etiquette::isActive)                                                            // on ne joue pas avec les étiquettes inactives
 				.filter(etiq -> etiq.getTypeTiers().isForClass(PersonnePhysique.class))                 // seules les étiquettes activables sur une personne physique sont éligibles
 				.filter(etiq -> etiq.getActionSurDeces() != null)                                       // on ne prends compte que des étiquettes qui ont un trigger sur le décès

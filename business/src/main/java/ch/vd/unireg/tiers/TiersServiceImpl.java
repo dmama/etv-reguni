@@ -309,16 +309,15 @@ public class TiersServiceImpl implements TiersService {
 		this.audit = audit;
 	}
 
-	/**
-     * Renvoie la personne physique correspondant au numéro d'individu passé en paramètre.
-     *
-     * @param numeroIndividu le numéro de l'individu.
-     * @return la personne physique correspondante au numéro d'individu passé en paramètre, ou <b>null</b> s'il n'existe pas.
-     */
     @Override
     public PersonnePhysique getPersonnePhysiqueByNumeroIndividu(long numeroIndividu) {
         return tiersDAO.getPPByNumeroIndividu(numeroIndividu);
     }
+
+	@Override
+	public PersonnePhysique getPersonnePhysiqueByNumeroIndividu(long numeroIndividu, boolean doNotAutoFlush) {
+		return tiersDAO.getPPByNumeroIndividu(numeroIndividu, doNotAutoFlush);
+	}
 
 	/**
      * Renvoie l'entreprise correspondant au numéro d'individu passé en paramètre.
@@ -2586,7 +2585,7 @@ public class TiersServiceImpl implements TiersService {
 
 	@Override
 	public ParenteUpdateResult refreshParentesDepuisNumeroIndividu(long noIndividu) {
-		final PersonnePhysique pp = getPersonnePhysiqueByNumeroIndividu(noIndividu);
+		final PersonnePhysique pp = tiersDAO.getPPByNumeroIndividu(noIndividu, true);
 		final ParenteUpdateResult result;
 		if (pp != null) {
 			result = refreshParentesSurPersonnePhysique(pp, true);
@@ -2779,7 +2778,6 @@ public class TiersServiceImpl implements TiersService {
 				final List<RelationVersIndividu> parents = individu.getParents();
 
 				// 1.1. on récupère les données "en tiers"
-				final Set<RapportEntreTiers> sujetsConnus = pp.getRapportsSujet();
 				final Map<Long, Parente> filiationsCiviles;         // parenté indexée par le numéro de tiers du parent
 				if (parents != null && !parents.isEmpty()) {
 					filiationsCiviles = new HashMap<>(parents.size());
@@ -2802,6 +2800,7 @@ public class TiersServiceImpl implements TiersService {
 				}
 
 				// 1.2. on passe d'abord en revue les parentés (-> parents) connues pour voir celles qui doivent disparaître
+				final Set<RapportEntreTiers> sujetsConnus = pp.getRapportsSujet();
 				final Set<RapportEntreTiers> sujets;
 				if (sujetsConnus != null) {
 					sujets = sujetsConnus;

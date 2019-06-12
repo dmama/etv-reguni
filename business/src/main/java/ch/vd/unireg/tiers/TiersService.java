@@ -82,6 +82,15 @@ public interface TiersService {
      */
     PersonnePhysique getPersonnePhysiqueByNumeroIndividu(long numeroIndividu);
 
+	/**
+	 * Renvoie la personne physique correspondant au numéro d'individu passé en paramètre.
+	 *
+	 * @param numeroIndividu le numéro de l'individu.
+	 * @param doNotAutoflush <code>true</code> s'il ne faut pas laisser la session subir un autoflush pendant la requête de récupération des données en base
+	 * @return la personne physique (tiers non-annulé) correspondante au numéro d'individu passé en paramètre, ou <b>null</b>.
+	 */
+	PersonnePhysique getPersonnePhysiqueByNumeroIndividu(long numeroIndividu, boolean doNotAutoFlush);
+
     /**
      * Renvoie l'entreprise (fiscale, donc) correspondant au numéro d'entreprise (civile) passé en paramètre.
      *
