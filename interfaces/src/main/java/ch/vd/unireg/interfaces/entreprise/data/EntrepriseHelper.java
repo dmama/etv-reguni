@@ -232,12 +232,8 @@ public abstract class EntrepriseHelper {
 	 * @return La succession de plage contenant l'information de capital.
 	 */
 	public static List<Capital> getCapitaux(Map<Long, ? extends EtablissementCivil> donneesEtablissements) {
-		return extractDataFromEtablissementsPrincipaux(donneesEtablissements, new DateRangeLimitatorImpl<>(), new EtablissementDataExtractor<List<Capital>>() {
-			@Override
-			public List<Capital> extractData(EtablissementCivil etablissement) {
-				return etablissement.getDonneesRC() != null ? etablissement.getDonneesRC().getCapital() : null;
-			}
-		});
+		return extractDataFromEtablissementsPrincipaux(donneesEtablissements, new DateRangeLimitatorImpl<>(),
+		                                               (EtablissementDataExtractor<List<Capital>>) etablissement -> etablissement.getDonneesRC() != null ? etablissement.getDonneesRC().getCapital() : null);
 	}
 
 	public static Capital getCapital(EntrepriseCivile entrepriseCivile, @Nullable RegDate date) {
@@ -699,15 +695,10 @@ public abstract class EntrepriseHelper {
 			domicilesDebutCorrige[0] = new Domicile(debutActivite, premierDomicile.getDateFin(), premierDomicile.getTypeAutoriteFiscale(), premierDomicile.getNumeroOfsAutoriteFiscale());
 		}
 
-		final List<Domicile> domicilesResult = DateRangeHelper.extract(Arrays.asList(domicilesDebutCorrige), activite, new DateRangeHelper.AdapterCallback<Domicile>() {
-			@Override
-			public Domicile adapt(Domicile range, RegDate debut, RegDate fin) {
-				return new Domicile(debut != null ? debut : range.getDateDebut(),
-				                    fin != null ? fin : range.getDateFin(),
-				                    range.getTypeAutoriteFiscale(),
-				                    range.getNumeroOfsAutoriteFiscale());
-			}
-		});
+		final List<Domicile> domicilesResult = DateRangeHelper.extract(Arrays.asList(domicilesDebutCorrige), activite, (range, debut, fin) -> new Domicile(debut != null ? debut : range.getDateDebut(),
+                                                                                                                                                   fin != null ? fin : range.getDateFin(),
+                                                                                                                                                   range.getTypeAutoriteFiscale(),
+                                                                                                                                                   range.getNumeroOfsAutoriteFiscale()));
 		return DateRangeHelper.collate(domicilesResult);
 	}
 
@@ -805,14 +796,9 @@ public abstract class EntrepriseHelper {
 						final List<DateRanged<T>> extractedData = DateRangeHelper.extract(toExtract,
 						                                                                  type.getDateDebut(),
 						                                                                  type.getDateFin(),
-						                                                                  new DateRangeHelper.AdapterCallback<DateRanged<T>>() {
-							                                                                  @Override
-							                                                                  public DateRanged<T> adapt(DateRanged<T> range, RegDate debut, RegDate fin) {
-								                                                                  return new DateRanged<>(debut != null ? debut : range.getDateDebut(),
-								                                                                                          fin != null ? fin : range.getDateFin(),
-								                                                                                          range.getPayload());
-							                                                                  }
-						                                                                  });
+						                                                                  (range, debut, fin) -> new DateRanged<>(debut != null ? debut : range.getDateDebut(),
+						                                                                                          fin != null ? fin : range.getDateFin(),
+						                                                                                          range.getPayload()));
 						extracted.addAll(extractedData);
 					}
 				}
@@ -845,16 +831,13 @@ public abstract class EntrepriseHelper {
 	}
 
 	private static <T extends DateRange> DateRangeHelper.AdapterCallback<T> buildAdapterCallbackFromLimitator(final DateRangeLimitator<T> limitator) {
-		return new DateRangeHelper.AdapterCallback<T>() {
-			@Override
-			public T adapt(T range, RegDate debut, RegDate fin) {
-				if (debut == null && fin == null) {
-					return range;
-				}
-				return limitator.limitTo(range,
-				                         debut == null ? range.getDateDebut() : debut,
-				                         fin == null ? range.getDateFin() : fin);
+		return (range, debut, fin) -> {
+			if (debut == null && fin == null) {
+				return range;
 			}
+			return limitator.limitTo(range,
+			                         debut == null ? range.getDateDebut() : debut,
+			                         fin == null ? range.getDateFin() : fin);
 		};
 	}
 }

@@ -2,7 +2,6 @@ package ch.vd.unireg.evenement.civil.interne.naissance;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import net.sf.ehcache.CacheManager;
@@ -242,12 +241,7 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 			assertEquals(2, events.size());
 
 			final List<EvenementFiscal> tries = new ArrayList<>(events);
-			Collections.sort(tries, new Comparator<EvenementFiscal>() {
-				@Override
-				public int compare(EvenementFiscal o1, EvenementFiscal o2) {
-					return Long.compare(o1.getId(), o2.getId());
-				}
-			});
+			Collections.sort(tries, (o1, o2) -> Long.compare(o1.getId(), o2.getId()));
 
 			final EvenementFiscalSituationFamille event0 = (EvenementFiscalSituationFamille) tries.get(0);
 			assertNotNull(event0);
@@ -333,12 +327,7 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 			assertEquals(2, events.size());
 
 			final List<EvenementFiscal> tries = new ArrayList<>(events);
-			Collections.sort(tries, new Comparator<EvenementFiscal>() {
-				@Override
-				public int compare(EvenementFiscal o1, EvenementFiscal o2) {
-					return Long.compare(o1.getId(), o2.getId());
-				}
-			});
+			Collections.sort(tries, (o1, o2) -> Long.compare(o1.getId(), o2.getId()));
 
 			final EvenementFiscalSituationFamille event0 = (EvenementFiscalSituationFamille) tries.get(0);
 			assertNotNull(event0);

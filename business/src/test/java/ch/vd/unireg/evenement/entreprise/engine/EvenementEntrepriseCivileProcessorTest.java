@@ -14,7 +14,6 @@ import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.data.CivilDataEventNotifier;
 import ch.vd.unireg.evenement.entreprise.EvenementEntreprise;
-import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseCappingLevelProvider;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseErreur;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseException;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseService;
@@ -205,12 +204,7 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		translator.setEvenementEntrepriseService(getBean(EvenementEntrepriseService.class, "evtEntrepriseService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.setUseOrganisationsOfNotice(false);
-		translator.setCappingLevelProvider(new EvenementEntrepriseCappingLevelProvider() {
-			@Override
-			public NiveauCappingEtat getNiveauCapping() {
-				return NiveauCappingEtat.A_VERIFIER;
-			}
-		});
+		translator.setCappingLevelProvider(() -> NiveauCappingEtat.A_VERIFIER);
 		translator.setAudit(audit);
 		translator.afterPropertiesSet();
 
@@ -287,12 +281,7 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		translator.setEvenementEntrepriseService(getBean(EvenementEntrepriseService.class, "evtEntrepriseService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.setUseOrganisationsOfNotice(false);
-		translator.setCappingLevelProvider(new EvenementEntrepriseCappingLevelProvider() {
-			@Override
-			public NiveauCappingEtat getNiveauCapping() {
-				return NiveauCappingEtat.EN_ERREUR;
-			}
-		});
+		translator.setCappingLevelProvider(() -> NiveauCappingEtat.EN_ERREUR);
 		translator.setAudit(audit);
 		translator.afterPropertiesSet();
 

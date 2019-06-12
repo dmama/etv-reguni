@@ -28,7 +28,6 @@ import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.indexer.EmptySearchCriteriaException;
 import ch.vd.unireg.indexer.GlobalIndexInterface;
 import ch.vd.unireg.indexer.IndexerException;
-import ch.vd.unireg.indexer.SearchAllCallback;
 import ch.vd.unireg.indexer.SearchCallback;
 import ch.vd.unireg.indexer.TooManyClausesIndexerException;
 import ch.vd.unireg.indexer.TooManyResultsIndexerException;
@@ -269,12 +268,7 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 		// Lancement de la recherche
 		Query query = new QueryConstructor(criteria).constructQuery();
 		if (query != null) {
-			globalIndex.search(query, maxHits, new SearchCallback() {
-				@Override
-				public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
-					results.exists = (hits.totalHits > 0);
-				}
-			});
+			globalIndex.search(query, maxHits, (hits, docGetter) -> results.exists = (hits.totalHits > 0));
 		}
 
 		return results.exists;
@@ -298,26 +292,23 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 		// Lancement de la recherche
 		Query query = new QueryConstructor(criteria).constructQuery();
 		if (query != null) {
-			globalIndex.search(query, maxHits, new SearchCallback() {
-				@Override
-				public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
-					try {
-						/*
-						 * On peut réellement recevoir plusieurs résultats en recherchant sur un seul numéro de contribuable (= cas du ménage
-						 * commun), mais ici on s'intéresse uniquement au contribuable spécifié.
-						 */
-						for (ScoreDoc h : hits.scoreDocs) {
-							Document doc = docGetter.get(h.doc);
-							TiersIndexedData data = new TiersIndexedData(doc);
-							if (data.getNumero().equals(numero)) {
-								results.data = data;
-								break;
-							}
+			globalIndex.search(query, maxHits, (hits, docGetter) -> {
+				try {
+					/*
+					 * On peut réellement recevoir plusieurs résultats en recherchant sur un seul numéro de contribuable (= cas du ménage
+					 * commun), mais ici on s'intéresse uniquement au contribuable spécifié.
+					 */
+					for (ScoreDoc h : hits.scoreDocs) {
+						Document doc = docGetter.get(h.doc);
+						TiersIndexedData data = new TiersIndexedData(doc);
+						if (data.getNumero().equals(numero)) {
+							results.data = data;
+							break;
 						}
 					}
-					catch (IOException e) {
-						throw new IndexerException(e);
-					}
+				}
+				catch (IOException e) {
+					throw new IndexerException(e);
 				}
 			});
 		}
@@ -331,13 +322,10 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 		final Set<Long> ids = new HashSet<>(globalIndex.getApproxDocCount());
 
 		// [UNIREG-2597] on veut explicitement tous les ids, sans limite de recherche
-		globalIndex.searchAll(new MatchAllDocsQuery(), new SearchAllCallback() {
-			@Override
-			public void handle(int docId, DocGetter docGetter) throws Exception {
-				final Document doc = docGetter.get(docId);
-				final long id = LuceneHelper.extractTiersId(doc);
-				ids.add(id);
-			}
+		globalIndex.searchAll(new MatchAllDocsQuery(), (docId, docGetter) -> {
+			final Document doc = docGetter.get(docId);
+			final long id = LuceneHelper.extractTiersId(doc);
+			ids.add(id);
 		});
 
 		return ids;
@@ -351,28 +339,25 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 		statusManager.setMessage("Vérification que les données de l'indexeur existent dans la base...", 50);
 
 		// Vérifie la cohérence des tiers indexés
-		globalIndex.search(new MatchAllDocsQuery(), maxHits, new SearchCallback() {
-			@Override
-			public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
-				for (ScoreDoc h : hits.scoreDocs) {
+		globalIndex.search(new MatchAllDocsQuery(), maxHits, (hits, docGetter) -> {
+			for (ScoreDoc h : hits.scoreDocs) {
 
-					if (statusManager.isInterrupted()) {
-						break;
-					}
+				if (statusManager.isInterrupted()) {
+					break;
+				}
 
-					final Document doc = docGetter.get(h.doc);
-					final long id = LuceneHelper.extractTiersId(doc);
+				final Document doc = docGetter.get(h.doc);
+				final long id = LuceneHelper.extractTiersId(doc);
 
-					if (!existingIds.contains(id)) {
-						final String message = "Le tiers n° " + id + " existe dans l'indexeur mais pas dans la base.";
-						callback.onError(id, message);
-					}
+				if (!existingIds.contains(id)) {
+					final String message = "Le tiers n° " + id + " existe dans l'indexeur mais pas dans la base.";
+					callback.onError(id, message);
+				}
 
-					final boolean added = indexedIds.add(id);
-					if (!added) {
-						final String message = "Le tiers n° " + id + " existe plusieurs fois dans l'indexeur.";
-						callback.onError(id, message);
-					}
+				final boolean added = indexedIds.add(id);
+				if (!added) {
+					final String message = "Le tiers n° " + id + " existe plusieurs fois dans l'indexeur.";
+					callback.onError(id, message);
 				}
 			}
 		});
@@ -420,19 +405,16 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 		if (fusible.isNotBlown()) {
 			final QueryConstructor queryConstructor = new QueryConstructor(criteria);
 			final Query query = queryConstructor.constructQuery();
-			globalIndex.search(query, Integer.MAX_VALUE, new SearchCallback() {
-				@Override
-				public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
-					if (fusible.isNotBlown()) {
-						for (ScoreDoc h : hits.scoreDocs) {
-							final Document doc = docGetter.get(h.doc);
-							final TiersIndexedData data = new TiersIndexedData(doc);
-							while (fusible.isNotBlown() && !queue.offer(data, 100, TimeUnit.MILLISECONDS)) {
-								// on ré-essaie tant que le fusible n'est pas grillé (= demande externe d'arrêt) et que la queue bloque
-							}
-							if (fusible.isBlown()) {
-								break;
-							}
+			globalIndex.search(query, Integer.MAX_VALUE, (hits, docGetter) -> {
+				if (fusible.isNotBlown()) {
+					for (ScoreDoc h : hits.scoreDocs) {
+						final Document doc = docGetter.get(h.doc);
+						final TiersIndexedData data = new TiersIndexedData(doc);
+						while (fusible.isNotBlown() && !queue.offer(data, 100, TimeUnit.MILLISECONDS)) {
+							// on ré-essaie tant que le fusible n'est pas grillé (= demande externe d'arrêt) et que la queue bloque
+						}
+						if (fusible.isBlown()) {
+							break;
 						}
 					}
 				}

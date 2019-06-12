@@ -80,19 +80,13 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		final long idEvt1 = 4367742354L;
 		final long idEvt2 = 567437834342L;
 
-		setupCivil(noIndividu, idEvt1, new RelationBuilder() {
-			           @Override
-			           public void buildRelations(MockIndividu individu) {
-				           addRelationVersParent(individu, rangeRelation1, noRelation1, TypeRelationVersIndividu.PERE);
-				           addRelationVersParent(individu, rangeRelation2, noRelation2, TypeRelationVersIndividu.MERE);
-			           }
-		           }, idEvt2, new RelationBuilder() {
-			           @Override
-			           public void buildRelations(MockIndividu individu) {
-				           addRelationVersParent(individu, rangeRelation1, noRelation1, TypeRelationVersIndividu.PERE);
-				           addRelationVersParent(individu, rangeRelation2, noRelation2, TypeRelationVersIndividu.MERE);
-			           }
-		           }
+		setupCivil(noIndividu, idEvt1, individu -> {
+			addRelationVersParent(individu, rangeRelation1, noRelation1, TypeRelationVersIndividu.PERE);
+			addRelationVersParent(individu, rangeRelation2, noRelation2, TypeRelationVersIndividu.MERE);
+		}, idEvt2, individu -> {
+			addRelationVersParent(individu, rangeRelation1, noRelation1, TypeRelationVersIndividu.PERE);
+			addRelationVersParent(individu, rangeRelation2, noRelation2, TypeRelationVersIndividu.MERE);
+		}
 		);
 
 		assertNeutre(strategy, idEvt1, idEvt2);
@@ -109,19 +103,13 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		final long idEvt1 = 4367742354L;
 		final long idEvt2 = 567437834342L;
 
-		setupCivil(noIndividu, idEvt1, new RelationBuilder() {
-			           @Override
-			           public void buildRelations(MockIndividu individu) {
-				           addRelationVersParent(individu, rangeRelation1, noRelation1, TypeRelationVersIndividu.PERE);
-				           addRelationVersParent(individu, rangeRelation2, noRelation2, TypeRelationVersIndividu.MERE);
-			           }
-		           }, idEvt2, new RelationBuilder() {
-			           @Override
-			           public void buildRelations(MockIndividu individu) {
-				           addRelationVersParent(individu, rangeRelation2, noRelation2, TypeRelationVersIndividu.MERE);
-				           addRelationVersParent(individu, rangeRelation1, noRelation1, TypeRelationVersIndividu.PERE);
-			           }
-		           }
+		setupCivil(noIndividu, idEvt1, individu -> {
+			addRelationVersParent(individu, rangeRelation1, noRelation1, TypeRelationVersIndividu.PERE);
+			addRelationVersParent(individu, rangeRelation2, noRelation2, TypeRelationVersIndividu.MERE);
+		}, idEvt2, individu -> {
+			addRelationVersParent(individu, rangeRelation2, noRelation2, TypeRelationVersIndividu.MERE);
+			addRelationVersParent(individu, rangeRelation1, noRelation1, TypeRelationVersIndividu.PERE);
+		}
 		);
 
 		assertNeutre(strategy, idEvt1, idEvt2);
@@ -137,19 +125,13 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		final long idEvt1 = 4367742354L;
 		final long idEvt2 = 567437834342L;
 
-		setupCivil(noIndividu, idEvt1, new RelationBuilder() {
-			           @Override
-			           public void buildRelations(MockIndividu individu) {
-				           addRelationVersParent(individu, range, noRelation1, TypeRelationVersIndividu.PERE);
-				           addRelationVersParent(individu, range, noRelation2, TypeRelationVersIndividu.MERE);
-			           }
-		           }, idEvt2, new RelationBuilder() {
-			           @Override
-			           public void buildRelations(MockIndividu individu) {
-				           addRelationVersParent(individu, range, noRelation2, TypeRelationVersIndividu.MERE);
-				           addRelationVersParent(individu, range, noRelation1, TypeRelationVersIndividu.PERE);
-			           }
-		           }
+		setupCivil(noIndividu, idEvt1, individu -> {
+			addRelationVersParent(individu, range, noRelation1, TypeRelationVersIndividu.PERE);
+			addRelationVersParent(individu, range, noRelation2, TypeRelationVersIndividu.MERE);
+		}, idEvt2, individu -> {
+			addRelationVersParent(individu, range, noRelation2, TypeRelationVersIndividu.MERE);
+			addRelationVersParent(individu, range, noRelation1, TypeRelationVersIndividu.PERE);
+		}
 		);
 
 		assertNeutre(strategy, idEvt1, idEvt2);
@@ -166,19 +148,13 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		final long idEvt1 = 4367742354L;
 		final long idEvt2 = 567437834342L;
 
-		setupCivil(noIndividu, idEvt1, new RelationBuilder() {
-			           @Override
-			           public void buildRelations(MockIndividu individu) {
-				           addRelationVersConjoint(individu, rangeRelation1, noRelation1, TypeRelationVersIndividu.CONJOINT);
-				           addRelationVersConjoint(individu, rangeRelation2, noRelation2, TypeRelationVersIndividu.CONJOINT);
-			           }
-		           }, idEvt2, new RelationBuilder() {
-			           @Override
-			           public void buildRelations(MockIndividu individu) {
-				           addRelationVersConjoint(individu, rangeRelation1, noRelation1, TypeRelationVersIndividu.CONJOINT);
-				           addRelationVersConjoint(individu, rangeRelation2, noRelation2, TypeRelationVersIndividu.CONJOINT);
-			           }
-		           }
+		setupCivil(noIndividu, idEvt1, individu -> {
+			addRelationVersConjoint(individu, rangeRelation1, noRelation1, TypeRelationVersIndividu.CONJOINT);
+			addRelationVersConjoint(individu, rangeRelation2, noRelation2, TypeRelationVersIndividu.CONJOINT);
+		}, idEvt2, individu -> {
+			addRelationVersConjoint(individu, rangeRelation1, noRelation1, TypeRelationVersIndividu.CONJOINT);
+			addRelationVersConjoint(individu, rangeRelation2, noRelation2, TypeRelationVersIndividu.CONJOINT);
+		}
 		);
 
 		assertNeutre(strategy, idEvt1, idEvt2);
@@ -195,19 +171,13 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		final long idEvt1 = 4367742354L;
 		final long idEvt2 = 567437834342L;
 
-		setupCivil(noIndividu, idEvt1, new RelationBuilder() {
-			           @Override
-			           public void buildRelations(MockIndividu individu) {
-				           addRelationVersConjoint(individu, rangeRelation1, noRelation1, TypeRelationVersIndividu.CONJOINT);
-				           addRelationVersConjoint(individu, rangeRelation2, noRelation2, TypeRelationVersIndividu.CONJOINT);
-			           }
-		           }, idEvt2, new RelationBuilder() {
-			           @Override
-			           public void buildRelations(MockIndividu individu) {
-				           addRelationVersConjoint(individu, rangeRelation2, noRelation2, TypeRelationVersIndividu.CONJOINT);
-				           addRelationVersConjoint(individu, rangeRelation1, noRelation1, TypeRelationVersIndividu.CONJOINT);
-			           }
-		           }
+		setupCivil(noIndividu, idEvt1, individu -> {
+			addRelationVersConjoint(individu, rangeRelation1, noRelation1, TypeRelationVersIndividu.CONJOINT);
+			addRelationVersConjoint(individu, rangeRelation2, noRelation2, TypeRelationVersIndividu.CONJOINT);
+		}, idEvt2, individu -> {
+			addRelationVersConjoint(individu, rangeRelation2, noRelation2, TypeRelationVersIndividu.CONJOINT);
+			addRelationVersConjoint(individu, rangeRelation1, noRelation1, TypeRelationVersIndividu.CONJOINT);
+		}
 		);
 
 		assertNeutre(strategy, idEvt1, idEvt2);
@@ -223,19 +193,13 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		final long idEvt1 = 4367742354L;
 		final long idEvt2 = 567437834342L;
 
-		setupCivil(noIndividu, idEvt1, new RelationBuilder() {
-			           @Override
-			           public void buildRelations(MockIndividu individu) {
-				           addRelationVersConjoint(individu, range, noRelation1, TypeRelationVersIndividu.CONJOINT);
-				           addRelationVersConjoint(individu, range, noRelation2, TypeRelationVersIndividu.CONJOINT);
-			           }
-		           }, idEvt2, new RelationBuilder() {
-			           @Override
-			           public void buildRelations(MockIndividu individu) {
-				           addRelationVersConjoint(individu, range, noRelation2, TypeRelationVersIndividu.CONJOINT);
-				           addRelationVersConjoint(individu, range, noRelation1, TypeRelationVersIndividu.CONJOINT);
-			           }
-		           }
+		setupCivil(noIndividu, idEvt1, individu -> {
+			addRelationVersConjoint(individu, range, noRelation1, TypeRelationVersIndividu.CONJOINT);
+			addRelationVersConjoint(individu, range, noRelation2, TypeRelationVersIndividu.CONJOINT);
+		}, idEvt2, individu -> {
+			addRelationVersConjoint(individu, range, noRelation2, TypeRelationVersIndividu.CONJOINT);
+			addRelationVersConjoint(individu, range, noRelation1, TypeRelationVersIndividu.CONJOINT);
+		}
 		);
 
 		assertNeutre(strategy, idEvt1, idEvt2);
@@ -249,12 +213,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		final long idEvt1 = 4367742354L;
 		final long idEvt2 = 567437834342L;
 
-		setupCivil(noIndividu, idEvt1, null, idEvt2, new RelationBuilder() {
-			@Override
-			public void buildRelations(MockIndividu individu) {
-				addRelationVersParent(individu, range, noParent, TypeRelationVersIndividu.PERE);
-			}
-		});
+		setupCivil(noIndividu, idEvt1, null, idEvt2, individu -> addRelationVersParent(individu, range, noParent, TypeRelationVersIndividu.PERE));
 		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (parents (apparition))");
 	}
 
@@ -266,12 +225,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		final long idEvt1 = 4367742354L;
 		final long idEvt2 = 567437834342L;
 
-		setupCivil(noIndividu, idEvt1, null, idEvt2, new RelationBuilder() {
-			@Override
-			public void buildRelations(MockIndividu individu) {
-				addRelationVersConjoint(individu, range, noConjoint, TypeRelationVersIndividu.CONJOINT);
-			}
-		});
+		setupCivil(noIndividu, idEvt1, null, idEvt2, individu -> addRelationVersConjoint(individu, range, noConjoint, TypeRelationVersIndividu.CONJOINT));
 		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (conjoints (apparition))");
 	}
 
@@ -283,12 +237,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		final long idEvt1 = 4367742354L;
 		final long idEvt2 = 567437834342L;
 
-		setupCivil(noIndividu, idEvt1, new RelationBuilder() {
-			@Override
-			public void buildRelations(MockIndividu individu) {
-				addRelationVersParent(individu, range, noParent, TypeRelationVersIndividu.MERE);
-			}
-		}, idEvt2, null);
+		setupCivil(noIndividu, idEvt1, individu -> addRelationVersParent(individu, range, noParent, TypeRelationVersIndividu.MERE), idEvt2, null);
 		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (parents (disparition))");
 	}
 
@@ -300,12 +249,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		final long idEvt1 = 4367742354L;
 		final long idEvt2 = 567437834342L;
 
-		setupCivil(noIndividu, idEvt1, new RelationBuilder() {
-			@Override
-			public void buildRelations(MockIndividu individu) {
-				addRelationVersConjoint(individu, range, noConjoint, TypeRelationVersIndividu.PARTENAIRE_ENREGISTRE);
-			}
-		}, idEvt2, null);
+		setupCivil(noIndividu, idEvt1, individu -> addRelationVersConjoint(individu, range, noConjoint, TypeRelationVersIndividu.PARTENAIRE_ENREGISTRE), idEvt2, null);
 		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (conjoints (disparition))");
 	}
 
@@ -318,17 +262,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		final long idEvt1 = 4367742354L;
 		final long idEvt2 = 567437834342L;
 
-		setupCivil(noIndividu, idEvt1, new RelationBuilder() {
-			           @Override
-			           public void buildRelations(MockIndividu individu) {
-				           addRelationVersParent(individu, range, noParent1, TypeRelationVersIndividu.PERE);
-			           }
-		           }, idEvt2, new RelationBuilder() {
-			           @Override
-			           public void buildRelations(MockIndividu individu) {
-				           addRelationVersParent(individu, range, noParent2, TypeRelationVersIndividu.PERE);
-			           }
-		           });
+		setupCivil(noIndividu, idEvt1, individu -> addRelationVersParent(individu, range, noParent1, TypeRelationVersIndividu.PERE), idEvt2, individu -> addRelationVersParent(individu, range, noParent2, TypeRelationVersIndividu.PERE));
 		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (parents)");
 	}
 
@@ -341,17 +275,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		final long idEvt1 = 4367742354L;
 		final long idEvt2 = 567437834342L;
 
-		setupCivil(noIndividu, idEvt1, new RelationBuilder() {
-			           @Override
-			           public void buildRelations(MockIndividu individu) {
-				           addRelationVersConjoint(individu, range, noConjoint1, TypeRelationVersIndividu.CONJOINT);
-			           }
-		           }, idEvt2, new RelationBuilder() {
-			           @Override
-			           public void buildRelations(MockIndividu individu) {
-				           addRelationVersConjoint(individu, range, noConjoint2, TypeRelationVersIndividu.CONJOINT);
-			           }
-		           });
+		setupCivil(noIndividu, idEvt1, individu -> addRelationVersConjoint(individu, range, noConjoint1, TypeRelationVersIndividu.CONJOINT), idEvt2, individu -> addRelationVersConjoint(individu, range, noConjoint2, TypeRelationVersIndividu.CONJOINT));
 		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (conjoints)");
 	}
 
@@ -364,17 +288,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		final long idEvt1 = 4367742354L;
 		final long idEvt2 = 567437834342L;
 
-		setupCivil(noIndividu, idEvt1, new RelationBuilder() {
-			           @Override
-			           public void buildRelations(MockIndividu individu) {
-				           addRelationVersParent(individu, range1, noParent, TypeRelationVersIndividu.MERE);
-			           }
-		           }, idEvt2, new RelationBuilder() {
-			           @Override
-			           public void buildRelations(MockIndividu individu) {
-				           addRelationVersParent(individu, range2, noParent, TypeRelationVersIndividu.MERE);
-			           }
-		           });
+		setupCivil(noIndividu, idEvt1, individu -> addRelationVersParent(individu, range1, noParent, TypeRelationVersIndividu.MERE), idEvt2, individu -> addRelationVersParent(individu, range2, noParent, TypeRelationVersIndividu.MERE));
 		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (parents (dates))");
 	}
 
@@ -387,17 +301,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		final long idEvt1 = 4367742354L;
 		final long idEvt2 = 567437834342L;
 
-		setupCivil(noIndividu, idEvt1, new RelationBuilder() {
-			           @Override
-			           public void buildRelations(MockIndividu individu) {
-				           addRelationVersParent(individu, range1, noParent, TypeRelationVersIndividu.PERE);
-			           }
-		           }, idEvt2, new RelationBuilder() {
-			           @Override
-			           public void buildRelations(MockIndividu individu) {
-				           addRelationVersParent(individu, range2, noParent, TypeRelationVersIndividu.PERE);
-			           }
-		           });
+		setupCivil(noIndividu, idEvt1, individu -> addRelationVersParent(individu, range1, noParent, TypeRelationVersIndividu.PERE), idEvt2, individu -> addRelationVersParent(individu, range2, noParent, TypeRelationVersIndividu.PERE));
 		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (parents (dates))");
 	}
 
@@ -410,17 +314,8 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		final long idEvt1 = 4367742354L;
 		final long idEvt2 = 567437834342L;
 
-		setupCivil(noIndividu, idEvt1, new RelationBuilder() {
-			           @Override
-			           public void buildRelations(MockIndividu individu) {
-				           addRelationVersConjoint(individu, range1, noConjoint, TypeRelationVersIndividu.PARTENAIRE_ENREGISTRE);
-			           }
-		           }, idEvt2, new RelationBuilder() {
-			           @Override
-			           public void buildRelations(MockIndividu individu) {
-				           addRelationVersConjoint(individu, range2, noConjoint, TypeRelationVersIndividu.PARTENAIRE_ENREGISTRE);
-			           }
-		           });
+		setupCivil(noIndividu, idEvt1, individu -> addRelationVersConjoint(individu, range1, noConjoint, TypeRelationVersIndividu.PARTENAIRE_ENREGISTRE), idEvt2,
+		           individu -> addRelationVersConjoint(individu, range2, noConjoint, TypeRelationVersIndividu.PARTENAIRE_ENREGISTRE));
 		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (conjoints (dates))");
 	}
 
@@ -433,17 +328,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		final long idEvt1 = 4367742354L;
 		final long idEvt2 = 567437834342L;
 
-		setupCivil(noIndividu, idEvt1, new RelationBuilder() {
-			           @Override
-			           public void buildRelations(MockIndividu individu) {
-				           addRelationVersConjoint(individu, range1, noConjoint, TypeRelationVersIndividu.CONJOINT);
-			           }
-		           }, idEvt2, new RelationBuilder() {
-			           @Override
-			           public void buildRelations(MockIndividu individu) {
-				           addRelationVersConjoint(individu, range2, noConjoint, TypeRelationVersIndividu.CONJOINT);
-			           }
-		           });
+		setupCivil(noIndividu, idEvt1, individu -> addRelationVersConjoint(individu, range1, noConjoint, TypeRelationVersIndividu.CONJOINT), idEvt2, individu -> addRelationVersConjoint(individu, range2, noConjoint, TypeRelationVersIndividu.CONJOINT));
 		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (conjoints (dates))");
 	}
 }

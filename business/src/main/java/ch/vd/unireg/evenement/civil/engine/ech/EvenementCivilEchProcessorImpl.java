@@ -560,13 +560,10 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 		}
 	}
 
-	private static final GroupAction CLEANUP_AVANT_TRAITEMENT = new GroupAction() {
-		@Override
-		public void execute(boolean principal, boolean hasReferrers, EvenementCivilEch evt) {
-			if (!evt.getEtat().isTraite()) {
-				evt.setCommentaireTraitement(null);
-				evt.getErreurs().clear();
-			}
+	private static final GroupAction CLEANUP_AVANT_TRAITEMENT = (principal, hasReferrers, evt) -> {
+		if (!evt.getEtat().isTraite()) {
+			evt.setCommentaireTraitement(null);
+			evt.getErreurs().clear();
 		}
 	};
 
@@ -582,12 +579,9 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 		}
 	};
 
-	private static final GroupAction DATE_TRAITEMENT = new GroupAction() {
-		@Override
-		public void execute(boolean principal, boolean hasReferrers, EvenementCivilEch evt) {
-			if (!evt.getEtat().isTraite()) {
-				evt.setDateTraitement(DateHelper.getCurrentDate());
-			}
+	private static final GroupAction DATE_TRAITEMENT = (principal, hasReferrers, evt) -> {
+		if (!evt.getEtat().isTraite()) {
+			evt.setDateTraitement(DateHelper.getCurrentDate());
 		}
 	};
 

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -25,7 +24,6 @@ import ch.vd.unireg.security.Role;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.TiersCriteria;
 import ch.vd.unireg.tiers.view.TiersCriteriaView;
-import ch.vd.unireg.transaction.TransactionHelper;
 
 @Controller
 @RequestMapping("/processuscomplexe/annulation/scission")
@@ -98,29 +96,26 @@ public class AnnulationScissionEntrepriseController extends AbstractProcessusCom
 			return showStart(model, view);
 		}
 
-		doInTransaction(new TransactionHelper.ExceptionThrowingCallbackWithoutResult<MetierServiceException>() {
-			@Override
-			public void execute(TransactionStatus status) throws MetierServiceException {
-				// récupération des données et vérification des droits d'accès
-				final Entreprise scindee = getTiers(Entreprise.class, view.getIdEntrepriseScindee());
-				controllerUtils.checkAccesDossierEnEcriture(view.getIdEntrepriseScindee());
-				controllerUtils.checkTraitementContribuableAvecDecisionAci(view.getIdEntrepriseScindee());
+		doInTransaction(status -> {
+			// récupération des données et vérification des droits d'accès
+			final Entreprise scindee = getTiers(Entreprise.class, view.getIdEntrepriseScindee());
+			controllerUtils.checkAccesDossierEnEcriture(view.getIdEntrepriseScindee());
+			controllerUtils.checkTraitementContribuableAvecDecisionAci(view.getIdEntrepriseScindee());
 
-				final Map<RegDate, List<Entreprise>> scissions = ScissionEntrepriseHelper.getScissions(scindee, tiersService);
-				final List<Entreprise> resultantes = scissions.get(view.getDateContratScission());
-				if (resultantes == null || resultantes.isEmpty()) {
-					throw new MetierServiceException("Aucune entreprise résultante de la scission trouvée!");
-				}
-
-				// petite boucle pour vérifier les droits d'accès sur les résultantes aussi
-				for (Entreprise resultante : resultantes) {
-					controllerUtils.checkAccesDossierEnEcriture(resultante.getNumero());
-					controllerUtils.checkTraitementContribuableAvecDecisionAci(resultante.getNumero());
-				}
-
-				// envoi de la sauce pour dé-tricoter tout ça
-				metierService.annuleScission(scindee, resultantes, view.getDateContratScission());
+			final Map<RegDate, List<Entreprise>> scissions = ScissionEntrepriseHelper.getScissions(scindee, tiersService);
+			final List<Entreprise> resultantes = scissions.get(view.getDateContratScission());
+			if (resultantes == null || resultantes.isEmpty()) {
+				throw new MetierServiceException("Aucune entreprise résultante de la scission trouvée!");
 			}
+
+			// petite boucle pour vérifier les droits d'accès sur les résultantes aussi
+			for (Entreprise resultante : resultantes) {
+				controllerUtils.checkAccesDossierEnEcriture(resultante.getNumero());
+				controllerUtils.checkTraitementContribuableAvecDecisionAci(resultante.getNumero());
+			}
+
+			// envoi de la sauce pour dé-tricoter tout ça
+			metierService.annuleScission(scindee, resultantes, view.getDateContratScission());
 		});
 
 		return "redirect:/tiers/visu.do?id=" + view.getIdEntrepriseScindee();

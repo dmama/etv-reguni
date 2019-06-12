@@ -14,7 +14,6 @@ import java.util.TreeSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -195,50 +194,47 @@ public class SuppressionOIDJob extends JobDefinition {
 	private void processBatch(final List<Long> batch, final int oid, final long officeImpotId, final SuppressionOIDResults rapport) {
 
 		final JdbcTemplate template = new JdbcTemplate(dataSource);
-		template.execute(new ConnectionCallback<Object>() {
-			@Override
-			public Object doInConnection(Connection con) throws SQLException, DataAccessException {
+		template.execute((ConnectionCallback<Object>) con -> {
 
-				// on crée des opérations (prepare statements sql) à l'avance
-				try (UpdateOperation updTiers = new UpdateTiers(con);
-				     UpdateOperation updDeclaration = new UpdateDeclarations(con);
-				     UpdateOperation updMvtDest = new UpdateMouvementsDestinations(con);
-				     UpdateOperation updMvtEmetteur = new UpdateMouvementsEmetteurs(con);
-				     UpdateOperation updMvtRecepteur = new UpdateMouvementsRecepteurs(con);
-				     UpdateOperation updTache = new UpdateTaches(con)) {
+			// on crée des opérations (prepare statements sql) à l'avance
+			try (UpdateOperation updTiers = new UpdateTiers(con);
+			     UpdateOperation updDeclaration = new UpdateDeclarations(con);
+			     UpdateOperation updMvtDest = new UpdateMouvementsDestinations(con);
+			     UpdateOperation updMvtEmetteur = new UpdateMouvementsEmetteurs(con);
+			     UpdateOperation updMvtRecepteur = new UpdateMouvementsRecepteurs(con);
+			     UpdateOperation updTache = new UpdateTaches(con)) {
 
-					final List<UpdateOperation> operations = Arrays.asList(updTiers, updDeclaration, updMvtDest, updMvtEmetteur, updMvtRecepteur, updTache);
-					for (Long id : batch) {
+				final List<UpdateOperation> operations = Arrays.asList(updTiers, updDeclaration, updMvtDest, updMvtEmetteur, updMvtRecepteur, updTache);
+				for (Long id : batch) {
 
-						// le nouvel office d'impôt de chaque tiers peut être différent, on va donc le chercher maintenant
-						final Tiers tiers = tiersDAO.get(id);
-						final CollectiviteAdministrative newOfficeImpot = tiersService.getOfficeImpotAt(tiers, RegDate.get()); // on spécifie explicitement la date du jour pour ne pas tomber dans le cache de l'OID
-						if (newOfficeImpot == null) {
-							rapport.addOIDInconnu(id);
-							continue;
-						}
-
-						// sanity check
-						if (oid == newOfficeImpot.getNumeroCollectiviteAdministrative()) {
-							throw new RuntimeException("Le nouvel office d'impôt calculé sur le tiers n°" + id + " est le même (" + newOfficeImpot.getNumeroCollectiviteAdministrative() +
-									                           ") que l'ancien. Est-ce que le référentiel Fidor est à jour ?");
-						}
-
-						final String muser = "Fermeture-OID-" + oid + "-" + newOfficeImpot.getNumeroCollectiviteAdministrative();
-
-						// on applique les changements
-						final Set<String> tables = new HashSet<>();
-						for (UpdateOperation operation : operations) {
-							if (operation.execute(id, oid, officeImpotId, newOfficeImpot.getNumeroCollectiviteAdministrative(), newOfficeImpot.getId(), muser) > 0) {
-								tables.add(operation.getTable());
-							}
-						}
-
-						rapport.addTraite(id, newOfficeImpot.getNumeroCollectiviteAdministrative(), tables);
+					// le nouvel office d'impôt de chaque tiers peut être différent, on va donc le chercher maintenant
+					final Tiers tiers = tiersDAO.get(id);
+					final CollectiviteAdministrative newOfficeImpot = tiersService.getOfficeImpotAt(tiers, RegDate.get()); // on spécifie explicitement la date du jour pour ne pas tomber dans le cache de l'OID
+					if (newOfficeImpot == null) {
+						rapport.addOIDInconnu(id);
+						continue;
 					}
 
-					return null;
+					// sanity check
+					if (oid == newOfficeImpot.getNumeroCollectiviteAdministrative()) {
+						throw new RuntimeException("Le nouvel office d'impôt calculé sur le tiers n°" + id + " est le même (" + newOfficeImpot.getNumeroCollectiviteAdministrative() +
+								                           ") que l'ancien. Est-ce que le référentiel Fidor est à jour ?");
+					}
+
+					final String muser = "Fermeture-OID-" + oid + "-" + newOfficeImpot.getNumeroCollectiviteAdministrative();
+
+					// on applique les changements
+					final Set<String> tables = new HashSet<>();
+					for (UpdateOperation operation : operations) {
+						if (operation.execute(id, oid, officeImpotId, newOfficeImpot.getNumeroCollectiviteAdministrative(), newOfficeImpot.getId(), muser) > 0) {
+							tables.add(operation.getTable());
+						}
+					}
+
+					rapport.addTraite(id, newOfficeImpot.getNumeroCollectiviteAdministrative(), tables);
 				}
+
+				return null;
 			}
 		});
 	}

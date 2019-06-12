@@ -232,21 +232,18 @@ public class EvenementEditiqueSenderImpl implements EvenementEditiqueSender, Ini
 		try {
 			final String body = "<empty/>";
 			final String businessId = String.format("copieconforme-%d-%s", noTiers, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(DateHelper.getCurrentDate()));
-			final EsbMessage msg = buildEsbMessage(businessId, typeDocument, body, serviceDestinationCopieConforme, true, new HeaderCustomFiller() {
-				@Override
-				public void addHeaders(EsbMessage msg) throws Exception {
-					final FormatDocumentEditique pdf = FormatDocumentEditique.PDF;
+			final EsbMessage msg = buildEsbMessage(businessId, typeDocument, body, serviceDestinationCopieConforme, true, msg1 -> {
+				final FormatDocumentEditique pdf = FormatDocumentEditique.PDF;
 
-					msg.addHeader(ConstantesEditique.TYPE_DOSSIER, ConstantesEditique.TYPE_DOSSIER_ARCHIVAGE);
-					msg.addHeader(ConstantesEditique.NOM_DOSSIER, FormatNumeroHelper.numeroCTBToDisplay(noTiers));
-					msg.addHeader(ConstantesEditique.TYPE_DOCUMENT, typeDocument.getCodeDocumentArchivage());
-					msg.addHeader(ConstantesEditique.CLE_ARCHIVAGE, cleArchivage);
-					msg.addHeader(ConstantesEditique.TYPE_FORMAT, pdf.getCode());
+				msg1.addHeader(ConstantesEditique.TYPE_DOSSIER, ConstantesEditique.TYPE_DOSSIER_ARCHIVAGE);
+				msg1.addHeader(ConstantesEditique.NOM_DOSSIER, FormatNumeroHelper.numeroCTBToDisplay(noTiers));
+				msg1.addHeader(ConstantesEditique.TYPE_DOCUMENT, typeDocument.getCodeDocumentArchivage());
+				msg1.addHeader(ConstantesEditique.CLE_ARCHIVAGE, cleArchivage);
+				msg1.addHeader(ConstantesEditique.TYPE_FORMAT, pdf.getCode());
 
-					msg.addHeader(ConstantesEditique.UNIREG_DOCUMENT_ID, businessId);
-					msg.addHeader(ConstantesEditique.UNIREG_TYPE_DOCUMENT, typeDocument.name());
-					msg.addHeader(ConstantesEditique.UNIREG_FORMAT_DOCUMENT, pdf.name());
-				}
+				msg1.addHeader(ConstantesEditique.UNIREG_DOCUMENT_ID, businessId);
+				msg1.addHeader(ConstantesEditique.UNIREG_TYPE_DOCUMENT, typeDocument.name());
+				msg1.addHeader(ConstantesEditique.UNIREG_FORMAT_DOCUMENT, pdf.name());
 			});
 
 			return Pair.of(send(noTxEsbTemplate, msg), businessId);

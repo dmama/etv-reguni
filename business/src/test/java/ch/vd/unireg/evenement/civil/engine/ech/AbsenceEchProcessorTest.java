@@ -10,7 +10,6 @@ import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchErreur;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
-import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -45,12 +44,7 @@ public class AbsenceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// notification d'absence civile
-		doModificationIndividu(noIndividu, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				individu.setDateDeces(dateDisparition);
-			}
-		});
+		doModificationIndividu(noIndividu, individu -> individu.setDateDeces(dateDisparition));
 
 		// événement d'absence
 		final long evtId = doInNewTransactionAndSession(status -> {
@@ -109,12 +103,7 @@ public class AbsenceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// notification d'absence civile
-		doModificationIndividu(noIndividu, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				individu.setDateDeces(dateDisparition);
-			}
-		});
+		doModificationIndividu(noIndividu, individu -> individu.setDateDeces(dateDisparition));
 
 		// événement d'absence
 		final long evtId = doInNewTransactionAndSession(status -> {
@@ -174,12 +163,7 @@ public class AbsenceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// notification d'absence civile
-		doModificationIndividu(noIndividu, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				individu.setDateDeces(dateDisparition);
-			}
-		});
+		doModificationIndividu(noIndividu, individu -> individu.setDateDeces(dateDisparition));
 
 		// événement d'absence
 		final long evtId = doInNewTransactionAndSession(status -> {

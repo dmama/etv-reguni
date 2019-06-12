@@ -3,7 +3,6 @@ package ch.vd.unireg.norentes.civil.naissance;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.Predicate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.norentes.annotation.Check;
@@ -47,12 +46,7 @@ public class Ec_1000_02_Naissance_IndividuNonExistantScenario extends EvenementC
 	public void check1() throws Exception {
 
 		final List<Tiers> list = tiersDAO.getAll();
-		CollectionUtils.filter(list, new Predicate<Tiers>() {
-			@Override
-			public boolean evaluate(Tiers object) {
-				return object instanceof PersonnePhysique;
-			}
-		});
+		CollectionUtils.filter(list, object -> object instanceof PersonnePhysique);
 		assertEquals(0, list.size(), "");
 	}
 
@@ -68,12 +62,7 @@ public class Ec_1000_02_Naissance_IndividuNonExistantScenario extends EvenementC
 	@Check(id=2, descr="Contrôle qu'il n'y a pas de personne physique dans la base de données et que l'événement est en erreur")
 	public void check2() throws Exception {
 		final List<Tiers> list = tiersDAO.getAll();
-		CollectionUtils.filter(list, new Predicate<Tiers>() {
-			@Override
-			public boolean evaluate(Tiers object) {
-				return object instanceof PersonnePhysique;
-			}
-		});
+		CollectionUtils.filter(list, object -> object instanceof PersonnePhysique);
 		assertEquals(0, list.size(), "");
 
 		checkEtatEvtCivils(1, EtatEvenementCivil.EN_ERREUR);

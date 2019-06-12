@@ -62,19 +62,16 @@ public class ContactEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		Assert.assertEquals(0, res.size());
 
 		// modification du civil pour ajout de l'adresse de contact
-		doModificationIndividu(noIndividu, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				final MockAdresse adr = new MockAdresse();
-				adr.setTypeAdresse(TypeAdresseCivil.COURRIER);
-				adr.setCommuneAdresse(MockCommune.Prilly);
-				adr.setDateDebutValidite(dateEvt);
-				adr.setLocalite(MockLocalite.Prilly.getNom());
-				adr.setNoOfsPays(MockPays.Suisse.getNoOFS());
-				adr.setNpa(Integer.toString(MockLocalite.Prilly.getNPA()));
-				adr.setNumeroRue(MockRue.Prilly.CheminDeLaPossession.getNoRue());
-				individu.addAdresse(adr);
-			}
+		doModificationIndividu(noIndividu, individu -> {
+			final MockAdresse adr = new MockAdresse();
+			adr.setTypeAdresse(TypeAdresseCivil.COURRIER);
+			adr.setCommuneAdresse(MockCommune.Prilly);
+			adr.setDateDebutValidite(dateEvt);
+			adr.setLocalite(MockLocalite.Prilly.getNom());
+			adr.setNoOfsPays(MockPays.Suisse.getNoOFS());
+			adr.setNpa(Integer.toString(MockLocalite.Prilly.getNPA()));
+			adr.setNumeroRue(MockRue.Prilly.CheminDeLaPossession.getNoRue());
+			individu.addAdresse(adr);
 		});
 
 		// création de l'événement civil

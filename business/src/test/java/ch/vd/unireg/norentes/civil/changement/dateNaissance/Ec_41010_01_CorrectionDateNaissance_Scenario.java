@@ -98,12 +98,7 @@ public class Ec_41010_01_CorrectionDateNaissance_Scenario extends EvenementCivil
 	@Etape(id=2, descr="Envoi de l'événement de correction de date de naissance")
 	public void step2() throws Exception {
 
-		doModificationIndividu(noIndMomo, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				individu.setDateNaissance(dateNaissanceCorrigee);
-			}
-		});
+		doModificationIndividu(noIndMomo, individu -> individu.setDateNaissance(dateNaissanceCorrigee));
 
 		final long id = addEvenementCivil(TypeEvenementCivil.CORREC_DATE_NAISSANCE, noIndMomo, dateNaissanceCorrigee, commune.getNoOFS());
 		commitAndStartTransaction();

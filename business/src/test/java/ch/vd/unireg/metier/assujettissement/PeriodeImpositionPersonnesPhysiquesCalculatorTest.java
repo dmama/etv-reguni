@@ -1,7 +1,5 @@
 package ch.vd.unireg.metier.assujettissement;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.List;
 
@@ -1281,14 +1279,11 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 
 		// construction d'un service d'assujettissement qui compte le nombre d'appels effectués aux méthodes "determineXXX"
 		final MutableInt compteurAppels = new MutableInt(0);
-		final AssujettissementService assProxy = (AssujettissementService) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{AssujettissementService.class}, new InvocationHandler() {
-			@Override
-			public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-				if (method.getName().startsWith("determine")) {
-					compteurAppels.increment();
-				}
-				return method.invoke(assImpl, args);
+		final AssujettissementService assProxy = (AssujettissementService) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{AssujettissementService.class}, (proxy, method, args) -> {
+			if (method.getName().startsWith("determine")) {
+				compteurAppels.increment();
 			}
+			return method.invoke(assImpl, args);
 		});
 
 		final PeriodeImpositionServiceImpl pis = new PeriodeImpositionServiceImpl();

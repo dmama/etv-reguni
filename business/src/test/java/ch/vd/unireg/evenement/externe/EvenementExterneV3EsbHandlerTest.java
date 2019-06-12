@@ -14,6 +14,7 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
+import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.xml.event.lr.event.v3.CaracteristiquesDebiteur;
 import ch.vd.unireg.xml.event.lr.event.v3.CaracteristiquesListe;
 import ch.vd.unireg.xml.event.lr.event.v3.Evenement;
@@ -22,7 +23,6 @@ import ch.vd.unireg.xml.event.lr.event.v3.Liste;
 import ch.vd.unireg.xml.event.lr.event.v3.ObjectFactory;
 import ch.vd.unireg.xml.event.lr.event.v3.PeriodeDeclaration;
 import ch.vd.unireg.xml.event.lr.event.v3.Utilisateur;
-import ch.vd.unireg.common.XmlUtils;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -35,82 +35,42 @@ public class EvenementExterneV3EsbHandlerTest extends AbstractEvenementExterneEs
 
 	@Test
 	public void testEventQuittancement() throws Exception {
-		doTestNewEventQuittancement(new MessageCreator() {
-			@Override
-			public EsbMessage createNewMessage(long dpiId, RegDate dateDebut, RegDate dateFin, RegDate dateQuittancement) throws Exception {
-				return createMessageQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
-			}
-		});
+		doTestNewEventQuittancement((dpiId, dateDebut, dateFin, dateQuittancement) -> createMessageQuittancement(dpiId, dateDebut, dateFin, dateQuittancement));
 	}
 
 	@Test
 	public void testEventLc() throws Exception {
-		doTestNewEventLC(new MessageCreator() {
-			@Override
-			public EsbMessage createNewMessage(long dpiId, RegDate dateDebut, RegDate dateFin, RegDate dateQuittancement) throws Exception {
-				return createMessageLc(dpiId, dateDebut, dateFin, dateQuittancement);
-			}
-		});
+		doTestNewEventLC((dpiId, dateDebut, dateFin, dateQuittancement) -> createMessageLc(dpiId, dateDebut, dateFin, dateQuittancement));
 	}
 
 	@Test
 	public void testEventAnnulationEtatRetourInexistant() throws Exception {
-		doTestNewEventAnnulationEtatRetourInexistant(new MessageCreator() {
-			@Override
-			public EsbMessage createNewMessage(long dpiId, RegDate dateDebut, RegDate dateFin, RegDate dateQuittancement) throws Exception {
-				return createMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
-			}
-		});
+		doTestNewEventAnnulationEtatRetourInexistant((dpiId, dateDebut, dateFin, dateQuittancement) -> createMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement));
 	}
 
 	@Test
 	public void testEventDoubleAnnulation() throws Exception {
-		doTestNewEventDoubleAnnulation(new MessageCreator() {
-			@Override
-			public EsbMessage createNewMessage(long dpiId, RegDate dateDebut, RegDate dateFin, RegDate dateQuittancement) throws Exception {
-				return createMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
-			}
-		});
+		doTestNewEventDoubleAnnulation((dpiId, dateDebut, dateFin, dateQuittancement) -> createMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement));
 	}
 
 	@Test
 	public void testEventAnnulation() throws Exception {
-		doTestNewEventAnnulation(new MessageCreator() {
-			@Override
-			public EsbMessage createNewMessage(long dpiId, RegDate dateDebut, RegDate dateFin, RegDate dateQuittancement) throws Exception {
-				return createMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
-			}
-		});
+		doTestNewEventAnnulation((dpiId, dateDebut, dateFin, dateQuittancement) -> createMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement));
 	}
 
 	@Test
 	public void testEvenementDoubleQuittancement() throws Exception {
-		doTestNewEvenementDoubleQuittancement(new MessageCreator() {
-			@Override
-			public EsbMessage createNewMessage(long dpiId, RegDate dateDebut, RegDate dateFin, RegDate dateQuittancement) throws Exception {
-				return createMessageQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
-			}
-		});
+		doTestNewEvenementDoubleQuittancement((dpiId, dateDebut, dateFin, dateQuittancement) -> createMessageQuittancement(dpiId, dateDebut, dateFin, dateQuittancement));
 	}
 
 	@Test
 	public void testEvenementQuittancementDesynchroHeure() throws Exception {
-		doTestNewEvenementQuittancementDesynchroHeure(new MessageCreator() {
-			@Override
-			public EsbMessage createNewMessage(long dpiId, RegDate dateDebut, RegDate dateFin, RegDate dateQuittancement) throws Exception {
-				return createMessageQuittancementDansFutur(dpiId, dateDebut, dateFin);
-			}
-		});
+		doTestNewEvenementQuittancementDesynchroHeure((dpiId, dateDebut, dateFin, dateQuittancement) -> createMessageQuittancementDansFutur(dpiId, dateDebut, dateFin));
 	}
 
 	@Test
 	public void testEvenementAnnulationDoubleQuittancement() throws Exception {
-		doTestNewEvenementAnnulationDoubleQuittancement(new MessageCreator() {
-			@Override
-			public EsbMessage createNewMessage(long dpiId, RegDate dateDebut, RegDate dateFin, RegDate dateQuittancement) throws Exception {
-				return createMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
-			}
-		});
+		doTestNewEvenementAnnulationDoubleQuittancement((dpiId, dateDebut, dateFin, dateQuittancement) -> createMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement));
 	}
 
 	private EsbMessage createMessageQuittancement(long noCtb, RegDate debutPeriode, RegDate finPeriode, RegDate dateEvenement) throws Exception {

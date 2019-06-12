@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -29,7 +28,6 @@ import ch.vd.unireg.common.Flash;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.indexer.IndexerException;
-import ch.vd.unireg.metier.MetierServiceException;
 import ch.vd.unireg.security.AccessDeniedException;
 import ch.vd.unireg.security.Role;
 import ch.vd.unireg.tiers.Entreprise;
@@ -37,7 +35,6 @@ import ch.vd.unireg.tiers.EtatEntreprise;
 import ch.vd.unireg.tiers.TiersCriteria;
 import ch.vd.unireg.tiers.TiersIndexedDataView;
 import ch.vd.unireg.tiers.view.TiersCriteriaView;
-import ch.vd.unireg.transaction.TransactionHelper;
 import ch.vd.unireg.type.TypeEtatEntreprise;
 import ch.vd.unireg.utils.WebContextUtils;
 
@@ -76,23 +73,17 @@ public class FusionEntreprisesController extends AbstractProcessusComplexeContro
 
 		this.searchAbsorbeeComponent = buildSearchComponent(CRITERIA_NAME_ABSORBEE, "entreprise/fusion/list-absorbees",
 		                                                    this::fillCriteresImperatifsPourEntrepriseAbsorbee,
-		                                                    new SearchTiersComponent.ModelFiller() {
-			                                                    @Override
-			                                                    public void fill(Model model, HttpSession session) throws SearchTiersComponent.RedirectException {
-				                                                    final FusionEntreprisesSessionData sessionData = getSessionData(session);
-				                                                    if (sessionData == null) {
-					                                                    Flash.warning("La session a été invalidée. Veuillez recommencer votre saisie.");
-					                                                    throw new SearchTiersComponent.RedirectException("../absorbante/list.do");
-				                                                    }
-				                                                    model.addAttribute(FUSION, sessionData);
+		                                                    (model, session) -> {
+			                                                    final FusionEntreprisesSessionData sessionData = getSessionData(session);
+			                                                    if (sessionData == null) {
+				                                                    Flash.warning("La session a été invalidée. Veuillez recommencer votre saisie.");
+				                                                    throw new SearchTiersComponent.RedirectException("../absorbante/list.do");
 			                                                    }
+			                                                    model.addAttribute(FUSION, sessionData);
 		                                                    },
-		                                                    new SearchTiersComponent.TiersSearchAdapter<SelectionEntrepriseView>() {
-			                                                    @Override
-			                                                    public List<SelectionEntrepriseView> adaptSearchResult(List<TiersIndexedDataView> result, HttpSession session) {
-				                                                    final FusionEntreprisesSessionData sessionData = getSessionData(session);
-				                                                    return FusionEntreprisesController.this.adapteSearchResults(result, sessionData);
-			                                                    }
+		                                                    (SearchTiersComponent.TiersSearchAdapter<SelectionEntrepriseView>) (result, session) -> {
+			                                                    final FusionEntreprisesSessionData sessionData = getSessionData(session);
+			                                                    return FusionEntreprisesController.this.adapteSearchResults(result, sessionData);
 		                                                    });
 	}
 
@@ -315,17 +306,14 @@ public class FusionEntreprisesController extends AbstractProcessusComplexeContro
 		}
 
 		// on récupère les données des entreprises et on envoie tout ça dans le moteur
-		doInTransaction(new TransactionHelper.ExceptionThrowingCallbackWithoutResult<MetierServiceException>() {
-			@Override
-			public void execute(TransactionStatus status) throws MetierServiceException {
-				final Entreprise absorbante = getTiers(Entreprise.class, sessionData.getIdEntrepriseAbsorbante());
-				final Set<Long> idsEntreprisesAbsorbees = sessionData.getIdsEntreprisesAbsorbees();
-				final List<Entreprise> absorbees = new ArrayList<>(idsEntreprisesAbsorbees.size());
-				for (Long id : idsEntreprisesAbsorbees) {
-					absorbees.add(getTiers(Entreprise.class, id));
-				}
-				metierService.fusionne(absorbante, absorbees, sessionData.getDateContratFusion(), sessionData.getDateBilanFusion());
+		doInTransaction(status -> {
+			final Entreprise absorbante = getTiers(Entreprise.class, sessionData.getIdEntrepriseAbsorbante());
+			final Set<Long> idsEntreprisesAbsorbees = sessionData.getIdsEntreprisesAbsorbees();
+			final List<Entreprise> absorbees = new ArrayList<>(idsEntreprisesAbsorbees.size());
+			for (Long id : idsEntreprisesAbsorbees) {
+				absorbees.add(getTiers(Entreprise.class, id));
 			}
+			metierService.fusionne(absorbante, absorbees, sessionData.getDateContratFusion(), sessionData.getDateBilanFusion());
 		});
 
 		// quand le boulot est terminé (correctement), on efface les données de la session

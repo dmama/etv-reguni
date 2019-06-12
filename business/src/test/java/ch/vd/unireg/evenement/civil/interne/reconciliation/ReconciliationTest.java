@@ -1,7 +1,6 @@
 package ch.vd.unireg.evenement.civil.interne.reconciliation;
 
 import java.util.Arrays;
-import java.util.Comparator;
 
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -14,7 +13,6 @@ import ch.vd.unireg.evenement.civil.interne.MessageCollector;
 import ch.vd.unireg.evenement.common.EvenementErreur;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
-import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
@@ -94,12 +92,7 @@ public class ReconciliationTest extends AbstractEvenementCivilInterneTest {
 		ForFiscalPrincipal ffp = menage.getForFiscalPrincipalAt(DATE_RECONCILIATION);
 		assertNull("Le for principal du ménage est fermmé", ffp.getDateFin());
 		RapportEntreTiers[] rapports = habitantReconcilie.getRapportsSujet().toArray(new RapportEntreTiers[0]);
-		Arrays.sort(rapports, new Comparator<RapportEntreTiers>() {
-			@Override
-			public int compare(RapportEntreTiers r1, RapportEntreTiers r2) {
-				return r1.getDateDebut().compareTo(r2.getDateDebut());
-			}
-		});
+		Arrays.sort(rapports, (r1, r2) -> r1.getDateDebut().compareTo(r2.getDateDebut()));
 		RapportEntreTiers rapportSepares = rapports[0];
 		assertEquals("le rapport entre tiers séparés n'a pas été clos", DATE_SEPARATION.getOneDayBefore(), rapportSepares.getDateFin());
 
@@ -147,12 +140,7 @@ public class ReconciliationTest extends AbstractEvenementCivilInterneTest {
 		ForFiscalPrincipal ffp = menage.getForFiscalPrincipalAt(DATE_RECONCILIATION);
 		assertNull("Le for principal du ménage est fermmé", ffp.getDateFin());
 		RapportEntreTiers[] rapports = habitantReconcilie.getRapportsSujet().toArray(new RapportEntreTiers[0]);
-		Arrays.sort(rapports, new Comparator<RapportEntreTiers>() {
-			@Override
-			public int compare(RapportEntreTiers r1, RapportEntreTiers r2) {
-				return r1.getDateDebut().compareTo(r2.getDateDebut());
-			}
-		});
+		Arrays.sort(rapports, (r1, r2) -> r1.getDateDebut().compareTo(r2.getDateDebut()));
 		RapportEntreTiers rapportSepares = rapports[0];
 		assertEquals("le rapport entre tiers séparés n'a pas été clos", DATE_SEPARATION.getOneDayBefore(), rapportSepares.getDateFin());
 
@@ -192,21 +180,15 @@ public class ReconciliationTest extends AbstractEvenementCivilInterneTest {
 		 * Simulation de séparation
 		 */
 		if (noIndividuConjoint == null) {
-			doModificationIndividu(noIndividu, new IndividuModification() {
-				@Override
-				public void modifyIndividu(MockIndividu individu) {
-					MockIndividuConnector.separeIndividu(individu, DATE_SEPARATION);
-					MockIndividuConnector.marieIndividu(individu, DATE_RECONCILIATION);
-				}
+			doModificationIndividu(noIndividu, individu -> {
+				MockIndividuConnector.separeIndividu(individu, DATE_SEPARATION);
+				MockIndividuConnector.marieIndividu(individu, DATE_RECONCILIATION);
 			});
 		}
 		else {
-			doModificationIndividus(noIndividu, noIndividuConjoint, new IndividusModification() {
-				@Override
-				public void modifyIndividus(MockIndividu individu, MockIndividu conjoint) {
-					MockIndividuConnector.separeIndividus(individu, conjoint, DATE_SEPARATION);
-					MockIndividuConnector.marieIndividus(individu, conjoint, DATE_RECONCILIATION);
-				}
+			doModificationIndividus(noIndividu, noIndividuConjoint, (individu, conjoint) -> {
+				MockIndividuConnector.separeIndividus(individu, conjoint, DATE_SEPARATION);
+				MockIndividuConnector.marieIndividus(individu, conjoint, DATE_RECONCILIATION);
 			});
 		}
 

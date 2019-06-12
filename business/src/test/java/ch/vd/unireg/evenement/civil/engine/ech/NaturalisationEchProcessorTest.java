@@ -52,12 +52,7 @@ public class NaturalisationEchProcessorTest extends AbstractEvenementCivilEchPro
 			return pp.getNumero();
 		});
 
-		doModificationIndividu(noIndividu, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				individu.setNationalites(Collections.singletonList((Nationalite) new MockNationalite(dateNaturalisation, null, MockPays.Suisse)));
-			}
-		});
+		doModificationIndividu(noIndividu, individu -> individu.setNationalites(Collections.singletonList((Nationalite) new MockNationalite(dateNaturalisation, null, MockPays.Suisse))));
 
 		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
 		final long evtId = doInNewTransactionAndSession(status -> {
@@ -113,12 +108,7 @@ public class NaturalisationEchProcessorTest extends AbstractEvenementCivilEchPro
 			return pp.getNumero();
 		});
 
-		doModificationIndividu(noIndividu, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				individu.setNationalites(Collections.singletonList((Nationalite) new MockNationalite(dateNaturalisation, null, MockPays.Suisse)));
-			}
-		});
+		doModificationIndividu(noIndividu, individu -> individu.setNationalites(Collections.singletonList((Nationalite) new MockNationalite(dateNaturalisation, null, MockPays.Suisse))));
 
 		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
 		final long evtId = doInNewTransactionAndSession(status -> {

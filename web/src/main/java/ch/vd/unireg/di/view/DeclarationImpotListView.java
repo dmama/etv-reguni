@@ -3,7 +3,6 @@ package ch.vd.unireg.di.view;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
@@ -36,18 +35,15 @@ public class DeclarationImpotListView {
 		for (DeclarationImpotOrdinaire declaration : declarations) {
 			views.add(new DeclarationImpotView(declaration, infraService, messageHelper));
 		}
-		views.sort(new Comparator<DeclarationImpotView>() {
-			@Override
-			public int compare(DeclarationImpotView o1, DeclarationImpotView o2) {
-				if (o1.isAnnule() && !o2.isAnnule()) {
-					return 1;
-				}
-				else if (!o1.isAnnule() && o2.isAnnule()) {
-					return -1;
-				}
-				else {
-					return o2.getDateDebut().compareTo(o1.getDateDebut());
-				}
+		views.sort((o1, o2) -> {
+			if (o1.isAnnule() && !o2.isAnnule()) {
+				return 1;
+			}
+			else if (!o1.isAnnule() && o2.isAnnule()) {
+				return -1;
+			}
+			else {
+				return o2.getDateDebut().compareTo(o1.getDateDebut());
 			}
 		});
 		return views;

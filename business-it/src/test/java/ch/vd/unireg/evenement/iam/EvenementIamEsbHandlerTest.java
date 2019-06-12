@@ -61,12 +61,7 @@ public class EvenementIamEsbHandlerTest extends EvenementTest {
 
 		final List<EvenementIAM> events = new ArrayList<>();
 
-		handler.setHandler(new EvenementIAMHandler() {
-			@Override
-			public void onEvent(EvenementIAM event) {
-				events.add(event);
-			}
-		});
+		handler.setHandler(event -> events.add(event));
 
 		// Lit le message sous format texte
 		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/iam/enregistrement_employeur.xml");
@@ -96,12 +91,7 @@ public class EvenementIamEsbHandlerTest extends EvenementTest {
 
 		final List<EvenementIAM> events = new ArrayList<>();
 
-		handler.setHandler(new EvenementIAMHandler() {
-			@Override
-			public void onEvent(EvenementIAM event) {
-				events.add(event);
-			}
-		});
+		handler.setHandler(event -> events.add(event));
 
 		// Lit le message sous format texte
 		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/iam/enregistrement_2employeur.xml");
@@ -136,12 +126,7 @@ public class EvenementIamEsbHandlerTest extends EvenementTest {
 
 		final List<EvenementIAM> events = new ArrayList<>();
 
-		handler.setHandler(new EvenementIAMHandler() {
-			@Override
-			public void onEvent(EvenementIAM event) {
-				events.add(event);
-			}
-		});
+		handler.setHandler(event -> events.add(event));
 
 		// Lit le message sous format texte
 		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/iam/enregistrement_employeurSansIdLogSansAcces.xml");
@@ -171,12 +156,7 @@ public class EvenementIamEsbHandlerTest extends EvenementTest {
 
 		final List<EvenementIAM> events = new ArrayList<>();
 
-		handler.setHandler(new EvenementIAMHandler() {
-			@Override
-			public void onEvent(EvenementIAM event) {
-				events.add(event);
-			}
-		});
+		handler.setHandler(event -> events.add(event));
 
 		// Lit le message sous format texte
 		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/iam/enregistrement_employeurMinimal.xml");
@@ -204,12 +184,7 @@ public class EvenementIamEsbHandlerTest extends EvenementTest {
 
 		final List<EvenementIAM> events = new ArrayList<>();
 
-		handler.setHandler(new EvenementIAMHandler() {
-			@Override
-			public void onEvent(EvenementIAM event) {
-				events.add(event);
-			}
-		});
+		handler.setHandler(event -> events.add(event));
 
 		// Lit le message sous format texte
 		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/iam/enregistrement_employeur_infoMetier_minimal.xml");
@@ -241,12 +216,7 @@ public class EvenementIamEsbHandlerTest extends EvenementTest {
 
 		final List<EvenementIAM> events = new ArrayList<>();
 
-		handler.setHandler(new EvenementIAMHandler() {
-			@Override
-			public void onEvent(EvenementIAM event) {
-				events.add(event);
-			}
-		});
+		handler.setHandler(event -> events.add(event));
 
 		// Lit le message sous format texte
 		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/iam/enregistrement_employeur.xml");
@@ -277,12 +247,7 @@ public class EvenementIamEsbHandlerTest extends EvenementTest {
 
 		final List<EvenementIAM> events = new ArrayList<>();
 
-		handler.setHandler(new EvenementIAMHandler() {
-			@Override
-			public void onEvent(EvenementIAM event) {
-				events.add(event);
-			}
-		});
+		handler.setHandler(event -> events.add(event));
 
 		// Lit le message sous format texte
 		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/iam/enregistrement_employeur.xml");
@@ -305,12 +270,7 @@ public class EvenementIamEsbHandlerTest extends EvenementTest {
 
 		final List<EvenementIAM> events = new ArrayList<>();
 
-		handler.setHandler(new EvenementIAMHandler() {
-			@Override
-			public void onEvent(EvenementIAM event) {
-				events.add(event);
-			}
-		});
+		handler.setHandler(event -> events.add(event));
 
 		// Lit le message sous format texte
 		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/iam/enregistrement_employeur.xml");

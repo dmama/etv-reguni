@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -27,7 +26,6 @@ import ch.vd.unireg.common.Flash;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.indexer.IndexerException;
-import ch.vd.unireg.metier.MetierServiceException;
 import ch.vd.unireg.security.AccessDeniedException;
 import ch.vd.unireg.security.Role;
 import ch.vd.unireg.tiers.Entreprise;
@@ -35,7 +33,6 @@ import ch.vd.unireg.tiers.EtatEntreprise;
 import ch.vd.unireg.tiers.TiersCriteria;
 import ch.vd.unireg.tiers.TiersIndexedDataView;
 import ch.vd.unireg.tiers.view.TiersCriteriaView;
-import ch.vd.unireg.transaction.TransactionHelper;
 import ch.vd.unireg.type.TypeEtatEntreprise;
 import ch.vd.unireg.utils.WebContextUtils;
 
@@ -67,38 +64,24 @@ public class ScissionEntrepriseController extends AbstractProcessusComplexeContr
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		this.searchScindeeComponent = buildSearchComponent(CRITERIA_NAME_SCINDEE, "entreprise/scission/list-scindee",
-		                                                   new SearchTiersComponent.TiersCriteriaFiller() {
-			                                                      @Override
-			                                                      public void fill(TiersCriteriaView data) {
-				                                                      data.setTypeTiersImperatif(TiersCriteria.TypeTiers.ENTREPRISE);
-				                                                      data.setEtatsEntrepriseInterdits(EnumSet.of(TypeEtatEntreprise.ABSORBEE, TypeEtatEntreprise.DISSOUTE, TypeEtatEntreprise.RADIEE_RC));
-			                                                      }
-		                                                      });
+		                                                   data -> {
+			                                                   data.setTypeTiersImperatif(TiersCriteria.TypeTiers.ENTREPRISE);
+			                                                   data.setEtatsEntrepriseInterdits(EnumSet.of(TypeEtatEntreprise.ABSORBEE, TypeEtatEntreprise.DISSOUTE, TypeEtatEntreprise.RADIEE_RC));
+		                                                   });
 
 		this.searchResultanteComponent = buildSearchComponent(CRITERIA_NAME_RESULTANTE, "entreprise/scission/list-resultantes",
-		                                                      new SearchTiersComponent.TiersCriteriaFiller() {
-			                                                      @Override
-			                                                      public void fill(TiersCriteriaView data) {
-				                                                      fillCriteresImperatifsPourEntrepriseResultante(data);
+		                                                      data -> fillCriteresImperatifsPourEntrepriseResultante(data),
+		                                                      (model, session) -> {
+			                                                      final ScissionEntrepriseSessionData sessionData = getSessionData(session);
+			                                                      if (sessionData == null) {
+				                                                      Flash.warning("La session a été invalidée. Veuillez recommencer votre saisie.");
+				                                                      throw new SearchTiersComponent.RedirectException("../scindee/list.do");
 			                                                      }
+			                                                      model.addAttribute(SCISSION, sessionData);
 		                                                      },
-		                                                      new SearchTiersComponent.ModelFiller() {
-			                                                      @Override
-			                                                      public void fill(Model model, HttpSession session) throws SearchTiersComponent.RedirectException {
-				                                                      final ScissionEntrepriseSessionData sessionData = getSessionData(session);
-				                                                      if (sessionData == null) {
-					                                                      Flash.warning("La session a été invalidée. Veuillez recommencer votre saisie.");
-					                                                      throw new SearchTiersComponent.RedirectException("../scindee/list.do");
-				                                                      }
-				                                                      model.addAttribute(SCISSION, sessionData);
-			                                                      }
-		                                                      },
-		                                                      new SearchTiersComponent.TiersSearchAdapter<SelectionEntrepriseView>() {
-			                                                      @Override
-			                                                      public List<SelectionEntrepriseView> adaptSearchResult(List<TiersIndexedDataView> result, HttpSession session) {
-				                                                      final ScissionEntrepriseSessionData sessionData = getSessionData(session);
-				                                                      return ScissionEntrepriseController.this.adapteSearchResults(result, sessionData);
-			                                                      }
+		                                                      (SearchTiersComponent.TiersSearchAdapter<SelectionEntrepriseView>) (result, session) -> {
+			                                                      final ScissionEntrepriseSessionData sessionData = getSessionData(session);
+			                                                      return ScissionEntrepriseController.this.adapteSearchResults(result, sessionData);
 		                                                      });
 	}
 
@@ -306,17 +289,14 @@ public class ScissionEntrepriseController extends AbstractProcessusComplexeContr
 		}
 
 		// on récupère les données des entreprises et on envoie tout ça dans le moteur
-		doInTransaction(new TransactionHelper.ExceptionThrowingCallbackWithoutResult<MetierServiceException>() {
-			@Override
-			public void execute(TransactionStatus status) throws MetierServiceException {
-				final Entreprise scindee = getTiers(Entreprise.class, sessionData.getIdEntrepriseScindee());
-				final Set<Long> idsEntreprisesResultantes = sessionData.getIdsEntreprisesResultantes();
-				final List<Entreprise> resultantes = new ArrayList<>(idsEntreprisesResultantes.size());
-				for (Long id : idsEntreprisesResultantes) {
-					resultantes.add(getTiers(Entreprise.class, id));
-				}
-				metierService.scinde(scindee, resultantes, sessionData.getDateContratScission());
+		doInTransaction(status -> {
+			final Entreprise scindee = getTiers(Entreprise.class, sessionData.getIdEntrepriseScindee());
+			final Set<Long> idsEntreprisesResultantes = sessionData.getIdsEntreprisesResultantes();
+			final List<Entreprise> resultantes = new ArrayList<>(idsEntreprisesResultantes.size());
+			for (Long id : idsEntreprisesResultantes) {
+				resultantes.add(getTiers(Entreprise.class, id));
 			}
+			metierService.scinde(scindee, resultantes, sessionData.getDateContratScission());
 		});
 
 		// quand le boulot est terminé (correctement), on efface les données de la session

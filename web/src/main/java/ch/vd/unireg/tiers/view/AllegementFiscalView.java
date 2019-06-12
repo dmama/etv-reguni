@@ -48,24 +48,21 @@ public class AllegementFiscalView implements DateRange, Annulable {
 	/**
 	 * Comparateur pour le tri par défaut des allègements fiscaux affichés
 	 */
-	public static final Comparator<AllegementFiscalView> DEFAULT_COMPARATOR = new AnnulableHelper.AnnulesApresWrappingComparator<>(new Comparator<AllegementFiscalView>() {
-		@Override
-		public int compare(AllegementFiscalView o1, AllegementFiscalView o2) {
-			int comparison = - NullDateBehavior.LATEST.compare(o1.getDateFin(), o2.getDateFin());
+	public static final Comparator<AllegementFiscalView> DEFAULT_COMPARATOR = new AnnulableHelper.AnnulesApresWrappingComparator<>((o1, o2) -> {
+		int comparison = - NullDateBehavior.LATEST.compare(o1.getDateFin(), o2.getDateFin());
+		if (comparison == 0) {
+			comparison = - NullDateBehavior.EARLIEST.compare(o1.getDateDebut(), o2.getDateDebut());
 			if (comparison == 0) {
-				comparison = - NullDateBehavior.EARLIEST.compare(o1.getDateDebut(), o2.getDateDebut());
+				comparison = compareNullable(o1.getTypeCollectivite(), o2.getTypeCollectivite(), true);
 				if (comparison == 0) {
-					comparison = compareNullable(o1.getTypeCollectivite(), o2.getTypeCollectivite(), true);
+					comparison = compareNullable(o1.getTypeImpot(), o2.getTypeImpot(), true);
 					if (comparison == 0) {
-						comparison = compareNullable(o1.getTypeImpot(), o2.getTypeImpot(), true);
-						if (comparison == 0) {
-							comparison = compareNullable(o1.getNoOfsCommune(), o2.getNoOfsCommune(), false);
-						}
+						comparison = compareNullable(o1.getNoOfsCommune(), o2.getNoOfsCommune(), false);
 					}
 				}
 			}
-			return comparison;
 		}
+		return comparison;
 	});
 
 	public AllegementFiscalView(AllegementFiscal af) {

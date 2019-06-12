@@ -709,17 +709,14 @@ public class RapportController {
 		}
 
 		if (annulesEnDernier) {
-			rapports.sort(new Comparator<RapportEntreTiers>() {
-				@Override
-				public int compare(RapportEntreTiers o1, RapportEntreTiers o2) {
-					// on garde l'ordre fourni par la base en plaçant les éléments annulés à la fin
-					if (o1.isAnnule() != o2.isAnnule()) {
-						return o1.isAnnule() ? 1 : -1;
-					}
-					else {
-						// on ne change pas l'ordre donné (car la méthode Collections#sort est dite "stable")
-						return 0;
-					}
+			rapports.sort((o1, o2) -> {
+				// on garde l'ordre fourni par la base en plaçant les éléments annulés à la fin
+				if (o1.isAnnule() != o2.isAnnule()) {
+					return o1.isAnnule() ? 1 : -1;
+				}
+				else {
+					// on ne change pas l'ordre donné (car la méthode Collections#sort est dite "stable")
+					return 0;
 				}
 			});
 		}
@@ -755,31 +752,28 @@ public class RapportController {
 	 */
 	static void sortRapportsByAutoriteTutelaire(ParamPagination pagination, List<RapportEntreTiers> rapports, TiersService tiersService) {
 		final Comparator<RapportEntreTiers> comparateurAsc;
-		comparateurAsc = new Comparator<RapportEntreTiers>() {
-			@Override
-			public int compare(RapportEntreTiers o1, RapportEntreTiers o2) {
-				String nomAutoriteTutelaire1 = "";
-				String nomAutoriteTutelaire2 = "";
-				// [SIFISC-26747] Tri par nom de l'autorité Tutélaire
-				if (o1 instanceof RepresentationLegale) {
-					final RepresentationLegale rl = (RepresentationLegale) o1;
-					nomAutoriteTutelaire1 = RapportsPage.RapportView.getNomAutoriteTutelaire(rl.getAutoriteTutelaireId(), tiersService);
-				}
-				if (o2 instanceof RepresentationLegale) {
-					final RepresentationLegale rl = (RepresentationLegale) o2;
-					nomAutoriteTutelaire2 = RapportsPage.RapportView.getNomAutoriteTutelaire(rl.getAutoriteTutelaireId(), tiersService);
-				}
-
-				if (StringUtils.isBlank(nomAutoriteTutelaire1) || StringUtils.isBlank(nomAutoriteTutelaire2)) {
-					if (StringUtils.isBlank(nomAutoriteTutelaire1) && StringUtils.isBlank(nomAutoriteTutelaire2)) {
-						return 0;
-					}
-
-					return StringUtils.isBlank(nomAutoriteTutelaire1) ? -1 : 1;
-				}
-
-				return nomAutoriteTutelaire1.compareTo(nomAutoriteTutelaire2);
+		comparateurAsc = (o1, o2) -> {
+			String nomAutoriteTutelaire1 = "";
+			String nomAutoriteTutelaire2 = "";
+			// [SIFISC-26747] Tri par nom de l'autorité Tutélaire
+			if (o1 instanceof RepresentationLegale) {
+				final RepresentationLegale rl = (RepresentationLegale) o1;
+				nomAutoriteTutelaire1 = RapportsPage.RapportView.getNomAutoriteTutelaire(rl.getAutoriteTutelaireId(), tiersService);
 			}
+			if (o2 instanceof RepresentationLegale) {
+				final RepresentationLegale rl = (RepresentationLegale) o2;
+				nomAutoriteTutelaire2 = RapportsPage.RapportView.getNomAutoriteTutelaire(rl.getAutoriteTutelaireId(), tiersService);
+			}
+
+			if (StringUtils.isBlank(nomAutoriteTutelaire1) || StringUtils.isBlank(nomAutoriteTutelaire2)) {
+				if (StringUtils.isBlank(nomAutoriteTutelaire1) && StringUtils.isBlank(nomAutoriteTutelaire2)) {
+					return 0;
+				}
+
+				return StringUtils.isBlank(nomAutoriteTutelaire1) ? -1 : 1;
+			}
+
+			return nomAutoriteTutelaire1.compareTo(nomAutoriteTutelaire2);
 		};
 
 		rapports.sort(comparateurAsc);

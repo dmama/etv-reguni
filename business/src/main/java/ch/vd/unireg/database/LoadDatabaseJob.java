@@ -1,6 +1,5 @@
 package ch.vd.unireg.database;
 
-import java.io.InputStream;
 import java.util.Map;
 import java.util.zip.ZipInputStream;
 
@@ -59,18 +58,15 @@ public class LoadDatabaseJob extends JobDefinition {
 		}
 
 		status.setMessage("Ouverture du fichier...");
-		docService.readDoc(doc, new DocumentService.ReadDocCallback<Document>() {
-			@Override
-			public void readDoc(Document doc, InputStream is) throws Exception {
+		docService.readDoc(doc, (doc1, is) -> {
 
-				try (ZipInputStream zipstream = new ZipInputStream(is)) {
-					zipstream.getNextEntry();
+			try (ZipInputStream zipstream = new ZipInputStream(is)) {
+				zipstream.getNextEntry();
 
-					status.setMessage("Effacement de la base...");
-					dbService.truncateDatabase();
-					status.setMessage("Import de la base en cours...");
-					dbService.loadFromDbunitFile(zipstream, status, false);
-				}
+				status.setMessage("Effacement de la base...");
+				dbService.truncateDatabase();
+				status.setMessage("Import de la base en cours...");
+				dbService.loadFromDbunitFile(zipstream, status, false);
 			}
 		});
 

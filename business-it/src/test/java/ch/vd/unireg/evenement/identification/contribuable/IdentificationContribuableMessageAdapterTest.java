@@ -287,12 +287,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 
 		final List<IdentificationContribuable> messages = new ArrayList<>();
 
-		handler.setDemandeHandler(new DemandeHandler() {
-			@Override
-			public void handleDemande(IdentificationContribuable message) {
-				messages.add(message);
-			}
-		});
+		handler.setDemandeHandler(message -> messages.add(message));
 
 		// Lit le message sous format texte
 		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/identification/contribuable/demande_identification_alfred_hitchcock.xml");
@@ -357,12 +352,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 	public void testDemandeIdentificationAvecUrlDocument() throws Exception {
 		final List<IdentificationContribuable> messages = new ArrayList<>();
 
-		handler.setDemandeHandler(new DemandeHandler() {
-			@Override
-			public void handleDemande(IdentificationContribuable message) {
-				messages.add(message);
-			}
-		});
+		handler.setDemandeHandler(message -> messages.add(message));
 
 		// Lit le message sous format texte
 		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/identification/contribuable/demande_identification_alfred_hitchcock.xml");
@@ -394,12 +384,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 
 		final List<IdentificationContribuable> messages = new ArrayList<>();
 
-		handler.setDemandeHandler(new DemandeHandler() {
-			@Override
-			public void handleDemande(IdentificationContribuable message) {
-				messages.add(message);
-			}
-		});
+		handler.setDemandeHandler(message -> messages.add(message));
 
 		// Lit le message sous format texte
 		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/identification/contribuable/demande_identification_date_farfelue.xml");
@@ -425,12 +410,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 
 		final List<IdentificationContribuable> messages = new ArrayList<>();
 
-		handler.setDemandeHandler(new DemandeHandler() {
-			@Override
-			public void handleDemande(IdentificationContribuable message) {
-				messages.add(message);
-			}
-		});
+		handler.setDemandeHandler(message -> messages.add(message));
 
 		// Lit le message sous format texte
 		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/identification/contribuable/demande_identification_NCS_erreur_montant.xml");
@@ -456,12 +436,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 	public void testDemandeIdentificationNCS() throws Exception {
 		final List<IdentificationContribuable> messages = new ArrayList<>();
 
-		handler.setDemandeHandler(new DemandeHandler() {
-			@Override
-			public void handleDemande(IdentificationContribuable message) {
-				messages.add(message);
-			}
-		});
+		handler.setDemandeHandler(message -> messages.add(message));
 
 		// Lit le message sous format texte
 		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/identification/contribuable/demande_identification_NCS_alfred_hitchcock.xml");
@@ -488,12 +463,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 	public void testDemandeIdentificationImpotSource_LISTE_IS() throws Exception {
 		final List<IdentificationContribuable> messages = new ArrayList<>();
 
-		handler.setDemandeHandler(new DemandeHandler() {
-			@Override
-			public void handleDemande(IdentificationContribuable message) {
-				messages.add(message);
-			}
-		});
+		handler.setDemandeHandler(message -> messages.add(message));
 
 		// Lit le message sous format texte
 		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/identification/contribuable/demande_identification_IMPOT_SOURCE_LISTE_IS_alfred_hitchcock.xml");
@@ -520,12 +490,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 	public void testDemandeIdentificationE_Facture() throws Exception {
 		final List<IdentificationContribuable> messages = new ArrayList<>();
 
-		handler.setDemandeHandler(new DemandeHandler() {
-			@Override
-			public void handleDemande(IdentificationContribuable message) {
-				messages.add(message);
-			}
-		});
+		handler.setDemandeHandler(message -> messages.add(message));
 
 		// Lit le message sous format texte
 		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/identification/contribuable/demande_identification_E_FACTURE_alfred_hitchcock.xml");
@@ -557,12 +522,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		// Aller
 		{
 
-			handler.setDemandeHandler(new DemandeHandler() {
-				@Override
-				public void handleDemande(IdentificationContribuable message) {
-					messages.add(message);
-				}
-			});
+			handler.setDemandeHandler(message -> messages.add(message));
 
 			// Lit le message sous format texte
 			final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/identification/contribuable/demande_identification_alfred_hitchcock.xml");

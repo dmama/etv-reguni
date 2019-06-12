@@ -302,12 +302,7 @@ public class AdresseMixer {
 		}
 
 		// on détermine les trous dans le sandwich qui peuvent être comblés par les adresses par défaut
-		return DateRangeHelper.subtract(adressesDefault, adresses, new DateRangeHelper.AdapterCallback<AdresseGenerique>() {
-			@Override
-			public AdresseGenerique adapt(AdresseGenerique range, RegDate debut, RegDate fin) {
-				return new AdresseGeneriqueAdapter(range, debut, fin, null, null);
-			}
-		});
+		return DateRangeHelper.subtract(adressesDefault, adresses, (range, debut, fin) -> new AdresseGeneriqueAdapter(range, debut, fin, null, null));
 	}
 
 	/**

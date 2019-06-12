@@ -3,7 +3,6 @@ package ch.vd.unireg.evenement.entreprise.casmetier.formejuridique;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import org.junit.Assert;
@@ -348,12 +347,7 @@ public class FormeJuridiqueManquanteTest extends AbstractEvenementEntrepriseCivi
 			Assert.assertEquals(2, evtsFiscaux.size()); // deux pour le for principal (fermeture + ouverture du nouveau), on n'a pas créé les régimes lors du test.
 
 			final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
-			Collections.sort(evtsFiscauxTries, new Comparator<EvenementFiscal>() {
-				@Override
-				public int compare(EvenementFiscal o1, EvenementFiscal o2) {
-					return Long.compare(o1.getId(), o2.getId());
-				}
-			});
+			Collections.sort(evtsFiscauxTries, (o1, o2) -> Long.compare(o1.getId(), o2.getId()));
 
 			{
 				final EvenementFiscal ef = evtsFiscauxTries.get(0);
@@ -472,12 +466,7 @@ public class FormeJuridiqueManquanteTest extends AbstractEvenementEntrepriseCivi
 			Assert.assertEquals(2, evtsFiscaux.size()); // deux pour le for principal (fermeture + ouverture du nouveau), on n'a pas créé les régimes lors du test.
 
 			final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
-			Collections.sort(evtsFiscauxTries, new Comparator<EvenementFiscal>() {
-				@Override
-				public int compare(EvenementFiscal o1, EvenementFiscal o2) {
-					return Long.compare(o1.getId(), o2.getId());
-				}
-			});
+			Collections.sort(evtsFiscauxTries, (o1, o2) -> Long.compare(o1.getId(), o2.getId()));
 
 			{
 				final EvenementFiscal ef = evtsFiscauxTries.get(0);
@@ -596,12 +585,7 @@ public class FormeJuridiqueManquanteTest extends AbstractEvenementEntrepriseCivi
 			Assert.assertEquals(2, evtsFiscaux.size()); // deux pour le for principal (fermeture + ouverture du nouveau), on n'a pas créé les régimes lors du test.
 
 			final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
-			Collections.sort(evtsFiscauxTries, new Comparator<EvenementFiscal>() {
-				@Override
-				public int compare(EvenementFiscal o1, EvenementFiscal o2) {
-					return Long.compare(o1.getId(), o2.getId());
-				}
-			});
+			Collections.sort(evtsFiscauxTries, (o1, o2) -> Long.compare(o1.getId(), o2.getId()));
 
 			{
 				final EvenementFiscal ef = evtsFiscauxTries.get(0);

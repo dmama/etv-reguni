@@ -1,7 +1,6 @@
 package ch.vd.unireg.evenement.reqdes;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 import ch.vd.unireg.common.NomPrenom;
@@ -19,12 +18,7 @@ public class ReqDesUniteTraitementListView extends ReqDesUniteTraitementAbstract
 		super(ut);
 
 		final List<PartiePrenante> partiesPrenantes = new ArrayList<>(ut.getPartiesPrenantes());
-		partiesPrenantes.sort(new Comparator<PartiePrenante>() {
-			@Override
-			public int compare(PartiePrenante o1, PartiePrenante o2) {
-				return Long.compare(o1.getId(), o2.getId());
-			}
-		});
+		partiesPrenantes.sort((o1, o2) -> Long.compare(o1.getId(), o2.getId()));
 		if (!partiesPrenantes.isEmpty()) {
 			final PartiePrenante pp1 = partiesPrenantes.get(0);
 			partiePrenante1 = new NomPrenom(pp1.getNom(), pp1.getPrenoms());

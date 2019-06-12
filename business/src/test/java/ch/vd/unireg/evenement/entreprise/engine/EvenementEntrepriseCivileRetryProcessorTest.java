@@ -92,12 +92,7 @@ public class EvenementEntrepriseCivileRetryProcessorTest extends BusinessTest {
 			@Override
 			public ListenerHandle registerListener(Listener listener) {
 				final int id = pointer.incrementAndGet();
-				final ListenerHandle handle = new ListenerHandle() {
-					@Override
-					public void unregister() {
-						listeners.remove(id);
-					}
-				};
+				final ListenerHandle handle = () -> listeners.remove(id);
 				listeners.put(id, listener);
 				return handle;
 			}

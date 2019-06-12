@@ -11,9 +11,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
 
-import ch.vd.registre.simpleindexer.DocGetter;
 import ch.vd.unireg.indexer.GlobalIndex;
-import ch.vd.unireg.indexer.SearchAllCallback;
 import ch.vd.unireg.indexer.lucene.FSIndexProvider;
 import ch.vd.unireg.indexer.lucene.IndexProvider;
 import ch.vd.unireg.indexer.lucene.LuceneHelper;
@@ -30,16 +28,13 @@ public class LuceneExtractor {
 		try {
 			final Set<String> docTypes = new HashSet<>(Arrays.asList("nonhabitant", "habitant"));
 			final Query query = new MatchAllDocsQuery();
-			index.searchAll(query, new SearchAllCallback() {
-				@Override
-				public void handle(int doc, DocGetter docGetter) throws Exception {
-					final Document document = docGetter.get(doc);
-					final String docsubtype = document.getField("DOCSUBTYPE").stringValue();
-					if (docTypes.contains(docsubtype)) {
-						final String entityId = document.getField(LuceneHelper.F_ENTITYID).stringValue();
-						final String nom = document.getField("D_NOM1").stringValue();
-						res.add(entityId + ";" + nom);
-					}
+			index.searchAll(query, (doc, docGetter) -> {
+				final Document document = docGetter.get(doc);
+				final String docsubtype = document.getField("DOCSUBTYPE").stringValue();
+				if (docTypes.contains(docsubtype)) {
+					final String entityId = document.getField(LuceneHelper.F_ENTITYID).stringValue();
+					final String nom = document.getField("D_NOM1").stringValue();
+					res.add(entityId + ";" + nom);
 				}
 			});
 		}

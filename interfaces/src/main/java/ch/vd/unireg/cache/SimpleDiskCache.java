@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -226,12 +225,7 @@ public class SimpleDiskCache<T extends Serializable> implements PersistentCache<
 
 		final String directory = calculateDir(id);
 		final File dir = new File(directory);
-		final File[] files = dir.listFiles(new FilenameFilter() {
-			@Override
-			public boolean accept(File dir, String name) {
-				return name.startsWith(String.valueOf(id) + '_');
-			}
-		});
+		final File[] files = dir.listFiles((dir1, name) -> name.startsWith(String.valueOf(id) + '_'));
 		if (files != null) {
 			for (File f : files) {
 				if (!f.delete()) {

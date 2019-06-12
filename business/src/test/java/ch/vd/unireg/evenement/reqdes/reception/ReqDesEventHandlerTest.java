@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -96,12 +95,7 @@ public class ReqDesEventHandlerTest extends BusinessTest {
 
 		// on trie les groupes par taille croissante (1 et 1 et 1 de 2)
 		final List<Set<Integer>> sortedGroupes = new ArrayList<>(groupes);
-		Collections.sort(sortedGroupes, new Comparator<Set<Integer>>() {
-			@Override
-			public int compare(Set<Integer> o1, Set<Integer> o2) {
-				return o1.size() - o2.size();
-			}
-		});
+		Collections.sort(sortedGroupes, (o1, o2) -> o1.size() - o2.size());
 
 		{
 			final Set<Integer> set = sortedGroupes.get(0);
@@ -148,12 +142,7 @@ public class ReqDesEventHandlerTest extends BusinessTest {
 			Assert.assertEquals(3, roles.size());
 
 			final List<Pair<RoleDansActe, Integer>> sortedRoles = new ArrayList<>(roles);
-			Collections.sort(sortedRoles, new Comparator<Pair<RoleDansActe, Integer>>() {
-				@Override
-				public int compare(Pair<RoleDansActe, Integer> o1, Pair<RoleDansActe, Integer> o2) {
-					return o1.getRight() - o2.getRight();
-				}
-			});
+			Collections.sort(sortedRoles, (o1, o2) -> o1.getRight() - o2.getRight());
 
 			{
 				final Pair<RoleDansActe, Integer> role = sortedRoles.get(0);
@@ -220,12 +209,7 @@ public class ReqDesEventHandlerTest extends BusinessTest {
 			}
 
 			// tri dans l'ordre du nombre de parties prenantes, (1 en a 1, l'autre en a 2)
-			Collections.sort(uts, new Comparator<UniteTraitement>() {
-				@Override
-				public int compare(UniteTraitement o1, UniteTraitement o2) {
-					return o1.getPartiesPrenantes().size() - o2.getPartiesPrenantes().size();
-				}
-			});
+			Collections.sort(uts, (o1, o2) -> o1.getPartiesPrenantes().size() - o2.getPartiesPrenantes().size());
 
 			// pour vérifier que le lien vers l'événement est bien le même à chaque fois
 			final EvenementReqDes evt;
@@ -270,12 +254,7 @@ public class ReqDesEventHandlerTest extends BusinessTest {
 
 				// tri par la date de naissance -> Harry puis Ginny
 				final List<PartiePrenante> sortedPPs = new ArrayList<>(ut.getPartiesPrenantes());
-				Collections.sort(sortedPPs, new Comparator<PartiePrenante>() {
-					@Override
-					public int compare(PartiePrenante o1, PartiePrenante o2) {
-						return o1.getDateNaissance().compareTo(o2.getDateNaissance());
-					}
-				});
+				Collections.sort(sortedPPs, (o1, o2) -> o1.getDateNaissance().compareTo(o2.getDateNaissance()));
 
 				{
 					final PartiePrenante pp = sortedPPs.get(0);
@@ -289,12 +268,7 @@ public class ReqDesEventHandlerTest extends BusinessTest {
 					Assert.assertEquals(3, pp.getRoles().size());
 
 					final List<RolePartiePrenante> sortedRoles = new ArrayList<>(pp.getRoles());
-					Collections.sort(sortedRoles, new Comparator<RolePartiePrenante>() {
-						@Override
-						public int compare(RolePartiePrenante o1, RolePartiePrenante o2) {
-							return o1.getTransaction().getOfsCommune() - o2.getTransaction().getOfsCommune();
-						}
-					});
+					Collections.sort(sortedRoles, (o1, o2) -> o1.getTransaction().getOfsCommune() - o2.getTransaction().getOfsCommune());
 
 					{
 						final RolePartiePrenante rpp = sortedRoles.get(0);
@@ -349,12 +323,7 @@ public class ReqDesEventHandlerTest extends BusinessTest {
 
 			// et finalement vérification des transactions enregistrées
 			final List<TransactionImmobiliere> transactions = new ArrayList<>(evt.getTransactions());
-			Collections.sort(transactions, new Comparator<TransactionImmobiliere>() {
-				@Override
-				public int compare(TransactionImmobiliere o1, TransactionImmobiliere o2) {
-					return o1.getOfsCommune() - o2.getOfsCommune();
-				}
-			});
+			Collections.sort(transactions, (o1, o2) -> o1.getOfsCommune() - o2.getOfsCommune());
 			Assert.assertEquals(3, transactions.size());
 
 			{

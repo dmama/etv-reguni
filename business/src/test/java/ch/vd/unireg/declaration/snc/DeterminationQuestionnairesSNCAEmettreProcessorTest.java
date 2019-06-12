@@ -1,7 +1,6 @@
 package ch.vd.unireg.declaration.snc;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import org.junit.Assert;
@@ -267,12 +266,7 @@ public class DeterminationQuestionnairesSNCAEmettreProcessorTest extends Busines
 		doInNewTransactionAndSession(status -> {
 			final List<Tache> all = tacheDAO.getAll();
 			Assert.assertNotNull(all);
-			Collections.sort(all, new Comparator<Tache>() {
-				@Override
-				public int compare(Tache o1, Tache o2) {
-					return Long.compare(o1.getId(), o2.getId());
-				}
-			});
+			Collections.sort(all, (o1, o2) -> Long.compare(o1.getId(), o2.getId()));
 			Assert.assertEquals(2, all.size());     // effectivement une tâche créée
 
 			{
@@ -366,12 +360,7 @@ public class DeterminationQuestionnairesSNCAEmettreProcessorTest extends Busines
 		doInNewTransactionAndSession(status -> {
 			final List<Tache> all = tacheDAO.getAll();
 			Assert.assertNotNull(all);
-			Collections.sort(all, new Comparator<Tache>() {
-				@Override
-				public int compare(Tache o1, Tache o2) {
-					return Long.compare(o1.getId(), o2.getId());
-				}
-			});
+			Collections.sort(all, (o1, o2) -> Long.compare(o1.getId(), o2.getId()));
 			Assert.assertEquals(2, all.size());     // effectivement une tâche créée
 
 			{
@@ -943,12 +932,7 @@ public class DeterminationQuestionnairesSNCAEmettreProcessorTest extends Busines
 			final List<Tache> all = tacheDAO.getAll();
 			Assert.assertNotNull(all);
 			Assert.assertEquals(2, all.size());     // toujours les deux mêmes tâches
-			Collections.sort(all, new Comparator<Tache>() {
-				@Override
-				public int compare(Tache o1, Tache o2) {
-					return Long.compare(o1.getId(), o2.getId());
-				}
-			});
+			Collections.sort(all, (o1, o2) -> Long.compare(o1.getId(), o2.getId()));
 
 			{
 				final Tache tache = all.get(0);

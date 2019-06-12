@@ -9,7 +9,6 @@ import java.util.RandomAccess;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -21,7 +20,6 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.Flash;
-import ch.vd.unireg.metier.MetierServiceException;
 import ch.vd.unireg.security.AccessDeniedException;
 import ch.vd.unireg.security.Role;
 import ch.vd.unireg.tiers.DomicileHisto;
@@ -31,7 +29,6 @@ import ch.vd.unireg.tiers.LocalisationFiscale;
 import ch.vd.unireg.tiers.LocalizedDateRange;
 import ch.vd.unireg.tiers.TiersCriteria;
 import ch.vd.unireg.tiers.view.TiersCriteriaView;
-import ch.vd.unireg.transaction.TransactionHelper;
 
 @Controller
 @RequestMapping("/processuscomplexe/demenagement")
@@ -152,12 +149,9 @@ public class DemenagementSiegeController extends AbstractProcessusComplexeRecher
 		}
 		controllerUtils.checkTraitementContribuableAvecDecisionAci(view.getIdEntreprise());
 
-		doInTransaction(new TransactionHelper.ExceptionThrowingCallbackWithoutResult<MetierServiceException>() {
-			@Override
-			public void execute(TransactionStatus status) throws MetierServiceException {
-				final Entreprise entreprise = getTiers(Entreprise.class, view.getIdEntreprise());
-				metierService.demenageSiege(entreprise, view.getDateDebutNouveauSiege(), view.getTypeAutoriteFiscale(), view.getNoAutoriteFiscale());
-			}
+		doInTransaction(status -> {
+			final Entreprise entreprise = getTiers(Entreprise.class, view.getIdEntreprise());
+			metierService.demenageSiege(entreprise, view.getDateDebutNouveauSiege(), view.getTypeAutoriteFiscale(), view.getNoAutoriteFiscale());
 		});
 
 		// tout s'est bien passé... mais si le contribuable est sous le coup d'une décision ACI

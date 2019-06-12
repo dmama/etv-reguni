@@ -65,20 +65,10 @@ public class VeuvageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// décès fictif de monsieur juste pour le test
-		doModificationIndividu(noMonsieur, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				individu.setDateDeces(dateVeuvage);
-			}
-		});
+		doModificationIndividu(noMonsieur, individu -> individu.setDateDeces(dateVeuvage));
 
 		// veuvage de madame pour le test
-		doModificationIndividu(noMadame, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				MockIndividuConnector.veuvifieIndividu(individu, dateVeuvage, false);
-			}
-		});
+		doModificationIndividu(noMadame, individu -> MockIndividuConnector.veuvifieIndividu(individu, dateVeuvage, false));
 
 		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
 		final long veuvageId = doInNewTransactionAndSession(status -> {
@@ -157,20 +147,10 @@ public class VeuvageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// décès fictif de monsieur juste pour le test
-		doModificationIndividu(noMonsieur, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				individu.setDateDeces(dateVeuvage);
-			}
-		});
+		doModificationIndividu(noMonsieur, individu -> individu.setDateDeces(dateVeuvage));
 
 		// veuvage de madame pour le test
-		doModificationIndividu(noMadame, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				MockIndividuConnector.veuvifieIndividu(individu, dateVeuvage, false);
-			}
-		});
+		doModificationIndividu(noMadame, individu -> MockIndividuConnector.veuvifieIndividu(individu, dateVeuvage, false));
 
 		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
 		final long veuvageId = doInNewTransactionAndSession(status -> {
@@ -235,20 +215,10 @@ public class VeuvageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 
 
 		// décès fictif de monsieur juste pour le test
-		doModificationIndividu(noMonsieur, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				individu.setDateDeces(dateVeuvage);
-			}
-		});
+		doModificationIndividu(noMonsieur, individu -> individu.setDateDeces(dateVeuvage));
 
 		// veuvage de madame pour le test
-		doModificationIndividu(noMadame, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				MockIndividuConnector.veuvifieIndividu(individu, dateVeuvage, false);
-			}
-		});
+		doModificationIndividu(noMadame, individu -> MockIndividuConnector.veuvifieIndividu(individu, dateVeuvage, false));
 
 		doInNewTransactionAndSession(status -> {
 			final PersonnePhysique monsieur = addHabitant(noMonsieur);
@@ -312,20 +282,10 @@ public class VeuvageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// décès fictif du conjoint juste pour le test
-		doModificationIndividu(noConjoint, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				individu.setDateDeces(dateVeuvage);
-			}
-		});
+		doModificationIndividu(noConjoint, individu -> individu.setDateDeces(dateVeuvage));
 
 		// veuvage du principal pour le test
-		doModificationIndividu(noPrincipal, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				MockIndividuConnector.veuvifieIndividu(individu, dateVeuvage, true);
-			}
-		});
+		doModificationIndividu(noPrincipal, individu -> MockIndividuConnector.veuvifieIndividu(individu, dateVeuvage, true));
 
 		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
 		final long veuvageId = doInNewTransactionAndSession(status -> {

@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -26,14 +25,12 @@ import ch.vd.unireg.common.Flash;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.indexer.IndexerException;
-import ch.vd.unireg.metier.MetierServiceException;
 import ch.vd.unireg.security.AccessDeniedException;
 import ch.vd.unireg.security.Role;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.TiersCriteria;
 import ch.vd.unireg.tiers.TiersIndexedDataView;
 import ch.vd.unireg.tiers.view.TiersCriteriaView;
-import ch.vd.unireg.transaction.TransactionHelper;
 import ch.vd.unireg.type.TypeEtatEntreprise;
 import ch.vd.unireg.utils.WebContextUtils;
 
@@ -65,38 +62,24 @@ public class TransfertPatrimoineController extends AbstractProcessusComplexeCont
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		this.searchEmettriceComponent = buildSearchComponent(CRITERIA_NAME_EMETTRICE, "entreprise/transfertpatrimoine/list-emettrice",
-		                                                     new SearchTiersComponent.TiersCriteriaFiller() {
-			                                                     @Override
-			                                                     public void fill(TiersCriteriaView data) {
-				                                                     data.setTypeTiersImperatif(TiersCriteria.TypeTiers.ENTREPRISE);
-				                                                     data.setEtatsEntrepriseInterdits(EnumSet.of(TypeEtatEntreprise.ABSORBEE, TypeEtatEntreprise.DISSOUTE, TypeEtatEntreprise.RADIEE_RC, TypeEtatEntreprise.EN_FAILLITE));
-			                                                     }
+		                                                     data -> {
+			                                                     data.setTypeTiersImperatif(TiersCriteria.TypeTiers.ENTREPRISE);
+			                                                     data.setEtatsEntrepriseInterdits(EnumSet.of(TypeEtatEntreprise.ABSORBEE, TypeEtatEntreprise.DISSOUTE, TypeEtatEntreprise.RADIEE_RC, TypeEtatEntreprise.EN_FAILLITE));
 		                                                     });
 
 		this.searchReceptriceComponent = buildSearchComponent(CRITERIA_NAME_RECEPTRICE, "entreprise/transfertpatrimoine/list-receptrices",
-		                                                      new SearchTiersComponent.TiersCriteriaFiller() {
-			                                                      @Override
-			                                                      public void fill(TiersCriteriaView data) {
-				                                                      fillCriteresImperatifsPourEntrepriseReceptrice(data);
+		                                                      data -> fillCriteresImperatifsPourEntrepriseReceptrice(data),
+		                                                      (model, session) -> {
+			                                                      final TransferPatrimoineSessionData sessionData = getSessionData(session);
+			                                                      if (sessionData == null) {
+				                                                      Flash.warning("La session a été invalidée. Veuillez recommencer votre saisie.");
+				                                                      throw new SearchTiersComponent.RedirectException("../emettrice/list.do");
 			                                                      }
+			                                                      model.addAttribute(TRANSFERT, sessionData);
 		                                                      },
-		                                                      new SearchTiersComponent.ModelFiller() {
-			                                                      @Override
-			                                                      public void fill(Model model, HttpSession session) throws SearchTiersComponent.RedirectException {
-				                                                      final TransferPatrimoineSessionData sessionData = getSessionData(session);
-				                                                      if (sessionData == null) {
-					                                                      Flash.warning("La session a été invalidée. Veuillez recommencer votre saisie.");
-					                                                      throw new SearchTiersComponent.RedirectException("../emettrice/list.do");
-				                                                      }
-				                                                      model.addAttribute(TRANSFERT, sessionData);
-			                                                      }
-		                                                      },
-		                                                      new SearchTiersComponent.TiersSearchAdapter<SelectionEntrepriseView>() {
-			                                                      @Override
-			                                                      public List<SelectionEntrepriseView> adaptSearchResult(List<TiersIndexedDataView> result, HttpSession session) {
-				                                                      final TransferPatrimoineSessionData sessionData = getSessionData(session);
-				                                                      return TransfertPatrimoineController.this.adapteSearchResults(result, sessionData);
-			                                                      }
+		                                                      (SearchTiersComponent.TiersSearchAdapter<SelectionEntrepriseView>) (result, session) -> {
+			                                                      final TransferPatrimoineSessionData sessionData = getSessionData(session);
+			                                                      return TransfertPatrimoineController.this.adapteSearchResults(result, sessionData);
 		                                                      });
 	}
 
@@ -294,18 +277,15 @@ public class TransfertPatrimoineController extends AbstractProcessusComplexeCont
 		}
 
 		// on récupère les données des entreprises et on envoie tout ça dans le moteur
-		doInTransaction(new TransactionHelper.ExceptionThrowingCallbackWithoutResult<MetierServiceException>() {
-			@Override
-			public void execute(TransactionStatus status) throws MetierServiceException {
-				final Entreprise emettrice = getTiers(Entreprise.class, sessionData.getIdEntrepriseEmettrice());
-				final Set<Long> idsEntreprisesReceptrices = sessionData.getIdsEntreprisesReceptrices();
-				final List<Entreprise> receptrices = new ArrayList<>(idsEntreprisesReceptrices.size());
-				for (Long id : idsEntreprisesReceptrices) {
-					receptrices.add(getTiers(Entreprise.class, id));
-				}
-
-				metierService.transferePatrimoine(emettrice, receptrices, sessionData.getDateTransfert());
+		doInTransaction(status -> {
+			final Entreprise emettrice = getTiers(Entreprise.class, sessionData.getIdEntrepriseEmettrice());
+			final Set<Long> idsEntreprisesReceptrices = sessionData.getIdsEntreprisesReceptrices();
+			final List<Entreprise> receptrices = new ArrayList<>(idsEntreprisesReceptrices.size());
+			for (Long id : idsEntreprisesReceptrices) {
+				receptrices.add(getTiers(Entreprise.class, id));
 			}
+
+			metierService.transferePatrimoine(emettrice, receptrices, sessionData.getDateTransfert());
 		});
 
 		// quand le boulot est terminé (correctement), on efface les données de la session

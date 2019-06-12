@@ -164,12 +164,7 @@ public class Ec_2000_05_Deces_ConjointsMemeJour_Scenario extends EvenementCivilS
 	@Etape(id = 2, descr = "Déclaration de décès de Heidi")
 	public void etape2() throws Exception {
 
-		doModificationIndividu(noIndHeidi, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				individu.setDateDeces(dateDeces);
-			}
-		});
+		doModificationIndividu(noIndHeidi, individu -> individu.setDateDeces(dateDeces));
 
 		long id = addEvenementCivil(TypeEvenementCivil.DECES, noIndHeidi, dateDeces, MockCommune.Lausanne.getNoOFS());
 		commitAndStartTransaction();
@@ -224,12 +219,7 @@ public class Ec_2000_05_Deces_ConjointsMemeJour_Scenario extends EvenementCivilS
 	@Etape(id = 3, descr = "Déclaration de décès de Hamlet")
 	public void etape3() throws Exception {
 
-		doModificationIndividu(noIndHamlet, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				individu.setDateDeces(dateDeces);
-			}
-		});
+		doModificationIndividu(noIndHamlet, individu -> individu.setDateDeces(dateDeces));
 
 		long id = addEvenementCivil(TypeEvenementCivil.DECES, noIndHamlet, dateDeces, MockCommune.Lausanne.getNoOFS());
 		commitAndStartTransaction();

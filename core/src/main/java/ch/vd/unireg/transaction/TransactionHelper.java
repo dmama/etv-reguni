@@ -109,12 +109,9 @@ public class TransactionHelper {
 	 * @throws E en cas de souci
 	 */
 	public <E extends Exception> void doInTransactionWithException(boolean readonly, final ExceptionThrowingCallbackWithoutResult<E> callback) throws E {
-		doInTransactionWithException(readonly, new ExceptionThrowingCallback<Object, E>() {
-			@Override
-			public Object execute(TransactionStatus status) throws E {
-				callback.execute(status);
-				return null;
-			}
+		doInTransactionWithException(readonly, status -> {
+			callback.execute(status);
+			return null;
 		});
 	}
 }

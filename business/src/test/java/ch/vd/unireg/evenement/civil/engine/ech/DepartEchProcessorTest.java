@@ -753,17 +753,14 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			}
 
 			// changement d'adresse
-			doModificationIndividu(noIndividu, new IndividuModification() {
-				@Override
-				public void modifyIndividu(MockIndividu individu) {
-					final MockAdresse oldAddress = (MockAdresse) individu.getAdresses().iterator().next();
-					oldAddress.setDateFinValidite(dateDepart);
-					oldAddress.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Cossonay.getNoOFS(), null));
+			doModificationIndividu(noIndividu, individu -> {
+				final MockAdresse oldAddress = (MockAdresse) individu.getAdresses().iterator().next();
+				oldAddress.setDateFinValidite(dateDepart);
+				oldAddress.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Cossonay.getNoOFS(), null));
 
-					final MockAdresse newAddress = new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateDepart.getOneDayAfter(), null);
-					newAddress.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Lausanne.getNoOFS(), null));
-					individu.addAdresse(newAddress);
-				}
+				final MockAdresse newAddress = new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateDepart.getOneDayAfter(), null);
+				newAddress.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Lausanne.getNoOFS(), null));
+				individu.addAdresse(newAddress);
 			});
 
 			// puisqu'il est déjà dans le cache, on ne devrait pas encore voir la nouvelle adresse
@@ -927,11 +924,8 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			return hibernateTemplate.merge(evt).getId();
 		});
 
-		buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {
-			@Override
-			public void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator) {
-				translator.overrideStrategy(TypeEvenementCivilEch.DEPART, ActionEvenementCivilEch.PREMIERE_LIVRAISON, new DepartEchTranslationStrategy(0));     // aucun décalage accepté
-			}
+		buildStrategyOverridingTranslatorAndProcessor(true, translator -> {
+			translator.overrideStrategy(TypeEvenementCivilEch.DEPART, ActionEvenementCivilEch.PREMIERE_LIVRAISON, new DepartEchTranslationStrategy(0));     // aucun décalage accepté
 		});
 
 		// traitement de l'événement
@@ -991,11 +985,8 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			return hibernateTemplate.merge(evt).getId();
 		});
 
-		buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {
-			@Override
-			public void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator) {
-				translator.overrideStrategy(TypeEvenementCivilEch.DEPART, ActionEvenementCivilEch.PREMIERE_LIVRAISON, new DepartEchTranslationStrategy(1));     // 1 jour de décalage accepté
-			}
+		buildStrategyOverridingTranslatorAndProcessor(true, translator -> {
+			translator.overrideStrategy(TypeEvenementCivilEch.DEPART, ActionEvenementCivilEch.PREMIERE_LIVRAISON, new DepartEchTranslationStrategy(1));     // 1 jour de décalage accepté
 		});
 
 		// traitement de l'événement
@@ -1048,11 +1039,8 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			return hibernateTemplate.merge(evt).getId();
 		});
 
-		buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {
-			@Override
-			public void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator) {
-				translator.overrideStrategy(TypeEvenementCivilEch.DEPART, ActionEvenementCivilEch.PREMIERE_LIVRAISON, new DepartEchTranslationStrategy(1));     // 1 jour de décalage accepté
-			}
+		buildStrategyOverridingTranslatorAndProcessor(true, translator -> {
+			translator.overrideStrategy(TypeEvenementCivilEch.DEPART, ActionEvenementCivilEch.PREMIERE_LIVRAISON, new DepartEchTranslationStrategy(1));     // 1 jour de décalage accepté
 		});
 
 		// traitement de l'événement
@@ -1112,11 +1100,8 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			return hibernateTemplate.merge(evt).getId();
 		});
 
-		buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {
-			@Override
-			public void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator) {
-				translator.overrideStrategy(TypeEvenementCivilEch.DEPART, ActionEvenementCivilEch.PREMIERE_LIVRAISON, new DepartEchTranslationStrategy(1));     // 1 jour de décalage accepté
-			}
+		buildStrategyOverridingTranslatorAndProcessor(true, translator -> {
+			translator.overrideStrategy(TypeEvenementCivilEch.DEPART, ActionEvenementCivilEch.PREMIERE_LIVRAISON, new DepartEchTranslationStrategy(1));     // 1 jour de décalage accepté
 		});
 
 		// traitement de l'événement
@@ -1169,11 +1154,8 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			return hibernateTemplate.merge(evt).getId();
 		});
 
-		buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {
-			@Override
-			public void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator) {
-				translator.overrideStrategy(TypeEvenementCivilEch.DEPART, ActionEvenementCivilEch.PREMIERE_LIVRAISON, new DepartEchTranslationStrategy(1));     // 1 jour de décalage accepté
-			}
+		buildStrategyOverridingTranslatorAndProcessor(true, translator -> {
+			translator.overrideStrategy(TypeEvenementCivilEch.DEPART, ActionEvenementCivilEch.PREMIERE_LIVRAISON, new DepartEchTranslationStrategy(1));     // 1 jour de décalage accepté
 		});
 
 		// traitement de l'événement
@@ -1854,18 +1836,15 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 		});
 
 		// son départ à elle-maintenant
-		doModificationIndividu(noIndividuElle, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				final Collection<Adresse> adresses = individu.getAdresses();
-				Assert.assertEquals(1, adresses.size());
+		doModificationIndividu(noIndividuElle, individu -> {
+			final Collection<Adresse> adresses = individu.getAdresses();
+			Assert.assertEquals(1, adresses.size());
 
-				final MockAdresse prn = (MockAdresse) adresses.iterator().next();
-				prn.setDateFinValidite(dateDepart);
-				prn.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.Albanie.getNoOFS(), null));
+			final MockAdresse prn = (MockAdresse) adresses.iterator().next();
+			prn.setDateFinValidite(dateDepart);
+			prn.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.Albanie.getNoOFS(), null));
 
-				individu.addAdresse(new MockAdresse(TypeAdresseCivil.SECONDAIRE, MockRue.Echallens.GrandRue, null, dateArriveeSecondaire, null));
-			}
+			individu.addAdresse(new MockAdresse(TypeAdresseCivil.SECONDAIRE, MockRue.Echallens.GrandRue, null, dateArriveeSecondaire, null));
 		});
 
 		// événements civils de départ/arrivée de Madame
@@ -1986,16 +1965,13 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 		// (départ vers l'Allemagne)
 		//
 
-		doModificationIndividu(noIndividuSuiveur, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				final Collection<Adresse> adresses = individu.getAdresses();
-				Assert.assertEquals(1, adresses.size());
+		doModificationIndividu(noIndividuSuiveur, individu -> {
+			final Collection<Adresse> adresses = individu.getAdresses();
+			Assert.assertEquals(1, adresses.size());
 
-				final MockAdresse prn = (MockAdresse) adresses.iterator().next();
-				prn.setDateFinValidite(dateDepartSuiveur);
-				prn.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null));
-			}
+			final MockAdresse prn = (MockAdresse) adresses.iterator().next();
+			prn.setDateFinValidite(dateDepartSuiveur);
+			prn.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null));
 		});
 
 		final long evtSuiveurId = doInNewTransactionAndSession(status -> {
@@ -2041,16 +2017,13 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 		// (départ vers la France)
 		//
 
-		doModificationIndividu(noIndividuMeneur, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				final Collection<Adresse> adresses = individu.getAdresses();
-				Assert.assertEquals(1, adresses.size());
+		doModificationIndividu(noIndividuMeneur, individu -> {
+			final Collection<Adresse> adresses = individu.getAdresses();
+			Assert.assertEquals(1, adresses.size());
 
-				final MockAdresse prn = (MockAdresse) adresses.iterator().next();
-				prn.setDateFinValidite(dateDepartMeneur);
-				prn.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
-			}
+			final MockAdresse prn = (MockAdresse) adresses.iterator().next();
+			prn.setDateFinValidite(dateDepartMeneur);
+			prn.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
 		});
 
 		final long evtMeneurId = doInNewTransactionAndSession(status -> {
@@ -2154,16 +2127,13 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 		// (celui-ci part en Allemagne)
 		//
 
-		doModificationIndividu(noIndividuSuiveur, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				final Collection<Adresse> adresses = individu.getAdresses();
-				Assert.assertEquals(1, adresses.size());
+		doModificationIndividu(noIndividuSuiveur, individu -> {
+			final Collection<Adresse> adresses = individu.getAdresses();
+			Assert.assertEquals(1, adresses.size());
 
-				final MockAdresse prn = (MockAdresse) adresses.iterator().next();
-				prn.setDateFinValidite(dateDepartSuiveur);
-				prn.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null));
-			}
+			final MockAdresse prn = (MockAdresse) adresses.iterator().next();
+			prn.setDateFinValidite(dateDepartSuiveur);
+			prn.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null));
 		});
 
 		final long evtSuiveurId = doInNewTransactionAndSession(status -> {
@@ -2209,16 +2179,13 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 		// (celui-ci part à ZH)
 		//
 
-		doModificationIndividu(noIndividuMeneur, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				final Collection<Adresse> adresses = individu.getAdresses();
-				Assert.assertEquals(1, adresses.size());
+		doModificationIndividu(noIndividuMeneur, individu -> {
+			final Collection<Adresse> adresses = individu.getAdresses();
+			Assert.assertEquals(1, adresses.size());
 
-				final MockAdresse prn = (MockAdresse) adresses.iterator().next();
-				prn.setDateFinValidite(dateDepartMeneur);
-				prn.setLocalisationSuivante(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Zurich.getNoOFS(), null));
-			}
+			final MockAdresse prn = (MockAdresse) adresses.iterator().next();
+			prn.setDateFinValidite(dateDepartMeneur);
+			prn.setLocalisationSuivante(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Zurich.getNoOFS(), null));
 		});
 
 		final long evtMeneurId = doInNewTransactionAndSession(status -> {
@@ -2321,16 +2288,13 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 		//
 		//
 
-		doModificationIndividu(noIndividuMadame, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				final Collection<Adresse> adresses = individu.getAdresses();
-				Assert.assertEquals(1, adresses.size());
+		doModificationIndividu(noIndividuMadame, individu -> {
+			final Collection<Adresse> adresses = individu.getAdresses();
+			Assert.assertEquals(1, adresses.size());
 
-				final MockAdresse prn = (MockAdresse) adresses.iterator().next();
-				prn.setDateFinValidite(dateDepartMadame);
-				prn.setLocalisationSuivante(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Geneve.getNoOFS(), null));
-			}
+			final MockAdresse prn = (MockAdresse) adresses.iterator().next();
+			prn.setDateFinValidite(dateDepartMadame);
+			prn.setLocalisationSuivante(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Geneve.getNoOFS(), null));
 		});
 
 		final long evtMadameId = doInNewTransactionAndSession(status -> {

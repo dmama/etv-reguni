@@ -598,12 +598,7 @@ public class ProduireRolesProcessor {
 	 * les éléments fournis (nombre de cas traités et nombre total de cas), en d'autres termes
 	 * qui ne fait pas de différences entre la progression locale et la progression globale
 	 */
-	private static final ProgressCalculator DEFAULT_PROGRESS_CALCULATOR = new ProgressCalculator() {
-		@Override
-		public int getProgressPercentage(int nbTreated, int size) {
-			return size == 0 ? 0 : nbTreated * 100 / size;
-		}
-	};
+	private static final ProgressCalculator DEFAULT_PROGRESS_CALCULATOR = (nbTreated, size) -> size == 0 ? 0 : nbTreated * 100 / size;
 
 	/**
 	 * Méthode interne qui produit le résultat des rôles pour un office d'impôt spécifique

@@ -3,7 +3,6 @@ package ch.vd.unireg.webservices.v6;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -755,12 +754,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 			// triage des résultats par ordre croissant de numéro de tiers (le DPI viendra donc toujours devant)
 			final List<PartyInfo> sortedRes = new ArrayList<>(res);
-			Collections.sort(sortedRes, new Comparator<PartyInfo>() {
-				@Override
-				public int compare(PartyInfo o1, PartyInfo o2) {
-					return o1.getNumber() - o2.getNumber();
-				}
-			});
+			Collections.sort(sortedRes, (o1, o2) -> o1.getNumber() - o2.getNumber());
 
 			{
 				final PartyInfo info = sortedRes.get(0);
@@ -796,12 +790,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 			// triage des résultats par ordre croissant de numéro de tiers (le DPI viendra donc toujours devant)
 			final List<PartyInfo> sortedRes = new ArrayList<>(res);
-			Collections.sort(sortedRes, new Comparator<PartyInfo>() {
-				@Override
-				public int compare(PartyInfo o1, PartyInfo o2) {
-					return o1.getNumber() - o2.getNumber();
-				}
-			});
+			Collections.sort(sortedRes, (o1, o2) -> o1.getNumber() - o2.getNumber());
 
 			{
 				final PartyInfo info = sortedRes.get(0);
@@ -855,12 +844,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 			// triage des résultats par ordre croissant de numéro de tiers (le DPI viendra donc toujours devant)
 			final List<PartyInfo> sortedRes = new ArrayList<>(res);
-			Collections.sort(sortedRes, new Comparator<PartyInfo>() {
-				@Override
-				public int compare(PartyInfo o1, PartyInfo o2) {
-					return o1.getNumber() - o2.getNumber();
-				}
-			});
+			Collections.sort(sortedRes, (o1, o2) -> o1.getNumber() - o2.getNumber());
 
 			{
 				final PartyInfo info = sortedRes.get(0);
@@ -980,12 +964,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			Assert.assertEquals(3, res.size());
 
 			final List<PartyInfo> sortedRes = new ArrayList<>(res);
-			Collections.sort(sortedRes, new Comparator<PartyInfo>() {
-				@Override
-				public int compare(PartyInfo o1, PartyInfo o2) {
-					return o1.getNumber() - o2.getNumber();
-				}
-			});
+			Collections.sort(sortedRes, (o1, o2) -> o1.getNumber() - o2.getNumber());
 
 			{
 				final PartyInfo info = sortedRes.get(0);
@@ -1125,12 +1104,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 			// triage des résultats par ordre croissant de numéro de tiers (le DPI viendra donc toujours devant)
 			final List<PartyInfo> sortedRes = new ArrayList<>(res);
-			Collections.sort(sortedRes, new Comparator<PartyInfo>() {
-				@Override
-				public int compare(PartyInfo o1, PartyInfo o2) {
-					return o1.getNumber() - o2.getNumber();
-				}
-			});
+			Collections.sort(sortedRes, (o1, o2) -> o1.getNumber() - o2.getNumber());
 
 			{
 				final PartyInfo info = sortedRes.get(0);
@@ -1216,12 +1190,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 			// triage des résultats par ordre croissant de numéro de tiers (le DPI viendra donc toujours devant)
 			final List<PartyInfo> sortedRes = new ArrayList<>(res);
-			Collections.sort(sortedRes, new Comparator<PartyInfo>() {
-				@Override
-				public int compare(PartyInfo o1, PartyInfo o2) {
-					return o1.getNumber() - o2.getNumber();
-				}
-			});
+			Collections.sort(sortedRes, (o1, o2) -> o1.getNumber() - o2.getNumber());
 
 			{
 				final PartyInfo info = sortedRes.get(0);
@@ -2256,13 +2225,10 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertEquals(2, partyAvec.getRelationsBetweenParties().size());
 
 		final List<RelationBetweenParties> sortedRelations = new ArrayList<>(partyAvec.getRelationsBetweenParties());
-		Collections.sort(sortedRelations, new Comparator<RelationBetweenParties>() {
-			@Override
-			public int compare(RelationBetweenParties o1, RelationBetweenParties o2) {
-				final DateRange r1 = new DateRangeHelper.Range(ch.vd.unireg.xml.DataHelper.xmlToCore(o1.getDateFrom()), ch.vd.unireg.xml.DataHelper.xmlToCore(o1.getDateTo()));
-				final DateRange r2 = new DateRangeHelper.Range(ch.vd.unireg.xml.DataHelper.xmlToCore(o2.getDateFrom()), ch.vd.unireg.xml.DataHelper.xmlToCore(o2.getDateTo()));
-				return DateRangeComparator.compareRanges(r1, r2);
-			}
+		Collections.sort(sortedRelations, (o1, o2) -> {
+			final DateRange r1 = new DateRangeHelper.Range(ch.vd.unireg.xml.DataHelper.xmlToCore(o1.getDateFrom()), ch.vd.unireg.xml.DataHelper.xmlToCore(o1.getDateTo()));
+			final DateRange r2 = new DateRangeHelper.Range(ch.vd.unireg.xml.DataHelper.xmlToCore(o2.getDateFrom()), ch.vd.unireg.xml.DataHelper.xmlToCore(o2.getDateTo()));
+			return DateRangeComparator.compareRanges(r1, r2);
 		});
 
 		{
@@ -2639,13 +2605,10 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			Assert.assertEquals(2, partyAvec.getRelationsBetweenParties().size());
 
 			final List<RelationBetweenParties> sortedRelations = new ArrayList<>(partyAvec.getRelationsBetweenParties());
-			Collections.sort(sortedRelations, new Comparator<RelationBetweenParties>() {
-				@Override
-				public int compare(RelationBetweenParties o1, RelationBetweenParties o2) {
-					final DateRange r1 = new DateRangeHelper.Range(ch.vd.unireg.xml.DataHelper.xmlToCore(o1.getDateFrom()), ch.vd.unireg.xml.DataHelper.xmlToCore(o1.getDateTo()));
-					final DateRange r2 = new DateRangeHelper.Range(ch.vd.unireg.xml.DataHelper.xmlToCore(o2.getDateFrom()), ch.vd.unireg.xml.DataHelper.xmlToCore(o2.getDateTo()));
-					return DateRangeComparator.compareRanges(r1, r2);
-				}
+			Collections.sort(sortedRelations, (o1, o2) -> {
+				final DateRange r1 = new DateRangeHelper.Range(ch.vd.unireg.xml.DataHelper.xmlToCore(o1.getDateFrom()), ch.vd.unireg.xml.DataHelper.xmlToCore(o1.getDateTo()));
+				final DateRange r2 = new DateRangeHelper.Range(ch.vd.unireg.xml.DataHelper.xmlToCore(o2.getDateFrom()), ch.vd.unireg.xml.DataHelper.xmlToCore(o2.getDateTo()));
+				return DateRangeComparator.compareRanges(r1, r2);
 			});
 
 			{
@@ -3426,12 +3389,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertEquals(6, parties.getEntries().size());
 
 		final List<Entry> sorted = new ArrayList<>(parties.getEntries());
-		Collections.sort(sorted, new Comparator<Entry>() {
-			@Override
-			public int compare(Entry o1, Entry o2) {
-				return o1.getPartyNo() - o2.getPartyNo();
-			}
-		});
+		Collections.sort(sorted, (o1, o2) -> o1.getPartyNo() - o2.getPartyNo());
 
 		{
 			final Entry e = sorted.get(0);
@@ -3574,12 +3532,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertEquals(2, parties.getEntries().size());
 
 		final List<Entry> sorted = new ArrayList<>(parties.getEntries());
-		Collections.sort(sorted, new Comparator<Entry>() {
-			@Override
-			public int compare(Entry o1, Entry o2) {
-				return o1.getPartyNo() - o2.getPartyNo();
-			}
-		});
+		Collections.sort(sorted, (o1, o2) -> o1.getPartyNo() - o2.getPartyNo());
 
 		{
 			final Entry e = sorted.get(0);
@@ -3946,12 +3899,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertEquals(2, parties.getEntries().size());
 
 		final List<Entry> sorted = new ArrayList<>(parties.getEntries());
-		Collections.sort(sorted, new Comparator<Entry>() {
-			@Override
-			public int compare(Entry o1, Entry o2) {
-				return o1.getPartyNo() - o2.getPartyNo();
-			}
-		});
+		Collections.sort(sorted, (o1, o2) -> o1.getPartyNo() - o2.getPartyNo());
 
 		{
 			final Entry entry = sorted.get(0);
@@ -4019,12 +3967,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertEquals(2, parties.getEntries().size());
 
 		final List<Entry> sorted = new ArrayList<>(parties.getEntries());
-		Collections.sort(sorted, new Comparator<Entry>() {
-			@Override
-			public int compare(Entry o1, Entry o2) {
-				return o1.getPartyNo() - o2.getPartyNo();
-			}
-		});
+		Collections.sort(sorted, (o1, o2) -> o1.getPartyNo() - o2.getPartyNo());
 
 		{
 			final Entry entry = sorted.get(0);

@@ -1146,20 +1146,17 @@ public abstract class DataHelper {
 			final FlushModeType flushMode = doNotAutoflush ? FlushModeType.COMMIT : null;
 			final List<ForFiscalPrincipal> forsMenage = hibernateTemplate.find("from ForFiscalPrincipalPP f where f.annulationDate is null and f.tiers.id = :menageId order by f.dateDebut asc", params, flushMode);
 			final List<ForFiscalPrincipal> extraction = DateRangeHelper.extract(forsMenage, a.getDateDebut(), a.getDateFin(),
-					new DateRangeHelper.AdapterCallback<ForFiscalPrincipal>() {
-						@Override
-						public ForFiscalPrincipal adapt(ForFiscalPrincipal f, RegDate debut, RegDate fin) {
-							if (debut == null && fin == null) {
-								return f;
-							}
-							else {
-								ForFiscalPrincipal clone = (ForFiscalPrincipal) f.duplicate();
-								clone.setDateDebut(debut);
-								clone.setDateFin(fin);
-								return clone;
-							}
-						}
-					});
+			                                                                    (f, debut, fin) -> {
+				                                                                    if (debut == null && fin == null) {
+					                                                                    return f;
+				                                                                    }
+				                                                                    else {
+					                                                                    ForFiscalPrincipal clone = (ForFiscalPrincipal) f.duplicate();
+					                                                                    clone.setDateDebut(debut);
+					                                                                    clone.setDateFin(fin);
+					                                                                    return clone;
+				                                                                    }
+			                                                                    });
 
 			forsVirtuels.addAll(extraction);
 		}

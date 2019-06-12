@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.Flash;
-import ch.vd.unireg.metier.MetierServiceException;
 import ch.vd.unireg.security.AccessDeniedException;
 import ch.vd.unireg.security.Role;
 import ch.vd.unireg.tiers.DomicileHisto;
@@ -25,7 +23,6 @@ import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.ForFiscalPrincipalPM;
 import ch.vd.unireg.tiers.TiersCriteria;
 import ch.vd.unireg.tiers.view.TiersCriteriaView;
-import ch.vd.unireg.transaction.TransactionHelper;
 import ch.vd.unireg.type.MotifFor;
 
 @Controller
@@ -168,12 +165,9 @@ public class AnnulationDemenagementSiegeController extends AbstractProcessusComp
 		}
 		controllerUtils.checkTraitementContribuableAvecDecisionAci(view.getIdEntreprise());
 
-		doInTransaction(new TransactionHelper.ExceptionThrowingCallbackWithoutResult<MetierServiceException>() {
-			@Override
-			public void execute(TransactionStatus status) throws MetierServiceException {
-				final Entreprise entreprise = getTiers(Entreprise.class, view.getIdEntreprise());
-				metierService.annuleDemenagement(entreprise, view.getDateDebutSiegeActuel());
-			}
+		doInTransaction(status -> {
+			final Entreprise entreprise = getTiers(Entreprise.class, view.getIdEntreprise());
+			metierService.annuleDemenagement(entreprise, view.getDateDebutSiegeActuel());
 		});
 
 		// tout s'est bien passé... mais si le contribuable est sous le coup d'une décision ACI

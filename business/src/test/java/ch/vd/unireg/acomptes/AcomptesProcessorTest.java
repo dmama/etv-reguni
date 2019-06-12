@@ -2,7 +2,6 @@ package ch.vd.unireg.acomptes;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -552,15 +551,12 @@ public class AcomptesProcessorTest extends BusinessTest {
 
 		// vérification des résultats pour le contribuable ignoré
 		final List<AcomptesResults.InfoContribuableIgnore> ignoresTries = new ArrayList<>(ignores);
-		Collections.sort(ignoresTries, new Comparator<AcomptesResults.InfoContribuableIgnore>() {
-			@Override
-			public int compare(AcomptesResults.InfoContribuableIgnore o1, AcomptesResults.InfoContribuableIgnore o2) {
-				int compare = Long.compare(o1.getNumeroCtb(), o2.getNumeroCtb());
-				if (compare == 0) {
-					compare = o1.getAnneeFiscale() - o2.getAnneeFiscale();
-				}
-				return compare;
+		Collections.sort(ignoresTries, (o1, o2) -> {
+			int compare = Long.compare(o1.getNumeroCtb(), o2.getNumeroCtb());
+			if (compare == 0) {
+				compare = o1.getAnneeFiscale() - o2.getAnneeFiscale();
 			}
+			return compare;
 		});
 
 		{

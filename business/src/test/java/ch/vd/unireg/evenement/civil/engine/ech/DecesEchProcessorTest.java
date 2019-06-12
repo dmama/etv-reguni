@@ -71,12 +71,7 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 		});
 
 		// décès civil
-		doModificationIndividu(noIndividu, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				individu.setDateDeces(dateDeces);
-			}
-		});
+		doModificationIndividu(noIndividu, individu -> individu.setDateDeces(dateDeces));
 
 		// événement de décès
 		final long decesId = doInNewTransactionAndSession(status -> {
@@ -156,12 +151,7 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 		final long madameId = ids[2];
 
 		// décès civil
-		doModificationIndividu(noMadame, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				individu.setDateDeces(dateDeces);
-			}
-		});
+		doModificationIndividu(noMadame, individu -> individu.setDateDeces(dateDeces));
 
 		// 2. Création d'un evenement de "deces" pour un membre du couple (ici madame)
 		final long decesMadameId = doInNewTransactionAndSession(status -> {
@@ -216,12 +206,7 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 		});
 
 		// décès civil
-		doModificationIndividu(noMonsieur, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				individu.setDateDeces(dateDeces);
-			}
-		});
+		doModificationIndividu(noMonsieur, individu -> individu.setDateDeces(dateDeces));
 
 		// 5. Création d'un évenement "Décés" pour le deuxième membre du couple: monsieur
 		final long decesMonsieurId = doInNewTransactionAndSession(status -> {
@@ -464,12 +449,7 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 		});
 
 		// décès civil
-		doModificationIndividu(noIndividuMadame, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				individu.setDateDeces(dateDeces);
-			}
-		});
+		doModificationIndividu(noIndividuMadame, individu -> individu.setDateDeces(dateDeces));
 
 		// création d'un événement civil de décès sur Madame
 		final long evtId = doInNewTransactionAndSession(status -> {
@@ -686,12 +666,7 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 		});
 
 		// décès civil
-		doModificationIndividu(noIndividu, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				individu.setDateDeces(dateDeces);
-			}
-		});
+		doModificationIndividu(noIndividu, individu -> individu.setDateDeces(dateDeces));
 
 		// événement de décès
 		final long decesId = doInNewTransactionAndSession(status -> {
@@ -760,12 +735,7 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 		});
 
 		// décès civil
-		doModificationIndividu(noMonsieur, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				individu.setDateDeces(dateDeces);
-			}
-		});
+		doModificationIndividu(noMonsieur, individu -> individu.setDateDeces(dateDeces));
 
 		// événement demenagement
 		final long evtId = doInNewTransactionAndSession(status -> {
@@ -843,12 +813,9 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 		});
 
 		// décès civil de Monsieur et veuvage de Madame
-		doModificationIndividus(noMonsieur, noMadame, new IndividusModification() {
-			@Override
-			public void modifyIndividus(MockIndividu m, MockIndividu mme) {
-				m.setDateDeces(dateDeces);
-				mme.getEtatsCivils().add(new MockEtatCivil(dateDeces, TypeEtatCivil.VEUF));
-			}
+		doModificationIndividus(noMonsieur, noMadame, (m, mme) -> {
+			m.setDateDeces(dateDeces);
+			mme.getEtatsCivils().add(new MockEtatCivil(dateDeces, TypeEtatCivil.VEUF));
 		});
 
 		// réception et traitement du veuvage pour Madame
@@ -984,12 +951,7 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 
 
 		//veuvage de Madame
-		doModificationIndividu(noMadame, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu mme) {
-				mme.getEtatsCivils().add(new MockEtatCivil(dateDecesMonsieur, TypeEtatCivil.VEUF));
-			}
-		});
+		doModificationIndividu(noMadame, mme -> mme.getEtatsCivils().add(new MockEtatCivil(dateDecesMonsieur, TypeEtatCivil.VEUF)));
 
 		// réception et traitement du veuvage pour Madame
 		final long veuvageId = doInNewTransactionAndSession(status -> {
@@ -1033,12 +995,7 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 			return null;
 		});
 
-		doModificationIndividu(noMonsieur, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				individu.setDateDeces(dateDecesMonsieur);
-			}
-		});
+		doModificationIndividu(noMonsieur, individu -> individu.setDateDeces(dateDecesMonsieur));
 
 		// 2. Création d'un evenement de "deces" pour un membre du couple (ici monsieur)
 		final long decesMonsieurId = doInNewTransactionAndSession(status -> {

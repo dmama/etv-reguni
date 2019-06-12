@@ -235,12 +235,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			assertEquals(2, list.size());
 
 			final List<TiersIndexedData> listeTriee = new ArrayList<>(list);
-			Collections.sort(listeTriee, new Comparator<TiersIndexedData>() {
-				@Override
-				public int compare(TiersIndexedData o1, TiersIndexedData o2) {
-					return Long.compare(o1.getNumero(), o2.getNumero());
-				}
-			});
+			Collections.sort(listeTriee, (o1, o2) -> Long.compare(o1.getNumero(), o2.getNumero()));
 			final TiersIndexedData marcel = listeTriee.get(0);
 			final TiersIndexedData couple = listeTriee.get(1);
 
@@ -679,12 +674,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			assertEquals(2, list.size());
 
 			final List<TiersIndexedData> listeTriee = new ArrayList<>(list);
-			Collections.sort(listeTriee, new Comparator<TiersIndexedData>() {
-				@Override
-				public int compare(TiersIndexedData o1, TiersIndexedData o2) {
-					return o1.getDateNaissanceInscriptionRC().compareTo(o2.getDateNaissanceInscriptionRC());
-				}
-			});
+			Collections.sort(listeTriee, (o1, o2) -> o1.getDateNaissanceInscriptionRC().compareTo(o2.getDateNaissanceInscriptionRC()));
 			{
 				final TiersIndexedData data = listeTriee.get(0);
 				assertEquals(dateNaissanceFred, RegDateHelper.indexStringToDate(data.getDateNaissanceInscriptionRC()));
@@ -755,12 +745,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		assertEquals(3, list.size());
 
 		final List<TiersIndexedData> listeTriee = new ArrayList<>(list);
-		Collections.sort(listeTriee, new Comparator<TiersIndexedData>() {
-			@Override
-			public int compare(TiersIndexedData o1, TiersIndexedData o2) {
-				return Long.compare(o1.getNumero(), o2.getNumero());
-			}
-		});
+		Collections.sort(listeTriee, (o1, o2) -> Long.compare(o1.getNumero(), o2.getNumero()));
 		TiersIndexedData dpi = listeTriee.get(0);
 		TiersIndexedData andre = listeTriee.get(1);
 		TiersIndexedData martine = listeTriee.get(2);
@@ -805,12 +790,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		assertEquals(2, list.size());
 
 		final List<TiersIndexedData> listeTriee = new ArrayList<>(list);
-		Collections.sort(listeTriee, new Comparator<TiersIndexedData>() {
-			@Override
-			public int compare(TiersIndexedData o1, TiersIndexedData o2) {
-				return Long.compare(o1.getNumero(), o2.getNumero());
-			}
-		});
+		Collections.sort(listeTriee, (o1, o2) -> Long.compare(o1.getNumero(), o2.getNumero()));
 
 		final TiersIndexedData debiteur = listeTriee.get(0);
 		final TiersIndexedData contribuable = listeTriee.get(1);
@@ -857,12 +837,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		assertEquals(2, list.size());
 
 		final List<TiersIndexedData> listeTriee = new ArrayList<>(list);
-		Collections.sort(listeTriee, new Comparator<TiersIndexedData>() {
-			@Override
-			public int compare(TiersIndexedData o1, TiersIndexedData o2) {
-				return Long.compare(o1.getNumero(), o2.getNumero());
-			}
-		});
+		Collections.sort(listeTriee, (o1, o2) -> Long.compare(o1.getNumero(), o2.getNumero()));
 
 		final TiersIndexedData debiteur = listeTriee.get(0);
 		final TiersIndexedData contribuable = listeTriee.get(1);
@@ -909,12 +884,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		assertEquals(2, list.size());
 
 		final List<TiersIndexedData> listeTriee = new ArrayList<>(list);
-		Collections.sort(listeTriee, new Comparator<TiersIndexedData>() {
-			@Override
-			public int compare(TiersIndexedData o1, TiersIndexedData o2) {
-				return Long.compare(o1.getNumero(), o2.getNumero());
-			}
-		});
+		Collections.sort(listeTriee, (o1, o2) -> Long.compare(o1.getNumero(), o2.getNumero()));
 
 		final TiersIndexedData debiteur = listeTriee.get(0);
 		final TiersIndexedData contribuable = listeTriee.get(1);
@@ -1156,12 +1126,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			assertEquals(40, list.size());
 
 			// Trie par ordre des noms croissant
-			Collections.sort(list, new Comparator<TiersIndexedData>() {
-				@Override
-				public int compare(TiersIndexedData o1, TiersIndexedData o2) {
-					return o1.getNom1().compareTo(o2.getNom1());
-				}
-			});
+			Collections.sort(list, (o1, o2) -> o1.getNom1().compareTo(o2.getNom1()));
 
 			int i = 0;
 			for (TiersIndexedData d : list) {
@@ -1285,16 +1250,13 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		final TiersCriteria criteria = new TiersCriteria();
 		criteria.setNomRaison("Alain Despont");
 
-		final Thread fuseBlowingThread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					Thread.sleep(2000);
-					fusible.blow();
-				}
-				catch (InterruptedException e) {
-					// on sort... de toute façon, si le <i>sleep</i> a sauté, le fusible va rester et le test partira en timeout
-				}
+		final Thread fuseBlowingThread = new Thread(() -> {
+			try {
+				Thread.sleep(2000);
+				fusible.blow();
+			}
+			catch (InterruptedException e) {
+				// on sort... de toute façon, si le <i>sleep</i> a sauté, le fusible va rester et le test partira en timeout
 			}
 		});
 
@@ -1411,20 +1373,17 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 
 		final List<TiersIndexedData> found = new ArrayList<>();
 		final Fuse done = new Fuse();
-		final Thread listener = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					while (done.isNotBlown()) {
-						final TiersIndexedData data = queue.poll(10, TimeUnit.MILLISECONDS);
-						if (data != null) {
-							found.add(data);
-						}
+		final Thread listener = new Thread(() -> {
+			try {
+				while (done.isNotBlown()) {
+					final TiersIndexedData data = queue.poll(10, TimeUnit.MILLISECONDS);
+					if (data != null) {
+						found.add(data);
 					}
 				}
-				catch (InterruptedException e) {
-					// on sort...
-				}
+			}
+			catch (InterruptedException e) {
+				// on sort...
 			}
 		});
 		listener.start();
@@ -1484,12 +1443,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			criteria.setNomRaison("Cochin");
 			final List<TiersIndexedData> res = globalTiersSearcher.search(criteria);
 			assertEquals(2, res.size());
-			Collections.sort(res, new Comparator<TiersIndexedData>() {
-				@Override
-				public int compare(TiersIndexedData o1, TiersIndexedData o2) {
-					return Long.compare(o1.getNumero(), o2.getNumero());
-				}
-			});
+			Collections.sort(res, (o1, o2) -> Long.compare(o1.getNumero(), o2.getNumero()));
 			assertEquals((Long) ids.elle, res.get(0).getNumero());
 			assertEquals((Long) ids.lui, res.get(1).getNumero());
 		}
@@ -1528,12 +1482,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			return ids1;
 		});
 
-		final Comparator<TiersIndexedData> comparator = new Comparator<TiersIndexedData>() {
-			@Override
-			public int compare(TiersIndexedData o1, TiersIndexedData o2) {
-				return Long.compare(o1.getNumero(), o2.getNumero());
-			}
-		};
+		final Comparator<TiersIndexedData> comparator = (o1, o2) -> Long.compare(o1.getNumero(), o2.getNumero());
 
 		// on attend la fin de l'indexation des bonshommes
 		globalTiersIndexer.sync();

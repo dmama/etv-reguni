@@ -112,12 +112,7 @@ public class Ec_48000_01_CorrectionIdentificationHabitant_Scenario extends Evene
 	@Etape(id=2, descr="Envoi de l'événement de correction d'identification")
 	public void step2() throws Exception {
 
-		doModificationIndividu(noIndMomo, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				individu.setNouveauNoAVS(avsNouveau);
-			}
-		});
+		doModificationIndividu(noIndMomo, individu -> individu.setNouveauNoAVS(avsNouveau));
 
 		final long id = addEvenementCivil(TypeEvenementCivil.CHGT_CORREC_IDENTIFICATION, noIndMomo, RegDate.get(), commune.getNoOFS());
 		commitAndStartTransaction();

@@ -1,6 +1,5 @@
 package ch.vd.unireg.database;
 
-import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
@@ -70,20 +69,17 @@ public class DumpDatabaseJob extends JobDefinition {
 
 			try {
 				return docService.newDoc(DatabaseDump.class, name, description, extension,
-						new DocumentService.WriteDocCallback<DatabaseDump>() {
-							@Override
-							public void writeDoc(DatabaseDump doc1, OutputStream os) throws Exception {
+				                         (doc1, os) -> {
 
-								// Dump la base de donnée dans un fichier zip sur le disque
-								try (ZipOutputStream zipstream = new ZipOutputStream(os)) {
-									final ZipEntry e = new ZipEntry(name + ".xml");
-									zipstream.putNextEntry(e);
-									dbService.dumpToDbunitFile(zipstream);
-								}
+					                         // Dump la base de donnée dans un fichier zip sur le disque
+					                         try (ZipOutputStream zipstream = new ZipOutputStream(os)) {
+						                         final ZipEntry e = new ZipEntry(name + ".xml");
+						                         zipstream.putNextEntry(e);
+						                         dbService.dumpToDbunitFile(zipstream);
+					                         }
 
-								doc1.setNbTiers(count);
-							}
-						});
+					                         doc1.setNbTiers(count);
+				                         });
 			}
 			catch (Exception e) {
 				throw new RuntimeException(e);

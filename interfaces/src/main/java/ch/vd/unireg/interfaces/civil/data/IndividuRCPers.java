@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -444,21 +443,18 @@ public class IndividuRCPers implements Individu, Serializable {
 			for (List<Residence> list : adressesParCommune.values()) {
 
 				// [SIREF-1794] les résidences doivent être triées par date d'arrivée croissant, puis par date de déménagement croissant
-				list.sort(new Comparator<Residence>() {
-					@Override
-					public int compare(Residence o1, Residence o2) {
-						// on trie par date d'arrivée dans la commune
-						final RegDate arrivalDate1 = XmlUtils.xmlcal2regdate(o1.getArrivalDate());
-						final RegDate arrivalDate2 = XmlUtils.xmlcal2regdate(o2.getArrivalDate());
-						int c = NullDateBehavior.EARLIEST.compare(arrivalDate1, arrivalDate2);
-						if (c == 0) {
-							// puis par date de déménagement dans la commune
-							final RegDate movingDate1 = XmlUtils.xmlcal2regdate(o1.getDwellingAddress().getMovingDate());
-							final RegDate movingDate2 = XmlUtils.xmlcal2regdate(o2.getDwellingAddress().getMovingDate());
-							c = NullDateBehavior.EARLIEST.compare(movingDate1, movingDate2);
-						}
-						return c;
+				list.sort((o1, o2) -> {
+					// on trie par date d'arrivée dans la commune
+					final RegDate arrivalDate1 = XmlUtils.xmlcal2regdate(o1.getArrivalDate());
+					final RegDate arrivalDate2 = XmlUtils.xmlcal2regdate(o2.getArrivalDate());
+					int c = NullDateBehavior.EARLIEST.compare(arrivalDate1, arrivalDate2);
+					if (c == 0) {
+						// puis par date de déménagement dans la commune
+						final RegDate movingDate1 = XmlUtils.xmlcal2regdate(o1.getDwellingAddress().getMovingDate());
+						final RegDate movingDate2 = XmlUtils.xmlcal2regdate(o2.getDwellingAddress().getMovingDate());
+						c = NullDateBehavior.EARLIEST.compare(movingDate1, movingDate2);
 					}
+					return c;
 				});
 
 				// Attention, il ne faut pas non plus, dans une même commune, mélanger les adresses de différents types !

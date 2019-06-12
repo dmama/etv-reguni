@@ -2,7 +2,6 @@ package ch.vd.unireg.evenement.reqdes;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -103,21 +102,18 @@ public class PartiePrenanteView implements Serializable {
 			rolesSet.add(new RolePartiePrenanteView(roleSource));
 		}
 		this.roles = new ArrayList<>(rolesSet);
-		this.roles.sort(new Comparator<RolePartiePrenanteView>() {
-			@Override
-			public int compare(RolePartiePrenanteView o1, RolePartiePrenanteView o2) {
-				int comparison = compareNullableValues(o1.getType(), o2.getType());
+		this.roles.sort((o1, o2) -> {
+			int comparison = compareNullableValues(o1.getType(), o2.getType());
+			if (comparison == 0) {
+				comparison = compareNullableValues(o1.getModeInscription(), o2.getModeInscription());
 				if (comparison == 0) {
-					comparison = compareNullableValues(o1.getModeInscription(), o2.getModeInscription());
+					comparison = compareNullableValues(o1.getTypeInscription(), o2.getTypeInscription());
 					if (comparison == 0) {
-						comparison = compareNullableValues(o1.getTypeInscription(), o2.getTypeInscription());
-						if (comparison == 0) {
-							comparison = Integer.compare(o1.getOfsCommune(), o2.getOfsCommune());
-						}
+						comparison = Integer.compare(o1.getOfsCommune(), o2.getOfsCommune());
 					}
 				}
-				return comparison;
 			}
+			return comparison;
 		});
 	}
 

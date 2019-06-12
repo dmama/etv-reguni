@@ -11,16 +11,13 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
-import org.apache.lucene.search.TopDocs;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.registre.simpleindexer.DocGetter;
 import ch.vd.unireg.common.pagination.ParamPagination;
 import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuableCriteria;
 import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuableEtatFilter;
 import ch.vd.unireg.evenement.identification.contribuable.TypeDemande;
 import ch.vd.unireg.indexer.GlobalIndexInterface;
-import ch.vd.unireg.indexer.SearchAllCallback;
 import ch.vd.unireg.indexer.SearchCallback;
 
 public class GlobalMessageIdentificationSearcherImpl implements GlobalMessageIdentificationSearcher {
@@ -73,25 +70,22 @@ public class GlobalMessageIdentificationSearcherImpl implements GlobalMessageIde
 	@Override
 	public List<MessageIdentificationIndexedData> search(IdentificationContribuableCriteria criteria, @Nullable TypeDemande[] typesDemande, IdentificationContribuableEtatFilter etatFilter, final ParamPagination pagination) {
 		final List<MessageIdentificationIndexedData> result = new LinkedList<>();
-		final SearchCallback callback = new SearchCallback() {
-			@Override
-			public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
-				final int firstIndex;
-				final int maxResults;
-				if (pagination == null) {
-					firstIndex = 0;
-					maxResults = MAX_RESULTS;
-				}
-				else {
-					firstIndex = pagination.getSqlFirstResult();
-					maxResults = pagination.getSqlMaxResults();
-				}
-				final ScoreDoc[] docs = hits.scoreDocs;
-				if (docs != null && firstIndex < docs.length) {
-					final int size = Math.min(maxResults, docs.length - firstIndex);
-					for (int idx = 0 ; idx < size ; ++ idx) {
-						result.add(new MessageIdentificationIndexedData(docGetter.get(docs[firstIndex + idx].doc)));
-					}
+		final SearchCallback callback = (hits, docGetter) -> {
+			final int firstIndex;
+			final int maxResults;
+			if (pagination == null) {
+				firstIndex = 0;
+				maxResults = MAX_RESULTS;
+			}
+			else {
+				firstIndex = pagination.getSqlFirstResult();
+				maxResults = pagination.getSqlMaxResults();
+			}
+			final ScoreDoc[] docs = hits.scoreDocs;
+			if (docs != null && firstIndex < docs.length) {
+				final int size = Math.min(maxResults, docs.length - firstIndex);
+				for (int idx = 0 ; idx < size ; ++ idx) {
+					result.add(new MessageIdentificationIndexedData(docGetter.get(docs[firstIndex + idx].doc)));
 				}
 			}
 		};
@@ -115,12 +109,7 @@ public class GlobalMessageIdentificationSearcherImpl implements GlobalMessageIde
 	public int count(IdentificationContribuableCriteria criteria, @Nullable TypeDemande[] typesDemande, IdentificationContribuableEtatFilter etatFilter) {
 		final MutableInt counter = new MutableInt(0);
 		final Query query = QueryConstructor.buildQuery(criteria, typesDemande, etatFilter);
-		globalIndex.searchAll(query, new SearchAllCallback() {
-			@Override
-			public void handle(int doc, DocGetter docGetter) throws Exception {
-				counter.increment();
-			}
-		});
+		globalIndex.searchAll(query, (doc, docGetter) -> counter.increment());
 		return counter.intValue();
 	}
 

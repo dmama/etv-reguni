@@ -156,12 +156,9 @@ public class MariageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// maintenant, il faut marier Madame...
-		doModificationIndividus(noMonsieur, noMadame, new IndividusModification() {
-			@Override
-			public void modifyIndividus(MockIndividu monsieur, MockIndividu madame) {
-				MockIndividuConnector.marieIndividu(madame, dateMariage);
-				MockIndividuConnector.addRelationConjoint(madame, monsieur, dateMariage);
-			}
+		doModificationIndividus(noMonsieur, noMadame, (monsieur, madame) -> {
+			MockIndividuConnector.marieIndividu(madame, dateMariage);
+			MockIndividuConnector.addRelationConjoint(madame, monsieur, dateMariage);
 		});
 
 		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
@@ -272,12 +269,9 @@ public class MariageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 
 
 		// maintenant, il faut marier Madame...
-		doModificationIndividus(noMonsieur, noMadame, new IndividusModification() {
-			@Override
-			public void modifyIndividus(MockIndividu monsieur, MockIndividu madame) {
-				MockIndividuConnector.marieIndividu(madame, dateMariageMadame);
-				MockIndividuConnector.addRelationConjoint(madame, monsieur, dateMariageMadame);
-			}
+		doModificationIndividus(noMonsieur, noMadame, (monsieur, madame) -> {
+			MockIndividuConnector.marieIndividu(madame, dateMariageMadame);
+			MockIndividuConnector.addRelationConjoint(madame, monsieur, dateMariageMadame);
 		});
 
 		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
@@ -473,12 +467,9 @@ public class MariageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 
 
 		// maintenant, on marie Madame ...
-		doModificationIndividus(noMonsieur, noMadame, new IndividusModification() {
-			@Override
-			public void modifyIndividus(MockIndividu monsieur, MockIndividu madame) {
-				MockIndividuConnector.marieIndividu(madame, dateMariage);
-				MockIndividuConnector.addRelationConjoint(madame, monsieur, dateMariage);
-			}
+		doModificationIndividus(noMonsieur, noMadame, (monsieur, madame) -> {
+			MockIndividuConnector.marieIndividu(madame, dateMariage);
+			MockIndividuConnector.addRelationConjoint(madame, monsieur, dateMariage);
 		});
 
 		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
@@ -588,12 +579,9 @@ public class MariageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 
 
 		// maintenant, on marie Madame ...
-		doModificationIndividus(noMonsieur, noMadame, new IndividusModification() {
-			@Override
-			public void modifyIndividus(MockIndividu monsieur, MockIndividu madame) {
-				MockIndividuConnector.marieIndividu(madame, dateMariage);
-				MockIndividuConnector.addRelationConjoint(madame, monsieur, dateMariage);
-			}
+		doModificationIndividus(noMonsieur, noMadame, (monsieur, madame) -> {
+			MockIndividuConnector.marieIndividu(madame, dateMariage);
+			MockIndividuConnector.addRelationConjoint(madame, monsieur, dateMariage);
 		});
 
 		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)

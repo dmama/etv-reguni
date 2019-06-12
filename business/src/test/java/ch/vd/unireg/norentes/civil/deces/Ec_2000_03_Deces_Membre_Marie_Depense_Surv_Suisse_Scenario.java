@@ -163,12 +163,7 @@ public class Ec_2000_03_Deces_Membre_Marie_Depense_Surv_Suisse_Scenario extends 
 	@Etape(id = 2, descr = "Déclaration de décès de Hamlet")
 	public void etape2() throws Exception {
 
-		doModificationIndividu(noIndHamlet, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				individu.setDateDeces(dateDeces);
-			}
-		});
+		doModificationIndividu(noIndHamlet, individu -> individu.setDateDeces(dateDeces));
 
 		long id = addEvenementCivil(TypeEvenementCivil.DECES, noIndHamlet, dateDeces, MockCommune.Lausanne.getNoOFS());
 		commitAndStartTransaction();

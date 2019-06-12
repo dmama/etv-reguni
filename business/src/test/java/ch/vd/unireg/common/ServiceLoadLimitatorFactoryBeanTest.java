@@ -44,12 +44,7 @@ public class ServiceLoadLimitatorFactoryBeanTest extends WithoutSpringTest {
 
 	@Test
 	public void testCallTransmission() throws Exception {
-		final TestService myImplementation = new TestService() {
-			@Override
-			public String doJob(int seed) {
-				return Integer.toString(seed) + ". Done.";
-			}
-		};
+		final TestService myImplementation = seed -> Integer.toString(seed) + ". Done.";
 
 		final ServiceLoadLimitatorFactoryBean<TestService> factory = buildLimitatorFactory(TestService.class, myImplementation, 1, "TestService");
 		try {
@@ -68,22 +63,19 @@ public class ServiceLoadLimitatorFactoryBeanTest extends WithoutSpringTest {
 		final AtomicInteger load = new AtomicInteger(0);
 		final int POOL_SIZE = 10;
 		final int NB_CLIENTS = POOL_SIZE * 10;
-		final TestService myImplementation = new TestService() {
-			@Override
-			public String doJob(int seed) {
-				final int currentLoad = load.incrementAndGet();
-				try {
-					Thread.sleep(100);
-					Assert.assertTrue("Valeur vue : " + currentLoad, currentLoad <= POOL_SIZE);
-				}
-				catch (InterruptedException e) {
-					throw new RuntimeException(e);
-				}
-				finally {
-					load.decrementAndGet();
-				}
-				return "OK";
+		final TestService myImplementation = seed -> {
+			final int currentLoad = load.incrementAndGet();
+			try {
+				Thread.sleep(100);
+				Assert.assertTrue("Valeur vue : " + currentLoad, currentLoad <= POOL_SIZE);
 			}
+			catch (InterruptedException e) {
+				throw new RuntimeException(e);
+			}
+			finally {
+				load.decrementAndGet();
+			}
+			return "OK";
 		};
 
 		final ServiceLoadLimitatorFactoryBean<TestService> factory = buildLimitatorFactory(TestService.class, myImplementation, POOL_SIZE, "TestService");
@@ -96,11 +88,8 @@ public class ServiceLoadLimitatorFactoryBeanTest extends WithoutSpringTest {
 			try {
 				for (int i = 0 ; i < NB_CLIENTS ; ++ i) {
 					final int index = i;
-					tasks.add(executor.submit(new Runnable() {
-						@Override
-						public void run() {
-							service.doJob(index);
-						}
+					tasks.add(executor.submit(() -> {
+						service.doJob(index);
 					}));
 				}
 			}
@@ -120,11 +109,8 @@ public class ServiceLoadLimitatorFactoryBeanTest extends WithoutSpringTest {
 
 	@Test
 	public void testThrownCheckedException() throws Exception {
-		final TestServiceWithCheckedException myImplementation = new TestServiceWithCheckedException() {
-			@Override
-			public String doJobWithException(int seed) throws CheckedTestException {
-				throw new CheckedTestException("Boom!!!");
-			}
+		final TestServiceWithCheckedException myImplementation = seed -> {
+			throw new CheckedTestException("Boom!!!");
 		};
 
 		final ServiceLoadLimitatorFactoryBean<TestServiceWithCheckedException> factory = buildLimitatorFactory(TestServiceWithCheckedException.class, myImplementation, 1, "TestService");
@@ -143,11 +129,8 @@ public class ServiceLoadLimitatorFactoryBeanTest extends WithoutSpringTest {
 
 	@Test
 	public void testThrownUncheckedException() throws Exception {
-		final TestService myImplementation = new TestService() {
-			@Override
-			public String doJob(int seed) {
-				throw new UncheckedTestException("Badaboom!!!");
-			}
+		final TestService myImplementation = seed -> {
+			throw new UncheckedTestException("Badaboom!!!");
 		};
 
 		final ServiceLoadLimitatorFactoryBean<TestService> factory = buildLimitatorFactory(TestService.class, myImplementation, 1, "TestService");

@@ -12,7 +12,6 @@ import javax.management.MBeanOperationInfo;
 import javax.management.ReflectionException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -135,12 +134,7 @@ public class UniregCacheManagerImpl implements UniregCacheManager, DynamicMBean 
 
 		// Récupère la liste des caches, et on la trie pour éviter que l'ordre change entre deux appels
 		final List<UniregCacheInterface> caches = new ArrayList<>(map.values());
-		caches.sort(new Comparator<UniregCacheInterface>() {
-			@Override
-			public int compare(UniregCacheInterface o1, UniregCacheInterface o2) {
-				return o1.getName().compareTo(o2.getName());
-			}
-		});
+		caches.sort((o1, o2) -> o1.getName().compareTo(o2.getName()));
 
 		final MBeanAttributeInfo[] atts = new MBeanAttributeInfo[caches.size()];
 

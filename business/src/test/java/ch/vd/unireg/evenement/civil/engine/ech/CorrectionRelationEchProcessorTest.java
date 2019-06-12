@@ -109,18 +109,8 @@ public class CorrectionRelationEchProcessorTest extends AbstractEvenementCivilEc
 		});
 
 		// modification de la relation de filiation descendante : c'est "enfant3", la fille de "lui", pas "enfant2" !
-		doModificationIndividu(noEnfant2, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				individu.getParents().removeIf(rel -> rel.getNumeroAutreIndividu() == noLui);
-			}
-		});
-		doModificationIndividu(noEnfant3, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				MockIndividuConnector.addLienVersParent(individu, serviceCivil.getIndividu(noLui, null), date(2007, 2, 1), null);
-			}
-		});
+		doModificationIndividu(noEnfant2, individu -> individu.getParents().removeIf(rel -> rel.getNumeroAutreIndividu() == noLui));
+		doModificationIndividu(noEnfant3, individu -> MockIndividuConnector.addLienVersParent(individu, serviceCivil.getIndividu(noLui, null), date(2007, 2, 1), null));
 
 		// création d'un événement civil (les corrections de relations de filiation sont envoyées sur les enfants)
 		final long evtIdEnfant2 = doInNewTransactionAndSession(status -> {

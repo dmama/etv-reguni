@@ -16,7 +16,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.MovingWindow;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
-import ch.vd.unireg.tiers.ForsParType;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 /**
@@ -24,33 +23,30 @@ import ch.vd.unireg.type.TypeAutoriteFiscale;
  */
 public abstract class AssujettissementHelper {
 
-	private static final DateRangeHelper.AdapterCallback<Assujettissement> ADAPTER = new DateRangeHelper.AdapterCallback<Assujettissement>() {
-		@Override
-		public Assujettissement adapt(Assujettissement assujettissement, RegDate debut, RegDate fin) {
-			final RegDate debutEffectif;
-			final MotifAssujettissement motifFracDebut;
-			if (debut != null && assujettissement.getDateDebut() != debut) {
-				debutEffectif = debut;
-				motifFracDebut = null;
-			}
-			else {
-				debutEffectif = assujettissement.getDateDebut();
-				motifFracDebut = assujettissement.getMotifFractDebut();
-			}
-
-			final RegDate finEffective;
-			final MotifAssujettissement motifFracFin;
-			if (fin != null && assujettissement.getDateFin() != fin) {
-				finEffective = fin;
-				motifFracFin = null;
-			}
-			else {
-				finEffective = assujettissement.getDateFin();
-				motifFracFin = assujettissement.getMotifFractFin();
-			}
-
-			return assujettissement.duplicate(debutEffectif, finEffective, motifFracDebut, motifFracFin);
+	private static final DateRangeHelper.AdapterCallback<Assujettissement> ADAPTER = (assujettissement, debut, fin) -> {
+		final RegDate debutEffectif;
+		final MotifAssujettissement motifFracDebut;
+		if (debut != null && assujettissement.getDateDebut() != debut) {
+			debutEffectif = debut;
+			motifFracDebut = null;
 		}
+		else {
+			debutEffectif = assujettissement.getDateDebut();
+			motifFracDebut = assujettissement.getMotifFractDebut();
+		}
+
+		final RegDate finEffective;
+		final MotifAssujettissement motifFracFin;
+		if (fin != null && assujettissement.getDateFin() != fin) {
+			finEffective = fin;
+			motifFracFin = null;
+		}
+		else {
+			finEffective = assujettissement.getDateFin();
+			motifFracFin = assujettissement.getMotifFractFin();
+		}
+
+		return assujettissement.duplicate(debutEffectif, finEffective, motifFracDebut, motifFracFin);
 	};
 
 	/**
@@ -121,16 +117,13 @@ public abstract class AssujettissementHelper {
 	 * @return calculateur qui limite l'assujettissement rendu par le calculateur source à l'année civile indiquée
 	 */
 	public static <T extends Contribuable> AssujettissementCalculator<T> yearLimiting(final AssujettissementCalculator<T> source, final int annee) {
-		return new AssujettissementCalculator<T>() {
-			@Override
-			public List<Assujettissement> determine(T ctb, ForsParType fpt, @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
-				final List<Assujettissement> all = source.determine(ctb, fpt, noOfsCommunesVaudoises);
-				if (all == null) {
-					return null;
-				}
-				final List<Assujettissement> yearly = extractYear(all, annee);
-				return yearly.isEmpty() ? null : yearly;
+		return (ctb, fpt, noOfsCommunesVaudoises) -> {
+			final List<Assujettissement> all = source.determine(ctb, fpt, noOfsCommunesVaudoises);
+			if (all == null) {
+				return null;
 			}
+			final List<Assujettissement> yearly = extractYear(all, annee);
+			return yearly.isEmpty() ? null : yearly;
 		};
 	}
 
@@ -141,25 +134,22 @@ public abstract class AssujettissementHelper {
 	 * @return calculateur qui limite l'assujettissement rendu par le calculateur source au range indiqué, après <string>collate</string> sur les assujettissements sources
 	 */
 	public static <T extends Contribuable> AssujettissementCalculator<T> collatedRangeLimiting(final AssujettissementCalculator<T> source, @Nullable final DateRange range) {
-		return new AssujettissementCalculator<T>() {
-			@Override
-			public List<Assujettissement> determine(T ctb, ForsParType fpt, @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
-				final List<Assujettissement> all = source.determine(ctb, fpt, noOfsCommunesVaudoises);
-				if (all == null) {
-					return null;
-				}
-
-				final List<Assujettissement> collated = DateRangeHelper.collate(all);
-				final List<Assujettissement> ranged;
-				if (range != null) {
-					ranged = extract(collated, range.getDateDebut(), range.getDateFin());
-				}
-				else {
-					ranged = collated;
-				}
-
-				return ranged.isEmpty() ? null : ranged;
+		return (ctb, fpt, noOfsCommunesVaudoises) -> {
+			final List<Assujettissement> all = source.determine(ctb, fpt, noOfsCommunesVaudoises);
+			if (all == null) {
+				return null;
 			}
+
+			final List<Assujettissement> collated = DateRangeHelper.collate(all);
+			final List<Assujettissement> ranged;
+			if (range != null) {
+				ranged = extract(collated, range.getDateDebut(), range.getDateFin());
+			}
+			else {
+				ranged = collated;
+			}
+
+			return ranged.isEmpty() ? null : ranged;
 		};
 	}
 
@@ -170,17 +160,14 @@ public abstract class AssujettissementHelper {
 	 * @return calculateur qui limite l'assujettissement rendu par le calculateur source à la période indiquée
 	 */
 	public static <T extends Contribuable> AssujettissementCalculator<T> rangeLimiting(final AssujettissementCalculator<T> source, final List<DateRange> splittingRanges) {
-		return new AssujettissementCalculator<T>() {
-			@Override
-			public List<Assujettissement> determine(T ctb, ForsParType fpt, @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
-				final List<Assujettissement> all = source.determine(ctb, fpt, noOfsCommunesVaudoises);
-				if (all == null) {
-					return null;
-				}
-
-				final List<Assujettissement> splitted = DateRangeHelper.extract(all, splittingRanges, ADAPTER);
-				return splitted.isEmpty() ? null : splitted;
+		return (ctb, fpt, noOfsCommunesVaudoises) -> {
+			final List<Assujettissement> all = source.determine(ctb, fpt, noOfsCommunesVaudoises);
+			if (all == null) {
+				return null;
 			}
+
+			final List<Assujettissement> splitted = DateRangeHelper.extract(all, splittingRanges, ADAPTER);
+			return splitted.isEmpty() ? null : splitted;
 		};
 	}
 

@@ -1291,12 +1291,7 @@ public class TiersDAOTest extends CoreDAOTest {
 		assertNotNull(listNormal);
 		assertEquals(ids.size(), listNormal.size());
 
-		Comparator<Tiers> c = new Comparator<Tiers>() {
-			@Override
-			public int compare(Tiers o1, Tiers o2) {
-				return o1.getId().compareTo(o2.getId());
-			}
-		};
+		Comparator<Tiers> c = (o1, o2) -> o1.getId().compareTo(o2.getId());
 		Collections.sort(listNormal, c);
 		Collections.sort(listBatch, c);
 
@@ -1333,12 +1328,7 @@ public class TiersDAOTest extends CoreDAOTest {
 		assertNotNull(listNormal);
 		assertEquals(ids.size(), listNormal.size());
 
-		Comparator<Tiers> c = new Comparator<Tiers>() {
-			@Override
-			public int compare(Tiers o1, Tiers o2) {
-				return o1.getId().compareTo(o2.getId());
-			}
-		};
+		Comparator<Tiers> c = (o1, o2) -> o1.getId().compareTo(o2.getId());
 		Collections.sort(listNormal, c);
 		Collections.sort(listBatch, c);
 
@@ -1567,12 +1557,7 @@ public class TiersDAOTest extends CoreDAOTest {
 			assertEquals(3, tiers.size());
 
 			final List<Tiers> sorted = new ArrayList<>(tiers);
-			Collections.sort(sorted, new Comparator<Tiers>() {
-				@Override
-				public int compare(Tiers o1, Tiers o2) {
-					return Long.compare(o1.getNumero(), o2.getNumero());
-				}
-			});
+			Collections.sort(sorted, (o1, o2) -> Long.compare(o1.getNumero(), o2.getNumero()));
 
 			{
 				final Tiers t = sorted.get(0);

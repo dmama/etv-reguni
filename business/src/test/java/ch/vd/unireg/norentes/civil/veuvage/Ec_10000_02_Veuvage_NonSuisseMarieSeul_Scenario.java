@@ -127,15 +127,12 @@ public class Ec_10000_02_Veuvage_NonSuisseMarieSeul_Scenario extends EvenementCi
 	@Etape(id=2, descr="Envoi de l'événenent Veuvage")
 	public void step2() throws Exception {
 
-		doModificationIndividu(noIndMikkel, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				final MockEtatCivilList etatsCivils = individu.getEtatsCivils();
-				final MockEtatCivil etatCivil = new MockEtatCivil();
-				etatCivil.setDateDebut(dateVeuvage);
-				etatCivil.setTypeEtatCivil(TypeEtatCivil.VEUF);
-				etatsCivils.add(etatCivil);
-			}
+		doModificationIndividu(noIndMikkel, individu -> {
+			final MockEtatCivilList etatsCivils = individu.getEtatsCivils();
+			final MockEtatCivil etatCivil = new MockEtatCivil();
+			etatCivil.setDateDebut(dateVeuvage);
+			etatCivil.setTypeEtatCivil(TypeEtatCivil.VEUF);
+			etatsCivils.add(etatCivil);
 		});
 
 		final long id = addEvenementCivil(TypeEvenementCivil.VEUVAGE, noIndMikkel, dateVeuvage, communeMariage.getNoOFS());

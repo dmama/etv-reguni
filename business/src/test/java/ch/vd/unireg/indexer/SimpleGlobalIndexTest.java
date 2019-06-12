@@ -3,10 +3,8 @@ package ch.vd.unireg.indexer;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TopDocs;
 import org.junit.Test;
 
-import ch.vd.registre.simpleindexer.DocGetter;
 import ch.vd.unireg.common.WithoutSpringTest;
 import ch.vd.unireg.indexer.lucene.FSIndexProvider;
 import ch.vd.unireg.indexer.lucene.LuceneHelper;
@@ -41,12 +39,7 @@ public class SimpleGlobalIndexTest extends WithoutSpringTest {
 	}
 
 	private void assertHits(final int count, Query baseQuery) {
-		globalIndex.search(baseQuery, maxHits, new SearchCallback() {
-			@Override
-			public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
-				assertEquals(count, hits.totalHits);
-			}
-		});
+		globalIndex.search(baseQuery, maxHits, (hits, docGetter) -> assertEquals(count, hits.totalHits));
 	}
 
 	@Test

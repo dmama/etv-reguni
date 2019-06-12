@@ -5,7 +5,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -268,12 +267,7 @@ public class NorentesManagerImpl implements NorentesManager, NorentesRegistrar, 
 	@Override
 	public TypeEvenementCivil[] getEvenementCivilsUsedForTest() {
 		if (evenementCivilArray == null) {
-			Collections.sort(evenementCivils, new Comparator<TypeEvenementCivil>() {
-				@Override
-				public int compare(TypeEvenementCivil o1, TypeEvenementCivil o2) {
-					return CompareToBuilder.reflectionCompare(o1, o2);
-				}
-			});
+			Collections.sort(evenementCivils, (o1, o2) -> CompareToBuilder.reflectionCompare(o1, o2));
 			evenementCivilArray = evenementCivils.toArray(new TypeEvenementCivil[evenementCivils.size()]);
 		}
 		return evenementCivilArray;

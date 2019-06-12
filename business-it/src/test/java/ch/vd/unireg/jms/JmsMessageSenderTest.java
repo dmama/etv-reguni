@@ -1,8 +1,5 @@
 package ch.vd.unireg.jms;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Session;
 import javax.jms.TextMessage;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -19,7 +16,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.core.MessageCreator;
 
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
@@ -68,13 +64,10 @@ public class JmsMessageSenderTest {
 
 		JmsTemplate jmsTemplate = new JmsTemplate(jmsConnectionFactory.getConnectionFactory());
 
-		jmsTemplate.send("ch.vd.registre.evtCivil", new MessageCreator() {
-			@Override
-			public Message createMessage(Session session) throws JMSException {
-				TextMessage tm = session.createTextMessage();
-				tm.setText(sb.toString());
-				return tm;
-			}
+		jmsTemplate.send("ch.vd.registre.evtCivil", session -> {
+			TextMessage tm = session.createTextMessage();
+			tm.setText(sb.toString());
+			return tm;
 		});
 
 		LOGGER.info("Terminé");

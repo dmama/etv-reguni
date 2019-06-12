@@ -7,15 +7,12 @@ import java.util.List;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.TopDocs;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.simpleindexer.DocGetter;
 import ch.vd.unireg.common.WithoutSpringTest;
 import ch.vd.unireg.indexer.GlobalIndex;
 import ch.vd.unireg.indexer.IndexerFormatHelper;
-import ch.vd.unireg.indexer.SearchCallback;
 import ch.vd.unireg.indexer.lucene.FSIndexProvider;
 import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
 import ch.vd.unireg.tiers.TiersCriteria;
@@ -267,22 +264,14 @@ public class TiersIndexableDataTest extends WithoutSpringTest {
 		// note : il n'y a pas de moyen de spécifier le type de for fiscal sur un TiersCriteria, on passe donc pas le global index directement
 
 		// recherche des données (OK)
-		globalIndex.search(new TermQuery(new Term(TiersIndexableData.TYPE_OFS_FOR_PRINCIPAL, TypeAutoriteFiscale.COMMUNE_HC.name())), 100, new SearchCallback() {
-			@Override
-			public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
-				assertEquals(1, hits.totalHits);
-				final Document doc = docGetter.get(hits.scoreDocs[0].doc);
-				assertEquals(TypeAutoriteFiscale.COMMUNE_HC.name(), doc.get(TiersIndexableData.TYPE_OFS_FOR_PRINCIPAL));
-			}
+		globalIndex.search(new TermQuery(new Term(TiersIndexableData.TYPE_OFS_FOR_PRINCIPAL, TypeAutoriteFiscale.COMMUNE_HC.name())), 100, (hits, docGetter) -> {
+			assertEquals(1, hits.totalHits);
+			final Document doc = docGetter.get(hits.scoreDocs[0].doc);
+			assertEquals(TypeAutoriteFiscale.COMMUNE_HC.name(), doc.get(TiersIndexableData.TYPE_OFS_FOR_PRINCIPAL));
 		});
 
 		// recherche des données (KO)
-		globalIndex.search(new TermQuery(new Term(TiersIndexableData.TYPE_OFS_FOR_PRINCIPAL, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD.name())), 100, new SearchCallback() {
-			@Override
-			public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
-				assertEquals(0, hits.totalHits);
-			}
-		});
+		globalIndex.search(new TermQuery(new Term(TiersIndexableData.TYPE_OFS_FOR_PRINCIPAL, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD.name())), 100, (hits, docGetter) -> assertEquals(0, hits.totalHits));
 	}
 
 	@Test

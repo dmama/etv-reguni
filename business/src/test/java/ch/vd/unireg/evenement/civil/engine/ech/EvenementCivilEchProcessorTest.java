@@ -48,84 +48,69 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 	@Test(timeout = 10000L)
 	public void testEvenementExceptionDansHandle() throws Exception {
 
-		traiterEvenementTesting(Testing.NoExceptionDansHandle, new AfterHandleCallback() {
-			@Override
-			public void checkEvent(EvenementCivilEch evt) {
-				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+		traiterEvenementTesting(Testing.NoExceptionDansHandle, evt -> {
+			assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
 
-				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
-				assertNotNull(erreurs);
-				assertEquals(1, erreurs.size());
+			final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+			assertNotNull(erreurs);
+			assertEquals(1, erreurs.size());
 
-				final EvenementCivilEchErreur erreur0 = erreurs.iterator().next();
-				assertNotNull(erreur0);
-				assertEquals(TypeEvenementErreur.ERROR, erreur0.getType());
-				assertEquals("Exception de test", erreur0.getMessage());
-			}
+			final EvenementCivilEchErreur erreur0 = erreurs.iterator().next();
+			assertNotNull(erreur0);
+			assertEquals(TypeEvenementErreur.ERROR, erreur0.getType());
+			assertEquals("Exception de test", erreur0.getMessage());
 		});
 	}
 
 	@Test(timeout = 10000L)
 	public void testEvenementTraiteAvecWarningDansHandle() throws Exception {
 
-		traiterEvenementTesting(Testing.NoTraiteAvecWarningDansHandle, new AfterHandleCallback() {
-			@Override
-			public void checkEvent(EvenementCivilEch evt) {
-				assertEquals(EtatEvenementCivil.A_VERIFIER, evt.getEtat());
+		traiterEvenementTesting(Testing.NoTraiteAvecWarningDansHandle, evt -> {
+			assertEquals(EtatEvenementCivil.A_VERIFIER, evt.getEtat());
 
-				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
-				assertNotNull(erreurs);
-				assertEquals(1, erreurs.size());
+			final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+			assertNotNull(erreurs);
+			assertEquals(1, erreurs.size());
 
-				final EvenementCivilEchErreur erreur0 = erreurs.iterator().next();
-				assertNotNull(erreur0);
-				assertEquals(TypeEvenementErreur.WARNING, erreur0.getType());
-				assertEquals("Warning de test", erreur0.getMessage());
-			}
+			final EvenementCivilEchErreur erreur0 = erreurs.iterator().next();
+			assertNotNull(erreur0);
+			assertEquals(TypeEvenementErreur.WARNING, erreur0.getType());
+			assertEquals("Warning de test", erreur0.getMessage());
 		});
 	}
 
 	@Test(timeout = 10000L)
 	public void testEvenementRedondantAvecWarningDansHandle() throws Exception {
 
-		traiterEvenementTesting(Testing.NoRedondantAvecWarningDansHandle, new AfterHandleCallback() {
-			@Override
-			public void checkEvent(EvenementCivilEch evt) {
-				assertEquals(EtatEvenementCivil.A_VERIFIER, evt.getEtat());
+		traiterEvenementTesting(Testing.NoRedondantAvecWarningDansHandle, evt -> {
+			assertEquals(EtatEvenementCivil.A_VERIFIER, evt.getEtat());
 
-				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
-				assertNotNull(erreurs);
-				assertEquals(1, erreurs.size());
+			final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+			assertNotNull(erreurs);
+			assertEquals(1, erreurs.size());
 
-				final EvenementCivilEchErreur erreur0 = erreurs.iterator().next();
-				assertNotNull(erreur0);
-				assertEquals(TypeEvenementErreur.WARNING, erreur0.getType());
-				assertEquals("Warning de test", erreur0.getMessage());
-			}
+			final EvenementCivilEchErreur erreur0 = erreurs.iterator().next();
+			assertNotNull(erreur0);
+			assertEquals(TypeEvenementErreur.WARNING, erreur0.getType());
+			assertEquals("Warning de test", erreur0.getMessage());
 		});
 	}
 
 	@Test(timeout = 10000L)
 	public void testEvenementTraiteSansWarningDansHandle() throws Exception {
 
-		traiterEvenementTesting(Testing.NoTraiteSansWarning, new AfterHandleCallback() {
-			@Override
-			public void checkEvent(EvenementCivilEch evt) {
-				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
-				assertEmpty(evt.getErreurs());
-			}
+		traiterEvenementTesting(Testing.NoTraiteSansWarning, evt -> {
+			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+			assertEmpty(evt.getErreurs());
 		});
 	}
 
 	@Test(timeout = 10000L)
 	public void testEvenementRedondantSansWarningDansHandle() throws Exception {
 
-		traiterEvenementTesting(Testing.NoRedondantSansWarning, new AfterHandleCallback() {
-			@Override
-			public void checkEvent(EvenementCivilEch evt) {
-				assertEquals(EtatEvenementCivil.REDONDANT, evt.getEtat());
-				assertEmpty(evt.getErreurs());
-			}
+		traiterEvenementTesting(Testing.NoRedondantSansWarning, evt -> {
+			assertEquals(EtatEvenementCivil.REDONDANT, evt.getEtat());
+			assertEmpty(evt.getErreurs());
 		});
 	}
 	
@@ -427,21 +412,15 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 	
 	@Test(timeout = 10000L)
 	public void testEvenementCompositeEtTransactionAvecRuntimeException() throws Exception {
-		doTestEvenementCompositeEtTransaction(new Handler() {
-			@Override
-			public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
-				throw new RuntimeException("Boom!");
-			}
+		doTestEvenementCompositeEtTransaction(warnings -> {
+			throw new RuntimeException("Boom!");
 		});
 	}
 	
 	@Test(timeout = 10000L)
 	public void testEvenementCompositeEtTransactionAvecCheckedException() throws Exception {
-		doTestEvenementCompositeEtTransaction(new Handler() {
-			@Override
-			public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
-				throw new EvenementCivilException("Boom!");
-			}
+		doTestEvenementCompositeEtTransaction(warnings -> {
+			throw new EvenementCivilException("Boom!");
 		});
 	}
 	
@@ -519,12 +498,7 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 			}
 		};
 
-		buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {
-			@Override
-			public void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator) {
-				translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.PREMIERE_LIVRAISON, strategy);
-			}
-		});
+		buildStrategyOverridingTranslatorAndProcessor(true, translator -> translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.PREMIERE_LIVRAISON, strategy));
 
 		// construction de l'événement en base
 		final long evtId = doInNewTransactionAndSession(status -> {

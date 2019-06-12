@@ -45,26 +45,23 @@ import static ch.vd.unireg.metier.assujettissement.FractionnementsRole.isFractio
  */
 public class AssujettissementPersonnesPhysiquesCalculator implements AssujettissementCalculator<ContribuableImpositionPersonnesPhysiques> {
 
-	public static final AssujettissementSurCommuneAnalyzer COMMUNE_ANALYZER = new AssujettissementSurCommuneAnalyzer() {
-		@Override
-		public List<ForFiscalRevenuFortune> getForsVaudoisDeterminantsPourCommunes(Assujettissement assujettissement) {
-			// pour l'assujettissement PP, les fors déterminants sont :
-			// - tous les fors secondaires de la période
-			// - le dernier for principal suisse de la période , s'il est vaudois
+	public static final AssujettissementSurCommuneAnalyzer COMMUNE_ANALYZER = assujettissement -> {
+		// pour l'assujettissement PP, les fors déterminants sont :
+		// - tous les fors secondaires de la période
+		// - le dernier for principal suisse de la période , s'il est vaudois
 
-			final DecompositionFors fors = assujettissement.getFors();
-			final List<ForFiscalRevenuFortune> determinants = new ArrayList<>(1 + fors.secondairesDansLaPeriode.size());
-			final ForFiscalPrincipal ffp = fors.principal != null ? fors.principal : fors.principauxDansLaPeriode.last();
-			if (ffp != null && ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-				determinants.add(ffp);
-			}
-			for (ForFiscalSecondaire ffs : fors.secondairesDansLaPeriode) {
-				if (ffs != null && ffs.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-					determinants.add(ffs);
-				}
-			}
-			return determinants;
+		final DecompositionFors fors = assujettissement.getFors();
+		final List<ForFiscalRevenuFortune> determinants = new ArrayList<>(1 + fors.secondairesDansLaPeriode.size());
+		final ForFiscalPrincipal ffp = fors.principal != null ? fors.principal : fors.principauxDansLaPeriode.last();
+		if (ffp != null && ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+			determinants.add(ffp);
 		}
+		for (ForFiscalSecondaire ffs : fors.secondairesDansLaPeriode) {
+			if (ffs != null && ffs.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+				determinants.add(ffs);
+			}
+		}
+		return determinants;
 	};
 
 	/**

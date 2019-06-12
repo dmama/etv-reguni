@@ -14,12 +14,7 @@ public class NationaliteView implements DateRange, Serializable {
 	/**
 	 * Comparateur de nationalités dans l'ordre inverse de l'ordre chronologique
 	 */
-	public static final Comparator<NationaliteView> COMPARATOR = new Comparator<NationaliteView>() {
-		@Override
-		public int compare(NationaliteView o1, NationaliteView o2) {
-			return - DateRangeComparator.compareRanges(o1, o2);
-		}
-	};
+	public static final Comparator<NationaliteView> COMPARATOR = (o1, o2) -> - DateRangeComparator.compareRanges(o1, o2);
 
 	private static final long serialVersionUID = -9166765391923515888L;
 

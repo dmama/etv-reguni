@@ -3,14 +3,11 @@ package ch.vd.unireg.webservices.v6.cache;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import java.io.ByteArrayOutputStream;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -250,15 +247,12 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 	private static BusinessWebService buildTracingDelegator(final BusinessWebService target, final Map<String, List<Object[]>> calls) {
 		return (BusinessWebService) Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(),
 		                                                   new Class[]{BusinessWebService.class},
-		                                                   new InvocationHandler() {
-			                                                   @Override
-			                                                   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-				                                                   synchronized (calls) {
-					                                                   List<Object[]> c = calls.computeIfAbsent(method.getName(), k -> new ArrayList<>());
-					                                                   c.add(args);
-				                                                   }
-				                                                   return method.invoke(target, args);
+		                                                   (proxy, method, args) -> {
+			                                                   synchronized (calls) {
+				                                                   List<Object[]> c = calls.computeIfAbsent(method.getName(), k -> new ArrayList<>());
+				                                                   c.add(args);
 			                                                   }
+			                                                   return method.invoke(target, args);
 		                                                   });
 	}
 
@@ -337,12 +331,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 			// tri dans l'ordre alphabétique des noms de lieux : 1. Neuch', 2. Orbe
 			final List<Origin> sortedOrigins = new ArrayList<>(origines);
-			Collections.sort(sortedOrigins, new Comparator<Origin>() {
-				@Override
-				public int compare(Origin o1, Origin o2) {
-					return o1.getOriginName().compareTo(o2.getOriginName());
-				}
-			});
+			Collections.sort(sortedOrigins, (o1, o2) -> o1.getOriginName().compareTo(o2.getOriginName()));
 
 			{
 				final Origin origine = sortedOrigins.get(0);
@@ -366,12 +355,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 			// tri dans l'ordre croissant des dates de début : 1. Suisse, 2. France
 			final List<Nationality> sortedNationalities = new ArrayList<>(nationalites);
-			Collections.sort(sortedNationalities, new Comparator<Nationality>() {
-				@Override
-				public int compare(Nationality o1, Nationality o2) {
-					return o1.getDateFrom().compareTo(o2.getDateFrom());
-				}
-			});
+			Collections.sort(sortedNationalities, (o1, o2) -> o1.getDateFrom().compareTo(o2.getDateFrom()));
 
 			{
 				final Nationality nationality = sortedNationalities.get(0);
@@ -1132,12 +1116,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 			assertEquals(parts, lastCall.getRight());
 
 			final List<Entry> sortedEntries = new ArrayList<>(parties.getEntries());
-			Collections.sort(sortedEntries, new Comparator<Entry>() {
-				@Override
-				public int compare(Entry o1, Entry o2) {
-					return o1.getPartyNo() - o2.getPartyNo();
-				}
-			});
+			Collections.sort(sortedEntries, (o1, o2) -> o1.getPartyNo() - o2.getPartyNo());
 
 			// eric d'abord
 			{
@@ -1176,12 +1155,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 			assertEquals(parts, lastCall.getRight());
 
 			final List<Entry> sortedEntries = new ArrayList<>(parties.getEntries());
-			Collections.sort(sortedEntries, new Comparator<Entry>() {
-				@Override
-				public int compare(Entry o1, Entry o2) {
-					return o1.getPartyNo() - o2.getPartyNo();
-				}
-			});
+			Collections.sort(sortedEntries, (o1, o2) -> o1.getPartyNo() - o2.getPartyNo());
 
 			// eric d'abord
 			{
@@ -1220,12 +1194,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 			assertEquals(parts, lastCall.getRight());
 
 			final List<Entry> sortedEntries = new ArrayList<>(parties.getEntries());
-			Collections.sort(sortedEntries, new Comparator<Entry>() {
-				@Override
-				public int compare(Entry o1, Entry o2) {
-					return o1.getPartyNo() - o2.getPartyNo();
-				}
-			});
+			Collections.sort(sortedEntries, (o1, o2) -> o1.getPartyNo() - o2.getPartyNo());
 
 			// eric d'abord
 			{
@@ -1263,12 +1232,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 			assertEquals(3, getNumberOfCallsToGetParties(calls));       // <- = pas de nouvel appel, car tout ce qui est demandé est déjà dans le cache
 
 			final List<Entry> sortedEntries = new ArrayList<>(parties.getEntries());
-			Collections.sort(sortedEntries, new Comparator<Entry>() {
-				@Override
-				public int compare(Entry o1, Entry o2) {
-					return o1.getPartyNo() - o2.getPartyNo();
-				}
-			});
+			Collections.sort(sortedEntries, (o1, o2) -> o1.getPartyNo() - o2.getPartyNo());
 
 			// eric d'abord
 			{
@@ -1397,12 +1361,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 			assertEquals(2, parties.getEntries().size());
 
 			final List<Entry> entries = new ArrayList<>(parties.getEntries());
-			Collections.sort(entries, new Comparator<Entry>() {
-				@Override
-				public int compare(Entry o1, Entry o2) {
-					return o1.getPartyNo() - o2.getPartyNo();
-				}
-			});
+			Collections.sort(entries, (o1, o2) -> o1.getPartyNo() - o2.getPartyNo());
 
 			{
 				final Entry e = entries.get(0);

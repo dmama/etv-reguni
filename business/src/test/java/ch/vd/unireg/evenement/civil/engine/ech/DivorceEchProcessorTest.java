@@ -134,12 +134,7 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// Divorce de monsieur dans le civil
-		doModificationIndividu(noMonsieur, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				MockIndividuConnector.divorceIndividu(individu, dateDivorce);
-			}
-		});
+		doModificationIndividu(noMonsieur, individu -> MockIndividuConnector.divorceIndividu(individu, dateDivorce));
 
 		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
 		final long divorceMonsieurId = genereEvenementDivorce(454563456L, noMonsieur, dateDivorce);
@@ -148,12 +143,7 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		traiterEvenements(noMonsieur);
 
 		// Divorce de madame dans le civil
-		doModificationIndividu(noMadame, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				MockIndividuConnector.divorceIndividu(individu, dateDivorce);
-			}
-		});
+		doModificationIndividu(noMadame, individu -> MockIndividuConnector.divorceIndividu(individu, dateDivorce));
 
 		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
 		final long divorceMadameId = genereEvenementDivorce(454563457L, noMadame, dateDivorce);
@@ -223,12 +213,7 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// Divorce de monsieur dans le civil
-		doModificationIndividu(noMonsieur, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				MockIndividuConnector.divorceIndividu(individu, dateDivorce);
-			}
-		});
+		doModificationIndividu(noMonsieur, individu -> MockIndividuConnector.divorceIndividu(individu, dateDivorce));
 
 		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
 		final long divorceMonsieurId = genereEvenementDivorce(454563456L, noMonsieur, dateDivorce);
@@ -246,12 +231,7 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// Divorce de madame dans le civil
-		doModificationIndividu(noMadame, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				MockIndividuConnector.divorceIndividu(individu, dateDivorce);
-			}
-		});
+		doModificationIndividu(noMadame, individu -> MockIndividuConnector.divorceIndividu(individu, dateDivorce));
 
 		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
 		final long divorceMadameId = genereEvenementDivorce(454563457L, noMadame, dateDivorce);
@@ -395,12 +375,7 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// Divorce de monsieur dans le civil
-		doModificationIndividu(noMonsieur, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				MockIndividuConnector.divorceIndividu(individu, dateDivorce);
-			}
-		});
+		doModificationIndividu(noMonsieur, individu -> MockIndividuConnector.divorceIndividu(individu, dateDivorce));
 
 		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
 		final long divorceMonsieurId = genereEvenementDivorce(454563456L, noMonsieur, dateDivorce);

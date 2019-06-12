@@ -21,12 +21,7 @@ public class PermisListImpl implements PermisList, Serializable {
 
 	private static final long serialVersionUID = 5377477549461551838L;
 
-	protected static final Comparator<Permis> COMPARATOR_PERMIS = new Comparator<Permis>() {
-		@Override
-		public int compare(Permis o1, Permis o2) {
-			return NullDateBehavior.EARLIEST.compare(o1.getDateValeur(), o2.getDateValeur());
-		}
-	};
+	protected static final Comparator<Permis> COMPARATOR_PERMIS = (o1, o2) -> NullDateBehavior.EARLIEST.compare(o1.getDateValeur(), o2.getDateValeur());
 
 	private final List<Permis> list;
 

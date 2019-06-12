@@ -361,12 +361,7 @@ public class ParallelBatchTransactionTemplateWithResultsTest extends BusinessTes
 			data.add(i);
 		}
 
-		final ProgressMonitor pm = new ProgressMonitor() {
-			@Override
-			public void setProgressInPercent(int percent) {
-				collector.add(percent);
-			}
-		};
+		final ProgressMonitor pm = percent -> collector.add(percent);
 
 		final TestJobResults rapportFinal = new TestJobResults();
 		final ParallelBatchTransactionTemplateWithResults<Long, TestJobResults>

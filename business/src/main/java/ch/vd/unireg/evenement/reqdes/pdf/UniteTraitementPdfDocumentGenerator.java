@@ -21,11 +21,11 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.common.ApplicationInfo;
+import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
-import ch.vd.unireg.common.ApplicationInfo;
-import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.reqdes.EvenementReqDes;
 import ch.vd.unireg.reqdes.InformationsActeur;
@@ -229,23 +229,20 @@ public class UniteTraitementPdfDocumentGenerator extends ReqDesPdfDocumentGenera
 			tableRoles.addCell(new Phrase(new Chunk("Commune", TABLE_HEADER_FONT)));
 
 			final List<RolePartiePrenante> sortedRoles = new ArrayList<>(pp.getRoles());
-			sortedRoles.sort(new Comparator<RolePartiePrenante>() {
-				@Override
-				public int compare(RolePartiePrenante o1, RolePartiePrenante o2) {
-					int comparison = compareNullableValues(o1.getRole(), o2.getRole());
+			sortedRoles.sort((o1, o2) -> {
+				int comparison = compareNullableValues(o1.getRole(), o2.getRole());
+				if (comparison == 0) {
+					final TransactionImmobiliere ti1 = o1.getTransaction();
+					final TransactionImmobiliere ti2 = o2.getTransaction();
+					comparison = compareNullableValues(ti1.getModeInscription(), ti2.getModeInscription());
 					if (comparison == 0) {
-						final TransactionImmobiliere ti1 = o1.getTransaction();
-						final TransactionImmobiliere ti2 = o2.getTransaction();
-						comparison = compareNullableValues(ti1.getModeInscription(), ti2.getModeInscription());
+						comparison = compareNullableValues(ti1.getTypeInscription(), ti2.getTypeInscription());
 						if (comparison == 0) {
-							comparison = compareNullableValues(ti1.getTypeInscription(), ti2.getTypeInscription());
-							if (comparison == 0) {
-								comparison = Integer.compare(ti1.getOfsCommune(), ti2.getOfsCommune());
-							}
+							comparison = Integer.compare(ti1.getOfsCommune(), ti2.getOfsCommune());
 						}
 					}
-					return comparison;
 				}
+				return comparison;
 			});
 			for (RolePartiePrenante role : sortedRoles) {
 				final TransactionImmobiliere transaction = role.getTransaction();

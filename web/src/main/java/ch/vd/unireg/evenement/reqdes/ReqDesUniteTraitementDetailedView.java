@@ -2,7 +2,6 @@ package ch.vd.unireg.evenement.reqdes;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import ch.vd.unireg.reqdes.ErreurTraitement;
@@ -39,12 +38,7 @@ public class ReqDesUniteTraitementDetailedView extends ReqDesUniteTraitementAbst
 			for (PartiePrenante pp : ut.getPartiesPrenantes()) {
 				this.partiesPrenantes.add(new PartiePrenanteView(pp));
 			}
-			this.partiesPrenantes.sort(new Comparator<PartiePrenanteView>() {
-				@Override
-				public int compare(PartiePrenanteView o1, PartiePrenanteView o2) {
-					return Long.compare(o1.getId(), o2.getId());
-				}
-			});
+			this.partiesPrenantes.sort((o1, o2) -> Long.compare(o1.getId(), o2.getId()));
 		}
 	}
 

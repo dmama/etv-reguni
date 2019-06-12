@@ -103,12 +103,7 @@ public class CorrectionAutresNomsEchProcessorTest extends AbstractCorrectionEchP
 			assertNotNull(indexed);
 			assertEquals("Gérard Manfind", indexed.getNom1());
 
-			doModificationIndividu(noIndividu, new IndividuModification() {
-				@Override
-				public void modifyIndividu(MockIndividu individu) {
-					individu.setNom("Findman");
-				}
-			});
+			doModificationIndividu(noIndividu, individu -> individu.setNom("Findman"));
 
 			// événement de Correction d'adresse
 			final long evtId = doInNewTransactionAndSession(status -> {

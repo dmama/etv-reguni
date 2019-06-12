@@ -11,7 +11,6 @@ import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.unireg.evenement.civil.interne.MessageCollector;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
-import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.tiers.ForFiscal;
 import ch.vd.unireg.tiers.ForFiscalRevenuFortune;
@@ -201,12 +200,7 @@ public class AnnulationMariageTest extends AbstractEvenementCivilInterneTest {
 	 * @return l'individu tel que retourné par le registre civil suite à cette annulation
 	 */
 	private Individu annuleMariage(long noIndividu) {
-		doModificationIndividu(noIndividu, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				MockIndividuConnector.annuleMariage(individu);
-			}
-		});
+		doModificationIndividu(noIndividu, individu -> MockIndividuConnector.annuleMariage(individu));
 		return serviceCivil.getIndividu(noIndividu, date(2008, 12, 31));
 	}
 
@@ -218,12 +212,7 @@ public class AnnulationMariageTest extends AbstractEvenementCivilInterneTest {
 	 * @return l'individu tel que retourné par le registre civil suite à cette annulation
 	 */
 	private Individu annuleMariage(long noIndividu, long noConjoint) {
-		doModificationIndividus(noIndividu, noConjoint, new IndividusModification() {
-			@Override
-			public void modifyIndividus(MockIndividu individu, MockIndividu conjoint) {
-				MockIndividuConnector.annuleMariage(individu, conjoint);
-			}
-		});
+		doModificationIndividus(noIndividu, noConjoint, (individu, conjoint) -> MockIndividuConnector.annuleMariage(individu, conjoint));
 		return serviceCivil.getIndividu(noIndividu, date(2008, 12, 31));
 	}
 

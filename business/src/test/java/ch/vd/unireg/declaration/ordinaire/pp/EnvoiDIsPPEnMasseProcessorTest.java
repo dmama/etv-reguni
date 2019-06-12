@@ -433,12 +433,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 
 			// tri selon le numéro de séquence
 			final List<DeclarationImpotOrdinairePP> diTriees = new ArrayList<>(dis);
-			Collections.sort(diTriees, new Comparator<DeclarationImpotOrdinaire>() {
-				@Override
-				public int compare(DeclarationImpotOrdinaire o1, DeclarationImpotOrdinaire o2) {
-					return o1.getNumero() - o2.getNumero();
-				}
-			});
+			Collections.sort(diTriees, (Comparator<DeclarationImpotOrdinaire>) (o1, o2) -> o1.getNumero() - o2.getNumero());
 
 			// les numéros de séquence doivent se suivre...
 			assertEquals(1, (int) diTriees.get(0).getNumero());

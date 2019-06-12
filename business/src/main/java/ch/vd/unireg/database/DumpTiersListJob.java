@@ -1,6 +1,5 @@
 package ch.vd.unireg.database;
 
-import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -120,22 +119,19 @@ public class DumpTiersListJob extends JobDefinition {
 		final String extension = "zip";
 
 		DatabaseDump doc = docService.newDoc(DatabaseDump.class, name, description, extension,
-				new DocumentService.WriteDocCallback<DatabaseDump>() {
-					@Override
-					public void writeDoc(DatabaseDump doc, OutputStream os) throws Exception {
+		                                     (doc1, os) -> {
 
-						int count;
-						// Dump la base de donnée dans un fichier zip sur le disque
-						try (ZipOutputStream zipstream = new ZipOutputStream(os)) {
-							ZipEntry e = new ZipEntry(name + ".xml");
-							zipstream.putNextEntry(e);
-							count = dbService.dumpTiersListToDbunitFile(ids, parts, zipstream, status);
-						}
+			                                     int count;
+			                                     // Dump la base de donnée dans un fichier zip sur le disque
+			                                     try (ZipOutputStream zipstream = new ZipOutputStream(os)) {
+				                                     ZipEntry e = new ZipEntry(name + ".xml");
+				                                     zipstream.putNextEntry(e);
+				                                     count = dbService.dumpTiersListToDbunitFile(ids, parts, zipstream, status);
+			                                     }
 
-						doc.setNbTiers(count);
-						doc.setDescription(String.format(description, count));
-					}
-				});
+			                                     doc1.setNbTiers(count);
+			                                     doc1.setDescription(String.format(description, count));
+		                                     });
 
 		setLastRunReport(doc);
 		audit.success("La base de données a été exportée dans le fichier " + doc.getNom() + " (document #" + doc.getId() + ").", doc);

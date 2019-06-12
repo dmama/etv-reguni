@@ -56,14 +56,11 @@ public class ChangementCategorieEtrangerEchProcessorTest extends AbstractEveneme
 		});
 
 		// changement de permis au civil
-		doModificationIndividu(noIndividu, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				final MockPermis permis = new MockPermis();
-				permis.setDateDebutValidite(dateObtentionPermis);
-				permis.setTypePermis(TypePermis.ETABLISSEMENT);
-				individu.setPermis(permis);
-			}
+		doModificationIndividu(noIndividu, individu -> {
+			final MockPermis permis = new MockPermis();
+			permis.setDateDebutValidite(dateObtentionPermis);
+			permis.setTypePermis(TypePermis.ETABLISSEMENT);
+			individu.setPermis(permis);
 		});
 
 		// création de l'événement civil d'obtention de permis
@@ -126,14 +123,11 @@ public class ChangementCategorieEtrangerEchProcessorTest extends AbstractEveneme
 		});
 
 		// changement de permis au civil
-		doModificationIndividu(noIndividu, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				final MockPermis permis = new MockPermis();
-				permis.setDateDebutValidite(dateObtentionPermis);
-				permis.setTypePermis(TypePermis.SEJOUR);
-				individu.setPermis(permis);
-			}
+		doModificationIndividu(noIndividu, individu -> {
+			final MockPermis permis = new MockPermis();
+			permis.setDateDebutValidite(dateObtentionPermis);
+			permis.setTypePermis(TypePermis.SEJOUR);
+			individu.setPermis(permis);
 		});
 
 		// création de l'événement civil d'obtention de permis
@@ -199,14 +193,11 @@ public class ChangementCategorieEtrangerEchProcessorTest extends AbstractEveneme
 		});
 
 		// changement de permis au civil
-		doModificationIndividu(noIndividu, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				final MockPermis permis = new MockPermis();
-				permis.setDateDebutValidite(dateObtentionPermis);
-				permis.setTypePermis(TypePermis.ETABLISSEMENT);
-				individu.setPermis(permis);
-			}
+		doModificationIndividu(noIndividu, individu -> {
+			final MockPermis permis = new MockPermis();
+			permis.setDateDebutValidite(dateObtentionPermis);
+			permis.setTypePermis(TypePermis.ETABLISSEMENT);
+			individu.setPermis(permis);
 		});
 
 		// création de l'événement civil d'obtention de permis

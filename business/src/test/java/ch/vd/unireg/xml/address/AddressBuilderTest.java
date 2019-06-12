@@ -3,17 +3,16 @@ package ch.vd.unireg.xml.address;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
+import ch.vd.unireg.adresse.AdresseGenerique;
 import ch.vd.unireg.common.NomPrenom;
+import ch.vd.unireg.common.NpaEtLocalite;
+import ch.vd.unireg.common.RueEtNumero;
+import ch.vd.unireg.common.WithoutSpringTest;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.xml.party.address.v1.Address;
 import ch.vd.unireg.xml.party.address.v1.AddressInformation;
 import ch.vd.unireg.xml.party.address.v1.TariffZone;
-import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
-import ch.vd.unireg.adresse.AdresseGenerique;
-import ch.vd.unireg.adresse.LocaliteInvalideMatcherService;
-import ch.vd.unireg.common.NpaEtLocalite;
-import ch.vd.unireg.common.RueEtNumero;
-import ch.vd.unireg.common.WithoutSpringTest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -32,12 +31,7 @@ public class AddressBuilderTest extends WithoutSpringTest {
 		// l'adresse bizarre
 		final AdresseEnvoiDetaillee from =
 				new AdresseEnvoiDetaillee(RegDate.get(2011, 10, 1), null, "Monsieur", "Monsieur", new NomPrenom("Porte", "Jean-Claude"), new RueEtNumero("Rue Aimé Pinel", "42"),
-				                          new NpaEtLocalite("1110", "38230"), MockPays.France, 254, 0, AdresseGenerique.SourceType.CIVILE_PERS, new LocaliteInvalideMatcherService(){
-					@Override
-					public boolean match(String localite) {
-						return false;
-					}
-				});
+				                          new NpaEtLocalite("1110", "38230"), MockPays.France, 254, 0, AdresseGenerique.SourceType.CIVILE_PERS, localite -> false);
 		
 		final Address to = new Address();
 		AddressBuilder.fillDestination(to, from);

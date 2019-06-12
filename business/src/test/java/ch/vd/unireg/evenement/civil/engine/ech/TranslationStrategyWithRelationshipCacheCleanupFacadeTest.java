@@ -236,24 +236,9 @@ public class TranslationStrategyWithRelationshipCacheCleanupFacadeTest extends A
 			serviceCivil.getIndividu(noIndividuGrandPere, null, AttributeIndividu.PARENTS, AttributeIndividu.CONJOINTS);
 
 			// modification des données sous-jacentes au cache
-			doModificationIndividu(noIndividuFils, new IndividuModification() {
-				@Override
-				public void modifyIndividu(MockIndividu individu) {
-					individu.setPrenomUsuel("Johnny");
-				}
-			});
-			doModificationIndividu(noIndividuGrandPere, new IndividuModification() {
-				@Override
-				public void modifyIndividu(MockIndividu individu) {
-					individu.setPrenomUsuel("John Senior");
-				}
-			});
-			doModificationIndividu(noIndividuMere, new IndividuModification() {
-				@Override
-				public void modifyIndividu(MockIndividu individu) {
-					individu.setPrenomUsuel("Barbara");
-				}
-			});
+			doModificationIndividu(noIndividuFils, individu -> individu.setPrenomUsuel("Johnny"));
+			doModificationIndividu(noIndividuGrandPere, individu -> individu.setPrenomUsuel("John Senior"));
+			doModificationIndividu(noIndividuMere, individu -> individu.setPrenomUsuel("Barbara"));
 
 			// le cache n'a pas été notifié des changements donc on doit encore voir les anciens prénoms
 			Assert.assertEquals("Junior", serviceCivil.getIndividu(noIndividuFils, null).getPrenomUsuel());
@@ -262,12 +247,7 @@ public class TranslationStrategyWithRelationshipCacheCleanupFacadeTest extends A
 
 			// mise en place de la stratégie
 			final EvenementCivilEchTranslationStrategy strategy = new TranslationStrategyWithRelationshipCacheCleanupFacade(finalStrategy, serviceCivil, civilDataEventNotifier, tiersService);
-			buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {
-				@Override
-				public void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator) {
-					translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.PREMIERE_LIVRAISON, strategy);
-				}
-			});
+			buildStrategyOverridingTranslatorAndProcessor(true, translator -> translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.PREMIERE_LIVRAISON, strategy));
 
 			// création de l'événement civil qui va passer par cette stratégie sur le père (= celui qui a des relations avec tous les autres)
 			final long evtId = doInNewTransactionAndSession(status -> {
@@ -356,24 +336,9 @@ public class TranslationStrategyWithRelationshipCacheCleanupFacadeTest extends A
 			serviceCivil.getIndividu(noIndividuGrandPere, null, AttributeIndividu.PARENTS, AttributeIndividu.CONJOINTS);
 
 			// modification des données sous-jacentes au cache
-			doModificationIndividu(noIndividuFils, new IndividuModification() {
-				@Override
-				public void modifyIndividu(MockIndividu individu) {
-					individu.setPrenomUsuel("Johnny");
-				}
-			});
-			doModificationIndividu(noIndividuGrandPere, new IndividuModification() {
-				@Override
-				public void modifyIndividu(MockIndividu individu) {
-					individu.setPrenomUsuel("John Senior");
-				}
-			});
-			doModificationIndividu(noIndividuMere, new IndividuModification() {
-				@Override
-				public void modifyIndividu(MockIndividu individu) {
-					individu.setPrenomUsuel("Barbara");
-				}
-			});
+			doModificationIndividu(noIndividuFils, individu -> individu.setPrenomUsuel("Johnny"));
+			doModificationIndividu(noIndividuGrandPere, individu -> individu.setPrenomUsuel("John Senior"));
+			doModificationIndividu(noIndividuMere, individu -> individu.setPrenomUsuel("Barbara"));
 
 			// le cache n'a pas été notifié des changements donc on doit encore voir les anciens prénoms
 			Assert.assertEquals("Junior", serviceCivil.getIndividu(noIndividuFils, null).getPrenomUsuel());
@@ -382,12 +347,7 @@ public class TranslationStrategyWithRelationshipCacheCleanupFacadeTest extends A
 
 			// mise en place de la stratégie
 			final EvenementCivilEchTranslationStrategy strategy = new TranslationStrategyWithRelationshipCacheCleanupFacade(finalStrategy, serviceCivil, civilDataEventNotifier, tiersService);
-			buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {
-				@Override
-				public void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator) {
-					translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.PREMIERE_LIVRAISON, strategy);
-				}
-			});
+			buildStrategyOverridingTranslatorAndProcessor(true, translator -> translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.PREMIERE_LIVRAISON, strategy));
 
 			// création de l'événement civil qui va passer par cette stratégie sur le père (= celui qui a des relations avec tous les autres)
 			final long evtId = doInNewTransactionAndSession(status -> {

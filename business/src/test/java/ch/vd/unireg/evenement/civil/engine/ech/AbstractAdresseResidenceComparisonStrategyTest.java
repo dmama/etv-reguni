@@ -6,7 +6,6 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
-import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockBatiment;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -61,13 +60,10 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final long noEvt2 = 43757536526L;
 
 		final TypeAdresseCivil typeInteressant = getTypeAdresseResidence();
-		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
-			@Override
-			public void buildAdresses(MockIndividu individu) {
-				for (TypeAdresseCivil type : TypeAdresseCivil.values()) {
-					if (type != typeInteressant) {
-						individu.addAdresse(buildAdresse(type, "12", 123, null, null, null));
-					}
+		setupCivil(noIndividu, noEvt1, individu -> {
+			for (TypeAdresseCivil type : TypeAdresseCivil.values()) {
+				if (type != typeInteressant) {
+					individu.addAdresse(buildAdresse(type, "12", 123, null, null, null));
 				}
 			}
 		}, noEvt2, null);
@@ -84,13 +80,8 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final Localisation precedente = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null);
 		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null);
 
-		setupCivil(noIndividu, noEvt1, null, noEvt2, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", 123, range, precedente, suivante));
-			           }
-		           }
-		);
+		setupCivil(noIndividu, noEvt1, null, noEvt2,
+		           individu -> individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", 123, range, precedente, suivante)));
 
 		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (apparition)");
 	}
@@ -104,12 +95,9 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final Localisation precedente = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null);
 		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null);
 
-		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
-			@Override
-			public void buildAdresses(MockIndividu individu) {
-				individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", 123, range, precedente, suivante));
-			}
-		}, noEvt2, null);
+		setupCivil(noIndividu,
+		           noEvt1,
+		           individu -> individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", 123, range, precedente, suivante)), noEvt2, null);
 
 		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (disparition)");
 	}
@@ -123,18 +111,11 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final Localisation precedente = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null);
 		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null);
 
-		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", 123, range, precedente, suivante));
-			           }
-		           }, noEvt2, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", 123, range, precedente, suivante));
-			           }
-		           }
-		);
+		setupCivil(noIndividu,
+		           noEvt1,
+		           individu -> individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", 123, range, precedente, suivante)),
+		           noEvt2,
+		           individu -> individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", 123, range, precedente, suivante)));
 
 		assertNeutre(strategy, noEvt1, noEvt2);
 	}
@@ -151,18 +132,16 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final Localisation precedente2 = new Localisation(LocalisationType.CANTON_VD, MockCommune.ChateauDoex.getNoOFS(), null);
 		final Localisation suivante2 = null;    // on ne quitte pas la commune ici
 
-		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", 123, range1, precedente1, suivante1));
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", 123, range2, precedente2, suivante2));
-			           }
-		           }, noEvt2, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", 123, range1, precedente1, suivante1));
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", 123, range2, precedente2, suivante2));
-			           }
+		setupCivil(noIndividu,
+		           noEvt1,
+		           individu -> {
+			           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", 123, range1, precedente1, suivante1));
+			           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", 123, range2, precedente2, suivante2));
+		           },
+		           noEvt2,
+		           individu -> {
+			           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", 123, range1, precedente1, suivante1));
+			           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", 123, range2, precedente2, suivante2));
 		           }
 		);
 
@@ -181,18 +160,16 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final Localisation precedente2 = new Localisation(LocalisationType.CANTON_VD, MockCommune.ChateauDoex.getNoOFS(), null);
 		final Localisation suivante2 = null;    // on ne quitte pas la commune ici
 
-		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", 123, range1, precedente1, suivante1));
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", 123, range2, precedente2, suivante2));
-			           }
-		           }, noEvt2, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", 123, range2, precedente2, suivante2));
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", 123, range1, precedente1, suivante1));
-			           }
+		setupCivil(noIndividu,
+		           noEvt1,
+		           individu -> {
+			           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", 123, range1, precedente1, suivante1));
+			           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", 123, range2, precedente2, suivante2));
+		           },
+		           noEvt2,
+		           individu -> {
+			           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", 123, range2, precedente2, suivante2));
+			           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", 123, range1, precedente1, suivante1));
 		           }
 		);
 
@@ -210,18 +187,11 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final Localisation precedente = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null);
 		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null);
 
-		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid1, range, precedente, suivante));
-			           }
-		           }, noEvt2, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid2, range, precedente, suivante));
-			           }
-		           }
-		);
+		setupCivil(noIndividu,
+		           noEvt1,
+		           individu -> individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid1, range, precedente, suivante)),
+		           noEvt2,
+		           individu -> individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid2, range, precedente, suivante)));
 
 		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (commune)");
 	}
@@ -237,18 +207,11 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final Localisation precedente = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null);
 		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null);
 
-		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid1, range, precedente, suivante));
-			           }
-		           }, noEvt2, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid2, range, precedente, suivante));
-			           }
-		           }
-		);
+		setupCivil(noIndividu,
+		           noEvt1,
+		           individu -> individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid1, range, precedente, suivante)),
+		           noEvt2,
+		           individu -> individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid2, range, precedente, suivante)));
 
 		assertNeutre(strategy, noEvt1, noEvt2);
 	}
@@ -263,18 +226,10 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final Localisation precedente = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null);
 		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null);
 
-		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", null, range, precedente, suivante));
-			           }
-		           }, noEvt2, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente, suivante));
-			           }
-		           }
-		);
+		setupCivil(noIndividu,
+		           noEvt1,
+		           individu -> individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", null, range, precedente, suivante)), noEvt2,
+		           individu -> individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente, suivante)));
 
 		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (commune (apparition))");
 	}
@@ -289,18 +244,10 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final Localisation precedente = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null);
 		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null);
 
-		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente, suivante));
-			           }
-		           }, noEvt2, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", null, range, precedente, suivante));
-			           }
-		           }
-		);
+		setupCivil(noIndividu,
+		           noEvt1,
+		           individu -> individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente, suivante)), noEvt2,
+		           individu -> individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", null, range, precedente, suivante)));
 
 		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (commune (disparition))");
 	}
@@ -316,18 +263,10 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final Localisation precedente = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null);
 		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null);
 
-		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range1, precedente, suivante));
-			           }
-		           }, noEvt2, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range2, precedente, suivante));
-			           }
-		           }
-		);
+		setupCivil(noIndividu,
+		           noEvt1,
+		           individu -> individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range1, precedente, suivante)), noEvt2,
+		           individu -> individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range2, precedente, suivante)));
 
 		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (dates)");
 	}
@@ -343,18 +282,10 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final Localisation precedente = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null);
 		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null);
 
-		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range1, precedente, suivante));
-			           }
-		           }, noEvt2, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range2, precedente, suivante));
-			           }
-		           }
-		);
+		setupCivil(noIndividu,
+		           noEvt1,
+		           individu -> individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range1, precedente, suivante)), noEvt2,
+		           individu -> individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range2, precedente, suivante)));
 
 		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (dates)");
 	}
@@ -370,18 +301,11 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final Localisation precedente2 = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Albanie.getNoOFS(), null);
 		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null);
 
-		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente1, suivante));
-			           }
-		           }, noEvt2, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente2, suivante));
-			           }
-		           }
-		);
+		setupCivil(noIndividu,
+		           noEvt1,
+		           individu -> individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente1, suivante)),
+		           noEvt2,
+		           individu -> individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente2, suivante)));
 
 		assertNeutre(strategy, noEvt1, noEvt2);
 	}
@@ -397,18 +321,11 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final Localisation precedente2 = new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bale.getNoOFS(), null);
 		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null);
 
-		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente1, suivante));
-			           }
-		           }, noEvt2, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente2, suivante));
-			           }
-		           }
-		);
+		setupCivil(noIndividu,
+		           noEvt1,
+		           individu -> individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente1, suivante)),
+		           noEvt2,
+		           individu -> individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente2, suivante)));
 
 		assertNeutre(strategy, noEvt1, noEvt2);
 	}
@@ -424,18 +341,11 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final Localisation precedente2 = new Localisation(LocalisationType.CANTON_VD, MockCommune.CheseauxSurLausanne.getNoOFS(), null);
 		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null);
 
-		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente1, suivante));
-			           }
-		           }, noEvt2, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente2, suivante));
-			           }
-		           }
-		);
+		setupCivil(noIndividu,
+		           noEvt1,
+		           individu -> individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente1, suivante)),
+		           noEvt2,
+		           individu -> individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente2, suivante)));
 
 		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (localisation précédente (commune))");
 	}
@@ -451,18 +361,11 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final Localisation suivante1 = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Albanie.getNoOFS(), null);
 		final Localisation suivante2 = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Colombie.getNoOFS(), null);
 
-		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente, suivante1));
-			           }
-		           }, noEvt2, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente, suivante2));
-			           }
-		           }
-		);
+		setupCivil(noIndividu,
+		           noEvt1,
+		           individu -> individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente, suivante1)),
+		           noEvt2,
+		           individu -> individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente, suivante2)));
 
 		assertNeutre(strategy, noEvt1, noEvt2);
 	}
@@ -478,18 +381,11 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final Localisation suivante1 = new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bale.getNoOFS(), null);
 		final Localisation suivante2 = new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bern.getNoOFS(), null);
 
-		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente, suivante1));
-			           }
-		           }, noEvt2, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente, suivante2));
-			           }
-		           }
-		);
+		setupCivil(noIndividu,
+		           noEvt1,
+		           individu -> individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente, suivante1)),
+		           noEvt2,
+		           individu -> individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente, suivante2)));
 
 		assertNeutre(strategy, noEvt1, noEvt2);
 	}
@@ -505,18 +401,11 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final Localisation suivante1 = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null);
 		final Localisation suivante2 = new Localisation(LocalisationType.CANTON_VD, MockCommune.Bex.getNoOFS(), null);
 
-		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente, suivante1));
-			           }
-		           }, noEvt2, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente, suivante2));
-			           }
-		           }
-		);
+		setupCivil(noIndividu,
+		           noEvt1,
+		           individu -> individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente, suivante1)),
+		           noEvt2,
+		           individu -> individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente, suivante2)));
 
 		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (localisation suivante (commune))");
 	}
@@ -532,18 +421,11 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final Localisation precedente2 = new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bern.getNoOFS(), null);
 		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null);
 
-		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente1, suivante));
-			           }
-		           }, noEvt2, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente2, suivante));
-			           }
-		           }
-		);
+		setupCivil(noIndividu,
+		           noEvt1,
+		           individu -> individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente1, suivante)),
+		           noEvt2,
+		           individu -> individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente2, suivante)));
 
 		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (localisation précédente (type))");
 	}
@@ -559,18 +441,11 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final Localisation suivante1 = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null);
 		final Localisation suivante2 = new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bern.getNoOFS(), null);
 
-		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente, suivante1));
-			           }
-		           }, noEvt2, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente, suivante2));
-			           }
-		           }
-		);
+		setupCivil(noIndividu,
+		           noEvt1,
+		           individu -> individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente, suivante1)),
+		           noEvt2,
+		           individu -> individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente, suivante2)));
 
 		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (localisation suivante (type))");
 	}
@@ -585,18 +460,11 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final Localisation precedente = new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bern.getNoOFS(), null);
 		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null);
 
-		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range, null, suivante));
-			           }
-		           }, noEvt2, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente, suivante));
-			           }
-		           }
-		);
+		setupCivil(noIndividu,
+		           noEvt1,
+		           individu -> individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range, null, suivante)),
+		           noEvt2,
+		           individu -> individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente, suivante)));
 
 		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (localisation précédente (apparition))");
 	}
@@ -611,18 +479,11 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final Localisation precedente = new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bern.getNoOFS(), null);
 		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null);
 
-		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente, null));
-			           }
-		           }, noEvt2, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente, suivante));
-			           }
-		           }
-		);
+		setupCivil(noIndividu,
+		           noEvt1,
+		           individu -> individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente, null)),
+		           noEvt2,
+		           individu -> individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente, suivante)));
 
 		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (localisation suivante (apparition))");
 	}
@@ -637,18 +498,11 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final Localisation precedente = new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bern.getNoOFS(), null);
 		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null);
 
-		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente, suivante));
-			           }
-		           }, noEvt2, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range, null, suivante));
-			           }
-		           }
-		);
+		setupCivil(noIndividu,
+		           noEvt1,
+		           individu -> individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente, suivante)),
+		           noEvt2,
+		           individu -> individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range, null, suivante)));
 
 		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (localisation précédente (disparition))");
 	}
@@ -663,18 +517,11 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final Localisation precedente = new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bern.getNoOFS(), null);
 		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null);
 
-		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente, suivante));
-			           }
-		           }, noEvt2, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente, null));
-			           }
-		           }
-		);
+		setupCivil(noIndividu,
+		           noEvt1,
+		           individu -> individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente, suivante)),
+		           noEvt2,
+		           individu -> individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente, null)));
 
 		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (localisation suivante (disparition))");
 	}
@@ -689,18 +536,16 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final Localisation precedente = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null);
 		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null);
 
-		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(TypeAdresseCivil.PRINCIPALE, "12", 123, range1, precedente, null));
-				           individu.addAdresse(buildAdresse(TypeAdresseCivil.SECONDAIRE, "12", 12345, range2, null, suivante));
-			           }
-		           }, noEvt2, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(TypeAdresseCivil.SECONDAIRE, "13", 12345, range2, null, suivante));
-				           individu.addAdresse(buildAdresse(TypeAdresseCivil.PRINCIPALE, "13", 123, range1, precedente, null));
-			           }
+		setupCivil(noIndividu,
+		           noEvt1,
+		           individu -> {
+			           individu.addAdresse(buildAdresse(TypeAdresseCivil.PRINCIPALE, "12", 123, range1, precedente, null));
+			           individu.addAdresse(buildAdresse(TypeAdresseCivil.SECONDAIRE, "12", 12345, range2, null, suivante));
+		           },
+		           noEvt2,
+		           individu -> {
+			           individu.addAdresse(buildAdresse(TypeAdresseCivil.SECONDAIRE, "13", 12345, range2, null, suivante));
+			           individu.addAdresse(buildAdresse(TypeAdresseCivil.PRINCIPALE, "13", 123, range1, precedente, null));
 		           }
 		);
 

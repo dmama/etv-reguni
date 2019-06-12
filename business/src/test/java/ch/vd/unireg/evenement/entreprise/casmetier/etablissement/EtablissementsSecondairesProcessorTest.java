@@ -2,7 +2,6 @@ package ch.vd.unireg.evenement.entreprise.casmetier.etablissement;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -173,12 +172,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementEnt
 			Assert.assertEquals(1, evtsFiscaux.size()); // 1 for secondaire créé
 
 			final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
-			Collections.sort(evtsFiscauxTries, new Comparator<EvenementFiscal>() {
-				@Override
-				public int compare(EvenementFiscal o1, EvenementFiscal o2) {
-					return Long.compare(o1.getId(), o2.getId());
-				}
-			});
+			Collections.sort(evtsFiscauxTries, (o1, o2) -> Long.compare(o1.getId(), o2.getId()));
 
 			{
 				final EvenementFiscal ef = evtsFiscauxTries.get(0);
@@ -920,12 +914,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementEnt
 			Assert.assertEquals(2, evtsFiscaux.size()); // 1 for secondaire créé, 1 fermé
 
 			final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
-			Collections.sort(evtsFiscauxTries, new Comparator<EvenementFiscal>() {
-				@Override
-				public int compare(EvenementFiscal o1, EvenementFiscal o2) {
-					return Long.compare(o1.getId(), o2.getId());
-				}
-			});
+			Collections.sort(evtsFiscauxTries, (o1, o2) -> Long.compare(o1.getId(), o2.getId()));
 
 			{
 				final EvenementFiscal ef = evtsFiscauxTries.get(0);
@@ -1118,12 +1107,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementEnt
 			Assert.assertEquals(8, evtsFiscaux.size()); // 8 for secondaire créé, 6 fermé
 
 			final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
-			Collections.sort(evtsFiscauxTries, new Comparator<EvenementFiscal>() {
-				@Override
-				public int compare(EvenementFiscal o1, EvenementFiscal o2) {
-					return Long.compare(o1.getId(), o2.getId());
-				}
-			});
+			Collections.sort(evtsFiscauxTries, (o1, o2) -> Long.compare(o1.getId(), o2.getId()));
 
 			{
 				final EvenementFiscal ef = evtsFiscauxTries.get(0);
@@ -1301,12 +1285,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementEnt
 			final Etablissement etablissementPrincipal = tiersService.getEtablissementsPrincipauxEntreprise(entreprise).get(0).getPayload();
 			Assert.assertNotNull(etablissementPrincipal);
 			final List<DateRanged<Etablissement>> etablissementsSecondairesEntreprise = tiersService.getEtablissementsSecondairesEntreprise(entreprise);
-			Collections.sort(etablissementsSecondairesEntreprise, new Comparator<DateRanged<Etablissement>>() {
-				@Override
-				public int compare(DateRanged<Etablissement> o1, DateRanged<Etablissement> o2) {
-					return o1.getPayload().getNumero().compareTo(o2.getPayload().getNumero());
-				}
-			});
+			Collections.sort(etablissementsSecondairesEntreprise, (o1, o2) -> o1.getPayload().getNumero().compareTo(o2.getPayload().getNumero()));
 
 			final Etablissement etablissementSecondaire = etablissementsSecondairesEntreprise.get(0).getPayload();
 			Assert.assertNotNull(etablissementSecondaire);
@@ -1356,12 +1335,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementEnt
 			Assert.assertEquals(2, evtsFiscaux.size()); // 1 for secondaire créé, 1 fermé
 
 			final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
-			Collections.sort(evtsFiscauxTries, new Comparator<EvenementFiscal>() {
-				@Override
-				public int compare(EvenementFiscal o1, EvenementFiscal o2) {
-					return Long.compare(o1.getId(), o2.getId());
-				}
-			});
+			Collections.sort(evtsFiscauxTries, (o1, o2) -> Long.compare(o1.getId(), o2.getId()));
 
 			{
 				final EvenementFiscal ef = evtsFiscauxTries.get(0);
@@ -1506,12 +1480,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementEnt
 			Assert.assertEquals(2, evtsFiscaux.size());
 
 			final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
-			Collections.sort(evtsFiscauxTries, new Comparator<EvenementFiscal>() {
-				@Override
-				public int compare(EvenementFiscal o1, EvenementFiscal o2) {
-					return Long.compare(o1.getId(), o2.getId());
-				}
-			});
+			Collections.sort(evtsFiscauxTries, (o1, o2) -> Long.compare(o1.getId(), o2.getId()));
 
 			{
 				final EvenementFiscal ef = evtsFiscauxTries.get(0);
@@ -1660,12 +1629,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementEnt
 			Assert.assertEquals(2, evtsFiscaux.size());
 
 			final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
-			Collections.sort(evtsFiscauxTries, new Comparator<EvenementFiscal>() {
-				@Override
-				public int compare(EvenementFiscal o1, EvenementFiscal o2) {
-					return Long.compare(o1.getId(), o2.getId());
-				}
-			});
+			Collections.sort(evtsFiscauxTries, (o1, o2) -> Long.compare(o1.getId(), o2.getId()));
 
 			{
 				final EvenementFiscal ef = evtsFiscauxTries.get(0);
@@ -2107,12 +2071,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementEnt
 			Assert.assertEquals(3, evtsFiscaux.size()); // 1 for secondaire créé, 1 fermé
 
 			final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
-			Collections.sort(evtsFiscauxTries, new Comparator<EvenementFiscal>() {
-				@Override
-				public int compare(EvenementFiscal o1, EvenementFiscal o2) {
-					return Long.compare(o1.getId(), o2.getId());
-				}
-			});
+			Collections.sort(evtsFiscauxTries, (o1, o2) -> Long.compare(o1.getId(), o2.getId()));
 
 			{
 				final EvenementFiscal ef = evtsFiscauxTries.get(0);
@@ -2303,12 +2262,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementEnt
 			Assert.assertEquals(2, evtsFiscaux.size()); // 1 for secondaire créé, 1 fermé
 
 			final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
-			Collections.sort(evtsFiscauxTries, new Comparator<EvenementFiscal>() {
-				@Override
-				public int compare(EvenementFiscal o1, EvenementFiscal o2) {
-					return Long.compare(o1.getId(), o2.getId());
-				}
-			});
+			Collections.sort(evtsFiscauxTries, (o1, o2) -> Long.compare(o1.getId(), o2.getId()));
 
 			{
 				final EvenementFiscal ef = evtsFiscauxTries.get(0);
@@ -2809,12 +2763,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementEnt
 			Assert.assertEquals(0, evtsFiscaux.size());
 
 			final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
-			Collections.sort(evtsFiscauxTries, new Comparator<EvenementFiscal>() {
-				@Override
-				public int compare(EvenementFiscal o1, EvenementFiscal o2) {
-					return Long.compare(o1.getId(), o2.getId());
-				}
-			});
+			Collections.sort(evtsFiscauxTries, (o1, o2) -> Long.compare(o1.getId(), o2.getId()));
 			return null;
 		});
 	}

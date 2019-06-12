@@ -402,12 +402,7 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 
 	private Deces createValidDeces(Individu ppal, Individu conjoint, final RegDate dateDeces) {
 
-		doModificationIndividu(ppal.getNoTechnique(), new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				individu.setDateDeces(dateDeces);
-			}
-		});
+		doModificationIndividu(ppal.getNoTechnique(), individu -> individu.setDateDeces(dateDeces));
 
 		return new Deces(ppal, conjoint, dateDeces, 5652, context);
 	}

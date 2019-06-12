@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -440,15 +439,12 @@ public class AppariementServiceImpl implements AppariementService {
 			return Collections.emptyMap();
 		}
 
-		liste.sort(new Comparator<Pair<Etablissement, DateRange>>() {
-			@Override
-			public int compare(Pair<Etablissement, DateRange> o1, Pair<Etablissement, DateRange> o2) {
-				int comparison = Long.compare(o1.getLeft().getNumero(), o2.getLeft().getNumero());
-				if (comparison == 0) {
-					comparison = DateRangeComparator.compareRanges(o1.getRight(), o2.getRight());
-				}
-				return comparison;
+		liste.sort((o1, o2) -> {
+			int comparison = Long.compare(o1.getLeft().getNumero(), o2.getLeft().getNumero());
+			if (comparison == 0) {
+				comparison = DateRangeComparator.compareRanges(o1.getRight(), o2.getRight());
 			}
+			return comparison;
 		});
 		final Map<Long, Pair<Etablissement, List<DateRange>>> map = new HashMap<>(liste.size());
 		for (Pair<Etablissement, DateRange> pair : liste) {

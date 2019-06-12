@@ -3,7 +3,6 @@ package ch.vd.unireg.entreprise.complexe;
 import javax.validation.Valid;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -13,14 +12,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.Flash;
-import ch.vd.unireg.metier.MetierServiceException;
 import ch.vd.unireg.security.AccessDeniedException;
 import ch.vd.unireg.security.Role;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.EtatEntreprise;
 import ch.vd.unireg.tiers.TiersCriteria;
 import ch.vd.unireg.tiers.view.TiersCriteriaView;
-import ch.vd.unireg.transaction.TransactionHelper;
 import ch.vd.unireg.type.TypeEtatEntreprise;
 
 @Controller
@@ -82,12 +79,9 @@ public class ReinscriptionRCController extends AbstractProcessusComplexeRecherch
 		}
 		controllerUtils.checkTraitementContribuableAvecDecisionAci(view.getIdEntreprise());
 
-		doInTransaction(new TransactionHelper.ExceptionThrowingCallbackWithoutResult<MetierServiceException>() {
-			@Override
-			public void execute(TransactionStatus status) throws MetierServiceException {
-				final Entreprise entreprise = getTiers(Entreprise.class, view.getIdEntreprise());
-				metierService.reinscritRC(entreprise, view.getDateRadiationRC(), view.getRemarque());
-			}
+		doInTransaction(status -> {
+			final Entreprise entreprise = getTiers(Entreprise.class, view.getIdEntreprise());
+			metierService.reinscritRC(entreprise, view.getDateRadiationRC(), view.getRemarque());
 		});
 
 		return "redirect:/tiers/visu.do?id=" + view.getIdEntreprise();

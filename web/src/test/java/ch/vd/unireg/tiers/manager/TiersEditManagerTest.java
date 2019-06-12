@@ -3,7 +3,6 @@ package ch.vd.unireg.tiers.manager;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
@@ -173,12 +172,7 @@ public class TiersEditManagerTest extends WebTest {
 				assertEquals(2, remarques.size());
 
 				final List<Remarque> sorted = new ArrayList<>(remarques);
-				Collections.sort(sorted, new Comparator<Remarque>() {
-					@Override
-					public int compare(Remarque o1, Remarque o2) {
-						return Long.compare(o1.getId(), o2.getId());
-					}
-				});
+				Collections.sort(sorted, (o1, o2) -> Long.compare(o1.getId(), o2.getId()));
 
 				{
 					final Remarque remarque = sorted.get(0);
@@ -277,12 +271,7 @@ public class TiersEditManagerTest extends WebTest {
 
 			// on trie les périodicité par leur ordre de création
 			final List<Periodicite> periodicites = new ArrayList<>(dpi.getPeriodicites());
-			Collections.sort(periodicites, new Comparator<Periodicite>() {
-				@Override
-				public int compare(Periodicite o1, Periodicite o2) {
-					return Long.compare(o1.getId(), o2.getId());
-				}
-			});
+			Collections.sort(periodicites, (o1, o2) -> Long.compare(o1.getId(), o2.getId()));
 
 			assertEquals(4, periodicites.size());
 			{
@@ -345,12 +334,7 @@ public class TiersEditManagerTest extends WebTest {
 
 			// on trie les périodicité par leur ordre de création
 			final List<Periodicite> periodicites = new ArrayList<>(dpi.getPeriodicites());
-			Collections.sort(periodicites, new Comparator<Periodicite>() {
-				@Override
-				public int compare(Periodicite o1, Periodicite o2) {
-					return Long.compare(o1.getId(), o2.getId());
-				}
-			});
+			Collections.sort(periodicites, (o1, o2) -> Long.compare(o1.getId(), o2.getId()));
 
 			assertEquals(7, periodicites.size());
 			{

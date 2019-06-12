@@ -122,12 +122,7 @@ public class Ec_2000_07_Deces_CivilApresFiscal_Scenario extends EvenementCivilSc
 	@Etape(id=3, descr="Envoi de l'événement de décès")
 	public void step3() throws Exception {
 
-		doModificationIndividu(noIndGuillaume, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				individu.setDateDeces(dateDeces);
-			}
-		});
+		doModificationIndividu(noIndGuillaume, individu -> individu.setDateDeces(dateDeces));
 
 		long id = addEvenementCivil(TypeEvenementCivil.DECES, noIndGuillaume, dateDeces, MockCommune.Lausanne.getNoOFS());
 		commitAndStartTransaction();

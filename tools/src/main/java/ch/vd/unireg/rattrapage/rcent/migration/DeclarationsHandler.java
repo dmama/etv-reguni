@@ -74,74 +74,59 @@ public class DeclarationsHandler implements CategoryHandler {
 		final Map<Pattern, MatcherHandler> map = new HashMap<>();
 
 		// une nouvelle déclaration
-		map.put(DECLARATION_PATTERN, new MatcherHandler() {
-			@Override
-			public void handle(StringBuilder b, Matcher matcher, Map<String, Object> context) throws ParseException {
-				// ligne "génération d'une déclaration"...
-				// - si une déclaration était déjà en cours, il faut finaliser son traitement (visa)
-				if (context.containsKey(CTXT_DECLARATION_IN_PROGRESS)) {
-					addVisaReset(b);
-				}
-
-				final long noEntreprise = Long.parseLong(matcher.group(1));
-				final int pf = Integer.parseInt(matcher.group(2));
-				final RegDate dateDebut = RegDateHelper.displayStringToRegDate(matcher.group(3), false);
-				final RegDate dateFin = RegDateHelper.displayStringToRegDate(matcher.group(4), false);
-				addDeclaration(b, noEntreprise, pf, dateDebut, dateFin);
-				context.put(CTXT_DATE_DEMANDE_DELAI_INITIAL, dateFin.addDays(4));
-				context.put(CTXT_DECLARATION_IN_PROGRESS, Boolean.TRUE);
+		map.put(DECLARATION_PATTERN, (b, matcher, context) -> {
+			// ligne "génération d'une déclaration"...
+			// - si une déclaration était déjà en cours, il faut finaliser son traitement (visa)
+			if (context.containsKey(CTXT_DECLARATION_IN_PROGRESS)) {
+				addVisaReset(b);
 			}
+
+			final long noEntreprise = Long.parseLong(matcher.group(1));
+			final int pf = Integer.parseInt(matcher.group(2));
+			final RegDate dateDebut = RegDateHelper.displayStringToRegDate(matcher.group(3), false);
+			final RegDate dateFin = RegDateHelper.displayStringToRegDate(matcher.group(4), false);
+			addDeclaration(b, noEntreprise, pf, dateDebut, dateFin);
+			context.put(CTXT_DATE_DEMANDE_DELAI_INITIAL, dateFin.addDays(4));
+			context.put(CTXT_DECLARATION_IN_PROGRESS, Boolean.TRUE);
 		});
 
 		// le délai initial
-		map.put(DELAI_INITIAL_PATTERN, new MatcherHandler() {
-			@Override
-			public void handle(StringBuilder b, Matcher matcher, Map<String, Object> context) throws ParseException {
-				final RegDate dateDelai = RegDateHelper.displayStringToRegDate(matcher.group(2), false);
-				final RegDate dateDemande = (RegDate) context.get(CTXT_DATE_DEMANDE_DELAI_INITIAL);
-				if (dateDemande == null) {
-					throw new IllegalStateException("Délai initial sans déclaration préalable dans ligne " + matcher.group());
-				}
-				addDelai(b, dateDemande, dateDelai);
+		map.put(DELAI_INITIAL_PATTERN, (b, matcher, context) -> {
+			final RegDate dateDelai = RegDateHelper.displayStringToRegDate(matcher.group(2), false);
+			final RegDate dateDemande = (RegDate) context.get(CTXT_DATE_DEMANDE_DELAI_INITIAL);
+			if (dateDemande == null) {
+				throw new IllegalStateException("Délai initial sans déclaration préalable dans ligne " + matcher.group());
 			}
+			addDelai(b, dateDemande, dateDelai);
 		});
 
 		// un autre délai
-		map.put(DELAI_PATTERN, new MatcherHandler() {
-			@Override
-			public void handle(StringBuilder b, Matcher matcher, Map<String, Object> context) throws ParseException {
-				final RegDate delaiAccorde = RegDateHelper.displayStringToRegDate(matcher.group(2), false);
-				final RegDate dateDemande = RegDateHelper.displayStringToRegDate(matcher.group(3), false);
-				addDelai(b, dateDemande, delaiAccorde);
-			}
+		map.put(DELAI_PATTERN, (b, matcher, context) -> {
+			final RegDate delaiAccorde = RegDateHelper.displayStringToRegDate(matcher.group(2), false);
+			final RegDate dateDemande = RegDateHelper.displayStringToRegDate(matcher.group(3), false);
+			addDelai(b, dateDemande, delaiAccorde);
 		});
 
 		// un état
-		map.put(ETAT_PATTERN, new MatcherHandler() {
-			@Override
-			public void handle(StringBuilder b, Matcher matcher, Map<String, Object> context) throws ParseException {
-				final TypeEtatDocumentFiscal type = TypeEtatDocumentFiscal.valueOf(matcher.group(2));
-				final RegDate dateObtention = RegDateHelper.displayStringToRegDate(matcher.group(3), false);
-				addEtat(b, type, dateObtention);
-			}
+		map.put(ETAT_PATTERN, (b, matcher, context) -> {
+			final TypeEtatDocumentFiscal type = TypeEtatDocumentFiscal.valueOf(matcher.group(2));
+			final RegDate dateObtention = RegDateHelper.displayStringToRegDate(matcher.group(3), false);
+			addEtat(b, type, dateObtention);
 		});
 
 		// un questionnaire SNC
-		map.put(QUESTIONNAIRE_SNC_PATTERN, new MatcherHandler() {
-			@Override
-			public void handle(StringBuilder b, Matcher matcher, Map<String, Object> context) throws ParseException {
-				// ligne "génération d'une déclaration"...
-				// - si une déclaration était déjà en cours, il faut finaliser son traitement (visa)
-				if (context.containsKey(CTXT_DECLARATION_IN_PROGRESS)) {
-					addVisaReset(b);
-				}
-
-				final long noEntreprise = Long.parseLong(matcher.group(1));
-				final int pf = Integer.parseInt(matcher.group(2));
-				addQuestionnaireSNC(b, noEntreprise, pf);
-				context.put(CTXT_DATE_DEMANDE_DELAI_INITIAL, RegDate.get(pf + 1, 1, 4));
-				context.put(CTXT_DECLARATION_IN_PROGRESS, Boolean.TRUE);
+		map.put(QUESTIONNAIRE_SNC_PATTERN, (b, matcher, context) -> {
+			// ligne "génération d'une déclaration"...
+			// - si une déclaration était déjà en cours, il faut finaliser son traitement (visa)
+			if (context.containsKey(CTXT_DECLARATION_IN_PROGRESS)) {
+				addVisaReset(b);
 			}
+
+			final long noEntreprise = Long.parseLong(matcher.group(1));
+			final int pf = Integer.parseInt(matcher.group(2));
+			addQuestionnaireSNC(b, noEntreprise, pf);
+			context.put(CTXT_DATE_DEMANDE_DELAI_INITIAL, RegDate.get(pf + 1, 1, 4));
+			context.put(CTXT_DECLARATION_IN_PROGRESS, Boolean.TRUE);
 		});
 
 		return map;

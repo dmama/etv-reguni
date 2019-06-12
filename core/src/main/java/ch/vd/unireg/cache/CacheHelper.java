@@ -118,14 +118,11 @@ public abstract class CacheHelper {
 	 */
 	private static BufferedReader dumpKeys(Collection<?> keys) throws IOException {
 		final List<DisplayableKey> dispKeys = getSortedKeys(keys);
-		return buildReader(new LongStringBuilder() {
-			@Override
-			public void build(BufferedWriter writer) throws IOException {
-				for (DisplayableKey str : dispKeys) {
-					writer.write(LI);
-					writer.write(str.keyString);
-					writer.newLine();
-				}
+		return buildReader(writer -> {
+			for (DisplayableKey str : dispKeys) {
+				writer.write(LI);
+				writer.write(str.keyString);
+				writer.newLine();
 			}
 		});
 	}
@@ -138,18 +135,15 @@ public abstract class CacheHelper {
 	 */
 	private static BufferedReader dumpKeysValues(final Ehcache cache, @Nullable final ValueRendererFactory rendererFactory) throws IOException {
 		final List<DisplayableKey> dispKeys = getSortedKeys(cache.getKeys());
-		return buildReader(new LongStringBuilder() {
-			@Override
-			public void build(BufferedWriter writer) throws IOException {
-				for (DisplayableKey key : dispKeys) {
-					final Element element = cache.getQuiet(key.key);
-					if (element != null) {
-						writer.write(LI);
-						writer.write(key.keyString);
-						writer.write(ARROW);
-						writer.write(getDisplayedValue(element, rendererFactory));
-						writer.newLine();
-					}
+		return buildReader(writer -> {
+			for (DisplayableKey key : dispKeys) {
+				final Element element = cache.getQuiet(key.key);
+				if (element != null) {
+					writer.write(LI);
+					writer.write(key.keyString);
+					writer.write(ARROW);
+					writer.write(getDisplayedValue(element, rendererFactory));
+					writer.newLine();
 				}
 			}
 		});

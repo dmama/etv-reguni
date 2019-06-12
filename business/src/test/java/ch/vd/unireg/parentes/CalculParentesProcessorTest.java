@@ -3,7 +3,6 @@ package ch.vd.unireg.parentes;
 import javax.persistence.FlushModeType;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -273,15 +272,12 @@ public class CalculParentesProcessorTest extends BusinessTest {
 			Assert.assertNotNull(parentes);
 			Assert.assertEquals(4, parentes.size());
 			final List<Parente> copyToSort = new ArrayList<>(parentes);
-			Collections.sort(copyToSort, new Comparator<Parente>() {
-				@Override
-				public int compare(Parente o1, Parente o2) {
-					int comp = Long.compare(o1.getObjetId(), o2.getObjetId());
-					if (comp == 0) {
-						comp = Long.compare(o1.getSujetId(), o2.getSujetId());
-					}
-					return comp;
+			Collections.sort(copyToSort, (o1, o2) -> {
+				int comp = Long.compare(o1.getObjetId(), o2.getObjetId());
+				if (comp == 0) {
+					comp = Long.compare(o1.getSujetId(), o2.getSujetId());
 				}
+				return comp;
 			});
 
 			{
@@ -401,15 +397,12 @@ public class CalculParentesProcessorTest extends BusinessTest {
 			Assert.assertNotNull(parentes);
 			Assert.assertEquals(2, parentes.size());
 			final List<Parente> copyToSort = new ArrayList<>(parentes);
-			Collections.sort(copyToSort, new Comparator<Parente>() {
-				@Override
-				public int compare(Parente o1, Parente o2) {
-					int comp = Long.compare(o1.getObjetId(), o2.getObjetId());
-					if (comp == 0) {
-						comp = Long.compare(o1.getSujetId(), o2.getSujetId());
-					}
-					return comp;
+			Collections.sort(copyToSort, (o1, o2) -> {
+				int comp = Long.compare(o1.getObjetId(), o2.getObjetId());
+				if (comp == 0) {
+					comp = Long.compare(o1.getSujetId(), o2.getSujetId());
 				}
+				return comp;
 			});
 
 			{
@@ -511,15 +504,12 @@ public class CalculParentesProcessorTest extends BusinessTest {
 			Assert.assertNotNull(parentes);
 			Assert.assertEquals(2, parentes.size());
 			final List<Parente> copyToSort = new ArrayList<>(parentes);
-			Collections.sort(copyToSort, new Comparator<Parente>() {
-				@Override
-				public int compare(Parente o1, Parente o2) {
-					int comp = Long.compare(o1.getObjetId(), o2.getObjetId());
-					if (comp == 0) {
-						comp = Long.compare(o1.getSujetId(), o2.getSujetId());
-					}
-					return comp;
+			Collections.sort(copyToSort, (o1, o2) -> {
+				int comp = Long.compare(o1.getObjetId(), o2.getObjetId());
+				if (comp == 0) {
+					comp = Long.compare(o1.getSujetId(), o2.getSujetId());
 				}
+				return comp;
 			});
 
 			{

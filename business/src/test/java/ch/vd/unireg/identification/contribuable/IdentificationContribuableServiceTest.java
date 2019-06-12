@@ -3,7 +3,6 @@ package ch.vd.unireg.identification.contribuable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -1830,12 +1829,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		assertEquals(2, listJerome2.size());
 
 		//Afin de guarantir que l'on prend toujours le bon message, on trie la liste
-		Collections.sort(listJerome2, new Comparator<IdentificationContribuable>() {
-			@Override
-			public int compare(IdentificationContribuable ic1, IdentificationContribuable ic2) {
-				return Long.compare(ic1.getId(), ic2.getId());
-			}
-		});
+		Collections.sort(listJerome2, (ic1, ic2) -> Long.compare(ic1.getId(), ic2.getId()));
 
 		final IdentificationContribuable icJerome2 = listJerome2.get(1);
 
@@ -3898,11 +3892,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			assertEquals(2, resultSearch.size());
 
 			final List<TiersIndexedData> sortedResultSearch = new ArrayList<>(resultSearch);
-			Collections.sort(sortedResultSearch, new Comparator<TiersIndexedData>() {
-				@Override
-				public int compare(TiersIndexedData o1, TiersIndexedData o2) {
-					return o1.getTiersType().compareTo(o2.getTiersType());          // Ménage Commun d'abord, puis Non Habitant
-				}
+			Collections.sort(sortedResultSearch, (o1, o2) -> {
+				return o1.getTiersType().compareTo(o2.getTiersType());          // Ménage Commun d'abord, puis Non Habitant
 			});
 
 			assertEquals(MenageCommunIndexable.SUB_TYPE, sortedResultSearch.get(0).getTiersType());

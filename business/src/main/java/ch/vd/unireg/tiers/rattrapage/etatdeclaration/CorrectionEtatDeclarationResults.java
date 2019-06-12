@@ -2,7 +2,6 @@ package ch.vd.unireg.tiers.rattrapage.etatdeclaration;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -98,20 +97,17 @@ public class CorrectionEtatDeclarationResults extends JobResults<Long, Correctio
 
 	@Override
 	public void end() {
-		doublons.sort(new Comparator<Doublon>() {
-			@Override
-			public int compare(Doublon o1, Doublon o2) {
-				if (o1.ctbId.equals(o2.ctbId)) {
-					if (o1.diId.equals(o2.diId)) {
-						return o1.id.compareTo(o2.id);
-					}
-					else {
-						return o1.diId.compareTo(o2.diId);
-					}
+		doublons.sort((o1, o2) -> {
+			if (o1.ctbId.equals(o2.ctbId)) {
+				if (o1.diId.equals(o2.diId)) {
+					return o1.id.compareTo(o2.id);
 				}
 				else {
-					return o1.ctbId.compareTo(o2.ctbId);
+					return o1.diId.compareTo(o2.diId);
 				}
+			}
+			else {
+				return o1.ctbId.compareTo(o2.ctbId);
 			}
 		});
 		super.end();

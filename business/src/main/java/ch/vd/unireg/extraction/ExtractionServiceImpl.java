@@ -564,16 +564,13 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 	 * @throws IOException en cas de problème I/O
 	 */
 	private <E, R extends BatchResults<E, R>> ExtractionResult runParallelBatchExtractor(BatchableParallelExtractor<E, R> extractor) throws IOException {
-		return runBatchableExtractor(extractor, new CustomBatchableRun<E, R, BatchableParallelExtractor<E, R>>() {
-			@Override
-			public void run(BatchableParallelExtractor<E, R> extractor, R rapportFinal, List<E> elements) {
-				final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
-				final ParallelBatchTransactionTemplateWithResults<E, R>
-						batch = new ParallelBatchTransactionTemplateWithResults<>(elements, extractor.getBatchSize(), extractor.getNbThreads(), extractor.getBatchBehavior(), transactionManager,
-						                                                          extractor.getStatusManager(), AuthenticationInterface.INSTANCE);
-				batch.setReadonly(true);        // ce sont toutes des extractions !
-				batch.execute(rapportFinal, createCallback(extractor, rapportFinal, progressMonitor), progressMonitor);
-			}
+		return runBatchableExtractor(extractor, (extractor1, rapportFinal, elements) -> {
+			final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
+			final ParallelBatchTransactionTemplateWithResults<E, R>
+					batch = new ParallelBatchTransactionTemplateWithResults<>(elements, extractor1.getBatchSize(), extractor1.getNbThreads(), extractor1.getBatchBehavior(), transactionManager,
+					                                                          extractor1.getStatusManager(), AuthenticationInterface.INSTANCE);
+			batch.setReadonly(true);        // ce sont toutes des extractions !
+			batch.execute(rapportFinal, createCallback(extractor1, rapportFinal, progressMonitor), progressMonitor);
 		});
 	}
 
@@ -586,15 +583,12 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 	 * @throws IOException en cas de problème I/O
 	 */
 	private <E, R extends BatchResults<E, R>> ExtractionResult runBatchExtractor(BatchableExtractor<E, R> extractor) throws IOException {
-		return runBatchableExtractor(extractor, new CustomBatchableRun<E, R, BatchableExtractor<E, R>>() {
-			@Override
-			public void run(BatchableExtractor<E, R> extractor, R rapportFinal, List<E> elements) {
-				final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
-				final BatchTransactionTemplateWithResults<E, R>
-						batch = new BatchTransactionTemplateWithResults<>(elements, extractor.getBatchSize(), extractor.getBatchBehavior(), transactionManager, extractor.getStatusManager());
-				batch.setReadonly(true);        // ce sont toutes des extractions !
-				batch.execute(rapportFinal, createCallback(extractor, rapportFinal, progressMonitor), progressMonitor);
-			}
+		return runBatchableExtractor(extractor, (extractor1, rapportFinal, elements) -> {
+			final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
+			final BatchTransactionTemplateWithResults<E, R>
+					batch = new BatchTransactionTemplateWithResults<>(elements, extractor1.getBatchSize(), extractor1.getBatchBehavior(), transactionManager, extractor1.getStatusManager());
+			batch.setReadonly(true);        // ce sont toutes des extractions !
+			batch.execute(rapportFinal, createCallback(extractor1, rapportFinal, progressMonitor), progressMonitor);
 		});
 	}
 

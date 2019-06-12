@@ -1,7 +1,6 @@
 package ch.vd.unireg.declaration;
 
 import javax.persistence.FlushModeType;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -81,12 +80,7 @@ public class ModeleDocumentDAOImpl extends BaseDAOImpl<ModeleDocument, Long> imp
 	public List<ModeleDocument> getByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
 		final List<ModeleDocument> list = find("FROM ModeleDocument m WHERE m.periodeFiscale = :pf", buildNamedParameters(Pair.of("pf", periodeFiscale)), null);
 
-		list.sort(new Comparator<ModeleDocument>() {
-			@Override
-			public int compare(ModeleDocument o1, ModeleDocument o2) {
-				return o1.getTypeDocument().compareTo(o2.getTypeDocument());
-			}
-		});
+		list.sort((o1, o2) -> o1.getTypeDocument().compareTo(o2.getTypeDocument()));
 		return list;
 	}
 }

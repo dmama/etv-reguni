@@ -50,12 +50,9 @@ public class RetourEditiqueControllerHelperImpl implements MessageSourceAware, R
 	                                   @Nullable TraitementRetourEditique<? super EditiqueResultatTimeout> onTimeout,
 	                                   @Nullable TraitementRetourEditique<? super EditiqueResultatErreur> onError) throws IOException {
 
-		final TraitementRetourEditique<EditiqueResultatDocument> print = new TraitementRetourEditique<EditiqueResultatDocument>() {
-			@Override
-			public String doJob(EditiqueResultatDocument resultat) throws IOException {
-				downloadService.download(resultat, filenameRadical, response);
-				return null;
-			}
+		final TraitementRetourEditique<EditiqueResultatDocument> print = resultat1 -> {
+			downloadService.download(resultat1, filenameRadical, response);
+			return null;
 		};
 
 		return traiteRetourEditique(resultat, print, onReroutageInbox, onTimeout, onError);

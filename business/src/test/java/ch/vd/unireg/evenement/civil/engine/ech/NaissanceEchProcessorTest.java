@@ -116,14 +116,11 @@ public class NaissanceEchProcessorTest extends AbstractEvenementCivilEchProcesso
 		});
 
 		// on ajoute maintenant une adresse sur le bébé et on génère une arrivée
-		doModificationIndividu(noIndividu, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				final MockAdresse adresse = new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Vallorbe.GrandRue, null, dateNaissance, null);
-				adresse.setDateDebutValidite(dateNaissance);
-				adresse.setTypeAdresse(TypeAdresseCivil.PRINCIPALE);
-				individu.addAdresse(adresse);
-			}
+		doModificationIndividu(noIndividu, individu -> {
+			final MockAdresse adresse = new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Vallorbe.GrandRue, null, dateNaissance, null);
+			adresse.setDateDebutValidite(dateNaissance);
+			adresse.setTypeAdresse(TypeAdresseCivil.PRINCIPALE);
+			individu.addAdresse(adresse);
 		});
 
 		// événement civil d'arrivée

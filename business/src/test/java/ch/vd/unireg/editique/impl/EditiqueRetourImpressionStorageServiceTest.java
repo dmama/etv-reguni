@@ -65,16 +65,13 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 
 		final String nomDocument = "Mon document tant attendu";
 		final EditiqueResultatRecu envoi = buildResultat(nomDocument);
-		final Thread thread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					Thread.sleep(200);
-					service.onArriveeRetourImpression(envoi);
-				}
-				catch (InterruptedException e) {
-					throw new RuntimeException(e);
-				}
+		final Thread thread = new Thread(() -> {
+			try {
+				Thread.sleep(200);
+				service.onArriveeRetourImpression(envoi);
+			}
+			catch (InterruptedException e) {
+				throw new RuntimeException(e);
 			}
 		});
 		thread.start();
@@ -100,16 +97,13 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 
 		final String nomDocument = "Mon document tant attendu";
 		final EditiqueResultatRecu envoi = buildResultat(nomDocument);
-		final Thread thread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					Thread.sleep(200);
-					service.onArriveeRetourImpression(envoi);
-				}
-				catch (InterruptedException e) {
-					throw new RuntimeException(e);
-				}
+		final Thread thread = new Thread(() -> {
+			try {
+				Thread.sleep(200);
+				service.onArriveeRetourImpression(envoi);
+			}
+			catch (InterruptedException e) {
+				throw new RuntimeException(e);
 			}
 		});
 		thread.start();
@@ -208,16 +202,13 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 		final String nomDocumentEvoye = "Mon document reçu";
 
 		final EditiqueResultatRecu envoi = buildResultat(nomDocumentEvoye);
-		final Thread thread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					Thread.sleep(200);
-					service.onArriveeRetourImpression(envoi);
-				}
-				catch (InterruptedException e) {
-					throw new RuntimeException(e);
-				}
+		final Thread thread = new Thread(() -> {
+			try {
+				Thread.sleep(200);
+				service.onArriveeRetourImpression(envoi);
+			}
+			catch (InterruptedException e) {
+				throw new RuntimeException(e);
 			}
 		});
 		thread.start();
@@ -245,19 +236,16 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 
 		final EditiqueResultatRecu documentAttendu = buildResultat(nomDocumentAttendu);
 		final EditiqueResultatRecu autreDocument = buildResultat(nomDocumentEvoye);
-		final Thread thread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					Thread.sleep(200);
-					service.onArriveeRetourImpression(autreDocument);
+		final Thread thread = new Thread(() -> {
+			try {
+				Thread.sleep(200);
+				service.onArriveeRetourImpression(autreDocument);
 
-					Thread.sleep(100);
-					service.onArriveeRetourImpression(documentAttendu);
-				}
-				catch (InterruptedException e) {
-					throw new RuntimeException(e);
-				}
+				Thread.sleep(100);
+				service.onArriveeRetourImpression(documentAttendu);
+			}
+			catch (InterruptedException e) {
+				throw new RuntimeException(e);
 			}
 		});
 		thread.start();
@@ -291,17 +279,14 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 
 		// date de réception : 1.8s dans le futur !
 		// (afin de tester que seuls les vieux documents sont effacés)
-		final Thread thread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					Thread.sleep(1800L);
-					final EditiqueResultatRecu timeTraveler = buildResultat(nomDocumentVoyageurTemporel);
-					service.onArriveeRetourImpression(timeTraveler);
-				}
-				catch (InterruptedException e) {
-					throw new RuntimeException(e);
-				}
+		final Thread thread = new Thread(() -> {
+			try {
+				Thread.sleep(1800L);
+				final EditiqueResultatRecu timeTraveler = buildResultat(nomDocumentVoyageurTemporel);
+				service.onArriveeRetourImpression(timeTraveler);
+			}
+			catch (InterruptedException e) {
+				throw new RuntimeException(e);
 			}
 		});
 		thread.start();
@@ -342,12 +327,7 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 		// on enregistre un trigger, on attend un peu, il ne doit pas avoir bougé ;
 		// quand le document du trigger arrive, on doit le voir dans le trigger
 		final MutableObject<EditiqueResultatRecu> res = new MutableObject<>(null);
-		final RetourImpressionTrigger myTrigger = new RetourImpressionTrigger() {
-			@Override
-			public void trigger(EditiqueResultatRecu resultat) throws Exception {
-				res.setValue(resultat);
-			}
-		};
+		final RetourImpressionTrigger myTrigger = resultat -> res.setValue(resultat);
 
 		final String nomDocument = "Mon document qui déclenche tout";
 		service.registerTrigger(nomDocument, myTrigger);
@@ -387,12 +367,7 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 
         // on enregistre un trigger
 		final MutableObject<EditiqueResultatRecu> res = new MutableObject<>(null);
-		final RetourImpressionTrigger myTrigger = new RetourImpressionTrigger() {
-			@Override
-			public void trigger(EditiqueResultatRecu resultat) throws Exception {
-				res.setValue(resultat);
-			}
-		};
+		final RetourImpressionTrigger myTrigger = resultat -> res.setValue(resultat);
 
 		Assert.assertNull("Initialisation bizarre...", res.getValue());
 		service.registerTrigger(nomDocument, myTrigger);
@@ -414,12 +389,7 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 		// on enregistre un trigger, on attend un peu, il ne doit pas avoir bougé ;
 		// quand le document du trigger arrive, il ne doit toujours pas bouger (ce n'est pas le bon document !)
 		final MutableObject<EditiqueResultatRecu> res = new MutableObject<>(null);
-		final RetourImpressionTrigger myTrigger = new RetourImpressionTrigger() {
-			@Override
-			public void trigger(EditiqueResultatRecu resultat) throws Exception {
-				res.setValue(resultat);
-			}
-		};
+		final RetourImpressionTrigger myTrigger = resultat -> res.setValue(resultat);
 
 		final String nomDocumentAttendu = "Mon document qui est attendu";
 		final String nomDocumentArrive = "Mon document qui arrive";

@@ -111,30 +111,10 @@ public class CorrectionFiliationTest extends AbstractEvenementCivilInterneTest {
 			assertNomIndividu("Jacquouille", "Martine", cache, martineNoInd);
 
 			// on change les noms dans le service civil (le cache ne doit pas encore avoir bougé)
-			doModificationIndividu(jeanNoInd, new IndividuModification() {
-				@Override
-				public void modifyIndividu(MockIndividu individu) {
-					individu.setNom("Jacquard");
-				}
-			});
-			doModificationIndividu(veroNoInd, new IndividuModification() {
-				@Override
-				public void modifyIndividu(MockIndividu individu) {
-					individu.setNom("Jacquard");
-				}
-			});
-			doModificationIndividu(jacquesNoInd, new IndividuModification() {
-				@Override
-				public void modifyIndividu(MockIndividu individu) {
-					individu.setNom("Jacquard");
-				}
-			});
-			doModificationIndividu(martineNoInd, new IndividuModification() {
-				@Override
-				public void modifyIndividu(MockIndividu individu) {
-					individu.setNom("Jacquard");
-				}
-			});
+			doModificationIndividu(jeanNoInd, individu -> individu.setNom("Jacquard"));
+			doModificationIndividu(veroNoInd, individu -> individu.setNom("Jacquard"));
+			doModificationIndividu(jacquesNoInd, individu -> individu.setNom("Jacquard"));
+			doModificationIndividu(martineNoInd, individu -> individu.setNom("Jacquard"));
 
 			// On vérifie que les individus sont toujours bien présents dans le cache avec l'ancien nom
 			assertNomIndividu("Jacquouille", "Jean", cache, jeanNoInd);

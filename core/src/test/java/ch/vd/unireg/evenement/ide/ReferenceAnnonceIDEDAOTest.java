@@ -1,7 +1,6 @@
 package ch.vd.unireg.evenement.ide;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import org.junit.Assert;
@@ -60,12 +59,7 @@ public class ReferenceAnnonceIDEDAOTest extends CoreDAOTest {
 		final List<ReferenceAnnonceIDE> refAnnonceEtablissement1 = dao.getReferencesAnnonceIDE(etablissement1Id);
 		Assert.assertNotNull(refAnnonceEtablissement1);
 		Assert.assertEquals(2, refAnnonceEtablissement1.size());
-		Collections.sort(refAnnonceEtablissement1, new Comparator<ReferenceAnnonceIDE>() {
-			@Override
-			public int compare(ReferenceAnnonceIDE o1, ReferenceAnnonceIDE o2) {
-				return Long.compare(o1.getId(), o2.getId());
-			}
-		});
+		Collections.sort(refAnnonceEtablissement1, (o1, o2) -> Long.compare(o1.getId(), o2.getId()));
 		{
 			final ReferenceAnnonceIDE refAnnonce = refAnnonceEtablissement1.get(0);
 			Assert.assertEquals("testbid101", refAnnonce.getMsgBusinessId());

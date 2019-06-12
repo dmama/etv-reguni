@@ -189,12 +189,7 @@ public class DeterminationQuestionnairesSNCAEmettreProcessor {
 			final DateRange anneeCivile = new DateRangeHelper.Range(RegDate.get(periode.getAnnee(), 1, 1), RegDate.get(periode.getAnnee(), 12, 31));
 
 			// si on a des tâches d'annulation, on les annule
-			annuleTout(tachesAnnulationExistantes, new Collector<TacheAnnulationQuestionnaireSNC>() {
-				@Override
-				public void collect(TacheAnnulationQuestionnaireSNC tache) {
-					rapport.addTraiteAnnulationTacheAnnulation(entreprise, tache);
-				}
-			});
+			annuleTout(tachesAnnulationExistantes, tache -> rapport.addTraiteAnnulationTacheAnnulation(entreprise, tache));
 
 			// si déjà un questionnaire, pas de nouvelle tâche
 			if (questionnairesExistants.isEmpty()) {
@@ -216,12 +211,7 @@ public class DeterminationQuestionnairesSNCAEmettreProcessor {
 
 					// si plusieurs tâches d'envoi existantes, on les annule toutes sauf une
 					final List<TacheEnvoiQuestionnaireSNC> aAnnuler = tachesEnvoiExistantes.subList(1, tachesEnvoiExistantes.size());
-					annuleTout(aAnnuler, new Collector<TacheEnvoiQuestionnaireSNC>() {
-						@Override
-						public void collect(TacheEnvoiQuestionnaireSNC tache) {
-							rapport.addTraiteAnnulationTacheEnvoi(entreprise, tache);
-						}
-					});
+					annuleTout(aAnnuler, tache -> rapport.addTraiteAnnulationTacheEnvoi(entreprise, tache));
 					aAnnuler.clear();
 
 					// tâche déjà présente (éventuelle correction des dates de début/fin)
@@ -240,12 +230,7 @@ public class DeterminationQuestionnairesSNCAEmettreProcessor {
 			// il ne faut pas de questionnaire...
 
 			// si on a des tâches d'émission, on les annule
-			annuleTout(tachesEnvoiExistantes, new Collector<TacheEnvoiQuestionnaireSNC>() {
-				@Override
-				public void collect(TacheEnvoiQuestionnaireSNC tache) {
-					rapport.addTraiteAnnulationTacheEnvoi(entreprise, tache);
-				}
-			});
+			annuleTout(tachesEnvoiExistantes, tache -> rapport.addTraiteAnnulationTacheEnvoi(entreprise, tache));
 
 			// si on n'a pas de questionnaire, rien à faire...
 			if (!questionnairesExistants.isEmpty()) {

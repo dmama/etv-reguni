@@ -189,69 +189,58 @@ public class RapportEntreTiersDAOImpl extends BaseDAOImpl<RapportEntreTiers, Lon
 	static Comparator<RapportEntreTiers> getRapportEntreTiersComparator(long tiersId, String sortingField) {
 		final Comparator<RapportEntreTiers> comparateurAsc;
 		if ("tiersId".equals(sortingField)) {
-			comparateurAsc = new Comparator<RapportEntreTiers>() {
-				@Override
-				public int compare(RapportEntreTiers o1, RapportEntreTiers o2) {
-					// [SIFISC-9965] on va trier par le résultat de l'expression "sujetId + objetId - $tiersId", i.e. par l'AUTRE numéro de tiers
-					final long key1 = o1.getObjetId() + o1.getSujetId() - tiersId;
-					final long key2 = o2.getObjetId() + o2.getSujetId() - tiersId;
-					int comparison = Long.compare(key1, key2);
-					if (comparison == 0) {
-						comparison = Long.compare(o1.getId(), o2.getId());
-					}
-					return comparison;
+			comparateurAsc = (o1, o2) -> {
+				// [SIFISC-9965] on va trier par le résultat de l'expression "sujetId + objetId - $tiersId", i.e. par l'AUTRE numéro de tiers
+				final long key1 = o1.getObjetId() + o1.getSujetId() - tiersId;
+				final long key2 = o2.getObjetId() + o2.getSujetId() - tiersId;
+				int comparison = Long.compare(key1, key2);
+				if (comparison == 0) {
+					comparison = Long.compare(o1.getId(), o2.getId());
 				}
+				return comparison;
 			};
 		} else if("autoriteTutelaire".equals(sortingField)) {
 			// [SIFISC-26747] pour le tri sur la colonne "autoriteTutelaire" le tri est fait au niveau service
-			comparateurAsc = new Comparator<RapportEntreTiers>() {
-				@Override
-				public int compare(RapportEntreTiers o1, RapportEntreTiers o2) {
-					return 1;
-				}
-			};
+			comparateurAsc = (o1, o2) -> 1;
 		}
 		else {
-			comparateurAsc = new Comparator<RapportEntreTiers>() {
-				@Override
-				public int compare(RapportEntreTiers o1, RapportEntreTiers o2) {
-					try {
-						final Map<String, PropertyDescriptor> descriptorsO1 = ReflexionUtils.getPropertyDescriptors(o1.getClass());
-						final Map<String, PropertyDescriptor> descriptorsO2 = ReflexionUtils.getPropertyDescriptors(o2.getClass());
-						final PropertyDescriptor descriptorO1 = descriptorsO1.get(sortingField == null ? "id" : sortingField);
-						final PropertyDescriptor descriptorO2 = descriptorsO2.get(sortingField == null ? "id" : sortingField);
-						if (descriptorO1 == null) {
-							return 1;
+			comparateurAsc = (o1, o2) -> {
+				try {
+					final Map<String, PropertyDescriptor> descriptorsO1 = ReflexionUtils.getPropertyDescriptors(o1.getClass());
+					final Map<String, PropertyDescriptor> descriptorsO2 = ReflexionUtils.getPropertyDescriptors(o2.getClass());
+					final PropertyDescriptor descriptorO1 = descriptorsO1.get(sortingField == null ? "id" : sortingField);
+					final PropertyDescriptor descriptorO2 = descriptorsO2.get(sortingField == null ? "id" : sortingField);
+					if (descriptorO1 == null) {
+						return 1;
+					}
+					else if (descriptorO2 == null) {
+						return -1;
+					}
+					else {
+						final Object value1 = descriptorO1.getReadMethod().invoke(o1);
+						final Object value2 = descriptorO2.getReadMethod().invoke(o2);
+						if (value1 == null || value2 == null) {
+							if (value1 == null && value2 == null) {
+								return 0;
+							}
+							return value1 == null ? -1 : 1;
 						}
-						else if (descriptorO2 == null) {
-							return -1;
+						else if (value1 instanceof Comparable && value2 instanceof Comparable) {
+							//noinspection unchecked
+							return ((Comparable) value1).compareTo(value2);
+						}
+						else if (Class.class.equals(descriptorO1.getPropertyType())) {
+							// [SIFISC-25994] on veut comparer par classe (= type de rapport)...
+							//noinspection ConstantConditions
+							return ((Class<?>) value1).getSimpleName().compareTo(((Class<?>) value2).getSimpleName());
 						}
 						else {
-							final Object value1 = descriptorO1.getReadMethod().invoke(o1);
-							final Object value2 = descriptorO2.getReadMethod().invoke(o2);
-							if (value1 == null || value2 == null) {
-								if (value1 == null && value2 == null) {
-									return 0;
-								}
-								return value1 == null ? -1 : 1;
-							}
-							else if (value1 instanceof Comparable && value2 instanceof Comparable) {
-								//noinspection unchecked
-								return ((Comparable) value1).compareTo(value2);
-							}
-							else if (Class.class.equals(descriptorO1.getPropertyType())) {
-								// [SIFISC-25994] on veut comparer par classe (= type de rapport)...
-								//noinspection ConstantConditions
-								return ((Class<?>) value1).getSimpleName().compareTo(((Class<?>) value2).getSimpleName());
-							}
-							else {
-								throw new IllegalArgumentException("Propriété " + descriptorO1.getDisplayName() + " de type " + descriptorO1.getPropertyType().getName() + " non comparable...");
-							}
+							throw new IllegalArgumentException("Propriété " + descriptorO1.getDisplayName() + " de type " + descriptorO1.getPropertyType().getName() + " non comparable...");
 						}
 					}
-					catch (IllegalAccessException | InvocationTargetException | IntrospectionException e) {
-						throw new IllegalArgumentException("Impossible d'accéder à la propriété " + sortingField + " de la classe " + RapportEntreTiers.class.getSimpleName());
-					}
+				}
+				catch (IllegalAccessException | InvocationTargetException | IntrospectionException e) {
+					throw new IllegalArgumentException("Impossible d'accéder à la propriété " + sortingField + " de la classe " + RapportEntreTiers.class.getSimpleName());
 				}
 			};
 		}

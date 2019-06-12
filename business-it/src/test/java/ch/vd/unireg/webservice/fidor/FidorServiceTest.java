@@ -1,7 +1,6 @@
 package ch.vd.unireg.webservice.fidor;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -101,12 +100,7 @@ public class FidorServiceTest {
 		Assert.assertEquals(3, localities.size());      // Villars-le-Terroir, Echallens, St-Barthélemy VD
 
 		// ordre alphabétique
-		Collections.sort(localities, new Comparator<PostalLocality>() {
-			@Override
-			public int compare(PostalLocality o1, PostalLocality o2) {
-				return o1.getLongName().compareTo(o2.getLongName());
-			}
-		});
+		Collections.sort(localities, (o1, o2) -> o1.getLongName().compareTo(o2.getLongName()));
 
 		Assert.assertEquals("Echallens", localities.get(0).getLongName());
 		Assert.assertEquals("St-Barthélemy VD", localities.get(1).getLongName());

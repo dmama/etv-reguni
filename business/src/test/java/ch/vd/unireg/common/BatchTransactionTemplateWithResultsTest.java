@@ -127,11 +127,8 @@ public class BatchTransactionTemplateWithResultsTest extends BusinessTest {
 		doInNewTransaction(status -> {
 			// On vérifie que les batchs ont bien été processés et committés
 			final List<PersonnePhysique> lines = allTiersOfType(PersonnePhysique.class);
-			Collections.sort(lines, new Comparator<Tiers>() {
-				@Override
-				public int compare(Tiers o1, Tiers o2) {
-					return (int) (o1.getNumero() - o2.getNumero()); // -> ordre naturel d'insertion
-				}
+			Collections.sort(lines, (Comparator<Tiers>) (o1, o2) -> {
+				return (int) (o1.getNumero() - o2.getNumero()); // -> ordre naturel d'insertion
 			});
 			assertEquals(3, lines.size());
 
@@ -187,11 +184,8 @@ public class BatchTransactionTemplateWithResultsTest extends BusinessTest {
 		doInNewTransaction(status -> {
 			// On vérifie que les batchs ont bien été processés et committés à l'exception du deuxième batch qui a été rollé-back
 			final List<PersonnePhysique> lines = allTiersOfType(PersonnePhysique.class);
-			Collections.sort(lines, new Comparator<Tiers>() {
-				@Override
-				public int compare(Tiers o1, Tiers o2) {
-					return (int) (o1.getNumero() - o2.getNumero()); // -> ordre naturel d'insertion
-				}
+			Collections.sort(lines, (Comparator<Tiers>) (o1, o2) -> {
+				return (int) (o1.getNumero() - o2.getNumero()); // -> ordre naturel d'insertion
 			});
 			assertEquals(2, lines.size());
 
@@ -240,11 +234,8 @@ public class BatchTransactionTemplateWithResultsTest extends BusinessTest {
 		doInNewTransaction(status -> {
 			// On vérifie que les batchs ont bien été processés et committés
 			final List<PersonnePhysique> lines = allTiersOfType(PersonnePhysique.class);
-			Collections.sort(lines, new Comparator<Tiers>() {
-				@Override
-				public int compare(Tiers o1, Tiers o2) {
-					return (int) (o1.getNumero() - o2.getNumero()); // -> ordre naturel d'insertion
-				}
+			Collections.sort(lines, (Comparator<Tiers>) (o1, o2) -> {
+				return (int) (o1.getNumero() - o2.getNumero()); // -> ordre naturel d'insertion
 			});
 			assertEquals(3, lines.size());
 
@@ -315,11 +306,8 @@ public class BatchTransactionTemplateWithResultsTest extends BusinessTest {
 			 * </ul>
 			 */
 			final List<PersonnePhysique> lines = allTiersOfType(PersonnePhysique.class);
-			Collections.sort(lines, new Comparator<Tiers>() {
-				@Override
-				public int compare(Tiers o1, Tiers o2) {
-					return (int) (o1.getNumero() - o2.getNumero()); // -> ordre naturel d'insertion
-				}
+			Collections.sort(lines, (Comparator<Tiers>) (o1, o2) -> {
+				return (int) (o1.getNumero() - o2.getNumero()); // -> ordre naturel d'insertion
 			});
 			assertEquals(3, lines.size());
 

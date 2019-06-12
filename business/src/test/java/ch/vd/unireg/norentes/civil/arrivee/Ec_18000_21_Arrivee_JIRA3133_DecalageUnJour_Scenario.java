@@ -95,15 +95,12 @@ public class Ec_18000_21_Arrivee_JIRA3133_DecalageUnJour_Scenario extends Evenem
 	@Etape(id = 2, descr = "Envoi de l'événement d'arrivée")
 	public void etape2() throws Exception {
 
-		doModificationIndividu(numeroIndividu, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				final MockAdresse adresse = new MockAdresse("Rue du Lac", "76", "1003", "Lausanne");
-				adresse.setDateDebutValidite(dateArrivee);
-				adresse.setTypeAdresse(TypeAdresseCivil.PRINCIPALE);
-				adresse.setCommuneAdresse(MockCommune.Lausanne);
-				individu.addAdresse(adresse);
-			}
+		doModificationIndividu(numeroIndividu, individu -> {
+			final MockAdresse adresse = new MockAdresse("Rue du Lac", "76", "1003", "Lausanne");
+			adresse.setDateDebutValidite(dateArrivee);
+			adresse.setTypeAdresse(TypeAdresseCivil.PRINCIPALE);
+			adresse.setCommuneAdresse(MockCommune.Lausanne);
+			individu.addAdresse(adresse);
 		});
 
 		final long id = addEvenementCivil(TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, numeroIndividu, dateArrivee, commune.getNoOFS());

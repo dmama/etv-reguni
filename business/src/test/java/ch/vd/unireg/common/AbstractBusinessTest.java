@@ -700,21 +700,11 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
      * @throws Exception en case d'exception
      */
     protected <T> T doInNewTransactionAndSessionWithoutValidation(final TransactionCallback<T> action) throws Exception {
-	    return doWithoutValidation(new ExecuteCallback<T>() {
-            @Override
-            public T execute() throws Exception {
-                return doInNewTransactionAndSession(action);
-            }
-        });
+	    return doWithoutValidation(() -> doInNewTransactionAndSession(action));
     }
 
 	protected <T> T doInNewTransactionAndSessionUnderSwitch(Switchable switchable, boolean switchValue, final TransactionCallback<T> action) throws Exception {
-		return doUnderSwitch(switchable, switchValue, new ExecuteCallback<T>() {
-            @Override
-            public T execute() throws Exception {
-                return doInNewTransactionAndSession(action);
-            }
-        });
+		return doUnderSwitch(switchable, switchValue, () -> doInNewTransactionAndSession(action));
 	}
 
 	/**
@@ -722,12 +712,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	 * (ces deux phases - initialisation et nettoyage - étant lancées hors de la transaction)
 	 */
 	protected <T> T doInNewTransactionAndSessionWithInitCleanup(InitCleanupCallback initCleanup, final TransactionCallback<T> action) throws Exception {
-		return doWithInitCleanup(initCleanup, new ExecuteCallback<T>() {
-			@Override
-			public T execute() throws Exception {
-				return doInNewTransactionAndSession(action);
-			}
-		});
+		return doWithInitCleanup(initCleanup, () -> doInNewTransactionAndSession(action));
 	}
 
     protected static void assertForPrincipal(RegDate debut, MotifFor motifOuverture, Commune commune, MotifRattachement motif, ModeImposition modeImposition, ForFiscalPrincipalPP forPrincipal) {

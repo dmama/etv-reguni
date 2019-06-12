@@ -3,7 +3,6 @@ package ch.vd.unireg.entreprise.complexe;
 import javax.validation.Valid;
 import java.util.EnumSet;
 
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -19,7 +18,6 @@ import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.EtatEntreprise;
 import ch.vd.unireg.tiers.TiersCriteria;
 import ch.vd.unireg.tiers.view.TiersCriteriaView;
-import ch.vd.unireg.transaction.TransactionHelper;
 import ch.vd.unireg.type.TypeEtatEntreprise;
 
 /**
@@ -89,12 +87,9 @@ public abstract class AnnulationRevocationFailliteController extends AbstractPro
 		}
 		controllerUtils.checkTraitementContribuableAvecDecisionAci(view.getIdEntreprise());
 
-		doInTransaction(new TransactionHelper.ExceptionThrowingCallbackWithoutResult<MetierServiceException>() {
-			@Override
-			public void execute(TransactionStatus status) throws MetierServiceException {
-				final Entreprise entreprise = getTiers(Entreprise.class, view.getIdEntreprise());
-				doJob(entreprise, view);
-			}
+		doInTransaction(status -> {
+			final Entreprise entreprise = getTiers(Entreprise.class, view.getIdEntreprise());
+			doJob(entreprise, view);
 		});
 
 		return "redirect:/tiers/visu.do?id=" + view.getIdEntreprise();

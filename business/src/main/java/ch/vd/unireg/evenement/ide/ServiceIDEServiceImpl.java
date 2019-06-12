@@ -3,7 +3,6 @@ package ch.vd.unireg.evenement.ide;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +20,6 @@ import ch.vd.unireg.adresse.AdressesFiscalesHisto;
 import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.FormatNumeroHelper;
-import ch.vd.unireg.common.StringRenderer;
 import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.entreprise.EntrepriseConnectorException;
 import ch.vd.unireg.interfaces.entreprise.data.AdresseAnnonceIDERCEnt;
@@ -493,12 +491,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 			validerAnnonceIDE(protoActuel, entreprise);
 		}
 		catch (AnnonceIDEValidationException e) {
-			String message = String.format("%s %s", e.getMessage(), CollectionsUtils.toString(e.getErreurs(), new StringRenderer<Pair<String, String>>() {
-				@Override
-				public String toString(Pair<String, String> paire) {
-					return paire.getLeft() + ": " + paire.getRight();
-				}
-			}, "; "));
+			String message = String.format("%s %s", e.getMessage(), CollectionsUtils.toString(e.getErreurs(), paire -> paire.getLeft() + ": " + paire.getRight(), "; "));
 			audit.error(message);
 			throw new ServiceIDEException(message);
 		}

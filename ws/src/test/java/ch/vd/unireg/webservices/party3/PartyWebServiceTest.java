@@ -168,12 +168,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 		assertNotNull(batch);
 		assertEquals(2, batch.getEntries().size());
 
-		Collections.sort(batch.getEntries(), new Comparator<BatchPartyEntry>() {
-			@Override
-			public int compare(BatchPartyEntry o1, BatchPartyEntry o2) {
-				return Integer.valueOf(o1.getNumber()).compareTo(o2.getNumber());
-			}
-		});
+		Collections.sort(batch.getEntries(), (o1, o2) -> Integer.valueOf(o1.getNumber()).compareTo(o2.getNumber()));
 
 		// On vérifie les fors fiscaux de Paul, il doit y en avoir 2 dont un virtuel
 		final BatchPartyEntry entry0 = batch.getEntries().get(0);

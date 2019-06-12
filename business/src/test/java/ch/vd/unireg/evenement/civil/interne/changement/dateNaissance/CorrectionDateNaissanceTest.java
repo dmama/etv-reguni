@@ -22,7 +22,6 @@ import ch.vd.unireg.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.unireg.indexer.tiers.TiersIndexedData;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockIndividuConnector;
-import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividuConnector;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -94,12 +93,7 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 		Assert.assertEquals("Le numéro du tiers est incorrect", (long) tiers.getNumero(), NUMERO_CONTRIBUABLE);
 
 		// changement de la date de naissance dans le registre civil
-		doModificationIndividu(NO_INDIVIDU, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				individu.setDateNaissance(DATE_NAISSANCE_CORRIGEE);
-			}
-		});
+		doModificationIndividu(NO_INDIVIDU, individu -> individu.setDateNaissance(DATE_NAISSANCE_CORRIGEE));
 
 		doInNewTransaction(status -> {
 			// déclenchement de l'événement
@@ -148,12 +142,7 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 		Assert.assertEquals("Le numéro du tiers est incorrect", (long) tiers.getNumero(), NUMERO_CONTRIBUABLE_ERREUR);
 
 		// changement de la date de naissance dans le registre civil
-		doModificationIndividu(NO_INDIVIDU_ERREUR, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				individu.setDateNaissance(DATE_NAISSANCE_CORRIGEE_ERREUR);
-			}
-		});
+		doModificationIndividu(NO_INDIVIDU_ERREUR, individu -> individu.setDateNaissance(DATE_NAISSANCE_CORRIGEE_ERREUR));
 
 		try {
 			doInNewTransaction(status -> {

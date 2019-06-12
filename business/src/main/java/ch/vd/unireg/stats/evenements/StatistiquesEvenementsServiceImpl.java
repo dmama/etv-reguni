@@ -136,25 +136,22 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 		final String sql = "SELECT R.ID, R.DATE_EVENEMENT, R.DATE_TRAITEMENT, R.ETAT, R.NO_INDIVIDU, R.TYPE, R.ACTION_EVT, E.MESSAGE, R.COMMENTAIRE_TRAITEMENT"
 				+ " FROM EVENEMENT_CIVIL_ECH R JOIN EVENEMENT_CIVIL_ECH_ERREUR E ON E.EVT_CIVIL_ID = R.ID WHERE R.ETAT NOT IN ('TRAITE','REDONDANT') ORDER BY R.ID, R.DATE_TRAITEMENT";
 
-		return executeSelect(sql, null, new SelectCallback<StatsEvenementsCivilsPersonnesResults.EvenementCivilEnErreurInfo>() {
-			@Override
-			public StatsEvenementsCivilsPersonnesResults.EvenementCivilEnErreurInfo onRow(Object[] row) {
+		return executeSelect(sql, null, row -> {
 
-				if (row.length != 9) {
-					throw new IllegalArgumentException();
-				}
-
-				final long id = ((Number) row[0]).longValue();
-				final RegDate dateEvenement = RegDate.fromIndex(((Number) row[1]).intValue(), false);
-				final Date dateTraitement = (Date) row[2];
-				final EtatEvenementCivil etat = EtatEvenementCivil.valueOf((String) row[3]);
-				final Long individu = row[4] != null ? ((Number) row[4]).longValue() : null;
-				final TypeEvenementCivilEch type = TypeEvenementCivilEch.valueOf((String) row[5]);
-				final ActionEvenementCivilEch action = ActionEvenementCivilEch.valueOf((String) row[6]);
-				final String message = (String) row[7];
-				final String commentaireStraitement = (String) row[8];
-				return new StatsEvenementsCivilsPersonnesResults.EvenementCivilEnErreurInfo(id, type, action, dateEvenement, dateTraitement, etat, individu, commentaireStraitement, message);
+			if (row.length != 9) {
+				throw new IllegalArgumentException();
 			}
+
+			final long id = ((Number) row[0]).longValue();
+			final RegDate dateEvenement = RegDate.fromIndex(((Number) row[1]).intValue(), false);
+			final Date dateTraitement = (Date) row[2];
+			final EtatEvenementCivil etat = EtatEvenementCivil.valueOf((String) row[3]);
+			final Long individu = row[4] != null ? ((Number) row[4]).longValue() : null;
+			final TypeEvenementCivilEch type = TypeEvenementCivilEch.valueOf((String) row[5]);
+			final ActionEvenementCivilEch action = ActionEvenementCivilEch.valueOf((String) row[6]);
+			final String message = (String) row[7];
+			final String commentaireStraitement = (String) row[8];
+			return new StatsEvenementsCivilsPersonnesResults.EvenementCivilEnErreurInfo(id, type, action, dateEvenement, dateTraitement, etat, individu, commentaireStraitement, message);
 		});
 	}
 
@@ -163,48 +160,42 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 		final String sql = "SELECT ID, LOG_CDATE, LOG_MDATE, LOG_MUSER, DATE_EVENEMENT, ETAT, NO_INDIVIDU, TYPE, ACTION_EVT, COMMENTAIRE_TRAITEMENT FROM EVENEMENT_CIVIL_ECH"
 				+ " WHERE LOG_MUSER LIKE '" + VISA_HUMAIN_TEMPLATE + "' AND LOG_MDATE > TO_DATE('" + debutActivite.index() + "', 'YYYYMMDD') ORDER BY ID";
 
-		return executeSelect(sql, null, new SelectCallback<StatsEvenementsCivilsPersonnesResults.EvenementCivilTraiteManuellementInfo>() {
-			@Override
-			public StatsEvenementsCivilsPersonnesResults.EvenementCivilTraiteManuellementInfo onRow(Object[] row) {
+		return executeSelect(sql, null, row -> {
 
-				if (row.length != 10) {
-					throw new IllegalArgumentException();
-				}
-
-				final long id = ((Number) row[0]).longValue();
-				final Date dateReception = (Date) row[1];
-				final Date dateModification = (Date) row[2];
-				final String visaOperateur = (String) row[3];
-				final RegDate dateEvenement = RegDate.fromIndex(((Number) row[4]).intValue(), false);
-				final EtatEvenementCivil etat = EtatEvenementCivil.valueOf((String) row[5]);
-				final Long individu = row[6] != null ? ((Number) row[6]).longValue() : null;
-				final TypeEvenementCivilEch type = TypeEvenementCivilEch.valueOf((String) row[7]);
-				final ActionEvenementCivilEch action = ActionEvenementCivilEch.valueOf((String) row[8]);
-				final String commentaireTraitement = (String) row[9];
-				return new StatsEvenementsCivilsPersonnesResults.EvenementCivilTraiteManuellementInfo(id, type, action, dateEvenement, etat, individu, commentaireTraitement, visaOperateur, dateReception, dateModification);
+			if (row.length != 10) {
+				throw new IllegalArgumentException();
 			}
+
+			final long id = ((Number) row[0]).longValue();
+			final Date dateReception = (Date) row[1];
+			final Date dateModification = (Date) row[2];
+			final String visaOperateur = (String) row[3];
+			final RegDate dateEvenement = RegDate.fromIndex(((Number) row[4]).intValue(), false);
+			final EtatEvenementCivil etat = EtatEvenementCivil.valueOf((String) row[5]);
+			final Long individu = row[6] != null ? ((Number) row[6]).longValue() : null;
+			final TypeEvenementCivilEch type = TypeEvenementCivilEch.valueOf((String) row[7]);
+			final ActionEvenementCivilEch action = ActionEvenementCivilEch.valueOf((String) row[8]);
+			final String commentaireTraitement = (String) row[9];
+			return new StatsEvenementsCivilsPersonnesResults.EvenementCivilTraiteManuellementInfo(id, type, action, dateEvenement, etat, individu, commentaireTraitement, visaOperateur, dateReception, dateModification);
 		});
 	}
 	
 	private List<StatsEvenementsCivilsPersonnesResults.QueueAttenteInfo> getQueuesAttente() {
 		final String sql = "SELECT NO_INDIVIDU, MIN(DATE_EVENEMENT), MAX(DATE_EVENEMENT), COUNT(*) FROM EVENEMENT_CIVIL_ECH WHERE ETAT IN ('EN_ERREUR', 'EN_ATTENTE') GROUP BY NO_INDIVIDU ORDER BY COUNT(*) DESC, NO_INDIVIDU ASC";
 		
-		return executeSelect(sql, null, new SelectCallback<StatsEvenementsCivilsPersonnesResults.QueueAttenteInfo>() {
-			@Override
-			public StatsEvenementsCivilsPersonnesResults.QueueAttenteInfo onRow(Object[] row) {
-				if (row.length != 4) {
-					throw new IllegalArgumentException();
-				}
-				if (row[0] != null) {
-					final long noIndividu = ((Number) row[0]).longValue();
-					final RegDate minDate = RegDate.fromIndex(((Number) row[1]).intValue(), false);
-					final RegDate maxDate = RegDate.fromIndex(((Number) row[2]).intValue(), false);
-					final int count = ((Number) row[3]).intValue();
-					return new StatsEvenementsCivilsPersonnesResults.QueueAttenteInfo(noIndividu, minDate, maxDate, count);
-				}
-				else {
-					return null;
-				}
+		return executeSelect(sql, null, row -> {
+			if (row.length != 4) {
+				throw new IllegalArgumentException();
+			}
+			if (row[0] != null) {
+				final long noIndividu = ((Number) row[0]).longValue();
+				final RegDate minDate = RegDate.fromIndex(((Number) row[1]).intValue(), false);
+				final RegDate maxDate = RegDate.fromIndex(((Number) row[2]).intValue(), false);
+				final int count = ((Number) row[3]).intValue();
+				return new StatsEvenementsCivilsPersonnesResults.QueueAttenteInfo(noIndividu, minDate, maxDate, count);
+			}
+			else {
+				return null;
 			}
 		});
 	}
@@ -259,27 +250,24 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 
 		// extraction des lignes bruttes du resultSet (avec 'factorisation' des instances de String pour les descriptions)
 		final Map<String, String> descriptions = new TreeMap<>();
-		final List<Pair<StatsEvenementsCivilsEntreprisesResults.MutationsTraiteesStatsKey, Integer>> data = this.executeSelect(sql, sqlParameters, new SelectCallback<Pair<StatsEvenementsCivilsEntreprisesResults.MutationsTraiteesStatsKey, Integer>>() {
-			@Override
-			public Pair<StatsEvenementsCivilsEntreprisesResults.MutationsTraiteesStatsKey, Integer> onRow(Object[] row) {
+		final List<Pair<StatsEvenementsCivilsEntreprisesResults.MutationsTraiteesStatsKey, Integer>> data = this.executeSelect(sql, sqlParameters, row -> {
 
-				if (row.length != 3) {
-					throw new IllegalArgumentException();
-				}
-
-				final String description = (String) row[1];
-				final String uniqueDescription;
-				if (descriptions.containsKey(description)) {
-					uniqueDescription = descriptions.get(description);
-				}
-				else {
-					uniqueDescription = description;
-					descriptions.put(description, description);
-				}
-				final EtatEvenementEntreprise etat = EtatEvenementEntreprise.valueOf((String) row[0]);
-				final int nombre = ((Number) row[2]).intValue();
-				return Pair.of(new StatsEvenementsCivilsEntreprisesResults.MutationsTraiteesStatsKey(uniqueDescription, etat), nombre);
+			if (row.length != 3) {
+				throw new IllegalArgumentException();
 			}
+
+			final String description = (String) row[1];
+			final String uniqueDescription;
+			if (descriptions.containsKey(description)) {
+				uniqueDescription = descriptions.get(description);
+			}
+			else {
+				uniqueDescription = description;
+				descriptions.put(description, description);
+			}
+			final EtatEvenementEntreprise etat = EtatEvenementEntreprise.valueOf((String) row[0]);
+			final int nombre = ((Number) row[2]).intValue();
+			return Pair.of(new StatsEvenementsCivilsEntreprisesResults.MutationsTraiteesStatsKey(uniqueDescription, etat), nombre);
 		});
 
 		// constitution de la Map à partir des lignes bruttes
@@ -310,32 +298,29 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 
 		// extraction des lignes du resultSet (avec 'factorisation' des instances de String pour les descriptions)
 		final Map<String, String> descriptions = new TreeMap<>();
-		return executeSelect(sql, sqlParameters, new SelectCallback<StatsEvenementsCivilsEntreprisesResults.DetailMutationTraitee>() {
-			@Override
-			public StatsEvenementsCivilsEntreprisesResults.DetailMutationTraitee onRow(Object[] row) {
+		return executeSelect(sql, sqlParameters, row -> {
 
-				if (row.length != 6) {
-					throw new IllegalArgumentException();
-				}
-
-				final long noEntrepriseCivile = ((Number) row[0]).longValue();
-				final RegDate dateEvenement = RegDateHelper.indexStringToDate(Integer.toString(((Number) row[1]).intValue()));
-				final long noEvenement = ((Number) row[2]).longValue();
-				final EtatEvenementEntreprise etat = EtatEvenementEntreprise.valueOf((String) row[3]);
-				final String description = (String) row[4];
-				final Timestamp date = (Timestamp) row[5];
-
-				final String uniqueDescription;
-				if (descriptions.containsKey(description)) {
-					uniqueDescription = descriptions.get(description);
-				}
-				else {
-					uniqueDescription = description;
-					descriptions.put(description, description);
-				}
-
-				return new StatsEvenementsCivilsEntreprisesResults.DetailMutationTraitee(noEntrepriseCivile, etat, uniqueDescription, noEvenement, dateEvenement, date);
+			if (row.length != 6) {
+				throw new IllegalArgumentException();
 			}
+
+			final long noEntrepriseCivile = ((Number) row[0]).longValue();
+			final RegDate dateEvenement = RegDateHelper.indexStringToDate(Integer.toString(((Number) row[1]).intValue()));
+			final long noEvenement = ((Number) row[2]).longValue();
+			final EtatEvenementEntreprise etat = EtatEvenementEntreprise.valueOf((String) row[3]);
+			final String description = (String) row[4];
+			final Timestamp date = (Timestamp) row[5];
+
+			final String uniqueDescription;
+			if (descriptions.containsKey(description)) {
+				uniqueDescription = descriptions.get(description);
+			}
+			else {
+				uniqueDescription = description;
+				descriptions.put(description, description);
+			}
+
+			return new StatsEvenementsCivilsEntreprisesResults.DetailMutationTraitee(noEntrepriseCivile, etat, uniqueDescription, noEvenement, dateEvenement, date);
 		});
 	}
 
@@ -344,23 +329,20 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 				+ " FROM EVENEMENT_ORGANISATION R JOIN EVENEMENT_ORGANISATION_ERREUR E ON E.EVT_ORGANISATION_ID = R.ID WHERE R.ETAT NOT IN ('TRAITE','REDONDANT')"
 				+ " AND E.TYPE='ERROR' ORDER BY R.ID, R.DATE_TRAITEMENT";
 
-		return executeSelect(sql, null, new SelectCallback<StatsEvenementsCivilsEntreprisesResults.ErreurInfo>() {
-			@Override
-			public StatsEvenementsCivilsEntreprisesResults.ErreurInfo onRow(Object[] row) {
+		return executeSelect(sql, null, row -> {
 
-				if (row.length != 7) {
-					throw new IllegalArgumentException();
-				}
-
-				final long id = ((Number) row[0]).longValue();
-				final long noEvenement = ((Number) row[1]).longValue();
-				final RegDate dateEvenement = RegDate.fromIndex(((Number) row[2]).intValue(), false);
-				final Date dateTraitement = (Date) row[3];
-				final EtatEvenementEntreprise etat = EtatEvenementEntreprise.valueOf((String) row[4]);
-				final long noEntrepriseCivile = ((Number) row[5]).longValue();
-				final String message = (String) row[6];
-				return new StatsEvenementsCivilsEntreprisesResults.ErreurInfo(id, noEntrepriseCivile, noEvenement, dateEvenement, dateTraitement, etat, message);
+			if (row.length != 7) {
+				throw new IllegalArgumentException();
 			}
+
+			final long id = ((Number) row[0]).longValue();
+			final long noEvenement = ((Number) row[1]).longValue();
+			final RegDate dateEvenement = RegDate.fromIndex(((Number) row[2]).intValue(), false);
+			final Date dateTraitement = (Date) row[3];
+			final EtatEvenementEntreprise etat = EtatEvenementEntreprise.valueOf((String) row[4]);
+			final long noEntrepriseCivile = ((Number) row[5]).longValue();
+			final String message = (String) row[6];
+			return new StatsEvenementsCivilsEntreprisesResults.ErreurInfo(id, noEntrepriseCivile, noEvenement, dateEvenement, dateTraitement, etat, message);
 		});
 	}
 
@@ -369,21 +351,18 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 				+ " WHERE ETAT IN ('A_TRAITER', 'A_VERIFIER', 'EN_ERREUR', 'EN_ATTENTE')"
 				+ " AND LOG_CDATE < CURRENT_DATE - INTERVAL '" + seuilEnJours + "' DAY ORDER BY ID ASC";
 
-		return executeSelect(sql, null, new SelectCallback<StatsEvenementsCivilsEntreprisesResults.EvenementEnSouffranceInfo>() {
-			@Override
-			public StatsEvenementsCivilsEntreprisesResults.EvenementEnSouffranceInfo onRow(Object[] row) {
-				if (row.length != 6) {
-					throw new IllegalArgumentException();
-				}
-
-				final long id = ((Number) row[0]).longValue();
-				final long noEvevement = ((Number) row[1]).longValue();
-				final long noEntrepriseCivile = ((Number) row[2]).longValue();
-				final RegDate dateEvenement = RegDate.fromIndex(((Number) row[3]).intValue(), false);
-				final Date dateReception = (Date) row[4];
-				final EtatEvenementEntreprise etat = EtatEvenementEntreprise.valueOf((String) row[5]);
-				return new StatsEvenementsCivilsEntreprisesResults.EvenementEnSouffranceInfo(id, noEntrepriseCivile, noEvevement, dateEvenement, dateReception, etat);
+		return executeSelect(sql, null, row -> {
+			if (row.length != 6) {
+				throw new IllegalArgumentException();
 			}
+
+			final long id = ((Number) row[0]).longValue();
+			final long noEvevement = ((Number) row[1]).longValue();
+			final long noEntrepriseCivile = ((Number) row[2]).longValue();
+			final RegDate dateEvenement = RegDate.fromIndex(((Number) row[3]).intValue(), false);
+			final Date dateReception = (Date) row[4];
+			final EtatEvenementEntreprise etat = EtatEvenementEntreprise.valueOf((String) row[5]);
+			return new StatsEvenementsCivilsEntreprisesResults.EvenementEnSouffranceInfo(id, noEntrepriseCivile, noEvevement, dateEvenement, dateReception, etat);
 		});
 	}
 
@@ -401,18 +380,15 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 
 		final String sql = "SELECT ID, MESSAGE FROM EVENEMENT_EXTERNE WHERE ETAT='EN_ERREUR'";
 
-		return executeSelect(sql, null, new SelectCallback<StatsEvenementsExternesResults.EvenementExterneErreur>() {
-			@Override
-			public StatsEvenementsExternesResults.EvenementExterneErreur onRow(Object[] row) {
+		return executeSelect(sql, null, row -> {
 
-				if (row.length != 2) {
-					throw new IllegalArgumentException();
-				}
-
-				final long id = ((Number) row[0]).longValue();
-				final String message = (String) row[1];
-				return new StatsEvenementsExternesResults.EvenementExterneErreur(id, message);
+			if (row.length != 2) {
+				throw new IllegalArgumentException();
 			}
+
+			final long id = ((Number) row[0]).longValue();
+			final String message = (String) row[1];
+			return new StatsEvenementsExternesResults.EvenementExterneErreur(id, message);
 		});
 	}
 
@@ -472,44 +448,41 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 		b.append(") ORDER BY DATE_DEMANDE");
 		final String sql = b.toString();
 
-		return executeSelect(sql, null, new SelectCallback<StatsEvenementsIdentificationContribuableResults.EvenementInfo>() {
-			@Override
-			public StatsEvenementsIdentificationContribuableResults.EvenementInfo onRow(Object[] row) {
+		return executeSelect(sql, null, row -> {
 
-				final Date dateDemande = (Date) row[0];
-				final String emetteurId = (String) row[1];
-				final IdentificationContribuable.Etat etat = IdentificationContribuable.Etat.valueOf((String) row[2]);
-				final String messageId = (String) row[3];
-				final Integer pf = row[4] != null ? ((Number) row[4]).intValue() : null;
-				final String typeMessage = (String) row[5];
-				final String businessId = (String) row[6];
-				final Integer nbCtbTrouves = row[7] != null ? ((Number) row[7]).intValue() : null;
-				final String navs11 = (String) row[8];
-				final String navs13 = (String) row[9];
-				final String adresseChiffreComplementaire = (String) row[10];
-				final String adresseCodePays = (String) row[11];
-				final String adresseLieu = (String) row[12];
-				final String adresseLigne1 = (String) row[13];
-				final String adresseLigne2 = (String) row[14];
-				final String adresseLocalite = (String) row[15];
-				final String adresseNumeroAppartement = (String) row[16];
-				final Integer adresseNumeroOrdrePoste = row[17] != null ? ((Number) row[17]).intValue() : null;
-				final String adresseNumeroPolice = (String) row[18];
-				final String adresseNpaEtranger = (String) row[19];
-				final Integer adresseNpaSuisse = row[20] != null ? ((Number ) row[20]).intValue() : null;
-				final Integer adresseNumeroCasePostale = row[21] != null ? ((Number) row[21]).intValue() : null;
-				final String adresseRue = (String) row[22];
-				final String adresseTexteCasePostale = (String) row[23];
-				final CriteresAdresse.TypeAdresse adresseType = row[24] != null ? CriteresAdresse.TypeAdresse.valueOf((String) row[24]) : null;
-				final RegDate dateNaissance = row[25] != null ? RegDate.fromIndex(((Number) row[25]).intValue(), true) : null;
-				final String nom = (String) row[26];
-				final String prenoms = (String) row[27];
-				final Sexe sexe = row[28] != null ? Sexe.valueOf((String) row[28]) : null;
+			final Date dateDemande = (Date) row[0];
+			final String emetteurId = (String) row[1];
+			final IdentificationContribuable.Etat etat = IdentificationContribuable.Etat.valueOf((String) row[2]);
+			final String messageId = (String) row[3];
+			final Integer pf = row[4] != null ? ((Number) row[4]).intValue() : null;
+			final String typeMessage = (String) row[5];
+			final String businessId = (String) row[6];
+			final Integer nbCtbTrouves = row[7] != null ? ((Number) row[7]).intValue() : null;
+			final String navs11 = (String) row[8];
+			final String navs13 = (String) row[9];
+			final String adresseChiffreComplementaire = (String) row[10];
+			final String adresseCodePays = (String) row[11];
+			final String adresseLieu = (String) row[12];
+			final String adresseLigne1 = (String) row[13];
+			final String adresseLigne2 = (String) row[14];
+			final String adresseLocalite = (String) row[15];
+			final String adresseNumeroAppartement = (String) row[16];
+			final Integer adresseNumeroOrdrePoste = row[17] != null ? ((Number) row[17]).intValue() : null;
+			final String adresseNumeroPolice = (String) row[18];
+			final String adresseNpaEtranger = (String) row[19];
+			final Integer adresseNpaSuisse = row[20] != null ? ((Number ) row[20]).intValue() : null;
+			final Integer adresseNumeroCasePostale = row[21] != null ? ((Number) row[21]).intValue() : null;
+			final String adresseRue = (String) row[22];
+			final String adresseTexteCasePostale = (String) row[23];
+			final CriteresAdresse.TypeAdresse adresseType = row[24] != null ? CriteresAdresse.TypeAdresse.valueOf((String) row[24]) : null;
+			final RegDate dateNaissance = row[25] != null ? RegDate.fromIndex(((Number) row[25]).intValue(), true) : null;
+			final String nom = (String) row[26];
+			final String prenoms = (String) row[27];
+			final Sexe sexe = row[28] != null ? Sexe.valueOf((String) row[28]) : null;
 
-				return new StatsEvenementsIdentificationContribuableResults.EvenementInfo(dateDemande, emetteurId, etat, messageId, pf, typeMessage, businessId, nbCtbTrouves, navs11, navs13,
-						adresseChiffreComplementaire, adresseCodePays, adresseLieu, adresseLigne1, adresseLigne2, adresseLocalite, adresseNumeroAppartement, adresseNumeroOrdrePoste, adresseNumeroPolice, adresseNpaEtranger,
-						adresseNpaSuisse, adresseNumeroCasePostale, adresseRue, adresseTexteCasePostale, adresseType, dateNaissance, nom, prenoms, sexe);
-			}
+			return new StatsEvenementsIdentificationContribuableResults.EvenementInfo(dateDemande, emetteurId, etat, messageId, pf, typeMessage, businessId, nbCtbTrouves, navs11, navs13,
+					adresseChiffreComplementaire, adresseCodePays, adresseLieu, adresseLigne1, adresseLigne2, adresseLocalite, adresseNumeroAppartement, adresseNumeroOrdrePoste, adresseNumeroPolice, adresseNpaEtranger,
+					adresseNpaSuisse, adresseNumeroCasePostale, adresseRue, adresseTexteCasePostale, adresseType, dateNaissance, nom, prenoms, sexe);
 		});
 	}
 
@@ -548,21 +521,18 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 		b.append(" WHERE NOT EXISTS (SELECT 1 FROM REQDES_PARTIE_PRENANTE PP WHERE PP.UNITE_TRAITEMENT_ID=UT.ID AND PP.ID<PP1.ID)");
 		b.append(" AND UT.ETAT='").append(EtatTraitement.EN_ERREUR).append("'");
 		final String sql = b.toString();
-		return executeSelect(sql, null, new SelectCallback<StatsEvenementsNotairesResults.UniteTraitementEnErreurInfo>() {
-			@Override
-			public StatsEvenementsNotairesResults.UniteTraitementEnErreurInfo onRow(Object[] row) {
-				final long id = ((Number) row[0]).longValue();
-				final String visaNotaire = (String) row[1];
-				final String numeroMinute = (String) row[2];
-				final RegDate dateActe = row[3] != null ? RegDate.fromIndex(((Number) row[3]).intValue(), false) : null;
-				final Date dateTraitement = (Date) row[4];
-				final EtatTraitement etat = row[5] != null ? EtatTraitement.valueOf((String) row[5]) : null;
-				final NomPrenom pp1 = row[6] != null ? new NomPrenom((String) row[6], (String) row[7]) : null;
-				final NomPrenom pp2 = row[8] != null ? new NomPrenom((String) row[8], (String) row[9]) : null;
-				final ErreurTraitement.TypeErreur typeErreur = ErreurTraitement.TypeErreur.valueOf((String) row[10]);
-				final String msgErreur = (String) row[11];
-				return new StatsEvenementsNotairesResults.UniteTraitementEnErreurInfo(id, etat, visaNotaire, numeroMinute, dateActe, dateTraitement, pp1, pp2, typeErreur, msgErreur);
-			}
+		return executeSelect(sql, null, row -> {
+			final long id = ((Number) row[0]).longValue();
+			final String visaNotaire = (String) row[1];
+			final String numeroMinute = (String) row[2];
+			final RegDate dateActe = row[3] != null ? RegDate.fromIndex(((Number) row[3]).intValue(), false) : null;
+			final Date dateTraitement = (Date) row[4];
+			final EtatTraitement etat = row[5] != null ? EtatTraitement.valueOf((String) row[5]) : null;
+			final NomPrenom pp1 = row[6] != null ? new NomPrenom((String) row[6], (String) row[7]) : null;
+			final NomPrenom pp2 = row[8] != null ? new NomPrenom((String) row[8], (String) row[9]) : null;
+			final ErreurTraitement.TypeErreur typeErreur = ErreurTraitement.TypeErreur.valueOf((String) row[10]);
+			final String msgErreur = (String) row[11];
+			return new StatsEvenementsNotairesResults.UniteTraitementEnErreurInfo(id, etat, visaNotaire, numeroMinute, dateActe, dateTraitement, pp1, pp2, typeErreur, msgErreur);
 		});
 	}
 
@@ -576,21 +546,18 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 		b.append(" WHERE NOT EXISTS (SELECT 1 FROM REQDES_PARTIE_PRENANTE PP WHERE PP.UNITE_TRAITEMENT_ID=UT.ID AND PP.ID<PP1.ID)");
 		b.append(" AND UT.ETAT='").append(EtatTraitement.FORCE).append("'");
 		final String sql = b.toString();
-		return executeSelect(sql, null, new SelectCallback<StatsEvenementsNotairesResults.UniteTraitementForceesInfo>() {
-			@Override
-			public StatsEvenementsNotairesResults.UniteTraitementForceesInfo onRow(Object[] row) {
-				final long id = ((Number) row[0]).longValue();
-				final String visaNotaire = (String) row[1];
-				final String numeroMinute = (String) row[2];
-				final RegDate dateActe = row[3] != null ? RegDate.fromIndex(((Number) row[3]).intValue(), false) : null;
-				final Date dateReception = (Date) row[4];
-				final Date dateModification = (Date) row[5];
-				final String visaForcage = (String) row[6];
-				final EtatTraitement etat = row[7] != null ? EtatTraitement.valueOf((String) row[7]) : null;
-				final NomPrenom pp1 = row[8] != null ? new NomPrenom((String) row[8], (String) row[9]) : null;
-				final NomPrenom pp2 = row[10] != null ? new NomPrenom((String) row[10], (String) row[11]) : null;
-				return new StatsEvenementsNotairesResults.UniteTraitementForceesInfo(id, etat, visaNotaire, numeroMinute, dateActe, pp1, pp2, visaForcage, dateReception, dateModification);
-			}
+		return executeSelect(sql, null, row -> {
+			final long id = ((Number) row[0]).longValue();
+			final String visaNotaire = (String) row[1];
+			final String numeroMinute = (String) row[2];
+			final RegDate dateActe = row[3] != null ? RegDate.fromIndex(((Number) row[3]).intValue(), false) : null;
+			final Date dateReception = (Date) row[4];
+			final Date dateModification = (Date) row[5];
+			final String visaForcage = (String) row[6];
+			final EtatTraitement etat = row[7] != null ? EtatTraitement.valueOf((String) row[7]) : null;
+			final NomPrenom pp1 = row[8] != null ? new NomPrenom((String) row[8], (String) row[9]) : null;
+			final NomPrenom pp2 = row[10] != null ? new NomPrenom((String) row[10], (String) row[11]) : null;
+			return new StatsEvenementsNotairesResults.UniteTraitementForceesInfo(id, etat, visaNotaire, numeroMinute, dateActe, pp1, pp2, visaForcage, dateReception, dateModification);
 		});
 	}
 

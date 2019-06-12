@@ -251,21 +251,18 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	 * @return une nouvelle map triée
 	 */
 	private static <K, V extends Comparable<V>> Map<K, V> sortMapAccordingToValues(Map<K, V> source) {
-		return sortMapAccordingToValues(source, new Comparator<V>() {
-			@Override
-			public int compare(V v1, V v2) {
-				if (v1 == v2) {
-					return 0;
-				}
-				else if (v1 == null) {
-					return -1;
-				}
-				else if (v2 == null) {
-					return 1;
-				}
-				else {
-					return v1.compareTo(v2);
-				}
+		return sortMapAccordingToValues(source, (v1, v2) -> {
+			if (v1 == v2) {
+				return 0;
+			}
+			else if (v1 == null) {
+				return -1;
+			}
+			else if (v2 == null) {
+				return 1;
+			}
+			else {
+				return v1.compareTo(v2);
 			}
 		});
 	}
@@ -284,12 +281,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 			return null;
 		}
 		final List<Map.Entry<K, V>> content = new ArrayList<>(source.entrySet());
-		content.sort(new Comparator<Map.Entry<K, V>>() {
-			@Override
-			public int compare(Map.Entry<K, V> o1, Map.Entry<K, V> o2) {
-				return valueComparator.compare(o1.getValue(), o2.getValue());
-			}
-		});
+		content.sort((o1, o2) -> valueComparator.compare(o1.getValue(), o2.getValue()));
 		final Map<K, V> sorted = new LinkedHashMap<>(source.size());
 		for (Map.Entry<K, V> item : content) {
 			sorted.put(item.getKey(), item.getValue());

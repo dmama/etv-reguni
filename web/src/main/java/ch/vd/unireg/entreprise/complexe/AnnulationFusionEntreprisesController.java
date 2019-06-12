@@ -16,7 +16,6 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -35,7 +34,6 @@ import ch.vd.unireg.security.Role;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.TiersCriteria;
 import ch.vd.unireg.tiers.view.TiersCriteriaView;
-import ch.vd.unireg.transaction.TransactionHelper;
 
 @Controller
 @RequestMapping("/processuscomplexe/annulation/fusion")
@@ -186,30 +184,27 @@ public class AnnulationFusionEntreprisesController extends AbstractProcessusComp
 			return showStart(model, view);
 		}
 
-		doInTransaction(new TransactionHelper.ExceptionThrowingCallbackWithoutResult<MetierServiceException>() {
-			@Override
-			public void execute(TransactionStatus status) throws MetierServiceException {
-				// récupération des données et vérification des droits d'accès
-				final Entreprise absorbante = getTiers(Entreprise.class, view.getIdEntrepriseAbsorbante());
-				controllerUtils.checkAccesDossierEnEcriture(view.getIdEntrepriseAbsorbante());
-				controllerUtils.checkTraitementContribuableAvecDecisionAci(view.getIdEntrepriseAbsorbante());
+		doInTransaction(status -> {
+			// récupération des données et vérification des droits d'accès
+			final Entreprise absorbante = getTiers(Entreprise.class, view.getIdEntrepriseAbsorbante());
+			controllerUtils.checkAccesDossierEnEcriture(view.getIdEntrepriseAbsorbante());
+			controllerUtils.checkTraitementContribuableAvecDecisionAci(view.getIdEntrepriseAbsorbante());
 
-				final Map<FusionEntreprisesHelper.DatesFusion, List<Entreprise>> absorptions = FusionEntreprisesHelper.getAbsorptions(absorbante, tiersService);
-				final FusionEntreprisesHelper.DatesFusion key = new FusionEntreprisesHelper.DatesFusion(view.getDateBilanFusion(), view.getDateContratFusion());
-				final List<Entreprise> absorbees = absorptions.get(key);
-				if (absorbees == null || absorbees.isEmpty()) {
-					throw new MetierServiceException("Aucune entreprise absorbée trouvée!");
-				}
-
-				// petite boucle pour vérifier les droits d'accès sur les absorbées aussi
-				for (Entreprise absorbee : absorbees) {
-					controllerUtils.checkAccesDossierEnEcriture(absorbee.getNumero());
-					controllerUtils.checkTraitementContribuableAvecDecisionAci(absorbee.getNumero());
-				}
-
-				// envoi de la sauce pour dé-tricoter tout ça
-				metierService.annuleFusionEntreprises(absorbante, absorbees, view.getDateContratFusion(), view.getDateBilanFusion());
+			final Map<FusionEntreprisesHelper.DatesFusion, List<Entreprise>> absorptions = FusionEntreprisesHelper.getAbsorptions(absorbante, tiersService);
+			final FusionEntreprisesHelper.DatesFusion key = new FusionEntreprisesHelper.DatesFusion(view.getDateBilanFusion(), view.getDateContratFusion());
+			final List<Entreprise> absorbees = absorptions.get(key);
+			if (absorbees == null || absorbees.isEmpty()) {
+				throw new MetierServiceException("Aucune entreprise absorbée trouvée!");
 			}
+
+			// petite boucle pour vérifier les droits d'accès sur les absorbées aussi
+			for (Entreprise absorbee : absorbees) {
+				controllerUtils.checkAccesDossierEnEcriture(absorbee.getNumero());
+				controllerUtils.checkTraitementContribuableAvecDecisionAci(absorbee.getNumero());
+			}
+
+			// envoi de la sauce pour dé-tricoter tout ça
+			metierService.annuleFusionEntreprises(absorbante, absorbees, view.getDateContratFusion(), view.getDateBilanFusion());
 		});
 
 		return "redirect:/tiers/visu.do?id=" + view.getIdEntrepriseAbsorbante();

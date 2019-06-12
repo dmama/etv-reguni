@@ -31,7 +31,6 @@ import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.unireg.servlet.security.AuthenticatedUserHelper;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.document.Document;
 import ch.vd.unireg.document.DocumentService;
@@ -43,6 +42,7 @@ import ch.vd.unireg.scheduler.JobParamDynamicEnum;
 import ch.vd.unireg.scheduler.JobParamEnum;
 import ch.vd.unireg.scheduler.JobParamMultiSelectEnum;
 import ch.vd.unireg.scheduler.JobParamType;
+import ch.vd.unireg.servlet.security.AuthenticatedUserHelper;
 import ch.vd.unireg.ubr.JobConstants;
 import ch.vd.unireg.ubr.JobDescription;
 import ch.vd.unireg.ubr.JobNames;
@@ -417,14 +417,11 @@ public class WebServiceEndPoint implements WebService {
 
 			final Mutable<byte[]> content = new MutableObject<>();
 			try {
-				documentService.readDoc(document, new DocumentService.ReadDocCallback<Document>() {
-					@Override
-					public void readDoc(Document doc, InputStream is) throws Exception {
-						try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
-							IOUtils.copy(is, bos);
-							bos.flush();
-							content.setValue(bos.toByteArray());
-						}
+				documentService.readDoc(document, (doc, is) -> {
+					try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+						IOUtils.copy(is, bos);
+						bos.flush();
+						content.setValue(bos.toByteArray());
 					}
 				});
 			}

@@ -4,7 +4,6 @@ import javax.validation.Valid;
 import java.util.EnumSet;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -12,13 +11,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import ch.vd.unireg.metier.MetierServiceException;
 import ch.vd.unireg.security.AccessDeniedException;
 import ch.vd.unireg.security.Role;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.TiersCriteria;
 import ch.vd.unireg.tiers.view.TiersCriteriaView;
-import ch.vd.unireg.transaction.TransactionHelper;
 import ch.vd.unireg.type.TypeEtatEntreprise;
 
 @Controller
@@ -71,12 +68,9 @@ public class FinActiviteController extends AbstractProcessusComplexeRechercheCon
 		}
 		controllerUtils.checkTraitementContribuableAvecDecisionAci(view.getIdEntreprise());
 
-		doInTransaction(new TransactionHelper.ExceptionThrowingCallbackWithoutResult<MetierServiceException>() {
-			@Override
-			public void execute(TransactionStatus status) throws MetierServiceException {
-				final Entreprise entreprise = getTiers(Entreprise.class, view.getIdEntreprise());
-				metierService.finActivite(entreprise, view.getDateFinActivite(), view.getRemarque());
-			}
+		doInTransaction(status -> {
+			final Entreprise entreprise = getTiers(Entreprise.class, view.getIdEntreprise());
+			metierService.finActivite(entreprise, view.getDateFinActivite(), view.getRemarque());
 		});
 
 		return "redirect:/tiers/visu.do?id=" + view.getIdEntreprise();

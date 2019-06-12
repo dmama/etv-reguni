@@ -120,11 +120,6 @@ public class EvenementEntrepriseDAOTest extends CoreDAOTest {
 
 	@NotNull
 	protected Comparator<EvenementEntreprise> getByIdEvtEntrepriseComparator() {
-		return new Comparator<EvenementEntreprise>() {
-			@Override
-			public int compare(EvenementEntreprise o1, EvenementEntreprise o2) {
-				return Long.compare(o1.getId(), o2.getId());
-			}
-		};
+		return (o1, o2) -> Long.compare(o1.getId(), o2.getId());
 	}
 }

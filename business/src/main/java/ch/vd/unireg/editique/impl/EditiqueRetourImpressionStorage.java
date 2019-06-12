@@ -40,42 +40,39 @@ public class EditiqueRetourImpressionStorage extends AsyncStorageWithPeriodicCle
 			LOGGER.info(String.format("Démarrage du thread %s", getName()));
 			try {
 				// on attend les arrivées des nouvelles impressions
-				doInLockedEnvironment(new Action<String, EditiqueResultatRecu, Object>() {
-					@Override
-					public Object execute(Iterable<Map.Entry<String, Mutable<EditiqueResultatRecu>>> entries) {
-						while (!stopping) {
-							final Iterator<Map.Entry<String, Mutable<EditiqueResultatRecu>>> iterator = entries.iterator();
-							while (iterator.hasNext()) {
-								final Map.Entry<String, Mutable<EditiqueResultatRecu>> entry = iterator.next();
-								final Pair<Long, RetourImpressionTrigger> trigger = delayedTriggers.remove(entry.getKey());
-								if (trigger != null) {
-									iterator.remove();
-									final Mutable<EditiqueResultatRecu> dh = entry.getValue();
-									try {
-										if (LOGGER.isDebugEnabled()) {
-											final long now = System.nanoTime();
-											final String duration = TimeHelper.formatDuree(TimeUnit.NANOSECONDS.toMillis(now - trigger.getLeft()));
-											LOGGER.debug(String.format("Exécution du trigger enregistré pour le document '%s' il y a %s", dh.getValue().getIdDocument(), duration));
-										}
-										trigger.getRight().trigger(dh.getValue());
+				doInLockedEnvironment(entries -> {
+					while (!stopping) {
+						final Iterator<Map.Entry<String, Mutable<EditiqueResultatRecu>>> iterator = entries.iterator();
+						while (iterator.hasNext()) {
+							final Map.Entry<String, Mutable<EditiqueResultatRecu>> entry = iterator.next();
+							final Pair<Long, RetourImpressionTrigger> trigger = delayedTriggers.remove(entry.getKey());
+							if (trigger != null) {
+								iterator.remove();
+								final Mutable<EditiqueResultatRecu> dh = entry.getValue();
+								try {
+									if (LOGGER.isDebugEnabled()) {
+										final long now = System.nanoTime();
+										final String duration = TimeHelper.formatDuree(TimeUnit.NANOSECONDS.toMillis(now - trigger.getLeft()));
+										LOGGER.debug(String.format("Exécution du trigger enregistré pour le document '%s' il y a %s", dh.getValue().getIdDocument(), duration));
 									}
-									catch (Throwable e) {
-										LOGGER.error(String.format("Exception levée lors du traitement du document '%s' par le trigger associé", dh.getValue().getIdDocument()), e);
-									}
+									trigger.getRight().trigger(dh.getValue());
+								}
+								catch (Throwable e) {
+									LOGGER.error(String.format("Exception levée lors du traitement du document '%s' par le trigger associé", dh.getValue().getIdDocument()), e);
 								}
 							}
-
-							// on attend le prochain réveil...
-							try {
-								await();
-							}
-							catch (InterruptedException e) {
-								LOGGER.warn("Le thread des triggers des impressions reçues a été interrompu", e);
-								break;
-							}
 						}
-						return null;
+
+						// on attend le prochain réveil...
+						try {
+							await();
+						}
+						catch (InterruptedException e) {
+							LOGGER.warn("Le thread des triggers des impressions reçues a été interrompu", e);
+							break;
+						}
 					}
+					return null;
 				});
 			}
 			finally {
@@ -84,13 +81,10 @@ public class EditiqueRetourImpressionStorage extends AsyncStorageWithPeriodicCle
 		}
 
 		public void stopIt() {
-			doInLockedEnvironment(new Action<String, EditiqueResultatRecu, Object>() {
-				@Override
-				public Object execute(Iterable<Map.Entry<String, Mutable<EditiqueResultatRecu>>> entries) {
-					stopping = true;
-					signalAll();
-					return null;
-				}
+			doInLockedEnvironment(entries -> {
+				stopping = true;
+				signalAll();
+				return null;
 			});
 		}
 	}
@@ -172,18 +166,15 @@ public class EditiqueRetourImpressionStorage extends AsyncStorageWithPeriodicCle
 	 */
 	public void registerTrigger(final String nomDocument, final RetourImpressionTrigger trigger) {
 
-		doInLockedEnvironment(new Action<String, EditiqueResultatRecu, Object>() {
-			@Override
-			public Object execute(Iterable<Map.Entry<String, Mutable<EditiqueResultatRecu>>> entries) {
+		doInLockedEnvironment(entries -> {
 
-				// on enregistre le trigger ...
-				delayedTriggers.put(nomDocument, Pair.of(System.nanoTime(), trigger));
+			// on enregistre le trigger ...
+			delayedTriggers.put(nomDocument, Pair.of(System.nanoTime(), trigger));
 
-				// .., et on réveille tout le monde : si le document
-				// est en fait déjà là, il sera alors traité par le réveil
-				signalAll();
-				return null;
-			}
+			// .., et on réveille tout le monde : si le document
+			// est en fait déjà là, il sera alors traité par le réveil
+			signalAll();
+			return null;
 		});
 	}
 
@@ -192,11 +183,6 @@ public class EditiqueRetourImpressionStorage extends AsyncStorageWithPeriodicCle
 	 * @see #delayedTriggers
 	 */
 	public Collection<Pair<Long, RetourImpressionTrigger>> getTriggersEnregistres() {
-		return doInLockedEnvironment(new Action<String, EditiqueResultatRecu, Collection<Pair<Long, RetourImpressionTrigger>>>() {
-			@Override
-			public Collection<Pair<Long, RetourImpressionTrigger>> execute(Iterable<Map.Entry<String, Mutable<EditiqueResultatRecu>>> entries) {
-				return new ArrayList<>(delayedTriggers.values());
-			}
-		});
+		return doInLockedEnvironment((Action<String, EditiqueResultatRecu, Collection<Pair<Long, RetourImpressionTrigger>>>) entries -> new ArrayList<>(delayedTriggers.values()));
 	}
 }

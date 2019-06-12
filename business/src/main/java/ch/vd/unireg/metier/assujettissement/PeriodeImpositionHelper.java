@@ -3,7 +3,6 @@ package ch.vd.unireg.metier.assujettissement;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
@@ -75,19 +74,15 @@ public abstract class PeriodeImpositionHelper {
 			return null;
 		}
 
-		return new PeriodeImpositionCalculator<C>() {
-			@NotNull
-			@Override
-			public List<PeriodeImposition> determine(C contribuable, List<Assujettissement> assujettissements) throws AssujettissementException {
-				final List<PeriodeImposition> all = calculator.determine(contribuable, assujettissements);
-				final List<PeriodeImposition> limited = new ArrayList<>(all.size());
-				for (PeriodeImposition pi : all) {
-					if (pi.getPeriodeFiscale() == periodeFiscale) {
-						limited.add(pi);
-					}
+		return (contribuable, assujettissements) -> {
+			final List<PeriodeImposition> all = calculator.determine(contribuable, assujettissements);
+			final List<PeriodeImposition> limited = new ArrayList<>(all.size());
+			for (PeriodeImposition pi : all) {
+				if (pi.getPeriodeFiscale() == periodeFiscale) {
+					limited.add(pi);
 				}
-				return limited;
 			}
+			return limited;
 		};
 	}
 
@@ -109,19 +104,15 @@ public abstract class PeriodeImpositionHelper {
 		}
 
 		// limitation d'intersection
-		return new PeriodeImpositionCalculator<C>() {
-			@NotNull
-			@Override
-			public List<PeriodeImposition> determine(C contribuable, List<Assujettissement> assujettissements) throws AssujettissementException {
-				final List<PeriodeImposition> all = calculator.determine(contribuable, assujettissements);
-				final List<PeriodeImposition> limited = new ArrayList<>(all.size());
-				for (PeriodeImposition pi : all) {
-					if (DateRangeHelper.intersect(pi, range)) {
-						limited.add(pi);
-					}
+		return (contribuable, assujettissements) -> {
+			final List<PeriodeImposition> all = calculator.determine(contribuable, assujettissements);
+			final List<PeriodeImposition> limited = new ArrayList<>(all.size());
+			for (PeriodeImposition pi : all) {
+				if (DateRangeHelper.intersect(pi, range)) {
+					limited.add(pi);
 				}
-				return limited;
 			}
+			return limited;
 		};
 	}
 }

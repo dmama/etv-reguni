@@ -933,12 +933,7 @@ public class EvenementCivilEchGrappeProcessorTest extends AbstractEvenementCivil
 		});
 
 		// changement de nom
-		doModificationIndividu(noIndividu, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				individu.setNom(nouveauNom);
-			}
-		});
+		doModificationIndividu(noIndividu, individu -> individu.setNom(nouveauNom));
 
 		final class Ids {
 			long idAnnonce;
@@ -1028,12 +1023,7 @@ public class EvenementCivilEchGrappeProcessorTest extends AbstractEvenementCivil
 		});
 
 		// changement de nom
-		doModificationIndividu(noIndividu, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				individu.setNom(nouveauNom);
-			}
-		});
+		doModificationIndividu(noIndividu, individu -> individu.setNom(nouveauNom));
 
 		final class Ids {
 			long idAnnonce;

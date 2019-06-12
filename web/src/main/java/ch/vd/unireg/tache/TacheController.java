@@ -269,12 +269,9 @@ public class TacheController {
 
 	@RequestMapping(value = "/imprimer-nouveaux-dossiers.do", method = RequestMethod.POST)
 	public String printNouveauxDossiers(HttpServletResponse response, @ModelAttribute ImpressionNouveauxDossiersView view) throws Exception {
-		final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur> erreur = new RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur>() {
-			@Override
-			public String doJob(EditiqueResultatErreur resultat) {
-				final String message = String.format("%s Veuillez recommencer l'opération ultérieurement.", EditiqueErrorHelper.getMessageErreurEditique(resultat));
-				throw new EditiqueCommunicationException(message);
-			}
+		final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur> erreur = resultat -> {
+			final String message = String.format("%s Veuillez recommencer l'opération ultérieurement.", EditiqueErrorHelper.getMessageErreurEditique(resultat));
+			throw new EditiqueCommunicationException(message);
 		};
 
 		try {

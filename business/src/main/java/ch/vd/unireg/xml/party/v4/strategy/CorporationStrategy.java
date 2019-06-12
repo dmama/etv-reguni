@@ -225,13 +225,10 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		final List<DatedCategory> regimesFiscaux = context.regimeFiscalService.getRegimesFiscauxVDNonAnnulesTrie(entreprise).stream()
 				.map(rf -> new DatedCategory(rf.getCategorie(), rf))
 				.collect(Collectors.toList());
-		final DateRangeHelper.AdapterCallback<DatedCategory> adapter = new DateRangeHelper.AdapterCallback<DatedCategory>() {
-			@Override
-			public DatedCategory adapt(DatedCategory range, RegDate debut, RegDate fin) {
-				final RegDate dateDebut = debut != null ? debut : range.getDateDebut();
-				final RegDate dateFin = fin != null ? fin : range.getDateFin();
-				return new DatedCategory(range.getCategorie(), dateDebut, dateFin);
-			}
+		final DateRangeHelper.AdapterCallback<DatedCategory> adapter = (range, debut, fin) -> {
+			final RegDate dateDebut = debut != null ? debut : range.getDateDebut();
+			final RegDate dateFin = fin != null ? fin : range.getDateFin();
+			return new DatedCategory(range.getCategorie(), dateDebut, dateFin);
 		};
 
 		final List<DatedLegalFormWithCategory> resultatBrut = new LinkedList<>();

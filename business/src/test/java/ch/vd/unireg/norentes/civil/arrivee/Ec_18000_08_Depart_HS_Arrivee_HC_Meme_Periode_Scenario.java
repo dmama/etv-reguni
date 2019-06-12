@@ -115,12 +115,7 @@ public class Ec_18000_08_Depart_HS_Arrivee_HC_Meme_Periode_Scenario extends Even
 	public void etape2() throws Exception {
 
 		// le retour, changement d'adresse
-		doModificationIndividu(noIndAlain, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				individu.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, dateRetourHC, null));
-			}
-		});
+		doModificationIndividu(noIndAlain, individu -> individu.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, dateRetourHC, null)));
 
 		final long id = addEvenementCivil(TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, noIndAlain, dateRetourHC, MockCommune.Bex.getNoOFS());
 		commitAndStartTransaction();

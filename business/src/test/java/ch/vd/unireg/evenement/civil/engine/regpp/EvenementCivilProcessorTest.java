@@ -1,7 +1,6 @@
 package ch.vd.unireg.evenement.civil.engine.regpp;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -313,84 +312,69 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 	@Test
 	public void testEvenementExceptionDansHandle() throws Exception {
 
-		traiterEvenementTesting(Testing.NoExceptionDansHandle, new AfterHandleCallback() {
-			@Override
-			public void checkEvent(EvenementCivilRegPP e) {
-				assertEquals(EtatEvenementCivil.EN_ERREUR, e.getEtat());
+		traiterEvenementTesting(Testing.NoExceptionDansHandle, e -> {
+			assertEquals(EtatEvenementCivil.EN_ERREUR, e.getEtat());
 
-				final Set<EvenementCivilRegPPErreur> erreurs = e.getErreurs();
-				assertNotNull(erreurs);
-				assertEquals(1, erreurs.size());
+			final Set<EvenementCivilRegPPErreur> erreurs = e.getErreurs();
+			assertNotNull(erreurs);
+			assertEquals(1, erreurs.size());
 
-				final EvenementCivilRegPPErreur erreur0 = erreurs.iterator().next();
-				assertNotNull(erreur0);
-				assertEquals(TypeEvenementErreur.ERROR, erreur0.getType());
-				assertEquals("Exception de test", erreur0.getMessage());
-			}
+			final EvenementCivilRegPPErreur erreur0 = erreurs.iterator().next();
+			assertNotNull(erreur0);
+			assertEquals(TypeEvenementErreur.ERROR, erreur0.getType());
+			assertEquals("Exception de test", erreur0.getMessage());
 		});
 	}
 
 	@Test
 	public void testEvenementTraiteAvecWarningDansHandle() throws Exception {
 
-		traiterEvenementTesting(Testing.NoTraiteAvecWarningDansHandle, new AfterHandleCallback() {
-			@Override
-			public void checkEvent(EvenementCivilRegPP e) {
-				assertEquals(EtatEvenementCivil.A_VERIFIER, e.getEtat());
+		traiterEvenementTesting(Testing.NoTraiteAvecWarningDansHandle, e -> {
+			assertEquals(EtatEvenementCivil.A_VERIFIER, e.getEtat());
 
-				final Set<EvenementCivilRegPPErreur> erreurs = e.getErreurs();
-				assertNotNull(erreurs);
-				assertEquals(1, erreurs.size());
+			final Set<EvenementCivilRegPPErreur> erreurs = e.getErreurs();
+			assertNotNull(erreurs);
+			assertEquals(1, erreurs.size());
 
-				final EvenementCivilRegPPErreur erreur0 = erreurs.iterator().next();
-				assertNotNull(erreur0);
-				assertEquals(TypeEvenementErreur.WARNING, erreur0.getType());
-				assertEquals("Warning de test", erreur0.getMessage());
-			}
+			final EvenementCivilRegPPErreur erreur0 = erreurs.iterator().next();
+			assertNotNull(erreur0);
+			assertEquals(TypeEvenementErreur.WARNING, erreur0.getType());
+			assertEquals("Warning de test", erreur0.getMessage());
 		});
 	}
 
 	@Test
 	public void testEvenementRedondantAvecWarningDansHandle() throws Exception {
 
-		traiterEvenementTesting(Testing.NoRedondantAvecWarningDansHandle, new AfterHandleCallback() {
-			@Override
-			public void checkEvent(EvenementCivilRegPP e) {
-				assertEquals(EtatEvenementCivil.A_VERIFIER, e.getEtat());
+		traiterEvenementTesting(Testing.NoRedondantAvecWarningDansHandle, e -> {
+			assertEquals(EtatEvenementCivil.A_VERIFIER, e.getEtat());
 
-				final Set<EvenementCivilRegPPErreur> erreurs = e.getErreurs();
-				assertNotNull(erreurs);
-				assertEquals(1, erreurs.size());
+			final Set<EvenementCivilRegPPErreur> erreurs = e.getErreurs();
+			assertNotNull(erreurs);
+			assertEquals(1, erreurs.size());
 
-				final EvenementCivilRegPPErreur erreur0 = erreurs.iterator().next();
-				assertNotNull(erreur0);
-				assertEquals(TypeEvenementErreur.WARNING, erreur0.getType());
-				assertEquals("Warning de test", erreur0.getMessage());
-			}
+			final EvenementCivilRegPPErreur erreur0 = erreurs.iterator().next();
+			assertNotNull(erreur0);
+			assertEquals(TypeEvenementErreur.WARNING, erreur0.getType());
+			assertEquals("Warning de test", erreur0.getMessage());
 		});
 	}
 
 	@Test
 	public void testEvenementTraiteSansWarningDansHandle() throws Exception {
 
-		traiterEvenementTesting(Testing.NoTraiteSansWarning, new AfterHandleCallback() {
-			@Override
-			public void checkEvent(EvenementCivilRegPP e) {
-				assertEquals(EtatEvenementCivil.TRAITE, e.getEtat());
-				assertEmpty(e.getErreurs());
-			}
+		traiterEvenementTesting(Testing.NoTraiteSansWarning, e -> {
+			assertEquals(EtatEvenementCivil.TRAITE, e.getEtat());
+			assertEmpty(e.getErreurs());
 		});
 	}
 
 	@Test
 	public void testEvenementRedondantSansWarningDansHandle() throws Exception {
 
-		traiterEvenementTesting(Testing.NoRedondantSansWarning, new AfterHandleCallback() {
-			@Override
-			public void checkEvent(EvenementCivilRegPP e) {
-				assertEquals(EtatEvenementCivil.REDONDANT, e.getEtat());
-				assertEmpty(e.getErreurs());
-			}
+		traiterEvenementTesting(Testing.NoRedondantSansWarning, e -> {
+			assertEquals(EtatEvenementCivil.REDONDANT, e.getEtat());
+			assertEmpty(e.getErreurs());
 		});
 	}
 
@@ -536,12 +520,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 	 * Trie la liste par ordre croissant d'id.
 	 */
 	private static void sortEvenements(final List<EvenementCivilRegPP> list) {
-		Collections.sort(list, new Comparator<EvenementCivilRegPP>() {
-			@Override
-			public int compare(EvenementCivilRegPP o1, EvenementCivilRegPP o2) {
-				return o1.getId().compareTo(o2.getId());
-			}
-		});
+		Collections.sort(list, (o1, o2) -> o1.getId().compareTo(o2.getId()));
 	}
 
 	// ********************************************************************
@@ -841,11 +820,8 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			});
 
 			// modification dans le service civil, mais pas de notification
-			doModificationIndividu(noIndividu, new IndividuModification() {
-				@Override
-				public void modifyIndividu(MockIndividu individu) {
-					individu.setPrenomUsuel("Alfred");        // sans le "o"
-				}
+			doModificationIndividu(noIndividu, individu -> {
+				individu.setPrenomUsuel("Alfred");        // sans le "o"
 			});
 
 			// création d'un événement en erreur
@@ -934,11 +910,8 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			});
 
 			// modification dans le service civil, mais pas de notification
-			doModificationIndividu(noIndividu, new IndividuModification() {
-				@Override
-				public void modifyIndividu(MockIndividu individu) {
-					individu.setPrenomUsuel("Alfred");        // sans le "o"
-				}
+			doModificationIndividu(noIndividu, individu -> {
+				individu.setPrenomUsuel("Alfred");        // sans le "o"
 			});
 
 			// création d'un événement en erreur
@@ -1037,11 +1010,8 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			});
 
 			// modification dans le service civil, mais pas de notification
-			doModificationIndividu(noIndividu, new IndividuModification() {
-				@Override
-				public void modifyIndividu(MockIndividu individu) {
-					individu.setPrenomUsuel("Alfred");        // sans le "o"
-				}
+			doModificationIndividu(noIndividu, individu -> {
+				individu.setPrenomUsuel("Alfred");        // sans le "o"
 			});
 
 			// création d'un événement en erreur

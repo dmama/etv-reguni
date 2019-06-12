@@ -2,7 +2,6 @@ package ch.vd.unireg.tiers.rattrapage.appariement;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import org.junit.Assert;
@@ -401,12 +400,7 @@ public class AppariementServiceTest extends BusinessTest {
 			Assert.assertEquals(2, candidats.size());
 
 			final List<CandidatAppariement> candidatsTries = new ArrayList<>(candidats);
-			Collections.sort(candidatsTries, new Comparator<CandidatAppariement>() {
-				@Override
-				public int compare(CandidatAppariement o1, CandidatAppariement o2) {
-					return Long.compare(o1.getEtablissement().getNumero(), o2.getEtablissement().getNumero());
-				}
-			});
+			Collections.sort(candidatsTries, (o1, o2) -> Long.compare(o1.getEtablissement().getNumero(), o2.getEtablissement().getNumero()));
 
 			{
 				final CandidatAppariement candidat = candidatsTries.get(0);

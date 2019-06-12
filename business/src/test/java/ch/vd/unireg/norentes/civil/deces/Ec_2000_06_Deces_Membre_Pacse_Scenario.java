@@ -176,12 +176,7 @@ public class Ec_2000_06_Deces_Membre_Pacse_Scenario extends EvenementCivilScenar
 	@Etape(id = 2, descr = "Déclaration de décès de Juliette")
 	public void etape2() throws Exception {
 
-		doModificationIndividu(noIndJuliette, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				individu.setDateDeces(dateDeces);
-			}
-		});
+		doModificationIndividu(noIndJuliette, individu -> individu.setDateDeces(dateDeces));
 
 		long id = addEvenementCivil(TypeEvenementCivil.DECES, noIndJuliette, dateDeces, MockCommune.Lausanne.getNoOFS());
 		commitAndStartTransaction();

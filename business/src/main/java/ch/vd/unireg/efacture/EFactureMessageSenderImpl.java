@@ -101,20 +101,17 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender, Initial
 	public String envoieDemandeChangementEmail(long noCtb, @Nullable final String newMail, boolean retourAttendu, final String description) throws EFactureException {
 		final PayerId payerId = new PayerId(String.valueOf(noCtb), EFactureService.ACI_BILLER_ID);
 		final String businessId = String.format("%d-mail-%s", noCtb, SDF.format(DateHelper.getCurrentDate()));
-		sendEvent(businessId, retourAttendu, new MessageBodyBuilder<UpdatePayerContact>() {
-			@Override
-			public UpdatePayerContact buildBody() {
-				final UpdatePayerContact msg = new UpdatePayerContact();
-				msg.setPayerId(payerId);
-				msg.setReasonDescription(description);
+		sendEvent(businessId, retourAttendu, () -> {
+			final UpdatePayerContact msg = new UpdatePayerContact();
+			msg.setPayerId(payerId);
+			msg.setReasonDescription(description);
 
-				final UpdatePayerContact.NewEmailAddress emailContainer = new UpdatePayerContact.NewEmailAddress();
-				if (StringUtils.isNotBlank(newMail)) {
-					emailContainer.setEmail(newMail);
-				}
-				msg.setNewEmailAddress(emailContainer);
-				return msg;
+			final UpdatePayerContact.NewEmailAddress emailContainer = new UpdatePayerContact.NewEmailAddress();
+			if (StringUtils.isNotBlank(newMail)) {
+				emailContainer.setEmail(newMail);
 			}
+			msg.setNewEmailAddress(emailContainer);
+			return msg;
 		});
 		return businessId;
 	}
@@ -122,14 +119,11 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender, Initial
 	@Override
 	public void demandeDesinscriptionContribuable(long noCtb, final String idNouvelleDemande, final String description) throws EFactureException {
 		final String businessId = String.format("%d-desinscription-%s", noCtb, SDF.format(DateHelper.getCurrentDate()));
-		sendEvent(businessId, false, new MessageBodyBuilder<UnsubscribePayerWithNewRequest>() {
-			@Override
-			public UnsubscribePayerWithNewRequest buildBody() {
-				final UnsubscribePayerWithNewRequest msg = new UnsubscribePayerWithNewRequest();
-				msg.setRegistrationRequestId(idNouvelleDemande);
-				msg.setReasonDescription(description);
-				return msg;
-			}
+		sendEvent(businessId, false, () -> {
+			final UnsubscribePayerWithNewRequest msg = new UnsubscribePayerWithNewRequest();
+			msg.setRegistrationRequestId(idNouvelleDemande);
+			msg.setReasonDescription(description);
+			return msg;
 		});
 	}
 
@@ -137,23 +131,20 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender, Initial
 	                                    @Nullable final Integer code, @Nullable final String description, @Nullable final String custom,
 	                                    boolean retourAttendu) throws EFactureException {
 		final String businessId = String.format("%s-%s-%s", idDemande, status.name(), SDF.format(DateHelper.getCurrentDate()));
-		sendEvent(businessId, retourAttendu, new MessageBodyBuilder<UpdateRegistrationRequest>() {
-			@Override
-			public UpdateRegistrationRequest buildBody() {
-				final UpdateRegistrationRequest msg = new UpdateRegistrationRequest();
-				if (custom != null) {
-					msg.setCustomField(custom);
-				}
-				if (code != null) {
-					msg.setReasonCode(code);
-				}
-				if (description != null) {
-					msg.setReasonDescription(description);
-				}
-				msg.setRegistrationRequestId(idDemande);
-				msg.setStatus(status);
-				return msg;
+		sendEvent(businessId, retourAttendu, () -> {
+			final UpdateRegistrationRequest msg = new UpdateRegistrationRequest();
+			if (custom != null) {
+				msg.setCustomField(custom);
 			}
+			if (code != null) {
+				msg.setReasonCode(code);
+			}
+			if (description != null) {
+				msg.setReasonDescription(description);
+			}
+			msg.setRegistrationRequestId(idDemande);
+			msg.setStatus(status);
+			return msg;
 		});
 		return businessId;
 	}
@@ -163,23 +154,20 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender, Initial
 	                                       boolean retourAttendu) throws EFactureException {
 		final PayerId payerId = new PayerId(String.valueOf(noCtb), EFactureService.ACI_BILLER_ID);
 		final String businessId = String.format("%d-%s-%s", noCtb, action.name(), SDF.format(DateHelper.getCurrentDate()));
-		sendEvent(businessId, retourAttendu, new MessageBodyBuilder<UpdatePayer>() {
-			@Override
-			public UpdatePayer buildBody() {
-				final UpdatePayer msg = new UpdatePayer();
-				if (custom != null) {
-					msg.setCustomField(custom);
-				}
-				if (code != null) {
-					msg.setReasonCode(code);
-				}
-				if (description != null) {
-					msg.setReasonDescription(description);
-				}
-				msg.setPayerId(payerId);
-				msg.setPayerUpdateAction(action);
-				return msg;
+		sendEvent(businessId, retourAttendu, () -> {
+			final UpdatePayer msg = new UpdatePayer();
+			if (custom != null) {
+				msg.setCustomField(custom);
 			}
+			if (code != null) {
+				msg.setReasonCode(code);
+			}
+			if (description != null) {
+				msg.setReasonDescription(description);
+			}
+			msg.setPayerId(payerId);
+			msg.setPayerUpdateAction(action);
+			return msg;
 		});
 		return businessId;
 	}

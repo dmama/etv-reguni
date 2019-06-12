@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.TextField;
-import org.apache.lucene.search.TopDocs;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -14,12 +13,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.registre.simpleindexer.DocGetter;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.common.RequiresNewTransactionDefinition;
 import ch.vd.unireg.indexer.GlobalIndexInterface;
 import ch.vd.unireg.indexer.IndexableData;
-import ch.vd.unireg.indexer.SearchCallback;
 
 import static org.junit.Assert.assertEquals;
 
@@ -180,11 +177,6 @@ public class IndexerTransactionalTest extends BusinessTest {
 	}
 
 	private void assertHits(final int count, String query) {
-		globalIndex.search(query, maxHits, new SearchCallback() {
-			@Override
-			public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
-				assertEquals(count, hits.totalHits);
-			}
-		});
+		globalIndex.search(query, maxHits, (hits, docGetter) -> assertEquals(count, hits.totalHits));
 	}
 }

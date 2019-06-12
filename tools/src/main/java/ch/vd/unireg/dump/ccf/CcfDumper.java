@@ -49,23 +49,20 @@ public class CcfDumper {
 				System.out.println("Démarrage " + dumper.getClass().getSimpleName());
 				final String sql = dumper.getSqlQuery();
 				try (final FileWriter writer = new FileWriter(dumper.getFilename())) {
-					doInNewConnection(dbConnectionPool, new ConnectionCallback<Object>() {
-						@Override
-						public Object doInConnection(Connection con) throws SQLException {
-							try (PreparedStatement ps = con.prepareStatement(sql)) {
-								final ResultSet rs = ps.executeQuery();
-								try {
-									dumpHeaders(writer, rs.getMetaData());
-									while (rs.next()) {
-										dumpLine(writer, rs);
-									}
-								}
-								catch (IOException e) {
-									throw new RuntimeException(e);
+					doInNewConnection(dbConnectionPool, con -> {
+						try (PreparedStatement ps = con.prepareStatement(sql)) {
+							final ResultSet rs = ps.executeQuery();
+							try {
+								dumpHeaders(writer, rs.getMetaData());
+								while (rs.next()) {
+									dumpLine(writer, rs);
 								}
 							}
-							return null;
+							catch (IOException e) {
+								throw new RuntimeException(e);
+							}
 						}
+						return null;
 					});
 				}
 			}

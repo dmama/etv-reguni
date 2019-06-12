@@ -16,14 +16,12 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.NumericRangeQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.WildcardQuery;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.registre.simpleindexer.DocGetter;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.indexer.lucene.LuceneHelper;
 
@@ -104,10 +102,7 @@ public class GlobalIndexTest extends BusinessTest {
 	// Members
 	private GlobalIndexInterface globalIndex;
 
-	private static final SearchCallback NULL_CALLBACK = new SearchCallback() {
-		@Override
-		public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
-		}
+	private static final SearchCallback NULL_CALLBACK = (hits, docGetter) -> {
 	};
 	
 	private static final int maxHits = 100;
@@ -223,13 +218,10 @@ public class GlobalIndexTest extends BusinessTest {
 		assertHits(1, "DESCR:pedagogiques");
 		assertHits(2, "DESCR:Solutions");
 
-		globalIndex.search("DESCR:Solutions AND NOT RAISON:sope", maxHits, new SearchCallback() {
-			@Override
-			public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
-				assertEquals(1, hits.totalHits);
-				final Document document = docGetter.get(hits.scoreDocs[0].doc);
-				assertEquals("Mme Cuendet Sara née Barbie", document.get("NOM"));
-			}
+		globalIndex.search("DESCR:Solutions AND NOT RAISON:sope", maxHits, (hits, docGetter) -> {
+			assertEquals(1, hits.totalHits);
+			final Document document = docGetter.get(hits.scoreDocs[0].doc);
+			assertEquals("Mme Cuendet Sara née Barbie", document.get("NOM"));
 		});
 
 		assertHits(4, "RAISON:corporate OR NOM:corporate OR DESCR:corporate");
@@ -573,21 +565,11 @@ public class GlobalIndexTest extends BusinessTest {
 	}
 
 	private void assertHits(final int count, Query query) {
-		globalIndex.search(query, maxHits, new SearchCallback() {
-			@Override
-			public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
-				assertEquals(count, hits.totalHits);
-			}
-		});
+		globalIndex.search(query, maxHits, (hits, docGetter) -> assertEquals(count, hits.totalHits));
 	}
 
 	private void assertHits(final int count, String query) {
-		globalIndex.search(query, maxHits, new SearchCallback() {
-			@Override
-			public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
-				assertEquals(count, hits.totalHits);
-			}
-		});
+		globalIndex.search(query, maxHits, (hits, docGetter) -> assertEquals(count, hits.totalHits));
 	}
 
 	/**
@@ -597,25 +579,17 @@ public class GlobalIndexTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testMultithreadAccess() throws Exception {
 
-		Runnable command = new Runnable() {
-			@Override
-			public void run() {
-				for (int i = 1; i < 10; ++i) {
-					for (Data d : data) {
-						globalIndex.indexEntity(d);
-					}
+		Runnable command = () -> {
+			for (int i = 1; i < 10; ++i) {
+				for (Data d : data) {
+					globalIndex.indexEntity(d);
 				}
 			}
 		};
 
 		final List<Throwable> throwables = new ArrayList<>();
 
-		UncaughtExceptionHandler handler = new UncaughtExceptionHandler() {
-			@Override
-			public void uncaughtException(Thread t, Throwable e) {
-				throwables.add(e);
-			}
-		};
+		UncaughtExceptionHandler handler = (t, e) -> throwables.add(e);
 
 		// on crée 4 threads qui vont réindexer toutes les données en parallèle
 		Thread thread1 = new Thread(command);

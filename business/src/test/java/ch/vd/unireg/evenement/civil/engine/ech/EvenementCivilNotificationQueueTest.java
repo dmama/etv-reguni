@@ -77,13 +77,10 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 
 	@Test(timeout = 10000L)
 	public void testRecupVide() throws Exception {
-		queueTemplate.doWithNewQueueDelayedBy(0, new QueueTemplate.Callback() {
-			@Override
-			public void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
-				Assert.assertEquals(0, queue.getTotalCount());
-				Assert.assertNull(queue.poll(Duration.ofMillis(1)));
-				Assert.assertNull(queue.poll(Duration.ofMillis(20)));
-			}
+		queueTemplate.doWithNewQueueDelayedBy(0, queue -> {
+			Assert.assertEquals(0, queue.getTotalCount());
+			Assert.assertNull(queue.poll(Duration.ofMillis(1)));
+			Assert.assertNull(queue.poll(Duration.ofMillis(20)));
 		});
 	}
 
@@ -107,76 +104,73 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		});
 
 		// envois dans la queue (avec une seconde de délai afin d'être certain de pouvoir compter les éléments insérés avant qu'ils passent dans la queue finale)
-		queueTemplate.doWithNewQueueDelayedBy(1, new QueueTemplate.Callback() {
-			@Override
-			public void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
-				Assert.assertEquals(0, queue.getTotalCount());
-				queue.post(noIndividuSans, EvenementCivilEchProcessingMode.BATCH);
-				Assert.assertEquals(1, queue.getTotalCount());
-				queue.post(noIndividu, EvenementCivilEchProcessingMode.BATCH);
-				Assert.assertEquals(2, queue.getTotalCount());
-				queue.post(noIndividu, EvenementCivilEchProcessingMode.BATCH);      // c'est un doublon -> il ne devrait apparaître qu'une fois en sortie
-				Assert.assertEquals(2, queue.getTotalCount());
+		queueTemplate.doWithNewQueueDelayedBy(1, queue -> {
+			Assert.assertEquals(0, queue.getTotalCount());
+			queue.post(noIndividuSans, EvenementCivilEchProcessingMode.BATCH);
+			Assert.assertEquals(1, queue.getTotalCount());
+			queue.post(noIndividu, EvenementCivilEchProcessingMode.BATCH);
+			Assert.assertEquals(2, queue.getTotalCount());
+			queue.post(noIndividu, EvenementCivilEchProcessingMode.BATCH);      // c'est un doublon -> il ne devrait apparaître qu'une fois en sortie
+			Assert.assertEquals(2, queue.getTotalCount());
 
-				// première récupération : individu sans événement -> collection vide (timeout > 1s pour laisser le délai s'écouler, voir plus haut)
-				final EvenementCivilNotificationQueue.Batch infoSans = queue.poll(Duration.ofMillis(1500));
-				Assert.assertNotNull(infoSans);
-				Assert.assertEquals(noIndividuSans, infoSans.noIndividu);
-				Assert.assertNotNull(infoSans.contenu);
-				Assert.assertEquals(0, infoSans.contenu.size());
-				Assert.assertEquals(1, queue.getTotalCount());
+			// première récupération : individu sans événement -> collection vide (timeout > 1s pour laisser le délai s'écouler, voir plus haut)
+			final EvenementCivilNotificationQueue.Batch infoSans = queue.poll(Duration.ofMillis(1500));
+			Assert.assertNotNull(infoSans);
+			Assert.assertEquals(noIndividuSans, infoSans.noIndividu);
+			Assert.assertNotNull(infoSans.contenu);
+			Assert.assertEquals(0, infoSans.contenu.size());
+			Assert.assertEquals(1, queue.getTotalCount());
 
-				// deuxième récupération : individu avec événements -> collection avec 3 éléments (seulements les événements non traités)
-				final EvenementCivilNotificationQueue.Batch infoAvec = queue.poll(Duration.ofMillis(1));
-				Assert.assertNotNull(infoAvec);
-				Assert.assertEquals(noIndividu, infoAvec.noIndividu);
-				Assert.assertNotNull(infoAvec.contenu);
-				Assert.assertEquals(5, infoAvec.contenu.size());
-				Assert.assertEquals(0, queue.getTotalCount());
-				{
-					final EvenementCivilEchBasicInfo evtCivilInfo = infoAvec.contenu.get(0);
-					Assert.assertEquals(1L, evtCivilInfo.getId());
-					Assert.assertEquals(date(1999, 1, 1), evtCivilInfo.getDate());
-					Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evtCivilInfo.getEtat());
-					Assert.assertEquals(TypeEvenementCivilEch.NAISSANCE, evtCivilInfo.getType());
-					Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.getAction());
-				}
-				{
-					final EvenementCivilEchBasicInfo evtCivilInfo = infoAvec.contenu.get(1);
-					Assert.assertEquals(5L, evtCivilInfo.getId());
-					Assert.assertEquals(date(1999, 2, 5), evtCivilInfo.getDate());
-					Assert.assertEquals(EtatEvenementCivil.A_TRAITER, evtCivilInfo.getEtat());
-					Assert.assertEquals(TypeEvenementCivilEch.NAISSANCE, evtCivilInfo.getType());
-					Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.getAction());
-				}
-				{
-					final EvenementCivilEchBasicInfo evtCivilInfo = infoAvec.contenu.get(2);
-					Assert.assertEquals(3L, evtCivilInfo.getId());
-					Assert.assertEquals(date(1999, 3, 3), evtCivilInfo.getDate());
-					Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, evtCivilInfo.getEtat());
-					Assert.assertEquals(TypeEvenementCivilEch.NAISSANCE, evtCivilInfo.getType());
-					Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.getAction());
-				}
-				{
-					final EvenementCivilEchBasicInfo evtCivilInfo = infoAvec.contenu.get(3);
-					Assert.assertEquals(7L, evtCivilInfo.getId());
-					Assert.assertEquals(date(1999, 3, 3), evtCivilInfo.getDate());
-					Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, evtCivilInfo.getEtat());
-					Assert.assertEquals(TypeEvenementCivilEch.ARRIVEE, evtCivilInfo.getType());
-					Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.getAction());
-				}
-				{
-					final EvenementCivilEchBasicInfo evtCivilInfo = infoAvec.contenu.get(4);
-					Assert.assertEquals(8L, evtCivilInfo.getId());
-					Assert.assertEquals(date(1999, 3, 3), evtCivilInfo.getDate());
-					Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, evtCivilInfo.getEtat());
-					Assert.assertEquals(TypeEvenementCivilEch.DIVORCE, evtCivilInfo.getType());
-					Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.getAction());
-				}
-
-				// troisième tentative de récupération : rien
-				Assert.assertNull(queue.poll(Duration.ofMillis(1)));
+			// deuxième récupération : individu avec événements -> collection avec 3 éléments (seulements les événements non traités)
+			final EvenementCivilNotificationQueue.Batch infoAvec = queue.poll(Duration.ofMillis(1));
+			Assert.assertNotNull(infoAvec);
+			Assert.assertEquals(noIndividu, infoAvec.noIndividu);
+			Assert.assertNotNull(infoAvec.contenu);
+			Assert.assertEquals(5, infoAvec.contenu.size());
+			Assert.assertEquals(0, queue.getTotalCount());
+			{
+				final EvenementCivilEchBasicInfo evtCivilInfo = infoAvec.contenu.get(0);
+				Assert.assertEquals(1L, evtCivilInfo.getId());
+				Assert.assertEquals(date(1999, 1, 1), evtCivilInfo.getDate());
+				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evtCivilInfo.getEtat());
+				Assert.assertEquals(TypeEvenementCivilEch.NAISSANCE, evtCivilInfo.getType());
+				Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.getAction());
 			}
+			{
+				final EvenementCivilEchBasicInfo evtCivilInfo = infoAvec.contenu.get(1);
+				Assert.assertEquals(5L, evtCivilInfo.getId());
+				Assert.assertEquals(date(1999, 2, 5), evtCivilInfo.getDate());
+				Assert.assertEquals(EtatEvenementCivil.A_TRAITER, evtCivilInfo.getEtat());
+				Assert.assertEquals(TypeEvenementCivilEch.NAISSANCE, evtCivilInfo.getType());
+				Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.getAction());
+			}
+			{
+				final EvenementCivilEchBasicInfo evtCivilInfo = infoAvec.contenu.get(2);
+				Assert.assertEquals(3L, evtCivilInfo.getId());
+				Assert.assertEquals(date(1999, 3, 3), evtCivilInfo.getDate());
+				Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, evtCivilInfo.getEtat());
+				Assert.assertEquals(TypeEvenementCivilEch.NAISSANCE, evtCivilInfo.getType());
+				Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.getAction());
+			}
+			{
+				final EvenementCivilEchBasicInfo evtCivilInfo = infoAvec.contenu.get(3);
+				Assert.assertEquals(7L, evtCivilInfo.getId());
+				Assert.assertEquals(date(1999, 3, 3), evtCivilInfo.getDate());
+				Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, evtCivilInfo.getEtat());
+				Assert.assertEquals(TypeEvenementCivilEch.ARRIVEE, evtCivilInfo.getType());
+				Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.getAction());
+			}
+			{
+				final EvenementCivilEchBasicInfo evtCivilInfo = infoAvec.contenu.get(4);
+				Assert.assertEquals(8L, evtCivilInfo.getId());
+				Assert.assertEquals(date(1999, 3, 3), evtCivilInfo.getDate());
+				Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, evtCivilInfo.getEtat());
+				Assert.assertEquals(TypeEvenementCivilEch.DIVORCE, evtCivilInfo.getType());
+				Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.getAction());
+			}
+
+			// troisième tentative de récupération : rien
+			Assert.assertNull(queue.poll(Duration.ofMillis(1)));
 		});
 	}
 
@@ -200,72 +194,69 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		});
 
 		// envois dans la queue (avec une seconde de délai afin d'être certain de pouvoir compter les éléments insérés avant qu'ils passent dans la queue finale)
-		queueTemplate.doWithNewQueueDelayedBy(1, new QueueTemplate.Callback() {
-			@Override
-			public void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
-				Assert.assertEquals(0, queue.getTotalCount());
-				queue.postAll(Arrays.asList(noIndividuSans, noIndividu, noIndividu));
-				Assert.assertEquals(2, queue.getTotalCount());
+		queueTemplate.doWithNewQueueDelayedBy(1, queue -> {
+			Assert.assertEquals(0, queue.getTotalCount());
+			queue.postAll(Arrays.asList(noIndividuSans, noIndividu, noIndividu));
+			Assert.assertEquals(2, queue.getTotalCount());
 
-				// première récupération : individu sans événement -> collection vide (timeout > 1s pour laisser le délai s'écouler, voir plus haut)
-				final EvenementCivilNotificationQueue.Batch infoSans = queue.poll(Duration.ofMillis(1500));
-				Assert.assertNotNull(infoSans);
-				Assert.assertEquals(noIndividuSans, infoSans.noIndividu);
-				Assert.assertNotNull(infoSans.contenu);
-				Assert.assertEquals(0, infoSans.contenu.size());
-				Assert.assertEquals(1, queue.getTotalCount());
+			// première récupération : individu sans événement -> collection vide (timeout > 1s pour laisser le délai s'écouler, voir plus haut)
+			final EvenementCivilNotificationQueue.Batch infoSans = queue.poll(Duration.ofMillis(1500));
+			Assert.assertNotNull(infoSans);
+			Assert.assertEquals(noIndividuSans, infoSans.noIndividu);
+			Assert.assertNotNull(infoSans.contenu);
+			Assert.assertEquals(0, infoSans.contenu.size());
+			Assert.assertEquals(1, queue.getTotalCount());
 
-				// deuxième récupération : individu avec événements -> collection avec 3 éléments (seulements les événements non traités)
-				final EvenementCivilNotificationQueue.Batch infoAvec = queue.poll(Duration.ofMillis(1));
-				Assert.assertNotNull(infoAvec);
-				Assert.assertEquals(noIndividu, infoAvec.noIndividu);
-				Assert.assertNotNull(infoAvec.contenu);
-				Assert.assertEquals(5, infoAvec.contenu.size());
-				Assert.assertEquals(0, queue.getTotalCount());
-				{
-					final EvenementCivilEchBasicInfo evtCivilInfo = infoAvec.contenu.get(0);
-					Assert.assertEquals(1L, evtCivilInfo.getId());
-					Assert.assertEquals(date(1999, 1, 1), evtCivilInfo.getDate());
-					Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evtCivilInfo.getEtat());
-					Assert.assertEquals(TypeEvenementCivilEch.NAISSANCE, evtCivilInfo.getType());
-					Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.getAction());
-				}
-				{
-					final EvenementCivilEchBasicInfo evtCivilInfo = infoAvec.contenu.get(1);
-					Assert.assertEquals(5L, evtCivilInfo.getId());
-					Assert.assertEquals(date(1999, 2, 5), evtCivilInfo.getDate());
-					Assert.assertEquals(EtatEvenementCivil.A_TRAITER, evtCivilInfo.getEtat());
-					Assert.assertEquals(TypeEvenementCivilEch.NAISSANCE, evtCivilInfo.getType());
-					Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.getAction());
-				}
-				{
-					final EvenementCivilEchBasicInfo evtCivilInfo = infoAvec.contenu.get(2);
-					Assert.assertEquals(3L, evtCivilInfo.getId());
-					Assert.assertEquals(date(1999, 3, 3), evtCivilInfo.getDate());
-					Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, evtCivilInfo.getEtat());
-					Assert.assertEquals(TypeEvenementCivilEch.NAISSANCE, evtCivilInfo.getType());
-					Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.getAction());
-				}
-				{
-					final EvenementCivilEchBasicInfo evtCivilInfo = infoAvec.contenu.get(3);
-					Assert.assertEquals(7L, evtCivilInfo.getId());
-					Assert.assertEquals(date(1999, 3, 3), evtCivilInfo.getDate());
-					Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, evtCivilInfo.getEtat());
-					Assert.assertEquals(TypeEvenementCivilEch.ARRIVEE, evtCivilInfo.getType());
-					Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.getAction());
-				}
-				{
-					final EvenementCivilEchBasicInfo evtCivilInfo = infoAvec.contenu.get(4);
-					Assert.assertEquals(8L, evtCivilInfo.getId());
-					Assert.assertEquals(date(1999, 3, 3), evtCivilInfo.getDate());
-					Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, evtCivilInfo.getEtat());
-					Assert.assertEquals(TypeEvenementCivilEch.DIVORCE, evtCivilInfo.getType());
-					Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.getAction());
-				}
-
-				// troisième tentative de récupération : rien
-				Assert.assertNull(queue.poll(Duration.ofMillis(1)));
+			// deuxième récupération : individu avec événements -> collection avec 3 éléments (seulements les événements non traités)
+			final EvenementCivilNotificationQueue.Batch infoAvec = queue.poll(Duration.ofMillis(1));
+			Assert.assertNotNull(infoAvec);
+			Assert.assertEquals(noIndividu, infoAvec.noIndividu);
+			Assert.assertNotNull(infoAvec.contenu);
+			Assert.assertEquals(5, infoAvec.contenu.size());
+			Assert.assertEquals(0, queue.getTotalCount());
+			{
+				final EvenementCivilEchBasicInfo evtCivilInfo = infoAvec.contenu.get(0);
+				Assert.assertEquals(1L, evtCivilInfo.getId());
+				Assert.assertEquals(date(1999, 1, 1), evtCivilInfo.getDate());
+				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evtCivilInfo.getEtat());
+				Assert.assertEquals(TypeEvenementCivilEch.NAISSANCE, evtCivilInfo.getType());
+				Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.getAction());
 			}
+			{
+				final EvenementCivilEchBasicInfo evtCivilInfo = infoAvec.contenu.get(1);
+				Assert.assertEquals(5L, evtCivilInfo.getId());
+				Assert.assertEquals(date(1999, 2, 5), evtCivilInfo.getDate());
+				Assert.assertEquals(EtatEvenementCivil.A_TRAITER, evtCivilInfo.getEtat());
+				Assert.assertEquals(TypeEvenementCivilEch.NAISSANCE, evtCivilInfo.getType());
+				Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.getAction());
+			}
+			{
+				final EvenementCivilEchBasicInfo evtCivilInfo = infoAvec.contenu.get(2);
+				Assert.assertEquals(3L, evtCivilInfo.getId());
+				Assert.assertEquals(date(1999, 3, 3), evtCivilInfo.getDate());
+				Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, evtCivilInfo.getEtat());
+				Assert.assertEquals(TypeEvenementCivilEch.NAISSANCE, evtCivilInfo.getType());
+				Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.getAction());
+			}
+			{
+				final EvenementCivilEchBasicInfo evtCivilInfo = infoAvec.contenu.get(3);
+				Assert.assertEquals(7L, evtCivilInfo.getId());
+				Assert.assertEquals(date(1999, 3, 3), evtCivilInfo.getDate());
+				Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, evtCivilInfo.getEtat());
+				Assert.assertEquals(TypeEvenementCivilEch.ARRIVEE, evtCivilInfo.getType());
+				Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.getAction());
+			}
+			{
+				final EvenementCivilEchBasicInfo evtCivilInfo = infoAvec.contenu.get(4);
+				Assert.assertEquals(8L, evtCivilInfo.getId());
+				Assert.assertEquals(date(1999, 3, 3), evtCivilInfo.getDate());
+				Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, evtCivilInfo.getEtat());
+				Assert.assertEquals(TypeEvenementCivilEch.DIVORCE, evtCivilInfo.getType());
+				Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.getAction());
+			}
+
+			// troisième tentative de récupération : rien
+			Assert.assertNull(queue.poll(Duration.ofMillis(1)));
 		});
 
 	}
@@ -282,23 +273,20 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		});
 
 		// envois dans la queue
-		queueTemplate.doWithNewQueueDelayedBy(1, new QueueTemplate.Callback() {
-			@Override
-			public void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
-				Assert.assertEquals(0, queue.getTotalCount());
-				queue.post(noIndividu, EvenementCivilEchProcessingMode.BATCH);
+		queueTemplate.doWithNewQueueDelayedBy(1, queue -> {
+			Assert.assertEquals(0, queue.getTotalCount());
+			queue.post(noIndividu, EvenementCivilEchProcessingMode.BATCH);
 
-				// après 800ms, on ne devrait toujours rien voir
-				Thread.sleep(800);
-				final EvenementCivilNotificationQueue.Batch infoVide = queue.poll(Duration.ofMillis(1));
-				Assert.assertNull(infoVide);
+			// après 800ms, on ne devrait toujours rien voir
+			Thread.sleep(800);
+			final EvenementCivilNotificationQueue.Batch infoVide = queue.poll(Duration.ofMillis(1));
+			Assert.assertNull(infoVide);
 
-				// mais 300ms après, alors là oui (puisque le délai est d'une seconde)
-				Thread.sleep(300);
-				final EvenementCivilNotificationQueue.Batch infoNonVide = queue.poll(Duration.ofMillis(1));
-				Assert.assertNotNull(infoNonVide);
-				Assert.assertEquals(noIndividu, infoNonVide.noIndividu);
-			}
+			// mais 300ms après, alors là oui (puisque le délai est d'une seconde)
+			Thread.sleep(300);
+			final EvenementCivilNotificationQueue.Batch infoNonVide = queue.poll(Duration.ofMillis(1));
+			Assert.assertNotNull(infoNonVide);
+			Assert.assertEquals(noIndividu, infoNonVide.noIndividu);
 		});
 	}
 
@@ -314,17 +302,14 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		});
 
 		// envois dans la queue
-		queueTemplate.doWithNewQueueDelayedBy(0, new QueueTemplate.Callback() {
-			@Override
-			public void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
-				Assert.assertEquals(0, queue.getTotalCount());
-				queue.post(noIndividu, EvenementCivilEchProcessingMode.BATCH);
+		queueTemplate.doWithNewQueueDelayedBy(0, queue -> {
+			Assert.assertEquals(0, queue.getTotalCount());
+			queue.post(noIndividu, EvenementCivilEchProcessingMode.BATCH);
 
-				// Pas de délai -> on doit donc tout de suite récupérer notre individu
-				final EvenementCivilNotificationQueue.Batch info = queue.poll(Duration.ofMillis(10));
-				Assert.assertNotNull(info);
-				Assert.assertEquals(noIndividu, info.noIndividu);
-			}
+			// Pas de délai -> on doit donc tout de suite récupérer notre individu
+			final EvenementCivilNotificationQueue.Batch info = queue.poll(Duration.ofMillis(10));
+			Assert.assertNotNull(info);
+			Assert.assertEquals(noIndividu, info.noIndividu);
 		});
 	}
 
@@ -340,17 +325,15 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		});
 
 		// envois dans la queue
-		queueTemplate.doWithNewQueueDelayedBy(2, new QueueTemplate.Callback() { // si on attend le délai, on fait exploser le timeout du test
-			@Override
-			public void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
-				Assert.assertEquals(0, queue.getTotalCount());
-				queue.post(noIndividu, EvenementCivilEchProcessingMode.IMMEDIATE);
+		// si on attend le délai, on fait exploser le timeout du test
+		queueTemplate.doWithNewQueueDelayedBy(2, queue -> {
+			Assert.assertEquals(0, queue.getTotalCount());
+			queue.post(noIndividu, EvenementCivilEchProcessingMode.IMMEDIATE);
 
-				// le poll doit recevoir l'événement immédiatement
-				final EvenementCivilNotificationQueue.Batch info = queue.poll(Duration.ofMillis(10));
-				Assert.assertNotNull(info);
-				Assert.assertEquals(noIndividu, info.noIndividu);
-			}
+			// le poll doit recevoir l'événement immédiatement
+			final EvenementCivilNotificationQueue.Batch info = queue.poll(Duration.ofMillis(10));
+			Assert.assertNotNull(info);
+			Assert.assertEquals(noIndividu, info.noIndividu);
 		});
 	}
 
@@ -372,26 +355,23 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		});
 
 		// envois dans la queue
-		queueTemplate.doWithNewQueueDelayedBy(0, new QueueTemplate.Callback() {
-			@Override
-			public void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
-				Assert.assertEquals(0, queue.getTotalCount());
-				long l = 1;
-				for (; l < nbEvtsBatch; l++) {
-					queue.post(noIndividuBase + l, EvenementCivilEchProcessingMode.BATCH);
-				}
-				queue.post(noIndividuTemoin, EvenementCivilEchProcessingMode.MANUAL);
-
-				for (l = 1; l < nbEvtsBatch; l++) {
-					final EvenementCivilNotificationQueue.Batch info = queue.poll(Duration.ofMillis(1));
-					Assert.assertNotNull(info);
-					if (info.noIndividu == noIndividuTemoin) {
-						LOGGER.info("Témoin sorti en position " + l);
-						return;
-					}
-				}
-				Assert.fail("L'individu Témoin devrait sortir avant la fin du traitement de la totalité des evts batch");
+		queueTemplate.doWithNewQueueDelayedBy(0, queue -> {
+			Assert.assertEquals(0, queue.getTotalCount());
+			long l = 1;
+			for (; l < nbEvtsBatch; l++) {
+				queue.post(noIndividuBase + l, EvenementCivilEchProcessingMode.BATCH);
 			}
+			queue.post(noIndividuTemoin, EvenementCivilEchProcessingMode.MANUAL);
+
+			for (l = 1; l < nbEvtsBatch; l++) {
+				final EvenementCivilNotificationQueue.Batch info = queue.poll(Duration.ofMillis(1));
+				Assert.assertNotNull(info);
+				if (info.noIndividu == noIndividuTemoin) {
+					LOGGER.info("Témoin sorti en position " + l);
+					return;
+				}
+			}
+			Assert.fail("L'individu Témoin devrait sortir avant la fin du traitement de la totalité des evts batch");
 		});
 	}
 
@@ -407,24 +387,21 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		});
 
 		// envois dans la queue
-		queueTemplate.doWithNewQueueDelayedBy(1, new QueueTemplate.Callback() {
-			@Override
-			public void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
-				Assert.assertEquals(0, queue.getTotalCount());
-				queue.post(noIndividu, EvenementCivilEchProcessingMode.MANUAL);
-				queue.post(noIndividu, EvenementCivilEchProcessingMode.IMMEDIATE);           // post en immédiat alors que l'individu est déjà dans la queue -> ne devrait pas avoir d'effet sur le délai de traitement
+		queueTemplate.doWithNewQueueDelayedBy(1, queue -> {
+			Assert.assertEquals(0, queue.getTotalCount());
+			queue.post(noIndividu, EvenementCivilEchProcessingMode.MANUAL);
+			queue.post(noIndividu, EvenementCivilEchProcessingMode.IMMEDIATE);           // post en immédiat alors que l'individu est déjà dans la queue -> ne devrait pas avoir d'effet sur le délai de traitement
 
-				// après 800ms, on ne devrait toujours rien voir
-				Thread.sleep(800);
-				final EvenementCivilNotificationQueue.Batch infoVide = queue.poll(Duration.ofMillis(1));
-				Assert.assertNull(infoVide);
+			// après 800ms, on ne devrait toujours rien voir
+			Thread.sleep(800);
+			final EvenementCivilNotificationQueue.Batch infoVide = queue.poll(Duration.ofMillis(1));
+			Assert.assertNull(infoVide);
 
-				// mais 300ms après, alors là oui (puisque le délai est d'une seconde)
-				Thread.sleep(300);
-				final EvenementCivilNotificationQueue.Batch infoNonVide = queue.poll(Duration.ofMillis(1));
-				Assert.assertNotNull(infoNonVide);
-				Assert.assertEquals(noIndividu, infoNonVide.noIndividu);
-			}
+			// mais 300ms après, alors là oui (puisque le délai est d'une seconde)
+			Thread.sleep(300);
+			final EvenementCivilNotificationQueue.Batch infoNonVide = queue.poll(Duration.ofMillis(1));
+			Assert.assertNotNull(infoNonVide);
+			Assert.assertEquals(noIndividu, infoNonVide.noIndividu);
 		});
 	}
 
@@ -604,24 +581,21 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		});
 
 		// envois dans la queue
-		queueTemplate.doWithNewQueueDelayedBy(1, new QueueTemplate.Callback() {
-			@Override
-			public void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
-				Assert.assertEquals(0, queue.getTotalCount());
-				queue.post(noIndividu, EvenementCivilEchProcessingMode.BATCH);
-				queue.post(noIndividu, EvenementCivilEchProcessingMode.IMMEDIATE);           // post en immédiat alors que l'individu est déjà dans la queue (mais de l'autre côté) -> ne devrait pas avoir d'effet sur le délai de traitement
+		queueTemplate.doWithNewQueueDelayedBy(1, queue -> {
+			Assert.assertEquals(0, queue.getTotalCount());
+			queue.post(noIndividu, EvenementCivilEchProcessingMode.BATCH);
+			queue.post(noIndividu, EvenementCivilEchProcessingMode.IMMEDIATE);           // post en immédiat alors que l'individu est déjà dans la queue (mais de l'autre côté) -> ne devrait pas avoir d'effet sur le délai de traitement
 
-				// après 800ms, on ne devrait toujours rien voir
-				Thread.sleep(800);
-				final EvenementCivilNotificationQueue.Batch infoVide = queue.poll(Duration.ofMillis(1));
-				Assert.assertNull(infoVide);
+			// après 800ms, on ne devrait toujours rien voir
+			Thread.sleep(800);
+			final EvenementCivilNotificationQueue.Batch infoVide = queue.poll(Duration.ofMillis(1));
+			Assert.assertNull(infoVide);
 
-				// mais 300ms après, alors là oui (puisque le délai est d'une seconde)
-				Thread.sleep(300);
-				final EvenementCivilNotificationQueue.Batch infoNonVide = queue.poll(Duration.ofMillis(1));
-				Assert.assertNotNull(infoNonVide);
-				Assert.assertEquals(noIndividu, infoNonVide.noIndividu);
-			}
+			// mais 300ms après, alors là oui (puisque le délai est d'une seconde)
+			Thread.sleep(300);
+			final EvenementCivilNotificationQueue.Batch infoNonVide = queue.poll(Duration.ofMillis(1));
+			Assert.assertNotNull(infoNonVide);
+			Assert.assertEquals(noIndividu, infoNonVide.noIndividu);
 		});
 	}
 
@@ -637,28 +611,25 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		});
 
 		// envois dans la queue
-		queueTemplate.doWithNewQueueDelayedBy(1, new QueueTemplate.Callback() {
-			@Override
-			public void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
-				Assert.assertEquals(0, queue.getTotalCount());
-				queue.post(noIndividu, EvenementCivilEchProcessingMode.BATCH);
-				queue.post(noIndividu, EvenementCivilEchProcessingMode.MANUAL);
+		queueTemplate.doWithNewQueueDelayedBy(1, queue -> {
+			Assert.assertEquals(0, queue.getTotalCount());
+			queue.post(noIndividu, EvenementCivilEchProcessingMode.BATCH);
+			queue.post(noIndividu, EvenementCivilEchProcessingMode.MANUAL);
 
-				// après 800ms, on ne devrait toujours rien voir
-				Thread.sleep(800);
-				final EvenementCivilNotificationQueue.Batch infoVide = queue.poll(Duration.ofMillis(1));
-				Assert.assertNull(infoVide);
+			// après 800ms, on ne devrait toujours rien voir
+			Thread.sleep(800);
+			final EvenementCivilNotificationQueue.Batch infoVide = queue.poll(Duration.ofMillis(1));
+			Assert.assertNull(infoVide);
 
-				// mais 300ms après, alors là oui (puisque le délai est d'une seconde)
-				Thread.sleep(300);
-				final EvenementCivilNotificationQueue.Batch infoNonVide = queue.poll(Duration.ofMillis(1));
-				Assert.assertNotNull(infoNonVide);
-				Assert.assertEquals(noIndividu, infoNonVide.noIndividu);
+			// mais 300ms après, alors là oui (puisque le délai est d'une seconde)
+			Thread.sleep(300);
+			final EvenementCivilNotificationQueue.Batch infoNonVide = queue.poll(Duration.ofMillis(1));
+			Assert.assertNotNull(infoNonVide);
+			Assert.assertEquals(noIndividu, infoNonVide.noIndividu);
 
-				// mais pas une seconde fois (= doublon bien détecté)
-				final EvenementCivilNotificationQueue.Batch infoVide2 = queue.poll(Duration.ofMillis(1));
-				Assert.assertNull(infoVide2);
-			}
+			// mais pas une seconde fois (= doublon bien détecté)
+			final EvenementCivilNotificationQueue.Batch infoVide2 = queue.poll(Duration.ofMillis(1));
+			Assert.assertNull(infoVide2);
 		});
 	}
 }

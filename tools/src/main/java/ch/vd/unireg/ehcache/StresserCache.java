@@ -88,31 +88,22 @@ public class StresserCache {
 		final List<List<Integer>> lots = creerLots(idTiers);
 
 		ExecutorService executor =Executors.newFixedThreadPool(3);
-		Future futureCharge = executor.submit(new Callable<Object>() {
-			@Override
-			public Object call() throws Exception {
+		Future futureCharge = executor.submit(() -> {
 
-				executerInsertion(idLotACharger);
-				return null;
-			}
+			executerInsertion(idLotACharger);
+			return null;
 		});
 
-		Future futureLire = executor.submit(new Callable<Object>() {
-			@Override
-			public Object call() throws Exception {
-				executerLecture(idLotALire);
-				return null;
-			}
+		Future futureLire = executor.submit(() -> {
+			executerLecture(idLotALire);
+			return null;
 		});
 
 	//	Future futureChargeSupplementaire = executor.submit(new ChargerCacheLot(lots));
 
-		Future futureEvict = executor.submit(new Callable<Object>() {
-			@Override
-			public Object call() throws Exception {
-				executerEviction(idLotAEvicter);
-				return null;
-			}
+		Future futureEvict = executor.submit(() -> {
+			executerEviction(idLotAEvicter);
+			return null;
 		});
 
 		executor.shutdown();

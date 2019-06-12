@@ -35,12 +35,7 @@ public class AccessLogProcessingFilter extends GenericFilterBean implements Deta
 	/**
 	 * Les requêtes doivent être affichées par leur URL
 	 */
-	private static final StringRenderer<ServletRequest> RENDERER = new StringRenderer<ServletRequest>() {
-		@Override
-		public String toString(ServletRequest object) {
-			return String.format("%s:%s", getMethod(object), getUrl(object));
-		}
-	};
+	private static final StringRenderer<ServletRequest> RENDERER = object -> String.format("%s:%s", getMethod(object), getUrl(object));
 
 	/**
 	 * Nombre de requêtes en cours en parallèle

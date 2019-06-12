@@ -2,7 +2,6 @@ package ch.vd.unireg.indexer.tiers;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -86,22 +85,19 @@ public class MenageCommunIndexable extends ContribuableImpositionPersonnesPhysiq
 				// tous les liens sur ce ménage sont annulés
 				final List<Map.Entry<PersonnePhysique, RapportEntreTiers>> aPrendre = new ArrayList<>(personnes.entrySet());
 				if (aPrendre.size() > 1) {
-					aPrendre.sort(new Comparator<Map.Entry<PersonnePhysique, RapportEntreTiers>>() {
-						@Override
-						public int compare(Map.Entry<PersonnePhysique, RapportEntreTiers> o1, Map.Entry<PersonnePhysique, RapportEntreTiers> o2) {
-							final RapportEntreTiers rapport1 = o1.getValue();
-							final RapportEntreTiers rapport2 = o2.getValue();
-							int comparaison = MenageCommunIndexable.compare(rapport1.getAnnulationDate(), rapport2.getAnnulationDate(), false);
+					aPrendre.sort((o1, o2) -> {
+						final RapportEntreTiers rapport1 = o1.getValue();
+						final RapportEntreTiers rapport2 = o2.getValue();
+						int comparaison = compare(rapport1.getAnnulationDate(), rapport2.getAnnulationDate(), false);
+						if (comparaison == 0) {
+							// à même date d'annulation, on regarde la date de fin du rapport
+							comparaison = compare(rapport1.getDateFin(), rapport2.getDateFin(), false);
 							if (comparaison == 0) {
-								// à même date d'annulation, on regarde la date de fin du rapport
-								comparaison = MenageCommunIndexable.compare(rapport1.getDateFin(), rapport2.getDateFin(), false);
-								if (comparaison == 0) {
-									// à même date de fin de rapport, on regarde la date de création du rapport
-									comparaison = MenageCommunIndexable.compare(rapport1.getLogCreationDate(), rapport2.getLogCreationDate(), false);
-								}
+								// à même date de fin de rapport, on regarde la date de création du rapport
+								comparaison = compare(rapport1.getLogCreationDate(), rapport2.getLogCreationDate(), false);
 							}
-							return comparaison;
 						}
+						return comparaison;
 					});
 				}
 				personnesPhysiques = new HashSet<>(2);

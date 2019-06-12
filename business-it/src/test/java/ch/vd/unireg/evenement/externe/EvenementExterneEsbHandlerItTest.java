@@ -69,12 +69,7 @@ public class EvenementExterneEsbHandlerItTest extends EvenementTest {
 
 		final List<EvenementExterne> events = new ArrayList<>();
 
-		handler.setHandler(new EvenementExterneHandler() {
-			@Override
-			public void onEvent(EvenementExterne event) {
-				events.add(event);
-			}
-		});
+		handler.setHandler(event -> events.add(event));
 
 		// Lit le message sous format texte
 		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/externe/old_quittance_lr.xml");
@@ -103,12 +98,7 @@ public class EvenementExterneEsbHandlerItTest extends EvenementTest {
 
 		final List<EvenementExterne> events = new ArrayList<>();
 
-		handler.setHandler(new EvenementExterneHandler() {
-			@Override
-			public void onEvent(EvenementExterne event) {
-				events.add(event);
-			}
-		});
+		handler.setHandler(event -> events.add(event));
 
 		// Lit le message sous format texte
 		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/externe/new_quittance_lr_v1.xml");
@@ -137,12 +127,7 @@ public class EvenementExterneEsbHandlerItTest extends EvenementTest {
 
 		final List<EvenementExterne> events = new ArrayList<>();
 
-		handler.setHandler(new EvenementExterneHandler() {
-			@Override
-			public void onEvent(EvenementExterne event) {
-				events.add(event);
-			}
-		});
+		handler.setHandler(event -> events.add(event));
 
 		// Lit le message sous format texte
 		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/externe/new_quittance_lr_v2.xml");
@@ -171,12 +156,7 @@ public class EvenementExterneEsbHandlerItTest extends EvenementTest {
 
 		final List<EvenementExterne> events = new ArrayList<>();
 
-		handler.setHandler(new EvenementExterneHandler() {
-			@Override
-			public void onEvent(EvenementExterne event) {
-				events.add(event);
-			}
-		});
+		handler.setHandler(event -> events.add(event));
 
 		// Lit le message sous format texte
 		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/externe/new_quittance_lr_v3.xml");

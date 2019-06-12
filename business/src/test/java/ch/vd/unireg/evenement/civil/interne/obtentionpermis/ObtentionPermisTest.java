@@ -773,12 +773,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		});
 		
 		// obtention du permis C
-		doModificationIndividu(noIndividu, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				individu.setPermis(new MockPermis(datePermisC, null, null, TypePermis.ETABLISSEMENT));
-			}
-		});
+		doModificationIndividu(noIndividu, individu -> individu.setPermis(new MockPermis(datePermisC, null, null, TypePermis.ETABLISSEMENT)));
 		
 		// traitement de l'événement d'obtention de permis d'établissement
 		doInNewTransactionAndSession(status -> {
@@ -843,12 +838,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// obtention du permis C
-		doModificationIndividu(noIndividu, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				individu.setPermis(new MockPermis(datePermisC, null, null, TypePermis.ETABLISSEMENT));
-			}
-		});
+		doModificationIndividu(noIndividu, individu -> individu.setPermis(new MockPermis(datePermisC, null, null, TypePermis.ETABLISSEMENT)));
 
 		// traitement de l'événement d'obtention de permis d'établissement
 		doInNewTransactionAndSession(status -> {
@@ -909,12 +899,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// obtention du permis C
-		doModificationIndividu(noIndividu, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				individu.setPermis(new MockPermis(datePermisC, null, null, TypePermis.ETABLISSEMENT));
-			}
-		});
+		doModificationIndividu(noIndividu, individu -> individu.setPermis(new MockPermis(datePermisC, null, null, TypePermis.ETABLISSEMENT)));
 
 		// traitement de l'événement d'obtention de permis d'établissement
 		doInNewTransactionAndSession(status -> {

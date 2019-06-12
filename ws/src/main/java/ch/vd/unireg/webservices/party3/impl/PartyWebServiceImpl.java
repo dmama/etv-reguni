@@ -339,43 +339,40 @@ public class PartyWebServiceImpl implements PartyWebService {
 				throw ExceptionHelper.newBusinessException(message, BusinessExceptionCode.INVALID_REQUEST);
 			}
 
-			final Map<Long, Object> results = mapParties(toLongSet(partyNumbers), null, DataHelper.webToXML(params.getParts()), new MapCallback() {
-				@Override
-				public Object map(ch.vd.unireg.tiers.Tiers tiers, Set<ch.vd.unireg.xml.party.v1.PartyPart> parts, RegDate date, Context context) {
-					try {
-						final Party t;
-						if (tiers instanceof ch.vd.unireg.tiers.PersonnePhysique) {
-							final ch.vd.unireg.tiers.PersonnePhysique personne = (ch.vd.unireg.tiers.PersonnePhysique) tiers;
-							t = PartyBuilder.newNaturalPerson(personne, parts, context);
-						}
-						else if (tiers instanceof ch.vd.unireg.tiers.MenageCommun) {
-							final ch.vd.unireg.tiers.MenageCommun menage = (ch.vd.unireg.tiers.MenageCommun) tiers;
-							t = PartyBuilder.newCommonHousehold(menage, parts, context);
-						}
-						else if (tiers instanceof Entreprise) {
-							final Entreprise entreprise = (Entreprise) tiers;
-							t = PartyBuilder.newCorporation(entreprise, parts, context);
-						}
-						else if (tiers instanceof DebiteurPrestationImposable) {
-							final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiers;
-							t = PartyBuilder.newDebtor(debiteur, parts, context);
-						}
-						else if (tiers instanceof CollectiviteAdministrative) {
-							final CollectiviteAdministrative coladm = (CollectiviteAdministrative) tiers;
-							t = PartyBuilder.newAdministrativeAuthority(coladm, parts, context);
-						}
-						else {
-							t = null;
-						}
-						return t;
+			final Map<Long, Object> results = mapParties(toLongSet(partyNumbers), null, DataHelper.webToXML(params.getParts()), (tiers, parts, date, context) -> {
+				try {
+					final Party t;
+					if (tiers instanceof ch.vd.unireg.tiers.PersonnePhysique) {
+						final ch.vd.unireg.tiers.PersonnePhysique personne = (ch.vd.unireg.tiers.PersonnePhysique) tiers;
+						t = PartyBuilder.newNaturalPerson(personne, parts, context);
 					}
-					catch (ServiceException e) {
-						return ExceptionHelper.newException(e);
+					else if (tiers instanceof ch.vd.unireg.tiers.MenageCommun) {
+						final ch.vd.unireg.tiers.MenageCommun menage = (ch.vd.unireg.tiers.MenageCommun) tiers;
+						t = PartyBuilder.newCommonHousehold(menage, parts, context);
 					}
-					catch (RuntimeException e) {
-						LOGGER.error(e.getMessage(), e);
-						return ExceptionHelper.newTechnicalException(e);
+					else if (tiers instanceof Entreprise) {
+						final Entreprise entreprise = (Entreprise) tiers;
+						t = PartyBuilder.newCorporation(entreprise, parts, context);
 					}
+					else if (tiers instanceof DebiteurPrestationImposable) {
+						final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiers;
+						t = PartyBuilder.newDebtor(debiteur, parts, context);
+					}
+					else if (tiers instanceof CollectiviteAdministrative) {
+						final CollectiviteAdministrative coladm = (CollectiviteAdministrative) tiers;
+						t = PartyBuilder.newAdministrativeAuthority(coladm, parts, context);
+					}
+					else {
+						t = null;
+					}
+					return t;
+				}
+				catch (ServiceException e) {
+					return ExceptionHelper.newException(e);
+				}
+				catch (RuntimeException e) {
+					LOGGER.error(e.getMessage(), e);
+					return ExceptionHelper.newTechnicalException(e);
 				}
 			});
 

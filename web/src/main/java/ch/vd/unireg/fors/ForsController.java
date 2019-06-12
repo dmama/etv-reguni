@@ -4,7 +4,6 @@ import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -171,12 +170,7 @@ public class ForsController {
 			list.add(new MotifForView(motifFor, getLabelOuverture(motifFor)));
 		}
 
-		list.sort(new Comparator<MotifForView>() {
-			@Override
-			public int compare(MotifForView o1, MotifForView o2) {
-				return o1.getLabel().compareTo(o2.getLabel());
-			}
-		});
+		list.sort((o1, o2) -> o1.getLabel().compareTo(o2.getLabel()));
 
 		return list;
 	}
@@ -213,12 +207,7 @@ public class ForsController {
 			list.add(new MotifForView(oldMotif, getLabelFermeture(oldMotif)));
 		}
 
-		list.sort(new Comparator<MotifForView>() {
-			@Override
-			public int compare(MotifForView o1, MotifForView o2) {
-				return o1.getLabel().compareTo(o2.getLabel());
-			}
-		});
+		list.sort((o1, o2) -> o1.getLabel().compareTo(o2.getLabel()));
 
 		return list;
 	}

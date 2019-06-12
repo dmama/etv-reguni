@@ -5,7 +5,6 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.type.TypeAdresseCivil;
 
@@ -46,13 +45,10 @@ public class AdresseContactComparisonStrategyTest extends AbstractAdresseCompari
 		final long noEvt1 = 3278456435L;
 		final long noEvt2 = 43757536526L;
 
-		setupCivil(noIndividu, noEvt1, null, noEvt2, new AddressBuilder() {
-			@Override
-			public void buildAdresses(MockIndividu individu) {
-				individu.addAdresse(buildAdresse(TypeAdresseCivil.SECONDAIRE, "Monsieur Tartempion", "Rue du pont de bois", "1234", "12", "Parlabas", null));
-				individu.addAdresse(buildAdresse(TypeAdresseCivil.PRINCIPALE, "Monsieur Tartempion", "Rue du pont de bois", "1234", "12", "Parlabas", null));
-				individu.addAdresse(buildAdresse(TypeAdresseCivil.TUTEUR, "Monsieur Tartempion", "Rue du pont de bois", "1234", "12", "Parlabas", null));
-			}
+		setupCivil(noIndividu, noEvt1, null, noEvt2, individu -> {
+			individu.addAdresse(buildAdresse(TypeAdresseCivil.SECONDAIRE, "Monsieur Tartempion", "Rue du pont de bois", "1234", "12", "Parlabas", null));
+			individu.addAdresse(buildAdresse(TypeAdresseCivil.PRINCIPALE, "Monsieur Tartempion", "Rue du pont de bois", "1234", "12", "Parlabas", null));
+			individu.addAdresse(buildAdresse(TypeAdresseCivil.TUTEUR, "Monsieur Tartempion", "Rue du pont de bois", "1234", "12", "Parlabas", null));
 		});
 		assertNeutre(strategy, noEvt1, noEvt2);
 	}
@@ -63,17 +59,8 @@ public class AdresseContactComparisonStrategyTest extends AbstractAdresseCompari
 		final long noEvt1 = 3278456435L;
 		final long noEvt2 = 43757536526L;
 
-		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de bois", "1234", "12", "Parlabas", null));
-			           }
-		           }, noEvt2, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de bois", "1234", "12", "Parlabas", null));
-			           }
-		           });
+		setupCivil(noIndividu, noEvt1, individu -> individu.addAdresse(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de bois", "1234", "12", "Parlabas", null)), noEvt2,
+		           individu -> individu.addAdresse(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de bois", "1234", "12", "Parlabas", null)));
 		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
@@ -83,17 +70,8 @@ public class AdresseContactComparisonStrategyTest extends AbstractAdresseCompari
 		final long noEvt1 = 3278456435L;
 		final long noEvt2 = 43757536526L;
 
-		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de bois", "1234", "12", "Parlabas", new DateRangeHelper.Range(date(2000, 1, 1), date(2009, 12, 10))));
-			           }
-		           }, noEvt2, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de bois", "1234", "12", "Parlabas", new DateRangeHelper.Range(date(2000, 1, 1), date(2009, 12, 10))));
-			           }
-		           });
+		setupCivil(noIndividu, noEvt1, individu -> individu.addAdresse(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de bois", "1234", "12", "Parlabas", new DateRangeHelper.Range(date(2000, 1, 1), date(2009, 12, 10)))), noEvt2,
+		           individu -> individu.addAdresse(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de bois", "1234", "12", "Parlabas", new DateRangeHelper.Range(date(2000, 1, 1), date(2009, 12, 10)))));
 		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
@@ -103,17 +81,8 @@ public class AdresseContactComparisonStrategyTest extends AbstractAdresseCompari
 		final long noEvt1 = 3278456435L;
 		final long noEvt2 = 43757536526L;
 
-		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de bois", "1234", "12", "Parlabas", null));
-			           }
-		           }, noEvt2, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Chabadabada", "Rue du pont de bois", "1234", "12", "Parlabas", null));
-			           }
-		           });
+		setupCivil(noIndividu, noEvt1, individu -> individu.addAdresse(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de bois", "1234", "12", "Parlabas", null)), noEvt2,
+		           individu -> individu.addAdresse(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Chabadabada", "Rue du pont de bois", "1234", "12", "Parlabas", null)));
 		assertNonNeutre(strategy, noEvt1, noEvt2, "adresse de contact (titre)");
 	}
 
@@ -123,17 +92,8 @@ public class AdresseContactComparisonStrategyTest extends AbstractAdresseCompari
 		final long noEvt1 = 3278456435L;
 		final long noEvt2 = 43757536526L;
 
-		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de bois", "1234", "12", "Parlabas", null));
-			           }
-		           }, noEvt2, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de fer", "1234", "12", "Parlabas", null));
-			           }
-		           });
+		setupCivil(noIndividu, noEvt1, individu -> individu.addAdresse(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de bois", "1234", "12", "Parlabas", null)), noEvt2,
+		           individu -> individu.addAdresse(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de fer", "1234", "12", "Parlabas", null)));
 		assertNonNeutre(strategy, noEvt1, noEvt2, "adresse de contact (rue)");
 	}
 
@@ -143,17 +103,8 @@ public class AdresseContactComparisonStrategyTest extends AbstractAdresseCompari
 		final long noEvt1 = 3278456435L;
 		final long noEvt2 = 43757536526L;
 
-		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de bois", "1234", "12", "Parlabas", null));
-			           }
-		           }, noEvt2, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de bois", "1235", "12", "Parlabas", null));
-			           }
-		           });
+		setupCivil(noIndividu, noEvt1, individu -> individu.addAdresse(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de bois", "1234", "12", "Parlabas", null)), noEvt2,
+		           individu -> individu.addAdresse(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de bois", "1235", "12", "Parlabas", null)));
 		assertNonNeutre(strategy, noEvt1, noEvt2, "adresse de contact (numéro postal)");
 	}
 
@@ -163,17 +114,8 @@ public class AdresseContactComparisonStrategyTest extends AbstractAdresseCompari
 		final long noEvt1 = 3278456435L;
 		final long noEvt2 = 43757536526L;
 
-		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de bois", "1234", "12", "Parlabas", null));
-			           }
-		           }, noEvt2, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de bois", "1234", "24", "Parlabas", null));
-			           }
-		           });
+		setupCivil(noIndividu, noEvt1, individu -> individu.addAdresse(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de bois", "1234", "12", "Parlabas", null)), noEvt2,
+		           individu -> individu.addAdresse(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de bois", "1234", "24", "Parlabas", null)));
 		assertNonNeutre(strategy, noEvt1, noEvt2, "adresse de contact (numéro)");
 	}
 
@@ -183,17 +125,8 @@ public class AdresseContactComparisonStrategyTest extends AbstractAdresseCompari
 		final long noEvt1 = 3278456435L;
 		final long noEvt2 = 43757536526L;
 
-		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de bois", "1234", "12", "Parlabas", null));
-			           }
-		           }, noEvt2, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de bois", "1234", "12", "Paricy", null));
-			           }
-		           });
+		setupCivil(noIndividu, noEvt1, individu -> individu.addAdresse(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de bois", "1234", "12", "Parlabas", null)), noEvt2,
+		           individu -> individu.addAdresse(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de bois", "1234", "12", "Paricy", null)));
 		assertNonNeutre(strategy, noEvt1, noEvt2, "adresse de contact (localité)");
 	}
 
@@ -203,17 +136,8 @@ public class AdresseContactComparisonStrategyTest extends AbstractAdresseCompari
 		final long noEvt1 = 3278456435L;
 		final long noEvt2 = 43757536526L;
 
-		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de bois", "1234", "12", "Parlabas", new DateRangeHelper.Range(date(2000, 1, 1), date(2009, 12, 10))));
-			           }
-		           }, noEvt2, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de bois", "1234", "12", "Paricy", new DateRangeHelper.Range(date(2001, 1, 1), date(2009, 12, 10))));
-			           }
-		           });
+		setupCivil(noIndividu, noEvt1, individu -> individu.addAdresse(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de bois", "1234", "12", "Parlabas", new DateRangeHelper.Range(date(2000, 1, 1), date(2009, 12, 10)))), noEvt2,
+		           individu -> individu.addAdresse(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de bois", "1234", "12", "Paricy", new DateRangeHelper.Range(date(2001, 1, 1), date(2009, 12, 10)))));
 		assertNonNeutre(strategy, noEvt1, noEvt2, "adresse de contact (dates)");
 	}
 
@@ -223,17 +147,8 @@ public class AdresseContactComparisonStrategyTest extends AbstractAdresseCompari
 		final long noEvt1 = 3278456435L;
 		final long noEvt2 = 43757536526L;
 
-		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de bois", "1234", "12", "Parlabas", new DateRangeHelper.Range(date(2000, 1, 1), date(2009, 12, 10))));
-			           }
-		           }, noEvt2, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de bois", "1234", "12", "Paricy", new DateRangeHelper.Range(date(2000, 1, 1), date(2009, 12, 9))));
-			           }
-		           });
+		setupCivil(noIndividu, noEvt1, individu -> individu.addAdresse(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de bois", "1234", "12", "Parlabas", new DateRangeHelper.Range(date(2000, 1, 1), date(2009, 12, 10)))), noEvt2,
+		           individu -> individu.addAdresse(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de bois", "1234", "12", "Paricy", new DateRangeHelper.Range(date(2000, 1, 1), date(2009, 12, 9)))));
 		assertNonNeutre(strategy, noEvt1, noEvt2, "adresse de contact (dates)");
 	}
 
@@ -243,12 +158,8 @@ public class AdresseContactComparisonStrategyTest extends AbstractAdresseCompari
 		final long noEvt1 = 3278456435L;
 		final long noEvt2 = 43757536526L;
 
-		setupCivil(noIndividu, noEvt1, null, noEvt2, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de bois", "1234", "12", "Paricy", new DateRangeHelper.Range(date(2000, 1, 1), date(2009, 12, 9))));
-			           }
-		           });
+		setupCivil(noIndividu, noEvt1, null, noEvt2,
+		           individu -> individu.addAdresse(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de bois", "1234", "12", "Paricy", new DateRangeHelper.Range(date(2000, 1, 1), date(2009, 12, 9)))));
 		assertNonNeutre(strategy, noEvt1, noEvt2, "adresse de contact (apparition)");
 	}
 
@@ -258,12 +169,7 @@ public class AdresseContactComparisonStrategyTest extends AbstractAdresseCompari
 		final long noEvt1 = 3278456435L;
 		final long noEvt2 = 43757536526L;
 
-		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
-			           @Override
-			           public void buildAdresses(MockIndividu individu) {
-				           individu.addAdresse(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de bois", "1234", "12", "Parlabas", new DateRangeHelper.Range(date(2000, 1, 1), date(2009, 12, 10))));
-			           }
-		           }, noEvt2, null);
+		setupCivil(noIndividu, noEvt1, individu -> individu.addAdresse(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de bois", "1234", "12", "Parlabas", new DateRangeHelper.Range(date(2000, 1, 1), date(2009, 12, 10)))), noEvt2, null);
 		assertNonNeutre(strategy, noEvt1, noEvt2, "adresse de contact (disparition)");
 	}
 }

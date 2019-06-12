@@ -2,7 +2,6 @@ package ch.vd.unireg.evenement.entreprise;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -299,12 +298,7 @@ public class EvenementEntrepriseCivileEsbHandlerItTest extends EvenementTest {
 		Assert.assertEquals(1, evenementsVusPasser.size());
 		Assert.assertEquals(4, evenementsTraites.size());
 
-		Collections.sort(evenementsTraites, new Comparator<EvenementEntreprise>() {
-			@Override
-			public int compare(EvenementEntreprise o1, EvenementEntreprise o2) {
-				return Long.valueOf(o1.getNoEntrepriseCivile()).compareTo(o2.getNoEntrepriseCivile());
-			}
-		});
+		Collections.sort(evenementsTraites, (o1, o2) -> Long.valueOf(o1.getNoEntrepriseCivile()).compareTo(o2.getNoEntrepriseCivile()));
 
 		{
 			final EvenementEntreprise recu = evenementsTraites.get(0);

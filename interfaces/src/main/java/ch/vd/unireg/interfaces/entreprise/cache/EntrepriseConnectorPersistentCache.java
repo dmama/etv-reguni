@@ -3,7 +3,6 @@ package ch.vd.unireg.interfaces.entreprise.cache;
 import java.util.Map;
 import java.util.Objects;
 
-import org.apache.commons.collections4.Predicate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -210,12 +209,7 @@ public class EntrepriseConnectorPersistentCache implements EntrepriseConnector, 
 		}
 		cache.removeAll(numero);
 		etablissementCache.removeAll(numero);
-		etablissementCache.removeValues(new Predicate<Long>() {
-			@Override
-			public boolean evaluate(Long object) {
-				return numero == object;
-			}
-		});
+		etablissementCache.removeValues(object -> numero == object);
 	}
 
 	@Override

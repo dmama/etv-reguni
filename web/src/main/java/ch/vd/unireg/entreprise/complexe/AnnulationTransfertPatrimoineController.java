@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -25,7 +24,6 @@ import ch.vd.unireg.security.Role;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.TiersCriteria;
 import ch.vd.unireg.tiers.view.TiersCriteriaView;
-import ch.vd.unireg.transaction.TransactionHelper;
 
 @Controller
 @RequestMapping("/processuscomplexe/annulation/transfertpatrimoine")
@@ -98,29 +96,26 @@ public class AnnulationTransfertPatrimoineController extends AbstractProcessusCo
 			return showStart(model, view);
 		}
 
-		doInTransaction(new TransactionHelper.ExceptionThrowingCallbackWithoutResult<MetierServiceException>() {
-			@Override
-			public void execute(TransactionStatus status) throws MetierServiceException {
-				// récupération des données et vérification des droits d'accès
-				final Entreprise emettrice = getTiers(Entreprise.class, view.getIdEntrepriseEmettrice());
-				controllerUtils.checkAccesDossierEnEcriture(view.getIdEntrepriseEmettrice());
-				controllerUtils.checkTraitementContribuableAvecDecisionAci(view.getIdEntrepriseEmettrice());
+		doInTransaction(status -> {
+			// récupération des données et vérification des droits d'accès
+			final Entreprise emettrice = getTiers(Entreprise.class, view.getIdEntrepriseEmettrice());
+			controllerUtils.checkAccesDossierEnEcriture(view.getIdEntrepriseEmettrice());
+			controllerUtils.checkTraitementContribuableAvecDecisionAci(view.getIdEntrepriseEmettrice());
 
-				final Map<RegDate, List<Entreprise>> transferts = TransfertPatrimoineHelper.getTransferts(emettrice, tiersService);
-				final List<Entreprise> receptrices = transferts.get(view.getDateTransfert());
-				if (receptrices == null || receptrices.isEmpty()) {
-					throw new MetierServiceException("Aucune entreprise réceptrice du transfert de patrimoine trouvée!");
-				}
-
-				// petite boucle pour vérifier les droits d'accès sur les réceptrices aussi
-				for (Entreprise resultante : receptrices) {
-					controllerUtils.checkAccesDossierEnEcriture(resultante.getNumero());
-					controllerUtils.checkTraitementContribuableAvecDecisionAci(resultante.getNumero());
-				}
-
-				// envoi de la sauce pour dé-tricoter tout ça
-				metierService.annuleTransfertPatrimoine(emettrice, receptrices, view.getDateTransfert());
+			final Map<RegDate, List<Entreprise>> transferts = TransfertPatrimoineHelper.getTransferts(emettrice, tiersService);
+			final List<Entreprise> receptrices = transferts.get(view.getDateTransfert());
+			if (receptrices == null || receptrices.isEmpty()) {
+				throw new MetierServiceException("Aucune entreprise réceptrice du transfert de patrimoine trouvée!");
 			}
+
+			// petite boucle pour vérifier les droits d'accès sur les réceptrices aussi
+			for (Entreprise resultante : receptrices) {
+				controllerUtils.checkAccesDossierEnEcriture(resultante.getNumero());
+				controllerUtils.checkTraitementContribuableAvecDecisionAci(resultante.getNumero());
+			}
+
+			// envoi de la sauce pour dé-tricoter tout ça
+			metierService.annuleTransfertPatrimoine(emettrice, receptrices, view.getDateTransfert());
 		});
 
 		return "redirect:/tiers/visu.do?id=" + view.getIdEntrepriseEmettrice();

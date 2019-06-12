@@ -57,12 +57,7 @@ public class DefaultCorrectionCivilEchTranslationStrategyTest extends AbstractEv
 	@Test(timeout = 10000L)
 	public void testSansModificationFiscale() throws Exception {
 
-		buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {
-			@Override
-			public void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator) {
-				translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, strategy);
-			}
-		});
+		buildStrategyOverridingTranslatorAndProcessor(true, translator -> translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, strategy));
 
 		final long noIndividu = 4684263L;
 		final long idEvtCorrige = 464735292L;
@@ -110,12 +105,7 @@ public class DefaultCorrectionCivilEchTranslationStrategyTest extends AbstractEv
 	@Test(timeout = 10000L)
 	public void testModificationDateNaissance() throws Exception {
 
-		buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {
-			@Override
-			public void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator) {
-				translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, strategy);
-			}
-		});
+		buildStrategyOverridingTranslatorAndProcessor(true, translator -> translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, strategy));
 
 		final long noIndividu = 4684263L;
 		final long idEvtCorrige = 464735292L;
@@ -172,12 +162,7 @@ public class DefaultCorrectionCivilEchTranslationStrategyTest extends AbstractEv
 	@Test(timeout = 10000L)
 	public void testModificationSexe() throws Exception {
 
-		buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {
-			@Override
-			public void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator) {
-				translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, strategy);
-			}
-		});
+		buildStrategyOverridingTranslatorAndProcessor(true, translator -> translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, strategy));
 
 		final long noIndividu = 4684263L;
 		final long idEvtCorrige = 464735292L;
@@ -227,12 +212,7 @@ public class DefaultCorrectionCivilEchTranslationStrategyTest extends AbstractEv
 	@Test(timeout = 10000L)
 	public void testModificationDateDeces() throws Exception {
 
-		buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {
-			@Override
-			public void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator) {
-				translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, strategy);
-			}
-		});
+		buildStrategyOverridingTranslatorAndProcessor(true, translator -> translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, strategy));
 
 		final long noIndividu = 4684263L;
 		final long idEvtCorrige = 464735292L;
@@ -290,12 +270,7 @@ public class DefaultCorrectionCivilEchTranslationStrategyTest extends AbstractEv
 	@Test(timeout = 10000L)
 	public void testModificationNationalite() throws Exception {
 
-		buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {
-			@Override
-			public void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator) {
-				translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, strategy);
-			}
-		});
+		buildStrategyOverridingTranslatorAndProcessor(true, translator -> translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, strategy));
 
 		final long noIndividu = 4684263L;
 		final long idEvtCorrige = 464735292L;
@@ -353,12 +328,7 @@ public class DefaultCorrectionCivilEchTranslationStrategyTest extends AbstractEv
 	@Test(timeout = 10000L)
 	public void testModificationPermis() throws Exception {
 
-		buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {
-			@Override
-			public void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator) {
-				translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, strategy);
-			}
-		});
+		buildStrategyOverridingTranslatorAndProcessor(true, translator -> translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, strategy));
 
 		final long noIndividu = 4684263L;
 		final long idEvtCorrige = 464735292L;
@@ -416,12 +386,7 @@ public class DefaultCorrectionCivilEchTranslationStrategyTest extends AbstractEv
 	@Test(timeout = 10000L)
 	public void testModificationAdresseDeResidencePrincipale() throws Exception {
 
-		buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {
-			@Override
-			public void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator) {
-				translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, strategy);
-			}
-		});
+		buildStrategyOverridingTranslatorAndProcessor(true, translator -> translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, strategy));
 
 		final long noIndividu = 4684263L;
 		final long idEvtCorrige = 464735292L;
@@ -480,12 +445,7 @@ public class DefaultCorrectionCivilEchTranslationStrategyTest extends AbstractEv
 	@Test(timeout = 10000L)
 	public void testModificationAdresseDeResidenceSecondaire() throws Exception {
 
-		buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {
-			@Override
-			public void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator) {
-				translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, strategy);
-			}
-		});
+		buildStrategyOverridingTranslatorAndProcessor(true, translator -> translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, strategy));
 
 		final long noIndividu = 4684263L;
 		final long idEvtCorrige = 464735292L;
@@ -543,12 +503,7 @@ public class DefaultCorrectionCivilEchTranslationStrategyTest extends AbstractEv
 	@Test(timeout = 10000L)
 	public void testModificationRelations() throws Exception {
 
-		buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {
-			@Override
-			public void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator) {
-				translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, strategy);
-			}
-		});
+		buildStrategyOverridingTranslatorAndProcessor(true, translator -> translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, strategy));
 
 		final long noIndividu = 4684263L;
 		final long noIndividuConjoint = 2567315623L;
@@ -608,12 +563,7 @@ public class DefaultCorrectionCivilEchTranslationStrategyTest extends AbstractEv
 	@Test(timeout = 10000L)
 	public void  testModificationPlusieursAttributs() throws Exception {
 
-		buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {
-			@Override
-			public void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator) {
-				translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, strategy);
-			}
-		});
+		buildStrategyOverridingTranslatorAndProcessor(true, translator -> translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, strategy));
 
 		final long noIndividu = 4684263L;
 		final long noIndividuConjoint = 2567315623L;
@@ -676,12 +626,7 @@ public class DefaultCorrectionCivilEchTranslationStrategyTest extends AbstractEv
 		// Tous les tests précédents ont été faits sans personne physique liée au numéro d'individu de l'événement civil
 		// Ici, on vérifie que tout va bien également avec une personne physique connectée
 
-		buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {
-			@Override
-			public void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator) {
-				translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, strategy);
-			}
-		});
+		buildStrategyOverridingTranslatorAndProcessor(true, translator -> translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, strategy));
 
 		final long noIndividu = 4684263L;
 		final long idEvtCorrige = 464735292L;
@@ -735,12 +680,7 @@ public class DefaultCorrectionCivilEchTranslationStrategyTest extends AbstractEv
 	@Test(timeout = 10000L)
 	public void testAncienHabitant() throws Exception {
 
-		buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {
-			@Override
-			public void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator) {
-				translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, strategy);
-			}
-		});
+		buildStrategyOverridingTranslatorAndProcessor(true, translator -> translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, strategy));
 
 		final long noIndividu = 4684263L;
 		final long idEvtCorrige = 464735292L;
@@ -805,12 +745,7 @@ public class DefaultCorrectionCivilEchTranslationStrategyTest extends AbstractEv
 	@Test(timeout = 10000L)
 	public void testModificationAdresseContact() throws Exception {
 
-		buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {
-			@Override
-			public void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator) {
-				translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, strategy);
-			}
-		});
+		buildStrategyOverridingTranslatorAndProcessor(true, translator -> translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, strategy));
 
 		final long noIndividu = 4684263L;
 		final long idEvtCorrige = 464735292L;
@@ -865,12 +800,7 @@ public class DefaultCorrectionCivilEchTranslationStrategyTest extends AbstractEv
 	@Test(timeout = 10000)
 	public void testRattrapageIdEvenementCorrige() throws Exception {
 
-		buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {
-			@Override
-			public void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator) {
-				translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, strategy);
-			}
-		});
+		buildStrategyOverridingTranslatorAndProcessor(true, translator -> translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, strategy));
 
 		final long noIndividu = 4684263L;
 		final long idEvtCorrige = 464735292L;
@@ -919,12 +849,7 @@ public class DefaultCorrectionCivilEchTranslationStrategyTest extends AbstractEv
 	@Test(timeout = 10000L)
 	public void testDoubleCorrectionQuiSAnnulent() throws Exception {
 
-		buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {
-			@Override
-			public void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator) {
-				translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, strategy);
-			}
-		});
+		buildStrategyOverridingTranslatorAndProcessor(true, translator -> translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, strategy));
 
 		final long noIndividu = 4684263L;
 		final long idEvtCorrige = 464735292L;
@@ -1028,12 +953,7 @@ public class DefaultCorrectionCivilEchTranslationStrategyTest extends AbstractEv
 	@Test(timeout = 10000L)
 	public void testRattrapageRefMessageIdAvecDoubleCorrection() throws Exception {
 
-		buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {
-			@Override
-			public void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator) {
-				translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, strategy);
-			}
-		});
+		buildStrategyOverridingTranslatorAndProcessor(true, translator -> translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, strategy));
 
 		final long noIndividu = 4684263L;
 		final long idEvtCorrige = 464735292L;
@@ -1119,12 +1039,7 @@ public class DefaultCorrectionCivilEchTranslationStrategyTest extends AbstractEv
 	@Test
 	public void testModificationDateEvenementSeule() throws Exception {
 
-		buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {
-			@Override
-			public void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator) {
-				translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, strategy);
-			}
-		});
+		buildStrategyOverridingTranslatorAndProcessor(true, translator -> translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, strategy));
 
 		final long noIndividu = 4684263L;
 		final long idEvtCorrige = 464735292L;
@@ -1185,12 +1100,7 @@ public class DefaultCorrectionCivilEchTranslationStrategyTest extends AbstractEv
 	@Test
 	public void testPleinDeModificationsFiscales() throws Exception {
 
-		buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {
-			@Override
-			public void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator) {
-				translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, strategy);
-			}
-		});
+		buildStrategyOverridingTranslatorAndProcessor(true, translator -> translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, strategy));
 
 		final long noIndividu = 4684263L;
 		final long idEvtCorrige = 464735292L;

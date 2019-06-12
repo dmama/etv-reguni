@@ -11,7 +11,6 @@ import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -119,12 +118,7 @@ public class Job {
 
 		// on veut traiter les clôtures d'abord...
 		final List<ExtractionSimpa> mandatsTries = new ArrayList<>(mandats);
-		mandatsTries.sort(new Comparator<ExtractionSimpa>() {
-			@Override
-			public int compare(ExtractionSimpa o1, ExtractionSimpa o2) {
-				return NullDateBehavior.LATEST.compare(o1.getDateResiliation(), o2.getDateResiliation());
-			}
-		});
+		mandatsTries.sort((o1, o2) -> NullDateBehavior.LATEST.compare(o1.getDateResiliation(), o2.getDateResiliation()));
 
 		for (ExtractionSimpa mandat : mandatsTries) {
 			// en fermeture, on regarde tout le monde

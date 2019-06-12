@@ -536,12 +536,7 @@ public class MetierServicePMTest extends BusinessTest {
 			// 6. événements fiscaux
 			final Collection<EvenementFiscal> evts = evenementFiscalDAO.getEvenementsFiscaux(entreprise);
 			Assert.assertEquals(3, evts.size());        // 2 fermetures de for + 1 info complémentaire
-			final Map<Class<?>, List<EvenementFiscal>> evtsParClass = segmenter(evts, new Extractor<EvenementFiscal, Class<?>>() {
-				@Override
-				public Class<?> extract(EvenementFiscal source) {
-					return source.getClass();
-				}
-			});
+			final Map<Class<?>, List<EvenementFiscal>> evtsParClass = segmenter(evts, source -> source.getClass());
 			Assert.assertEquals(new HashSet<>(Arrays.asList(EvenementFiscalFor.class, EvenementFiscalInformationComplementaire.class)), evtsParClass.keySet());
 			Assert.assertEquals(2, evtsParClass.get(EvenementFiscalFor.class).size());
 			Assert.assertEquals(1, evtsParClass.get(EvenementFiscalInformationComplementaire.class).size());
@@ -842,12 +837,7 @@ public class MetierServicePMTest extends BusinessTest {
 			Assert.assertTrue(evtsParClasse.containsKey(EvenementFiscalInformationComplementaire.class));
 			Assert.assertTrue(evtsParClasse.containsKey(EvenementFiscalFor.class));
 
-			final Map<EvenementFiscalFor.TypeEvenementFiscalFor, List<EvenementFiscal>> evtsParType = segmenter(evtsParClasse.get(EvenementFiscalFor.class), new Extractor<EvenementFiscal, EvenementFiscalFor.TypeEvenementFiscalFor>() {
-				@Override
-				public EvenementFiscalFor.TypeEvenementFiscalFor extract(EvenementFiscal source) {
-					return ((EvenementFiscalFor) source).getType();
-				}
-			});
+			final Map<EvenementFiscalFor.TypeEvenementFiscalFor, List<EvenementFiscal>> evtsParType = segmenter(evtsParClasse.get(EvenementFiscalFor.class), source -> ((EvenementFiscalFor) source).getType());
 			Assert.assertEquals(EnumSet.of(EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE, EvenementFiscalFor.TypeEvenementFiscalFor.ANNULATION), evtsParType.keySet());
 			Assert.assertEquals(2, evtsParType.get(EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE).size());
 			Assert.assertEquals(2, evtsParType.get(EvenementFiscalFor.TypeEvenementFiscalFor.ANNULATION).size());
@@ -972,12 +962,9 @@ public class MetierServicePMTest extends BusinessTest {
 			final Map<Boolean, List<RapportEntreTiers>> rets = segmenterAnnulables(rapportsSujet);
 			Assert.assertEquals(0, rets.get(Boolean.TRUE).size());
 			Assert.assertEquals(2, rets.get(Boolean.FALSE).size());
-			final Map<Boolean, List<RapportEntreTiers>> activitesEconomiques = segmenter(rets.get(Boolean.FALSE), new Extractor<RapportEntreTiers, Boolean>() {
-				@Override
-				public Boolean extract(RapportEntreTiers source) {
-					Assert.assertTrue(source.getClass().getName(), source instanceof ActiviteEconomique);
-					return ((ActiviteEconomique) source).isPrincipal();
-				}
+			final Map<Boolean, List<RapportEntreTiers>> activitesEconomiques = segmenter(rets.get(Boolean.FALSE), source -> {
+				Assert.assertTrue(source.getClass().getName(), source instanceof ActiviteEconomique);
+				return ((ActiviteEconomique) source).isPrincipal();
 			});
 			Assert.assertEquals(1, activitesEconomiques.get(Boolean.TRUE).size());
 			Assert.assertEquals(1, activitesEconomiques.get(Boolean.FALSE).size());
@@ -1592,12 +1579,9 @@ public class MetierServicePMTest extends BusinessTest {
 			Assert.assertEquals(dateDebutAbsorbante, ffp.getDateDebut());
 			Assert.assertFalse(ffp.isAnnule());
 
-			final List<FusionEntreprises> fusions = extractRapports(absorbante.getRapportsObjet(), FusionEntreprises.class, new Comparator<FusionEntreprises>() {
-				@Override
-				public int compare(FusionEntreprises o1, FusionEntreprises o2) {
-					// ordre croissant des identifiants des entreprises absorbées
-					return Long.compare(o1.getSujetId(), o2.getSujetId());
-				}
+			final List<FusionEntreprises> fusions = extractRapports(absorbante.getRapportsObjet(), FusionEntreprises.class, (o1, o2) -> {
+				// ordre croissant des identifiants des entreprises absorbées
+				return Long.compare(o1.getSujetId(), o2.getSujetId());
 			});
 			Assert.assertNotNull(fusions);
 			Assert.assertEquals(2, fusions.size());
@@ -1868,12 +1852,9 @@ public class MetierServicePMTest extends BusinessTest {
 			Assert.assertEquals(dateDebutAbsorbante, ffp.getDateDebut());
 			Assert.assertFalse(ffp.isAnnule());
 
-			final List<FusionEntreprises> fusions = extractRapports(absorbante.getRapportsObjet(), FusionEntreprises.class, new Comparator<FusionEntreprises>() {
-				@Override
-				public int compare(FusionEntreprises o1, FusionEntreprises o2) {
-					// ordre croissant des identifiants des entreprises absorbées
-					return Long.compare(o1.getSujetId(), o2.getSujetId());
-				}
+			final List<FusionEntreprises> fusions = extractRapports(absorbante.getRapportsObjet(), FusionEntreprises.class, (o1, o2) -> {
+				// ordre croissant des identifiants des entreprises absorbées
+				return Long.compare(o1.getSujetId(), o2.getSujetId());
 			});
 			Assert.assertNotNull(fusions);
 			Assert.assertEquals(2, fusions.size());
@@ -2391,12 +2372,9 @@ public class MetierServicePMTest extends BusinessTest {
 			// 6. événements fiscaux
 			final Collection<EvenementFiscal> evts = evenementFiscalDAO.getEvenementsFiscaux(entreprise);
 			Assert.assertEquals(4, evts.size());        // 2 annulations de for + 2 ouvertures de for
-			final Map<EvenementFiscalFor.TypeEvenementFiscalFor, List<EvenementFiscal>> evtsParType = segmenter(evts, new Extractor<EvenementFiscal, EvenementFiscalFor.TypeEvenementFiscalFor>() {
-				@Override
-				public EvenementFiscalFor.TypeEvenementFiscalFor extract(EvenementFiscal source) {
-					Assert.assertTrue(source.getClass().getName(), source instanceof EvenementFiscalFor);
-					return ((EvenementFiscalFor) source).getType();
-				}
+			final Map<EvenementFiscalFor.TypeEvenementFiscalFor, List<EvenementFiscal>> evtsParType = segmenter(evts, source -> {
+				Assert.assertTrue(source.getClass().getName(), source instanceof EvenementFiscalFor);
+				return ((EvenementFiscalFor) source).getType();
 			});
 			Assert.assertEquals(EnumSet.of(EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE, EvenementFiscalFor.TypeEvenementFiscalFor.ANNULATION), evtsParType.keySet());
 			Assert.assertEquals(2, evtsParType.get(EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE).size());
@@ -2514,12 +2492,9 @@ public class MetierServicePMTest extends BusinessTest {
 			final Map<Boolean, List<RapportEntreTiers>> rets = segmenterAnnulables(rapportsSujet);
 			Assert.assertEquals(0, rets.get(Boolean.TRUE).size());
 			Assert.assertEquals(2, rets.get(Boolean.FALSE).size());
-			final Map<Boolean, List<RapportEntreTiers>> activitesEconomiques = segmenter(rets.get(Boolean.FALSE), new Extractor<RapportEntreTiers, Boolean>() {
-				@Override
-				public Boolean extract(RapportEntreTiers source) {
-					Assert.assertTrue(source.getClass().getName(), source instanceof ActiviteEconomique);
-					return ((ActiviteEconomique) source).isPrincipal();
-				}
+			final Map<Boolean, List<RapportEntreTiers>> activitesEconomiques = segmenter(rets.get(Boolean.FALSE), source -> {
+				Assert.assertTrue(source.getClass().getName(), source instanceof ActiviteEconomique);
+				return ((ActiviteEconomique) source).isPrincipal();
 			});
 			Assert.assertEquals(1, activitesEconomiques.get(Boolean.TRUE).size());
 			Assert.assertEquals(1, activitesEconomiques.get(Boolean.FALSE).size());
@@ -2696,12 +2671,9 @@ public class MetierServicePMTest extends BusinessTest {
 			Assert.assertEquals(dateDebutScindee, ffp.getDateDebut());
 			Assert.assertFalse(ffp.isAnnule());
 
-			final List<ScissionEntreprise> scissions = extractRapports(scindee.getRapportsSujet(), ScissionEntreprise.class, new Comparator<ScissionEntreprise>() {
-				@Override
-				public int compare(ScissionEntreprise o1, ScissionEntreprise o2) {
-					// ordre croissant des identifiants des entreprises résultantes
-					return Long.compare(o1.getObjetId(), o2.getObjetId());
-				}
+			final List<ScissionEntreprise> scissions = extractRapports(scindee.getRapportsSujet(), ScissionEntreprise.class, (o1, o2) -> {
+				// ordre croissant des identifiants des entreprises résultantes
+				return Long.compare(o1.getObjetId(), o2.getObjetId());
 			});
 			Assert.assertNotNull(scissions);
 			Assert.assertEquals(2, scissions.size());
@@ -2938,12 +2910,9 @@ public class MetierServicePMTest extends BusinessTest {
 			Assert.assertEquals(dateDebutScindee, ffp.getDateDebut());
 			Assert.assertFalse(ffp.isAnnule());
 
-			final List<ScissionEntreprise> scissions = extractRapports(scindee.getRapportsSujet(), ScissionEntreprise.class, new Comparator<ScissionEntreprise>() {
-				@Override
-				public int compare(ScissionEntreprise o1, ScissionEntreprise o2) {
-					// ordre croissant des identifiants des entreprises résultantes
-					return Long.compare(o1.getObjetId(), o2.getObjetId());
-				}
+			final List<ScissionEntreprise> scissions = extractRapports(scindee.getRapportsSujet(), ScissionEntreprise.class, (o1, o2) -> {
+				// ordre croissant des identifiants des entreprises résultantes
+				return Long.compare(o1.getObjetId(), o2.getObjetId());
 			});
 			Assert.assertNotNull(scissions);
 			Assert.assertEquals(2, scissions.size());
@@ -3172,12 +3141,9 @@ public class MetierServicePMTest extends BusinessTest {
 			Assert.assertEquals(dateDebutEmettrice, ffp.getDateDebut());
 			Assert.assertFalse(ffp.isAnnule());
 
-			final List<TransfertPatrimoine> transferts = extractRapports(emettrice.getRapportsSujet(), TransfertPatrimoine.class, new Comparator<TransfertPatrimoine>() {
-				@Override
-				public int compare(TransfertPatrimoine o1, TransfertPatrimoine o2) {
-					// ordre croissant des identifiants des entreprises réceptrices
-					return Long.compare(o1.getObjetId(), o2.getObjetId());
-				}
+			final List<TransfertPatrimoine> transferts = extractRapports(emettrice.getRapportsSujet(), TransfertPatrimoine.class, (o1, o2) -> {
+				// ordre croissant des identifiants des entreprises réceptrices
+				return Long.compare(o1.getObjetId(), o2.getObjetId());
 			});
 			Assert.assertNotNull(transferts);
 			Assert.assertEquals(2, transferts.size());
@@ -3413,12 +3379,9 @@ public class MetierServicePMTest extends BusinessTest {
 			Assert.assertEquals(dateDebutEmettrice, ffp.getDateDebut());
 			Assert.assertFalse(ffp.isAnnule());
 
-			final List<TransfertPatrimoine> transferts = extractRapports(emettrice.getRapportsSujet(), TransfertPatrimoine.class, new Comparator<TransfertPatrimoine>() {
-				@Override
-				public int compare(TransfertPatrimoine o1, TransfertPatrimoine o2) {
-					// ordre croissant des identifiants des entreprises réceptrices
-					return Long.compare(o1.getObjetId(), o2.getObjetId());
-				}
+			final List<TransfertPatrimoine> transferts = extractRapports(emettrice.getRapportsSujet(), TransfertPatrimoine.class, (o1, o2) -> {
+				// ordre croissant des identifiants des entreprises réceptrices
+				return Long.compare(o1.getObjetId(), o2.getObjetId());
 			});
 			Assert.assertNotNull(transferts);
 			Assert.assertEquals(2, transferts.size());

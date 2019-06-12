@@ -171,12 +171,9 @@ public class BordereauController {
 		MouvementDossierHelper.checkAccess(securityProvider);
 
 		try {
-			final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur> erreur = new RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur>() {
-				@Override
-				public String doJob(EditiqueResultatErreur resultat) {
-					Flash.error(resultat.getErrorMessage());
-					return buildRedirectToDetailAvantImpression(source, destination, typeMouvement);
-				}
+			final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur> erreur = resultat -> {
+				Flash.error(resultat.getErrorMessage());
+				return buildRedirectToDetailAvantImpression(source, destination, typeMouvement);
 			};
 
 			final EditiqueResultat resultat = mouvementManager.imprimerBordereau(ids);

@@ -17,7 +17,6 @@ import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.unireg.cache.CacheHelper;
 import ch.vd.unireg.cache.CacheStats;
-import ch.vd.unireg.cache.CompletePartsCallbackWithException;
 import ch.vd.unireg.cache.EhCacheStats;
 import ch.vd.unireg.cache.KeyDumpableCache;
 import ch.vd.unireg.cache.UniregCacheInterface;
@@ -124,13 +123,10 @@ public class PartyWebServiceCache implements UniregCacheInterface, KeyDumpableCa
 			}
 			else {
 				GetPartyValue value = (GetPartyValue) element.getObjectValue();
-				party = value.getValueForPartsAndCompleteIfNeeded(parts, new CompletePartsCallbackWithException<Party, PartyPart>() {
-					@Override
-					public Party getDeltaValue(Set<PartyPart> delta) throws Exception {
-						// on complète la liste des parts à la volée
-						final GetPartyRequest deltaRequest = new GetPartyRequest(params.getLogin(), params.getPartyNumber(), new ArrayList<>(delta));
-						return target.getParty(deltaRequest);
-					}
+				party = value.getValueForPartsAndCompleteIfNeeded(parts, delta -> {
+					// on complète la liste des parts à la volée
+					final GetPartyRequest deltaRequest = new GetPartyRequest(params.getLogin(), params.getPartyNumber(), new ArrayList<>(delta));
+					return target.getParty(deltaRequest);
 				});
 			}
 		}

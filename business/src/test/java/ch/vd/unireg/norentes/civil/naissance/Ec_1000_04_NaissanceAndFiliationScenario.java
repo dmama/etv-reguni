@@ -3,7 +3,6 @@ package ch.vd.unireg.norentes.civil.naissance;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.Predicate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
@@ -65,12 +64,7 @@ public class Ec_1000_04_NaissanceAndFiliationScenario extends EvenementCivilScen
 	@Check(id=1, descr="Vérifie qu'il n'y a pas de personne physique dans la base de données")
 	public void check1() {
 		final List<Tiers> list = tiersDAO.getAll();
-		CollectionUtils.filter(list, new Predicate<Tiers>() {
-			@Override
-			public boolean evaluate(Tiers object) {
-				return object instanceof PersonnePhysique;
-			}
-		});
+		CollectionUtils.filter(list, object -> object instanceof PersonnePhysique);
 		assertEquals(0, list.size(), "");
 	}
 
@@ -106,12 +100,7 @@ public class Ec_1000_04_NaissanceAndFiliationScenario extends EvenementCivilScen
 		checkEtatEvtCivils(2, EtatEvenementCivil.TRAITE);
 
 		final List<Tiers> list = tiersDAO.getAll();
-		CollectionUtils.filter(list, new Predicate<Tiers>() {
-			@Override
-			public boolean evaluate(Tiers object) {
-				return object instanceof PersonnePhysique;
-			}
-		});
+		CollectionUtils.filter(list, object -> object instanceof PersonnePhysique);
 		assertEquals(1, list.size(), "");
 
 		PersonnePhysique pierre = (PersonnePhysique)list.get(0);

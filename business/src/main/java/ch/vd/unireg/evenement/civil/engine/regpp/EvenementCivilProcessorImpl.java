@@ -10,13 +10,11 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.AuthenticationHelper;
-import ch.vd.unireg.common.CheckedTransactionCallback;
 import ch.vd.unireg.common.CheckedTransactionTemplate;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.evenement.EvenementCivilHelper;
@@ -127,30 +125,27 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 		AuthenticationHelper.pushPrincipal(String.format("EvtCivil-%d", evenementCivilId));
 		try {
 			// Tout d'abord, on essaie de traiter l'événement
-			result = template.execute(new CheckedTransactionCallback<Long>() {
-				@Override
-				public Long doInTransaction(TransactionStatus status) throws Exception {
+			result = template.execute(status -> {
 
-					final EvenementCivilMessageCollector<EvenementCivilRegPPErreur> collector = new EvenementCivilMessageCollector<>(ERREUR_FACTORY);
+				final EvenementCivilMessageCollector<EvenementCivilRegPPErreur> collector = new EvenementCivilMessageCollector<>(ERREUR_FACTORY);
 
-					// Charge l'événement
-					final EvenementCivilRegPP evenementCivilExterne = evenementCivilRegPPDAO.get(evenementCivilId);
-					if (evenementCivilExterne == null) {
-						throw new IllegalArgumentException("l'événement est null");
-					}
-
-					if (evenementCivilExterne.getEtat().isTraite()) {
-						LOGGER.warn("Tentative de traitement de l'événement n°" + evenementCivilId + " qui est déjà traité. Aucune opération effectuée.");
-						return evenementCivilExterne.getNumeroIndividuPrincipal();
-					}
-
-					// On enlève les erreurs précédentes
-					evenementCivilExterne.getErreurs().clear();
-
-					// Traitement de l'événement
-					final EtatEvenementCivil etat = traiteEvenement(evenementCivilExterne, refreshCache, collector, collector);
-					return traiteErreurs(etat, evenementCivilExterne, collector.getErreurs(), collector.getWarnings());
+				// Charge l'événement
+				final EvenementCivilRegPP evenementCivilExterne = evenementCivilRegPPDAO.get(evenementCivilId);
+				if (evenementCivilExterne == null) {
+					throw new IllegalArgumentException("l'événement est null");
 				}
+
+				if (evenementCivilExterne.getEtat().isTraite()) {
+					LOGGER.warn("Tentative de traitement de l'événement n°" + evenementCivilId + " qui est déjà traité. Aucune opération effectuée.");
+					return evenementCivilExterne.getNumeroIndividuPrincipal();
+				}
+
+				// On enlève les erreurs précédentes
+				evenementCivilExterne.getErreurs().clear();
+
+				// Traitement de l'événement
+				final EtatEvenementCivil etat = traiteEvenement(evenementCivilExterne, refreshCache, collector, collector);
+				return traiteErreurs(etat, evenementCivilExterne, collector.getErreurs(), collector.getWarnings());
 			});
 		}
 		catch (final Exception e) {

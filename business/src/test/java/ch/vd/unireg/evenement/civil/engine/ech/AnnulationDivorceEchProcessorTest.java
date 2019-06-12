@@ -145,18 +145,15 @@ public class AnnulationDivorceEchProcessorTest extends AbstractEvenementCivilEch
 		});
 
 		// réception de l'annulation de divorce de Monsieur
-		doModificationIndividu(noIndividuLui, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				final MockEtatCivilList list = individu.getEtatsCivils();
+		doModificationIndividu(noIndividuLui, individu -> {
+			final MockEtatCivilList list = individu.getEtatsCivils();
 
-				final EtatCivil separe = list.getEtatCivilAt(null);
-				Assert.assertEquals(TypeEtatCivil.DIVORCE, separe.getTypeEtatCivil());
-				list.remove(separe);
+			final EtatCivil separe = list.getEtatCivilAt(null);
+			Assert.assertEquals(TypeEtatCivil.DIVORCE, separe.getTypeEtatCivil());
+			list.remove(separe);
 
-				final MockEtatCivil marie = (MockEtatCivil) list.getEtatCivilAt(null);
-				Assert.assertEquals(TypeEtatCivil.MARIE, marie.getTypeEtatCivil());
-			}
+			final MockEtatCivil marie = (MockEtatCivil) list.getEtatCivilAt(null);
+			Assert.assertEquals(TypeEtatCivil.MARIE, marie.getTypeEtatCivil());
 		});
 		final long evtIdLui = doInNewTransactionAndSession(status -> {
 			final EvenementCivilEch evt = new EvenementCivilEch();
@@ -193,18 +190,15 @@ public class AnnulationDivorceEchProcessorTest extends AbstractEvenementCivilEch
 		});
 
 		// réception de l'événement civil d'annulation de divorce de Madame
-		doModificationIndividu(noIndividuElle, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				final MockEtatCivilList list = individu.getEtatsCivils();
+		doModificationIndividu(noIndividuElle, individu -> {
+			final MockEtatCivilList list = individu.getEtatsCivils();
 
-				final EtatCivil separe = list.getEtatCivilAt(null);
-				Assert.assertEquals(TypeEtatCivil.DIVORCE, separe.getTypeEtatCivil());
-				list.remove(separe);
+			final EtatCivil separe = list.getEtatCivilAt(null);
+			Assert.assertEquals(TypeEtatCivil.DIVORCE, separe.getTypeEtatCivil());
+			list.remove(separe);
 
-				final MockEtatCivil marie = (MockEtatCivil) list.getEtatCivilAt(null);
-				Assert.assertEquals(TypeEtatCivil.MARIE, marie.getTypeEtatCivil());
-			}
+			final MockEtatCivil marie = (MockEtatCivil) list.getEtatCivilAt(null);
+			Assert.assertEquals(TypeEtatCivil.MARIE, marie.getTypeEtatCivil());
 		});
 		final long evtIdElle = doInNewTransactionAndSession(status -> {
 			final EvenementCivilEch evt = new EvenementCivilEch();

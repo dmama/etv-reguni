@@ -3,7 +3,6 @@ package ch.vd.unireg.couple;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -274,13 +273,10 @@ public class CoupleManagerImplTest extends BusinessTest {
 
 			// on trie la liste par numéro de tiers : Arnold a été créé d'abord, il a donc un numéro de tiers plus petit
 			final List<DroitAcces> droits = new ArrayList<>(droitsPourOperateurOuvert);
-			Collections.sort(droits, new Comparator<DroitAcces>() {
-				@Override
-				public int compare(DroitAcces o1, DroitAcces o2) {
-					final long n1 = o1.getTiers().getNumero();
-					final long n2 = o2.getTiers().getNumero();
-					return n1 > n2 ? 1 : (n1 < n2 ? -1 : 0);
-				}
+			Collections.sort(droits, (o1, o2) -> {
+				final long n1 = o1.getTiers().getNumero();
+				final long n2 = o2.getTiers().getNumero();
+				return n1 > n2 ? 1 : (n1 < n2 ? -1 : 0);
 			});
 			final RegDate aujourdhui = RegDate.get();
 			{

@@ -236,12 +236,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 			Assert.assertEquals(2, erreurs.size());
 
 			final List<ErreurTraitement> sorted = new ArrayList<>(erreurs);
-			Collections.sort(sorted, new Comparator<ErreurTraitement>() {
-				@Override
-				public int compare(ErreurTraitement o1, ErreurTraitement o2) {
-					return o1.getMessage().compareTo(o2.getMessage());
-				}
-			});
+			Collections.sort(sorted, (o1, o2) -> o1.getMessage().compareTo(o2.getMessage()));
 
 			{
 				final ErreurTraitement erreur = sorted.get(0);
@@ -273,12 +268,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 			Assert.assertEquals(2, erreurs.size());
 
 			final List<ErreurTraitement> sorted = new ArrayList<>(erreurs);
-			Collections.sort(sorted, new Comparator<ErreurTraitement>() {
-				@Override
-				public int compare(ErreurTraitement o1, ErreurTraitement o2) {
-					return o1.getMessage().compareTo(o2.getMessage());
-				}
-			});
+			Collections.sort(sorted, (o1, o2) -> o1.getMessage().compareTo(o2.getMessage()));
 
 			{
 				final ErreurTraitement erreur = sorted.get(0);
@@ -339,12 +329,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 			Assert.assertEquals(2, erreurs.size());
 
 			final List<ErreurTraitement> sorted = new ArrayList<>(erreurs);
-			Collections.sort(sorted, new Comparator<ErreurTraitement>() {
-				@Override
-				public int compare(ErreurTraitement o1, ErreurTraitement o2) {
-					return o1.getMessage().compareTo(o2.getMessage());
-				}
-			});
+			Collections.sort(sorted, (o1, o2) -> o1.getMessage().compareTo(o2.getMessage()));
 
 			{
 				final ErreurTraitement erreur = sorted.get(0);
@@ -979,12 +964,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 			Assert.assertEquals(2, ut.getPartiesPrenantes().size());
 
 			final List<PartiePrenante> partiesPrenantes = new ArrayList<>(ut.getPartiesPrenantes());
-			Collections.sort(partiesPrenantes, new Comparator<PartiePrenante>() {
-				@Override
-				public int compare(PartiePrenante o1, PartiePrenante o2) {
-					return o1.getNom().compareTo(o2.getNom());
-				}
-			});
+			Collections.sort(partiesPrenantes, (o1, o2) -> o1.getNom().compareTo(o2.getNom()));
 			final Long arthur = partiesPrenantes.get(0).getNumeroContribuableCree();
 			final Long marie = partiesPrenantes.get(1).getNumeroContribuableCree();
 			Assert.assertNotNull(arthur);
@@ -995,18 +975,15 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 			Assert.assertEquals(3, allTiers.size());        // 2 PP + 1 MC
 
 			final List<ContribuableImpositionPersonnesPhysiques> allSortedTiers = new ArrayList<>(allTiers);
-			Collections.sort(allSortedTiers, new Comparator<Tiers>() {
-				@Override
-				public int compare(Tiers o1, Tiers o2) {
-					int result = o1.getNatureTiers().compareTo(o2.getNatureTiers());
-					if (result == 0) {
-						// les seuls qui ont la même nature sont les deux personnes physiques
-						final PersonnePhysique pp1 = (PersonnePhysique) o1;
-						final PersonnePhysique pp2 = (PersonnePhysique) o2;
-						result = pp1.getNom().compareTo(pp2.getNom());
-					}
-					return result;
+			Collections.sort(allSortedTiers, (Comparator<Tiers>) (o1, o2) -> {
+				int result = o1.getNatureTiers().compareTo(o2.getNatureTiers());
+				if (result == 0) {
+					// les seuls qui ont la même nature sont les deux personnes physiques
+					final PersonnePhysique pp1 = (PersonnePhysique) o1;
+					final PersonnePhysique pp2 = (PersonnePhysique) o2;
+					result = pp1.getNom().compareTo(pp2.getNom());
 				}
+				return result;
 			});
 
 			// et finalement, on obtient :
@@ -1340,18 +1317,15 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 			Assert.assertEquals(3, allTiers.size());        // 2 PP + 1 MC
 
 			final List<ContribuableImpositionPersonnesPhysiques> allSortedTiers = new ArrayList<>(allTiers);
-			Collections.sort(allSortedTiers, new Comparator<Tiers>() {
-				@Override
-				public int compare(Tiers o1, Tiers o2) {
-					int result = o1.getNatureTiers().compareTo(o2.getNatureTiers());
-					if (result == 0) {
-						// les seuls qui ont la même nature sont les deux personnes physiques
-						final PersonnePhysique pp1 = (PersonnePhysique) o1;
-						final PersonnePhysique pp2 = (PersonnePhysique) o2;
-						result = pp1.getNom().compareTo(pp2.getNom());
-					}
-					return result;
+			Collections.sort(allSortedTiers, (Comparator<Tiers>) (o1, o2) -> {
+				int result = o1.getNatureTiers().compareTo(o2.getNatureTiers());
+				if (result == 0) {
+					// les seuls qui ont la même nature sont les deux personnes physiques
+					final PersonnePhysique pp1 = (PersonnePhysique) o1;
+					final PersonnePhysique pp2 = (PersonnePhysique) o2;
+					result = pp1.getNom().compareTo(pp2.getNom());
 				}
+				return result;
 			});
 
 			// et finalement, on obtient :
@@ -1579,12 +1553,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 			Assert.assertEquals(2, allTiers.size());        // 1 PP + 1 MC
 
 			final List<ContribuableImpositionPersonnesPhysiques> allSortedTiers = new ArrayList<>(allTiers);
-			Collections.sort(allSortedTiers, new Comparator<Tiers>() {
-				@Override
-				public int compare(Tiers o1, Tiers o2) {
-					return o1.getNatureTiers().compareTo(o2.getNatureTiers());
-				}
-			});
+			Collections.sort(allSortedTiers, (Comparator<Tiers>) (o1, o2) -> o1.getNatureTiers().compareTo(o2.getNatureTiers()));
 
 			// et finalement, on obtient :
 			// 1. Marie O'Batayon
@@ -2899,18 +2868,15 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 			Assert.assertEquals(3, allTiers.size());        // 2 PP + 1 MC
 
 			final List<ContribuableImpositionPersonnesPhysiques> allSortedTiers = new ArrayList<>(allTiers);
-			Collections.sort(allSortedTiers, new Comparator<Tiers>() {
-				@Override
-				public int compare(Tiers o1, Tiers o2) {
-					int result = o1.getNatureTiers().compareTo(o2.getNatureTiers());
-					if (result == 0) {
-						// les seuls qui ont la même nature sont les deux personnes physiques
-						final PersonnePhysique pp1 = (PersonnePhysique) o1;
-						final PersonnePhysique pp2 = (PersonnePhysique) o2;
-						result = pp1.getPrenomUsuel().compareTo(pp2.getPrenomUsuel());
-					}
-					return result;
+			Collections.sort(allSortedTiers, (Comparator<Tiers>) (o1, o2) -> {
+				int result = o1.getNatureTiers().compareTo(o2.getNatureTiers());
+				if (result == 0) {
+					// les seuls qui ont la même nature sont les deux personnes physiques
+					final PersonnePhysique pp1 = (PersonnePhysique) o1;
+					final PersonnePhysique pp2 = (PersonnePhysique) o2;
+					result = pp1.getPrenomUsuel().compareTo(pp2.getPrenomUsuel());
 				}
+				return result;
 			});
 
 			// et l'ordre est finalement 1. Marcel, 2. Valentine, 3 le couple
@@ -3148,18 +3114,15 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 			Assert.assertEquals(3, allTiers.size());        // 2 PP + 1 MC
 
 			final List<ContribuableImpositionPersonnesPhysiques> allSortedTiers = new ArrayList<>(allTiers);
-			Collections.sort(allSortedTiers, new Comparator<Tiers>() {
-				@Override
-				public int compare(Tiers o1, Tiers o2) {
-					int result = o1.getNatureTiers().compareTo(o2.getNatureTiers());
-					if (result == 0) {
-						// les seuls qui ont la même nature sont les deux personnes physiques
-						final PersonnePhysique pp1 = (PersonnePhysique) o1;
-						final PersonnePhysique pp2 = (PersonnePhysique) o2;
-						result = pp1.getPrenomUsuel().compareTo(pp2.getPrenomUsuel());
-					}
-					return result;
+			Collections.sort(allSortedTiers, (Comparator<Tiers>) (o1, o2) -> {
+				int result = o1.getNatureTiers().compareTo(o2.getNatureTiers());
+				if (result == 0) {
+					// les seuls qui ont la même nature sont les deux personnes physiques
+					final PersonnePhysique pp1 = (PersonnePhysique) o1;
+					final PersonnePhysique pp2 = (PersonnePhysique) o2;
+					result = pp1.getPrenomUsuel().compareTo(pp2.getPrenomUsuel());
 				}
+				return result;
 			});
 
 			// et l'ordre est finalement 1. Marcel, 2. Valentine, 3 le couple
@@ -3412,18 +3375,15 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 			Assert.assertEquals(3, allTiers.size());        // 2 PP + 1 MC
 
 			final List<ContribuableImpositionPersonnesPhysiques> allSortedTiers = new ArrayList<>(allTiers);
-			Collections.sort(allSortedTiers, new Comparator<Tiers>() {
-				@Override
-				public int compare(Tiers o1, Tiers o2) {
-					int result = o1.getNatureTiers().compareTo(o2.getNatureTiers());
-					if (result == 0) {
-						// les seuls qui ont la même nature sont les deux personnes physiques
-						final PersonnePhysique pp1 = (PersonnePhysique) o1;
-						final PersonnePhysique pp2 = (PersonnePhysique) o2;
-						result = pp1.getPrenomUsuel().compareTo(pp2.getPrenomUsuel());
-					}
-					return result;
+			Collections.sort(allSortedTiers, (Comparator<Tiers>) (o1, o2) -> {
+				int result = o1.getNatureTiers().compareTo(o2.getNatureTiers());
+				if (result == 0) {
+					// les seuls qui ont la même nature sont les deux personnes physiques
+					final PersonnePhysique pp1 = (PersonnePhysique) o1;
+					final PersonnePhysique pp2 = (PersonnePhysique) o2;
+					result = pp1.getPrenomUsuel().compareTo(pp2.getPrenomUsuel());
 				}
+				return result;
 			});
 
 			// et l'ordre est finalement 1. Philippe, 2. Valentine, 3 le couple
@@ -3691,18 +3651,15 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 			Assert.assertEquals(3, allTiers.size());        // 2 PP + 1 MC
 
 			final List<ContribuableImpositionPersonnesPhysiques> allSortedTiers = new ArrayList<>(allTiers);
-			Collections.sort(allSortedTiers, new Comparator<Tiers>() {
-				@Override
-				public int compare(Tiers o1, Tiers o2) {
-					int result = o1.getNatureTiers().compareTo(o2.getNatureTiers());
-					if (result == 0) {
-						// les seuls qui ont la même nature sont les deux personnes physiques
-						final PersonnePhysique pp1 = (PersonnePhysique) o1;
-						final PersonnePhysique pp2 = (PersonnePhysique) o2;
-						result = pp1.getPrenomUsuel().compareTo(pp2.getPrenomUsuel());
-					}
-					return result;
+			Collections.sort(allSortedTiers, (Comparator<Tiers>) (o1, o2) -> {
+				int result = o1.getNatureTiers().compareTo(o2.getNatureTiers());
+				if (result == 0) {
+					// les seuls qui ont la même nature sont les deux personnes physiques
+					final PersonnePhysique pp1 = (PersonnePhysique) o1;
+					final PersonnePhysique pp2 = (PersonnePhysique) o2;
+					result = pp1.getPrenomUsuel().compareTo(pp2.getPrenomUsuel());
 				}
+				return result;
 			});
 
 			// et l'ordre est finalement 1. Philippe, 2. Valentine, 3 le couple
@@ -3871,18 +3828,15 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 			Assert.assertEquals(3, allTiers.size());        // 2 PP + 1 MC
 
 			final List<ContribuableImpositionPersonnesPhysiques> allSortedTiers = new ArrayList<>(allTiers);
-			Collections.sort(allSortedTiers, new Comparator<Tiers>() {
-				@Override
-				public int compare(Tiers o1, Tiers o2) {
-					int result = o1.getNatureTiers().compareTo(o2.getNatureTiers());
-					if (result == 0) {
-						// les seuls qui ont la même nature sont les deux personnes physiques
-						final PersonnePhysique pp1 = (PersonnePhysique) o1;
-						final PersonnePhysique pp2 = (PersonnePhysique) o2;
-						result = pp1.getPrenomUsuel().compareTo(pp2.getPrenomUsuel());
-					}
-					return result;
+			Collections.sort(allSortedTiers, (Comparator<Tiers>) (o1, o2) -> {
+				int result = o1.getNatureTiers().compareTo(o2.getNatureTiers());
+				if (result == 0) {
+					// les seuls qui ont la même nature sont les deux personnes physiques
+					final PersonnePhysique pp1 = (PersonnePhysique) o1;
+					final PersonnePhysique pp2 = (PersonnePhysique) o2;
+					result = pp1.getPrenomUsuel().compareTo(pp2.getPrenomUsuel());
 				}
+				return result;
 			});
 
 			// et l'ordre est finalement 1. Philippe, 2. Valentine, 3 le couple
@@ -4068,18 +4022,15 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 			Assert.assertEquals(3, allTiers.size());        // 2 PP + 1 MC
 
 			final List<ContribuableImpositionPersonnesPhysiques> allSortedTiers = new ArrayList<>(allTiers);
-			Collections.sort(allSortedTiers, new Comparator<Tiers>() {
-				@Override
-				public int compare(Tiers o1, Tiers o2) {
-					int result = o1.getNatureTiers().compareTo(o2.getNatureTiers());
-					if (result == 0) {
-						// les seuls qui ont la même nature sont les deux personnes physiques
-						final PersonnePhysique pp1 = (PersonnePhysique) o1;
-						final PersonnePhysique pp2 = (PersonnePhysique) o2;
-						result = pp1.getPrenomUsuel().compareTo(pp2.getPrenomUsuel());
-					}
-					return result;
+			Collections.sort(allSortedTiers, (Comparator<Tiers>) (o1, o2) -> {
+				int result = o1.getNatureTiers().compareTo(o2.getNatureTiers());
+				if (result == 0) {
+					// les seuls qui ont la même nature sont les deux personnes physiques
+					final PersonnePhysique pp1 = (PersonnePhysique) o1;
+					final PersonnePhysique pp2 = (PersonnePhysique) o2;
+					result = pp1.getPrenomUsuel().compareTo(pp2.getPrenomUsuel());
 				}
+				return result;
 			});
 
 			// et l'ordre est finalement 1. Philippe, 2. Valentine, 3 le couple
@@ -4249,18 +4200,15 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 			Assert.assertEquals(3, allTiers.size());        // 2 PP + 1 MC
 
 			final List<ContribuableImpositionPersonnesPhysiques> allSortedTiers = new ArrayList<>(allTiers);
-			Collections.sort(allSortedTiers, new Comparator<Tiers>() {
-				@Override
-				public int compare(Tiers o1, Tiers o2) {
-					int result = o1.getNatureTiers().compareTo(o2.getNatureTiers());
-					if (result == 0) {
-						// les seuls qui ont la même nature sont les deux personnes physiques
-						final PersonnePhysique pp1 = (PersonnePhysique) o1;
-						final PersonnePhysique pp2 = (PersonnePhysique) o2;
-						result = pp1.getPrenomUsuel().compareTo(pp2.getPrenomUsuel());
-					}
-					return result;
+			Collections.sort(allSortedTiers, (Comparator<Tiers>) (o1, o2) -> {
+				int result = o1.getNatureTiers().compareTo(o2.getNatureTiers());
+				if (result == 0) {
+					// les seuls qui ont la même nature sont les deux personnes physiques
+					final PersonnePhysique pp1 = (PersonnePhysique) o1;
+					final PersonnePhysique pp2 = (PersonnePhysique) o2;
+					result = pp1.getPrenomUsuel().compareTo(pp2.getPrenomUsuel());
 				}
+				return result;
 			});
 
 			// et l'ordre est finalement 1. Philippe, 2. Valentine, 3 le couple
@@ -4423,12 +4371,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 			Assert.assertEquals(2, ffs.size());
 
 			final List<ForFiscal> sortedFors = new ArrayList<>(ffs);
-			Collections.sort(sortedFors, new Comparator<ForFiscal>() {
-				@Override
-				public int compare(ForFiscal o1, ForFiscal o2) {
-					return Boolean.compare(o1.isPrincipal(), o2.isPrincipal());
-				}
-			});
+			Collections.sort(sortedFors, (o1, o2) -> Boolean.compare(o1.isPrincipal(), o2.isPrincipal()));
 
 			// d'abord le secondaire, ensuite le principal
 			{
@@ -5588,18 +5531,15 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 			Assert.assertEquals(3, allTiers.size());        // 2 PP + 1 MC
 
 			final List<ContribuableImpositionPersonnesPhysiques> allSortedTiers = new ArrayList<>(allTiers);
-			Collections.sort(allSortedTiers, new Comparator<Tiers>() {
-				@Override
-				public int compare(Tiers o1, Tiers o2) {
-					int result = o1.getNatureTiers().compareTo(o2.getNatureTiers());
-					if (result == 0) {
-						// les seuls qui ont la même nature sont les deux personnes physiques
-						final PersonnePhysique pp1 = (PersonnePhysique) o1;
-						final PersonnePhysique pp2 = (PersonnePhysique) o2;
-						result = pp1.getPrenomUsuel().compareTo(pp2.getPrenomUsuel());
-					}
-					return result;
+			Collections.sort(allSortedTiers, (Comparator<Tiers>) (o1, o2) -> {
+				int result = o1.getNatureTiers().compareTo(o2.getNatureTiers());
+				if (result == 0) {
+					// les seuls qui ont la même nature sont les deux personnes physiques
+					final PersonnePhysique pp1 = (PersonnePhysique) o1;
+					final PersonnePhysique pp2 = (PersonnePhysique) o2;
+					result = pp1.getPrenomUsuel().compareTo(pp2.getPrenomUsuel());
 				}
+				return result;
 			});
 
 			// et finalement, on obtient :
@@ -5630,15 +5570,12 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertEquals(3, ffs.size());
 
 				final List<ForFiscal> sortedFors = new ArrayList<>(ffs);
-				Collections.sort(sortedFors, new Comparator<ForFiscal>() {
-					@Override
-					public int compare(ForFiscal o1, ForFiscal o2) {
-						int comparison = Boolean.compare(o1.isPrincipal(), o2.isPrincipal());
-						if (comparison == 0) {
-							comparison = o1.getNumeroOfsAutoriteFiscale() - o2.getNumeroOfsAutoriteFiscale();
-						}
-						return comparison;
+				Collections.sort(sortedFors, (o1, o2) -> {
+					int comparison = Boolean.compare(o1.isPrincipal(), o2.isPrincipal());
+					if (comparison == 0) {
+						comparison = o1.getNumeroOfsAutoriteFiscale() - o2.getNumeroOfsAutoriteFiscale();
 					}
+					return comparison;
 				});
 
 				// d'abord les secondaires (par ordre de numéro OFS de commune), ensuite le principal
@@ -5763,18 +5700,15 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 			Assert.assertEquals(3, allTiers.size());        // 2 PP + 1 MC
 
 			final List<ContribuableImpositionPersonnesPhysiques> allSortedTiers = new ArrayList<>(allTiers);
-			Collections.sort(allSortedTiers, new Comparator<Tiers>() {
-				@Override
-				public int compare(Tiers o1, Tiers o2) {
-					int result = o1.getNatureTiers().compareTo(o2.getNatureTiers());
-					if (result == 0) {
-						// les seuls qui ont la même nature sont les deux personnes physiques
-						final PersonnePhysique pp1 = (PersonnePhysique) o1;
-						final PersonnePhysique pp2 = (PersonnePhysique) o2;
-						result = pp1.getPrenomUsuel().compareTo(pp2.getPrenomUsuel());
-					}
-					return result;
+			Collections.sort(allSortedTiers, (Comparator<Tiers>) (o1, o2) -> {
+				int result = o1.getNatureTiers().compareTo(o2.getNatureTiers());
+				if (result == 0) {
+					// les seuls qui ont la même nature sont les deux personnes physiques
+					final PersonnePhysique pp1 = (PersonnePhysique) o1;
+					final PersonnePhysique pp2 = (PersonnePhysique) o2;
+					result = pp1.getPrenomUsuel().compareTo(pp2.getPrenomUsuel());
 				}
+				return result;
 			});
 
 			// et finalement, on obtient :

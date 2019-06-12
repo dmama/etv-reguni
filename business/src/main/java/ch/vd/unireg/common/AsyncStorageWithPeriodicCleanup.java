@@ -48,23 +48,20 @@ public class AsyncStorageWithPeriodicCleanup<K, V> extends AsyncStorage<K, V> {
 		@Override
 		public final void run() {
 			try {
-				doInLockedEnvironment(new Action<K, V, Object>() {
-					@Override
-					public Object execute(Iterable<Map.Entry<K, Mutable<V>>> entries) {
-						final Iterator<Map.Entry<K, Mutable<V>>> iterator = entries.iterator();
-						final Instant now = InstantHelper.get();
-						final Instant lastAcceptedTimestamp = now.minus(getMaximumAcceptedAge());
-						while (iterator.hasNext()) {
-							final Map.Entry<K, Mutable<V>> entry = iterator.next();
-							final CleanupMutableObject<V> dataHolder = (CleanupMutableObject<V>) entry.getValue();
-							final Instant responseArrivalTime = dataHolder.ts;
-							if (responseArrivalTime.isBefore(lastAcceptedTimestamp)) {
-								onPurge(entry.getKey(), dataHolder.getValue());
-								iterator.remove();
-							}
+				doInLockedEnvironment(entries -> {
+					final Iterator<Map.Entry<K, Mutable<V>>> iterator = entries.iterator();
+					final Instant now = InstantHelper.get();
+					final Instant lastAcceptedTimestamp = now.minus(getMaximumAcceptedAge());
+					while (iterator.hasNext()) {
+						final Map.Entry<K, Mutable<V>> entry = iterator.next();
+						final CleanupMutableObject<V> dataHolder = (CleanupMutableObject<V>) entry.getValue();
+						final Instant responseArrivalTime = dataHolder.ts;
+						if (responseArrivalTime.isBefore(lastAcceptedTimestamp)) {
+							onPurge(entry.getKey(), dataHolder.getValue());
+							iterator.remove();
 						}
-						return null;
 					}
+					return null;
 				});
 			}
 			catch (Exception e) {

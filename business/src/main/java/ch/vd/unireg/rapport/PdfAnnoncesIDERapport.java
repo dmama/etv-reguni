@@ -4,7 +4,6 @@ import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
 
-import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.date.DateHelper;
@@ -40,12 +39,7 @@ public class PdfAnnoncesIDERapport extends PdfRapport {
 		// Paramètres
 		addEntete1("Paramètre");
 		{
-			addTableSimple(2, new TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Simulation : ", String.valueOf(simulation));
-				}
-			});
+			addTableSimple(2, table -> table.addLigne("Simulation : ", String.valueOf(simulation)));
 		}
 
 		// Résultats
@@ -56,14 +50,11 @@ public class PdfAnnoncesIDERapport extends PdfRapport {
 						           + "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
-			addTableSimple(2, new TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Nombre total d'actions menées :", String.valueOf(results.getAnnoncesIDE().size()));
-					table.addLigne("Nombre total d'erreurs :", String.valueOf(results.getExceptions().size()));
-					table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
-					table.addLigne("Date de génération : ", formatTimestamp(dateGeneration));
-				}
+			addTableSimple(2, table -> {
+				table.addLigne("Nombre total d'actions menées :", String.valueOf(results.getAnnoncesIDE().size()));
+				table.addLigne("Nombre total d'erreurs :", String.valueOf(results.getExceptions().size()));
+				table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
+				table.addLigne("Date de génération : ", formatTimestamp(dateGeneration));
 			});
 		}
 

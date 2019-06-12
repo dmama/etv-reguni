@@ -3,7 +3,6 @@ package ch.vd.unireg.interfaces;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import org.junit.Test;
@@ -158,12 +157,7 @@ public class ServiceCivilRcPersTest extends BusinessItTest {
 		assertEquals(2, origines.size());
 
 		final List<Origine> originesList = new ArrayList<>(origines);
-		Collections.sort(originesList, new Comparator<Origine>() {
-			@Override
-			public int compare(Origine o1, Origine o2) {
-				return o1.getNomLieu().compareTo(o2.getNomLieu());
-			}
-		});
+		Collections.sort(originesList, (o1, o2) -> o1.getNomLieu().compareTo(o2.getNomLieu()));
 
 		final Origine origine0 = originesList.get(0);
 		assertNotNull(origine0);

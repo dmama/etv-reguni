@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -2255,12 +2254,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		assertEquals(2, data.size());       // les deux bouclements
 
 		final List<InfoContribuablePM> sortedData = new ArrayList<>(data);
-		Collections.sort(sortedData, new Comparator<InfoContribuablePM>() {
-			@Override
-			public int compare(InfoContribuablePM o1, InfoContribuablePM o2) {
-				return NullDateBehavior.LATEST.compare(o1.getDateBouclement(), o2.getDateBouclement());
-			}
-		});
+		Collections.sort(sortedData, (o1, o2) -> NullDateBehavior.LATEST.compare(o1.getDateBouclement(), o2.getDateBouclement()));
 
 		{
 			final InfoContribuablePM info = sortedData.get(0);
@@ -2391,12 +2385,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		assertEquals(2, data.size());       // les deux bouclements
 
 		final List<InfoContribuablePM> sortedData = new ArrayList<>(data);
-		Collections.sort(sortedData, new Comparator<InfoContribuablePM>() {
-			@Override
-			public int compare(InfoContribuablePM o1, InfoContribuablePM o2) {
-				return NullDateBehavior.LATEST.compare(o1.getDateBouclement(), o2.getDateBouclement());
-			}
-		});
+		Collections.sort(sortedData, (o1, o2) -> NullDateBehavior.LATEST.compare(o1.getDateBouclement(), o2.getDateBouclement()));
 
 		// avec le rôles pour l'OIPM, on se place au niveau cantonal global ; c'est ainsi que le rôle présenté pour
 		// la commune de Lausanne se poursuit dans la PF suivante (= à Morges, toujours dans le canton), et que le for

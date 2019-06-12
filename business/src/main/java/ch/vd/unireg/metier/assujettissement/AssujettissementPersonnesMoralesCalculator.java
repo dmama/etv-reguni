@@ -16,11 +16,11 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.infra.data.ModeExoneration;
-import ch.vd.unireg.interfaces.infra.data.PlageExonerationFiscale;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.common.MovingWindow;
+import ch.vd.unireg.interfaces.infra.data.ModeExoneration;
+import ch.vd.unireg.interfaces.infra.data.PlageExonerationFiscale;
 import ch.vd.unireg.metier.bouclement.ExerciceCommercial;
 import ch.vd.unireg.metier.common.ForFiscalPrincipalContext;
 import ch.vd.unireg.metier.common.Fraction;
@@ -87,28 +87,25 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 	/**
 	 * Détermine les fors fiscaux à prendre en compte pour la répartition sur les communes vaudoises
 	 */
-	public static final AssujettissementSurCommuneAnalyzer COMMUNE_ANALYZER = new AssujettissementSurCommuneAnalyzer() {
-		@Override
-		public List<ForFiscalRevenuFortune> getForsVaudoisDeterminantsPourCommunes(Assujettissement assujettissement) {
-			// pour l'assujettissement PM, les fors déterminants sont :
-			// - tous les fors secondaires dans la période
-			// - le dernier for principal vaudois de la période
+	public static final AssujettissementSurCommuneAnalyzer COMMUNE_ANALYZER = assujettissement -> {
+		// pour l'assujettissement PM, les fors déterminants sont :
+		// - tous les fors secondaires dans la période
+		// - le dernier for principal vaudois de la période
 
-			final DecompositionFors fors = assujettissement.getFors();
-			final List<ForFiscalRevenuFortune> determinants = new ArrayList<>(1 + fors.secondairesDansLaPeriode.size());
-			for (ForFiscalPrincipal ffp : CollectionsUtils.revertedOrder(fors.principauxDansLaPeriode)) {
-				if (ffp != null && ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-					determinants.add(ffp);
-					break;
-				}
+		final DecompositionFors fors = assujettissement.getFors();
+		final List<ForFiscalRevenuFortune> determinants = new ArrayList<>(1 + fors.secondairesDansLaPeriode.size());
+		for (ForFiscalPrincipal ffp : CollectionsUtils.revertedOrder(fors.principauxDansLaPeriode)) {
+			if (ffp != null && ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+				determinants.add(ffp);
+				break;
 			}
-			for (ForFiscalSecondaire ffs : fors.secondairesDansLaPeriode) {
-				if (ffs != null && ffs.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-					determinants.add(ffs);
-				}
-			}
-			return determinants;
 		}
+		for (ForFiscalSecondaire ffs : fors.secondairesDansLaPeriode) {
+			if (ffs != null && ffs.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+				determinants.add(ffs);
+			}
+		}
+		return determinants;
 	};
 
 	/**
@@ -202,17 +199,12 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 		}
 
 		// Masquer les ranges d'assujettissement d'après la liste
-		return DateRangeHelper.subtract(data, periodesAExclure, new DateRangeHelper.AdapterCallback<Data>() {
-			@Override
-			public Data adapt(Data range, RegDate debut, RegDate fin) {
-				return new Data(debut != null ? debut : range.getDateDebut(),
-				                fin != null ? fin : range.getDateFin(),
-				                range.type,
-				                debut != null && debut != range.getDateDebut() ? MotifAssujettissement.EXONERATION : range.motifDebut,
-				                fin != null && fin != range.getDateFin() ? MotifAssujettissement.EXONERATION : range.motifFin,
-				                range.typeAutoriteFiscale);
-			}
-		});
+		return DateRangeHelper.subtract(data, periodesAExclure, (range, debut, fin) -> new Data(debut != null ? debut : range.getDateDebut(),
+                                                                                        fin != null ? fin : range.getDateFin(),
+                                                                                        range.type,
+                                                                                        debut != null && debut != range.getDateDebut() ? MotifAssujettissement.EXONERATION : range.motifDebut,
+                                                                                        fin != null && fin != range.getDateFin() ? MotifAssujettissement.EXONERATION : range.motifFin,
+                                                                                        range.typeAutoriteFiscale));
 	}
 
 	private static boolean isExonerationTotaleIBC(RegimeFiscalConsolide rf, int periode) {

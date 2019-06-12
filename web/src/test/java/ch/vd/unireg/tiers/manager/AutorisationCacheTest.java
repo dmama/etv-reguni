@@ -134,17 +134,14 @@ public class AutorisationCacheTest extends WebTest {
 		Assert.assertTrue(cache.hasCachedData(ids.ppMenageCommun, visaOperateur, 5));
 
 		// départ de Monsieur, partie civile
-		doModificationIndividu(noIndividuLui, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				final MockAdresse oldAddress = (MockAdresse) individu.getAdresses().iterator().next();
-				oldAddress.setDateFinValidite(dateDepart);
-				oldAddress.setLocalisationSuivante(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Geneve.getNoOFS(), null));
+		doModificationIndividu(noIndividuLui, individu -> {
+			final MockAdresse oldAddress = (MockAdresse) individu.getAdresses().iterator().next();
+			oldAddress.setDateFinValidite(dateDepart);
+			oldAddress.setLocalisationSuivante(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Geneve.getNoOFS(), null));
 
-				final MockAdresse newAddress = new MockAdresse(TypeAdresseCivil.COURRIER, MockRue.Geneve.AvenueGuiseppeMotta, null, dateDepart.getOneDayAfter(), null);
-				newAddress.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Cossonay.getNoOFS(), null));
-				individu.addAdresse(newAddress);
-			}
+			final MockAdresse newAddress = new MockAdresse(TypeAdresseCivil.COURRIER, MockRue.Geneve.AvenueGuiseppeMotta, null, dateDepart.getOneDayAfter(), null);
+			newAddress.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Cossonay.getNoOFS(), null));
+			individu.addAdresse(newAddress);
 		});
 
 		// départ de Monsieur, partie fiscale
@@ -172,18 +169,15 @@ public class AutorisationCacheTest extends WebTest {
 		Assert.assertTrue(cache.hasCachedData(ids.ppMenageCommun, visaOperateur, 5));
 
 		// départ de Madame, partie civile
-		doModificationIndividu(noIndividuElle, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				// recalcul du flag "habitant" sur Madame
-				final MockAdresse oldAddress = (MockAdresse) individu.getAdresses().iterator().next();
-				oldAddress.setDateFinValidite(dateDepart);
-				oldAddress.setLocalisationSuivante(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Geneve.getNoOFS(), null));
+		doModificationIndividu(noIndividuElle, individu -> {
+			// recalcul du flag "habitant" sur Madame
+			final MockAdresse oldAddress = (MockAdresse) individu.getAdresses().iterator().next();
+			oldAddress.setDateFinValidite(dateDepart);
+			oldAddress.setLocalisationSuivante(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Geneve.getNoOFS(), null));
 
-				final MockAdresse newAddress = new MockAdresse(TypeAdresseCivil.COURRIER, MockRue.Geneve.AvenueGuiseppeMotta, null, dateDepart.getOneDayAfter(), null);
-				newAddress.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Cossonay.getNoOFS(), null));
-				individu.addAdresse(newAddress);
-			}
+			final MockAdresse newAddress = new MockAdresse(TypeAdresseCivil.COURRIER, MockRue.Geneve.AvenueGuiseppeMotta, null, dateDepart.getOneDayAfter(), null);
+			newAddress.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Cossonay.getNoOFS(), null));
+			individu.addAdresse(newAddress);
 		});
 
 		// départ de Madame, partie fiscale

@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.EnumSet;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -29,7 +28,6 @@ import ch.vd.unireg.security.Role;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.TiersCriteria;
 import ch.vd.unireg.tiers.view.TiersCriteriaView;
-import ch.vd.unireg.transaction.TransactionHelper;
 import ch.vd.unireg.type.TypeEtatEntreprise;
 
 @Controller
@@ -98,48 +96,37 @@ public class RequisitionRadiationRCController extends AbstractProcessusComplexeR
 		}
 		controllerUtils.checkTraitementContribuableAvecDecisionAci(view.getIdEntreprise());
 
-		return doInTransaction(new TransactionHelper.ExceptionThrowingCallback<String, MetierServiceException>() {
-			@Override
-			public String execute(TransactionStatus status) throws MetierServiceException {
-				final Entreprise entreprise = getTiers(Entreprise.class, view.getIdEntreprise());
-				metierService.finActivite(entreprise, view.getDateFinActivite(), view.getRemarque());
+		return doInTransaction(status -> {
+			final Entreprise entreprise = getTiers(Entreprise.class, view.getIdEntreprise());
+			metierService.finActivite(entreprise, view.getDateFinActivite(), view.getRemarque());
 
-				final String redirect = String.format("redirect:/tiers/visu.do?id=%d", view.getIdEntreprise());
-				if (!validationService.validate(entreprise).hasErrors() && view.isImprimerDemandeBilanFinal()) {
-					try {
-						final EditiqueResultat editique = autreDocumentFiscalService.envoyerDemandeBilanFinalOnline(entreprise, RegDate.get(), view.getPeriodeFiscale(), view.getDateFinActivite());
+			final String redirect = String.format("redirect:/tiers/visu.do?id=%d", view.getIdEntreprise());
+			if (!validationService.validate(entreprise).hasErrors() && view.isImprimerDemandeBilanFinal()) {
+				try {
+					final EditiqueResultat editique = autreDocumentFiscalService.envoyerDemandeBilanFinalOnline(entreprise, RegDate.get(), view.getPeriodeFiscale(), view.getDateFinActivite());
 
-						final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox> inbox =
-								new RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox>() {
-									@Override
-									public String doJob(EditiqueResultatReroutageInbox resultat) {
-										return redirect;
-									}
-								};
+					final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox> inbox =
+							resultat -> redirect;
 
-						final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur> erreur = new RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur>() {
-							@Override
-							public String doJob(EditiqueResultatErreur resultat) {
-								Flash.error(EditiqueErrorHelper.getMessageErreurEditique(resultat));
-								return redirect;
-							}
-						};
+					final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur> erreur = resultat -> {
+						Flash.error(EditiqueErrorHelper.getMessageErreurEditique(resultat));
+						return redirect;
+					};
 
-						return retourEditiqueHelper.traiteRetourEditiqueAfterRedirect(editique,
-						                                                              "demandeBilanFinal",
-						                                                              redirect,
-						                                                              true,
-						                                                              inbox,
-						                                                              null,
-						                                                              erreur);
-					}
-					catch (AutreDocumentFiscalException | IOException e) {
-						throw new MetierServiceException(e);
-					}
+					return retourEditiqueHelper.traiteRetourEditiqueAfterRedirect(editique,
+					                                                              "demandeBilanFinal",
+					                                                              redirect,
+					                                                              true,
+					                                                              inbox,
+					                                                              null,
+					                                                              erreur);
 				}
-				else {
-					return redirect;
+				catch (AutreDocumentFiscalException | IOException e) {
+					throw new MetierServiceException(e);
 				}
+			}
+			else {
+				return redirect;
 			}
 		});
 	}

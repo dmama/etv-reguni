@@ -51,16 +51,13 @@ public class EFactureResponseServiceTest extends WithoutSpringTest {
 		// et on commence tout de suite à attendre
 
 		final String businessId = "Ma réponse";
-		final Thread thread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					Thread.sleep(200);
-					service.onNewResponse(businessId);
-				}
-				catch (InterruptedException e) {
-					throw new RuntimeException(e);
-				}
+		final Thread thread = new Thread(() -> {
+			try {
+				Thread.sleep(200);
+				service.onNewResponse(businessId);
+			}
+			catch (InterruptedException e) {
+				throw new RuntimeException(e);
 			}
 		});
 		thread.start();

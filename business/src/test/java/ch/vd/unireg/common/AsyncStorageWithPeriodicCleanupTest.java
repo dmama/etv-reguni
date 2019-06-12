@@ -39,16 +39,13 @@ public class AsyncStorageWithPeriodicCleanupTest<S extends AsyncStorageWithPerio
 		final String keyLate = "Retardataire...";
 
 		service.add(key, null);
-		final Thread thread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					Thread.sleep(1800);
-					service.add(keyLate, null);
-				}
-				catch (InterruptedException e) {
-					throw new RuntimeException(e);
-				}
+		final Thread thread = new Thread(() -> {
+			try {
+				Thread.sleep(1800);
+				service.add(keyLate, null);
+			}
+			catch (InterruptedException e) {
+				throw new RuntimeException(e);
 			}
 		});
 		thread.start();

@@ -71,12 +71,7 @@ public class EvenementCivilEchIssuDe99ProcessorTest extends AbstractEvenementCiv
 		}
 
 		// maintenant, on change le prénom
-		doModificationIndividu(noIndividu, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				individu.setPrenomUsuel("Adriana");
-			}
-		});
+		doModificationIndividu(noIndividu, individu -> individu.setPrenomUsuel("Adriana"));
 
 		final long evtId;
 		AuthenticationHelper.pushPrincipal(EvenementCivilEchSourceHelper.getVisaForEch99());
@@ -168,12 +163,7 @@ public class EvenementCivilEchIssuDe99ProcessorTest extends AbstractEvenementCiv
 		}
 
 		// maintenant, on change le prénom
-		doModificationIndividu(noIndividu, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				individu.setPrenomUsuel("Adriana");
-			}
-		});
+		doModificationIndividu(noIndividu, individu -> individu.setPrenomUsuel("Adriana"));
 
 		final long evtId;
 		AuthenticationHelper.pushPrincipal(EvenementCivilEchSourceHelper.getVisaForEch99());
@@ -253,12 +243,9 @@ public class EvenementCivilEchIssuDe99ProcessorTest extends AbstractEvenementCiv
 		});
 
 		// maintenant, on change l'origine
-		doModificationIndividu(noIndividu, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				final MockOrigine nlleOrigine = new MockOrigine(MockCommune.Pully.getNomOfficiel(), InfrastructureConnector.SIGLE_CANTON_VD);
-				individu.setOrigines(Collections.<Origine>singletonList(nlleOrigine));
-			}
+		doModificationIndividu(noIndividu, individu -> {
+			final MockOrigine nlleOrigine = new MockOrigine(MockCommune.Pully.getNomOfficiel(), InfrastructureConnector.SIGLE_CANTON_VD);
+			individu.setOrigines(Collections.<Origine>singletonList(nlleOrigine));
 		});
 
 		final long evtId;

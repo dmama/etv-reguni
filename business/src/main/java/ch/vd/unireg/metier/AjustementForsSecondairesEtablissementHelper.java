@@ -109,26 +109,23 @@ public class AjustementForsSecondairesEtablissementHelper {
 					forCandidatsPourCommune.addAll(resultatCandidats);
 
 					// Déterminer et réinjecter les fors secondaires sans genre correspondant aux périodes non couvertes par un for principal
-					final List<ForFiscalSecondaire> nonCouverts = DateRangeHelper.subtract(forSecondaireSansGenre, resultatCandidats,  new DateRangeHelper.AdapterCallback<ForFiscalSecondaire>() {
-						@Override
-						public ForFiscalSecondaire adapt(ForFiscalSecondaire range, RegDate debut, RegDate fin) {
-							final RegDate dateOuverture = debut != null ? debut : range.getDateDebut();
-							MotifFor motifOuverture = range.getMotifOuverture();
-							if (debut != null && debut.isAfter(range.getDateDebut())) {
-								motifOuverture = MotifFor.CHGT_MODE_IMPOSITION;
-							}
-							final RegDate dateFermeture = fin != null ? fin : range.getDateFin();
-							MotifFor motifFermeture = range.getMotifFermeture();
-							if (motifFermeture == null || fin != null && fin.isBefore(range.getDateFin())) {
-								motifFermeture = MotifFor.CHGT_MODE_IMPOSITION;
-							}
-							final ForFiscalSecondaire nouveauForFiscalSecondaire =
-									new ForFiscalSecondaire(dateOuverture, motifOuverture, dateFermeture, dateFermeture != null ? motifFermeture : null,
-									                        range.getNumeroOfsAutoriteFiscale(), range.getTypeAutoriteFiscale(), range.getMotifRattachement());
-							nouveauForFiscalSecondaire.setGenreImpot(null);
-
-							return nouveauForFiscalSecondaire;
+					final List<ForFiscalSecondaire> nonCouverts = DateRangeHelper.subtract(forSecondaireSansGenre, resultatCandidats, (range, debut, fin) -> {
+						final RegDate dateOuverture = debut != null ? debut : range.getDateDebut();
+						MotifFor motifOuverture = range.getMotifOuverture();
+						if (debut != null && debut.isAfter(range.getDateDebut())) {
+							motifOuverture = MotifFor.CHGT_MODE_IMPOSITION;
 						}
+						final RegDate dateFermeture = fin != null ? fin : range.getDateFin();
+						MotifFor motifFermeture = range.getMotifFermeture();
+						if (motifFermeture == null || fin != null && fin.isBefore(range.getDateFin())) {
+							motifFermeture = MotifFor.CHGT_MODE_IMPOSITION;
+						}
+						final ForFiscalSecondaire nouveauForFiscalSecondaire =
+								new ForFiscalSecondaire(dateOuverture, motifOuverture, dateFermeture, dateFermeture != null ? motifFermeture : null,
+								                        range.getNumeroOfsAutoriteFiscale(), range.getTypeAutoriteFiscale(), range.getMotifRattachement());
+						nouveauForFiscalSecondaire.setGenreImpot(null);
+
+						return nouveauForFiscalSecondaire;
 					});
 					forCandidatsPourCommune.addAll(nonCouverts);
 					forCandidatsPourCommune.sort(new DateRangeComparator<>());
@@ -220,21 +217,18 @@ public class AjustementForsSecondairesEtablissementHelper {
 		List<ForFiscalSecondaire> resultat = new ArrayList<>();
 		// Extraire les fors principaux correspondant à la période du for secondaire. On en a besoin pour arriver à distinguer le début/fin d'activité du changements de genre d'impôt. Voir ci-dessous.
 		final List<ForFiscalPrincipalPM> forsPrincipauxPourForSecondairesACreer =
-				DateRangeHelper.extract(forsFiscauxPrincipaux, forFiscalSecondaireModele.getDateDebut(), forFiscalSecondaireModele.getDateFin(), new DateRangeHelper.AdapterCallback<ForFiscalPrincipalPM>() {
-					@Override
-					public ForFiscalPrincipalPM adapt(ForFiscalPrincipalPM range, RegDate debut, RegDate fin) {
-						ForFiscalPrincipalPM nouveauForFiscalPrincipalPM = new ForFiscalPrincipalPM(
-								debut != null ? debut : range.getDateDebut(),
-								range.getMotifOuverture(),
-								fin != null ? fin : range.getDateFin(),
-								range.getMotifFermeture(),
-								range.getNumeroOfsAutoriteFiscale(),
-								range.getTypeAutoriteFiscale(),
-								range.getMotifRattachement()
-						);
-						nouveauForFiscalPrincipalPM.setGenreImpot(range.getGenreImpot());
-						return nouveauForFiscalPrincipalPM;
-					}
+				DateRangeHelper.extract(forsFiscauxPrincipaux, forFiscalSecondaireModele.getDateDebut(), forFiscalSecondaireModele.getDateFin(), (range, debut, fin) -> {
+					ForFiscalPrincipalPM nouveauForFiscalPrincipalPM = new ForFiscalPrincipalPM(
+							debut != null ? debut : range.getDateDebut(),
+							range.getMotifOuverture(),
+							fin != null ? fin : range.getDateFin(),
+							range.getMotifFermeture(),
+							range.getNumeroOfsAutoriteFiscale(),
+							range.getTypeAutoriteFiscale(),
+							range.getMotifRattachement()
+					);
+					nouveauForFiscalPrincipalPM.setGenreImpot(range.getGenreImpot());
+					return nouveauForFiscalPrincipalPM;
 				});
 
 		// Classer les fors principaux par genre d'impot
@@ -247,26 +241,23 @@ public class AjustementForsSecondairesEtablissementHelper {
 
 			// On extrait les fors secondaires correspondant aux périodes de for principal du genre en cours.
 			final GenreImpot genreImpot = genreEntry.getKey();
-			resultat.addAll(DateRangeHelper.extract(Collections.singletonList(forFiscalSecondaireModele), mergedRanges, new DateRangeHelper.AdapterCallback<ForFiscalSecondaire>() {
-				@Override
-				public ForFiscalSecondaire adapt(ForFiscalSecondaire range, RegDate debut, RegDate fin) {
-					final RegDate dateOuverture = debut != null ? debut : range.getDateDebut();
-					MotifFor motifOuverture = range.getMotifOuverture();
-					if (debut != null && debut.isAfter(range.getDateDebut())) {
-						motifOuverture = MotifFor.CHGT_MODE_IMPOSITION;
-					}
-					final RegDate dateFermeture = fin != null ? fin : range.getDateFin();
-					MotifFor motifFermeture = range.getMotifFermeture();
-					if (motifFermeture == null || fin != null && fin.isBefore(range.getDateFin())) {
-						motifFermeture = MotifFor.CHGT_MODE_IMPOSITION;
-					}
-					final ForFiscalSecondaire nouveauForFiscalSecondaire =
-							new ForFiscalSecondaire(dateOuverture, motifOuverture, dateFermeture, dateFermeture != null ? motifFermeture : null,
-							                        range.getNumeroOfsAutoriteFiscale(), range.getTypeAutoriteFiscale(), range.getMotifRattachement());
-					nouveauForFiscalSecondaire.setGenreImpot(genreImpot);
-
-					return nouveauForFiscalSecondaire;
+			resultat.addAll(DateRangeHelper.extract(Collections.singletonList(forFiscalSecondaireModele), mergedRanges, (range, debut, fin) -> {
+				final RegDate dateOuverture = debut != null ? debut : range.getDateDebut();
+				MotifFor motifOuverture = range.getMotifOuverture();
+				if (debut != null && debut.isAfter(range.getDateDebut())) {
+					motifOuverture = MotifFor.CHGT_MODE_IMPOSITION;
 				}
+				final RegDate dateFermeture = fin != null ? fin : range.getDateFin();
+				MotifFor motifFermeture = range.getMotifFermeture();
+				if (motifFermeture == null || fin != null && fin.isBefore(range.getDateFin())) {
+					motifFermeture = MotifFor.CHGT_MODE_IMPOSITION;
+				}
+				final ForFiscalSecondaire nouveauForFiscalSecondaire =
+						new ForFiscalSecondaire(dateOuverture, motifOuverture, dateFermeture, dateFermeture != null ? motifFermeture : null,
+						                        range.getNumeroOfsAutoriteFiscale(), range.getTypeAutoriteFiscale(), range.getMotifRattachement());
+				nouveauForFiscalSecondaire.setGenreImpot(genreImpot);
+
+				return nouveauForFiscalSecondaire;
 			}));
 		}
 		resultat.sort(new DateRangeComparator<>(DateRangeComparator.CompareOrder.ASCENDING));

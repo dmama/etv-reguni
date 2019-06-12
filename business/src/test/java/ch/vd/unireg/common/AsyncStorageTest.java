@@ -45,16 +45,13 @@ public class AsyncStorageTest<S extends AsyncStorage<String, String>> extends Wi
 
 		final String key = "Ma question";
 		final String value = "Ma réponse";
-		final Thread thread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					Thread.sleep(200);
-					service.add(key, value);
-				}
-				catch (InterruptedException e) {
-					throw new RuntimeException(e);
-				}
+		final Thread thread = new Thread(() -> {
+			try {
+				Thread.sleep(200);
+				service.add(key, value);
+			}
+			catch (InterruptedException e) {
+				throw new RuntimeException(e);
 			}
 		});
 		thread.start();
@@ -81,16 +78,13 @@ public class AsyncStorageTest<S extends AsyncStorage<String, String>> extends Wi
 
 		final String key = "Ma question importante";
 		final String value = "Ma réponse tant attendue";
-		final Thread thread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					Thread.sleep(200);
-					service.add(key, value);
-				}
-				catch (InterruptedException e) {
-					throw new RuntimeException(e);
-				}
+		final Thread thread = new Thread(() -> {
+			try {
+				Thread.sleep(200);
+				service.add(key, value);
+			}
+			catch (InterruptedException e) {
+				throw new RuntimeException(e);
 			}
 		});
 		thread.start();
@@ -188,16 +182,13 @@ public class AsyncStorageTest<S extends AsyncStorage<String, String>> extends Wi
 		final String keyAttendue = "Mon document tant attendu";
 		final String keyRecue = "Mon document reçu";
 
-		final Thread thread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					Thread.sleep(200);
-					service.add(keyRecue, null);
-				}
-				catch (InterruptedException e) {
-					throw new RuntimeException(e);
-				}
+		final Thread thread = new Thread(() -> {
+			try {
+				Thread.sleep(200);
+				service.add(keyRecue, null);
+			}
+			catch (InterruptedException e) {
+				throw new RuntimeException(e);
 			}
 		});
 		thread.start();
@@ -223,19 +214,16 @@ public class AsyncStorageTest<S extends AsyncStorage<String, String>> extends Wi
 		final String keyAttendue = "Mon document tant attendu";
 		final String keyRecue = "Mon autre document reçu";
 
-		final Thread thread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					Thread.sleep(200);
-					service.add(keyRecue, null);
+		final Thread thread = new Thread(() -> {
+			try {
+				Thread.sleep(200);
+				service.add(keyRecue, null);
 
-					Thread.sleep(100);
-					service.add(keyAttendue, null);
-				}
-				catch (InterruptedException e) {
-					throw new RuntimeException(e);
-				}
+				Thread.sleep(100);
+				service.add(keyAttendue, null);
+			}
+			catch (InterruptedException e) {
+				throw new RuntimeException(e);
 			}
 		});
 		thread.start();

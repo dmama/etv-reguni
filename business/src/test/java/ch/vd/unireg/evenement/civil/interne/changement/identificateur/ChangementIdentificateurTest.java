@@ -61,13 +61,10 @@ public class ChangementIdentificateurTest extends AbstractEvenementCivilInterneT
 		Assert.assertEquals("Le numéro du tiers est incorrect", (Long) ppId, tiers.getNumero());
 
 		// changement du NAVS13 dans le registre civil
-		doModificationIndividu(noIndividu, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				individu.setNouveauNoAVS("7561261400563");
-				individu.setNomOfficielMere(new NomPrenom("Popova", "Célestine"));
-				individu.setNomOfficielPere(new NomPrenom("Popov", "Martin"));
-			}
+		doModificationIndividu(noIndividu, individu -> {
+			individu.setNouveauNoAVS("7561261400563");
+			individu.setNomOfficielMere(new NomPrenom("Popova", "Célestine"));
+			individu.setNomOfficielPere(new NomPrenom("Popov", "Martin"));
 		});
 
 		// traitement de l'événement civil
@@ -139,13 +136,10 @@ public class ChangementIdentificateurTest extends AbstractEvenementCivilInterneT
 			return null;
 		});
 
-		doModificationIndividu(noIndividu, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				individu.setNouveauNoAVS("7561261400563");
-				individu.setNomOfficielMere(new NomPrenom("Popova", "Célestine"));
-				individu.setNomOfficielPere(new NomPrenom("Popov", "Martin"));
-			}
+		doModificationIndividu(noIndividu, individu -> {
+			individu.setNouveauNoAVS("7561261400563");
+			individu.setNomOfficielMere(new NomPrenom("Popova", "Célestine"));
+			individu.setNomOfficielPere(new NomPrenom("Popov", "Martin"));
 		});
 
 		// traitement de l'événement civil

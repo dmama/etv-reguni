@@ -2,7 +2,6 @@ package ch.vd.unireg.entreprise;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -109,16 +108,13 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 
 		// les états
 		final List<EtatEntreprise> etats = new ArrayList<>(entreprise.getEtats());
-		etats.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(new Comparator<EtatEntreprise>() {
-			@Override
-			public int compare(EtatEntreprise o1, EtatEntreprise o2) {
-				int comparison = -o1.getDateObtention().compareTo(o2.getDateObtention());       // les plus récents d'abord
-				if (comparison == 0) {
-					// à dates d'obtention équivalentes, il faut trier par identifiant technique décroissant (pour avoir le plus récent d'abord)
-					comparison = -Long.compare(o1.getId(), o2.getId());
-				}
-				return comparison;
+		etats.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>((o1, o2) -> {
+			int comparison = -o1.getDateObtention().compareTo(o2.getDateObtention());       // les plus récents d'abord
+			if (comparison == 0) {
+				// à dates d'obtention équivalentes, il faut trier par identifiant technique décroissant (pour avoir le plus récent d'abord)
+				comparison = -Long.compare(o1.getId(), o2.getId());
 			}
+			return comparison;
 		}));
 		entrepriseView.setEtats(getEtats(etats));
 

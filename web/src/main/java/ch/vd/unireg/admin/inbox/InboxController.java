@@ -4,7 +4,6 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -139,12 +138,7 @@ public class InboxController implements InitializingBean {
 		// on met dans une liste pour trier par date de demande et ainsi avoir les éléments dans l'ordre de leur exécution
 		final String visa = AuthenticationHelper.getCurrentPrincipal();
 		final List<ExtractionJob> jobs = new ArrayList<>(getKnownJobsEnAttenteForVisa(visa).values());
-		jobs.sort(new Comparator<ExtractionJob>() {
-			@Override
-			public int compare(ExtractionJob o1, ExtractionJob o2) {
-				return o1.getCreationDate().compareTo(o2.getCreationDate());
-			}
-		});
+		jobs.sort((o1, o2) -> o1.getCreationDate().compareTo(o2.getCreationDate()));
 		model.addAttribute("content", jobs);
 		return "/admin/inbox-jobs";
 	}

@@ -196,15 +196,12 @@ public class TableFillerWithCivilValues {
 
 			if (!isIncrementalMode()) {
 				// creation de la table
-				doInNewConnection(dbConnectionPool, new ConnectionCallback<Object>() {
-					@Override
-					public Object doInConnection(Connection con) throws SQLException {
-						final String sql = buildCreateTableSql();
-						try (final PreparedStatement ps = con.prepareCall(sql)) {
-							ps.executeUpdate();
-						}
-						return null;
+				doInNewConnection(dbConnectionPool, con -> {
+					final String sql = buildCreateTableSql();
+					try (final PreparedStatement ps = con.prepareCall(sql)) {
+						ps.executeUpdate();
 					}
+					return null;
 				});
 			}
 
@@ -249,18 +246,15 @@ public class TableFillerWithCivilValues {
 		}
 		final String sql = b.toString();
 
-		return doInNewConnection(dbConnectionPool, new ConnectionCallback<List<Long>>() {
-			@Override
-			public List<Long> doInConnection(Connection con) throws SQLException {
-				try (final PreparedStatement ps = con.prepareStatement(sql)) {
-					final List<Long> noInds = new LinkedList<>();
-					final ResultSet rs = ps.executeQuery();
-					while (rs.next()) {
-						final long noIndividu = rs.getBigDecimal(1).longValue();
-						noInds.add(noIndividu);
-					}
-					return noInds;
+		return doInNewConnection(dbConnectionPool, con -> {
+			try (final PreparedStatement ps = con.prepareStatement(sql)) {
+				final List<Long> noInds = new LinkedList<>();
+				final ResultSet rs = ps.executeQuery();
+				while (rs.next()) {
+					final long noIndividu = rs.getBigDecimal(1).longValue();
+					noInds.add(noIndividu);
 				}
+				return noInds;
 			}
 		});
 	}
@@ -321,32 +315,29 @@ public class TableFillerWithCivilValues {
 
 	private void dumpIndividus(final List<CollectedData> data, ConnectionPool dbConnectionPool, Object loopDetector) throws Exception {
 		try {
-			doInNewConnection(dbConnectionPool, new ConnectionCallback<Object>() {
-				@Override
-				public Object doInConnection(Connection con) throws SQLException {
-					try (final PreparedStatement psIndividu = preparedStatementInsertIndividu(con);
-						 final PreparedStatement psException = preparedStatementInsertException(con)) {
-						for (CollectedData ind : data) {
-							if (ind.individu != null) {
-								final Map<TypeRelationVersIndividu, Long> idsParents = new EnumMap<>(TypeRelationVersIndividu.class);
-								if (ind.individu.getParents() != null) {
-									for (RelationVersIndividu rel : ind.individu.getParents()) {
-										idsParents.put(rel.getTypeRelation(), rel.getNumeroAutreIndividu());
-									}
+			doInNewConnection(dbConnectionPool, con -> {
+				try (final PreparedStatement psIndividu = preparedStatementInsertIndividu(con);
+					 final PreparedStatement psException = preparedStatementInsertException(con)) {
+					for (CollectedData ind : data) {
+						if (ind.individu != null) {
+							final Map<TypeRelationVersIndividu, Long> idsParents = new EnumMap<>(TypeRelationVersIndividu.class);
+							if (ind.individu.getParents() != null) {
+								for (RelationVersIndividu rel : ind.individu.getParents()) {
+									idsParents.put(rel.getTypeRelation(), rel.getNumeroAutreIndividu());
 								}
+							}
 
-								final List<CollectedData> parents = idsParents.isEmpty() ? null : getIndividus(idsParents.values());
-								final CollectedData pere = findByNoIndividu(parents, idsParents.get(TypeRelationVersIndividu.PERE));
-								final CollectedData mere = findByNoIndividu(parents, idsParents.get(TypeRelationVersIndividu.MERE));
-								insertDataIndividu(ind.individu, pere, mere, psIndividu);
-							}
-							else if (ind.exception != null) {
-								insertDataException(ind.noIndividu, ind.exception, psException);
-							}
+							final List<CollectedData> parents = idsParents.isEmpty() ? null : getIndividus(idsParents.values());
+							final CollectedData pere = findByNoIndividu(parents, idsParents.get(TypeRelationVersIndividu.PERE));
+							final CollectedData mere = findByNoIndividu(parents, idsParents.get(TypeRelationVersIndividu.MERE));
+							insertDataIndividu(ind.individu, pere, mere, psIndividu);
+						}
+						else if (ind.exception != null) {
+							insertDataException(ind.noIndividu, ind.exception, psException);
 						}
 					}
-					return null;
 				}
+				return null;
 			});
 		}
 		catch (Exception e) {

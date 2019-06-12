@@ -1,6 +1,5 @@
 package ch.vd.unireg.rapport;
 
-import java.io.OutputStream;
 import java.util.Date;
 
 import org.slf4j.Logger;
@@ -225,12 +224,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(DeterminationDIsPPRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<DeterminationDIsPPRapport>() {
-				@Override
-				public void writeDoc(DeterminationDIsPPRapport doc, OutputStream os) throws Exception {
-					final PdfDeterminationDIsPPRapport document = new PdfDeterminationDIsPPRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(DeterminationDIsPPRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfDeterminationDIsPPRapport document = new PdfDeterminationDIsPPRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -250,12 +246,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(DeterminationDIsPMRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<DeterminationDIsPMRapport>() {
-				@Override
-				public void writeDoc(DeterminationDIsPMRapport doc, OutputStream os) throws Exception {
-					final PdfDeterminationDIsPMRapport document = new PdfDeterminationDIsPMRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(DeterminationDIsPMRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfDeterminationDIsPMRapport document = new PdfDeterminationDIsPMRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -274,12 +267,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(EnvoiDIsPPRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<EnvoiDIsPPRapport>() {
-				@Override
-				public void writeDoc(EnvoiDIsPPRapport doc, OutputStream os) throws Exception {
-					final PdfEnvoiDIsPPRapport document = new PdfEnvoiDIsPPRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(EnvoiDIsPPRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfEnvoiDIsPPRapport document = new PdfEnvoiDIsPPRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -297,12 +287,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(EnvoiDIsPMRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<EnvoiDIsPMRapport>() {
-				@Override
-				public void writeDoc(EnvoiDIsPMRapport doc, OutputStream os) throws Exception {
-					final PdfEnvoiDIsPMRapport document = new PdfEnvoiDIsPMRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(EnvoiDIsPMRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfEnvoiDIsPMRapport document = new PdfEnvoiDIsPMRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -320,12 +307,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(EnvoiAnnexeImmeubleRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<EnvoiAnnexeImmeubleRapport>() {
-				@Override
-				public void writeDoc(EnvoiAnnexeImmeubleRapport doc, OutputStream os) throws Exception {
-					PdfEnvoiAnnexeImmeubleRapport document = new PdfEnvoiAnnexeImmeubleRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(EnvoiAnnexeImmeubleRapport.class, nom, description, "pdf", (doc, os) -> {
+				PdfEnvoiAnnexeImmeubleRapport document = new PdfEnvoiAnnexeImmeubleRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -339,12 +323,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final String description = String.format("Rapport de la liste des DIs non émises.. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.dateTraitement));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 		try {
-			return docService.newDoc(ListeDIsNonEmisesRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ListeDIsNonEmisesRapport>() {
-				@Override
-				public void writeDoc(ListeDIsNonEmisesRapport doc, OutputStream os) throws Exception {
-					PdfListeDIsNonEmisesRapport document = new PdfListeDIsNonEmisesRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(ListeDIsNonEmisesRapport.class, nom, description, "pdf", (doc, os) -> {
+				PdfListeDIsNonEmisesRapport document = new PdfListeDIsNonEmisesRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -363,12 +344,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(MajoriteRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<MajoriteRapport>() {
-				@Override
-				public void writeDoc(MajoriteRapport doc, OutputStream os) throws Exception {
-					PdfMajoriteRapport document = new PdfMajoriteRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(MajoriteRapport.class, nom, description, "pdf", (doc, os) -> {
+				PdfMajoriteRapport document = new PdfMajoriteRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -386,12 +364,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(FusionDeCommunesRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<FusionDeCommunesRapport>() {
-				@Override
-				public void writeDoc(FusionDeCommunesRapport doc, OutputStream os) throws Exception {
-					PdfFusionDeCommunesRapport document = new PdfFusionDeCommunesRapport(infraService);
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(FusionDeCommunesRapport.class, nom, description, "pdf", (doc, os) -> {
+				PdfFusionDeCommunesRapport document = new PdfFusionDeCommunesRapport(infraService);
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -481,12 +456,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(RolesCommunesPPRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<RolesCommunesPPRapport>() {
-				@Override
-				public void writeDoc(RolesCommunesPPRapport doc, OutputStream os) throws Exception {
-					final PdfRolesPPCommunesRapport document = new PdfRolesPPCommunesRapport(infraService, audit);
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(RolesCommunesPPRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfRolesPPCommunesRapport document = new PdfRolesPPCommunesRapport(infraService, audit);
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -504,12 +476,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(RolesCommunesPMRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<RolesCommunesPMRapport>() {
-				@Override
-				public void writeDoc(RolesCommunesPMRapport doc, OutputStream os) throws Exception {
-					final PdfRolesPMCommunesRapport document = new PdfRolesPMCommunesRapport(infraService, audit);
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(RolesCommunesPMRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfRolesPMCommunesRapport document = new PdfRolesPMCommunesRapport(infraService, audit);
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -532,12 +501,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(RolesOIDsRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<RolesOIDsRapport>() {
-				@Override
-				public void writeDoc(RolesOIDsRapport doc, OutputStream os) throws Exception {
-					final PdfRolesOIDsRapport document = new PdfRolesOIDsRapport(infraService, audit);
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(RolesOIDsRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfRolesOIDsRapport document = new PdfRolesOIDsRapport(infraService, audit);
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -561,12 +527,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(RolesOIPMRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<RolesOIPMRapport>() {
-				@Override
-				public void writeDoc(RolesOIPMRapport doc, OutputStream os) throws Exception {
-					final PdfRolesOIPMRapport document = new PdfRolesOIPMRapport(infraService, audit);
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(RolesOIPMRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfRolesOIPMRapport document = new PdfRolesOIPMRapport(infraService, audit);
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -581,12 +544,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(StatistiquesDIsRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<StatistiquesDIsRapport>() {
-				@Override
-				public void writeDoc(StatistiquesDIsRapport doc, OutputStream os) throws Exception {
-					PdfStatsDIsRapport document = new PdfStatsDIsRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(StatistiquesDIsRapport.class, nom, description, "pdf", (doc, os) -> {
+				PdfStatsDIsRapport document = new PdfStatsDIsRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -601,12 +561,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(StatistiquesCtbsRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<StatistiquesCtbsRapport>() {
-				@Override
-				public void writeDoc(StatistiquesCtbsRapport doc, OutputStream os) throws Exception {
-					PdfStatsCtbsRapport document = new PdfStatsCtbsRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(StatistiquesCtbsRapport.class, nom, description, "pdf", (doc, os) -> {
+				PdfStatsCtbsRapport document = new PdfStatsCtbsRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -620,13 +577,10 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final String description = String.format("Rapport de l'envoi de sommation des DIs PP. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 		try {
-			return docService.newDoc(EnvoiSommationsDIsPPRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<EnvoiSommationsDIsPPRapport>() {
-				@Override
-				public void writeDoc(EnvoiSommationsDIsPPRapport doc, OutputStream os) throws Exception {
-					PdfEnvoiSommationsDIsPPRapport document = new PdfEnvoiSommationsDIsPPRapport();
-					document.write(results, nom, description, dateGeneration, os, statusManager);
+			return docService.newDoc(EnvoiSommationsDIsPPRapport.class, nom, description, "pdf", (doc, os) -> {
+				PdfEnvoiSommationsDIsPPRapport document = new PdfEnvoiSommationsDIsPPRapport();
+				document.write(results, nom, description, dateGeneration, os, statusManager);
 
-				}
 			});
 		}
 		catch (Exception e) {
@@ -640,13 +594,10 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final String description = String.format("Rapport de l'envoi de sommation des DIs PM. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 		try {
-			return docService.newDoc(EnvoiSommationsDIsPMRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<EnvoiSommationsDIsPMRapport>() {
-				@Override
-				public void writeDoc(EnvoiSommationsDIsPMRapport doc, OutputStream os) throws Exception {
-					final PdfEnvoiSommationsDIsPMRapport document = new PdfEnvoiSommationsDIsPMRapport();
-					document.write(results, nom, description, dateGeneration, os, statusManager);
+			return docService.newDoc(EnvoiSommationsDIsPMRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfEnvoiSommationsDIsPMRapport document = new PdfEnvoiSommationsDIsPMRapport();
+				document.write(results, nom, description, dateGeneration, os, statusManager);
 
-				}
 			});
 		}
 		catch (Exception e) {
@@ -660,12 +611,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final String description = String.format("Rapport de la validation de tous les tiers. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.dateTraitement));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 		try {
-			return docService.newDoc(ValidationJobRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ValidationJobRapport>() {
-				@Override
-				public void writeDoc(ValidationJobRapport doc, OutputStream os) throws Exception {
-					PdfValidationRapport document = new PdfValidationRapport();
-					document.write(results, nom, description, dateGeneration, os, statusManager);
-				}
+			return docService.newDoc(ValidationJobRapport.class, nom, description, "pdf", (doc, os) -> {
+				PdfValidationRapport document = new PdfValidationRapport();
+				document.write(results, nom, description, dateGeneration, os, statusManager);
 			});
 		}
 		catch (Exception e) {
@@ -680,12 +628,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final String description = String.format("Rapport de l'envoi de LR pour le mois de %s. Date de traitement = %s", RegDateHelper.dateToDisplayString(month), RegDateHelper.dateToDisplayString(results.dateTraitement));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 		try {
-			return docService.newDoc(EnvoiLRsRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<EnvoiLRsRapport>() {
-				@Override
-				public void writeDoc(EnvoiLRsRapport doc, OutputStream os) throws Exception {
-					PdfEnvoiLRsRapport document = new PdfEnvoiLRsRapport();
-					document.write(results, nom, description, dateGeneration, os, statusManager);
-				}
+			return docService.newDoc(EnvoiLRsRapport.class, nom, description, "pdf", (doc, os) -> {
+				PdfEnvoiLRsRapport document = new PdfEnvoiLRsRapport();
+				document.write(results, nom, description, dateGeneration, os, statusManager);
 			});
 		}
 		catch (Exception e) {
@@ -699,12 +644,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final String description = String.format("Rapport de l'envoi de sommation de LR. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.dateTraitement));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 		try {
-			return docService.newDoc(EnvoiSommationLRsRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<EnvoiSommationLRsRapport>() {
-				@Override
-				public void writeDoc(EnvoiSommationLRsRapport doc, OutputStream os) throws Exception {
-					PdfEnvoiSommationsLRsRapport document = new PdfEnvoiSommationsLRsRapport();
-					document.write(results, nom, description, dateGeneration, os, statusManager);
-				}
+			return docService.newDoc(EnvoiSommationLRsRapport.class, nom, description, "pdf", (doc, os) -> {
+				PdfEnvoiSommationsLRsRapport document = new PdfEnvoiSommationsLRsRapport();
+				document.write(results, nom, description, dateGeneration, os, statusManager);
 			});
 		}
 		catch (Exception e) {
@@ -724,12 +666,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final String description = String.format("Rapport de la génération des listes nominatives au %s.", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 		try {
-			return docService.newDoc(ListesNominativesRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ListesNominativesRapport>() {
-				@Override
-				public void writeDoc(ListesNominativesRapport doc, OutputStream os) throws Exception {
-					final PdfListesNominativesRapport document = new PdfListesNominativesRapport();
-					document.write(results, nom, description, dateGeneration, os, statusManager);
-				}
+			return docService.newDoc(ListesNominativesRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfListesNominativesRapport document = new PdfListesNominativesRapport();
+				document.write(results, nom, description, dateGeneration, os, statusManager);
 			});
 		}
 		catch (Exception e) {
@@ -743,12 +682,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final String description = String.format("Rapport de la génération des populations pour les bases acomptes au %s.", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 		try {
-			return docService.newDoc(AcomptesRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<AcomptesRapport>() {
-				@Override
-				public void writeDoc(AcomptesRapport doc, OutputStream os) throws Exception {
-					final PdfAcomptesRapport document = new PdfAcomptesRapport();
-					document.write(results, nom, description, dateGeneration, os, statusManager);
-				}
+			return docService.newDoc(AcomptesRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfAcomptesRapport document = new PdfAcomptesRapport();
+				document.write(results, nom, description, dateGeneration, os, statusManager);
 			});
 		}
 		catch (Exception e) {
@@ -767,12 +703,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final String description = String.format("Rapport de l'extraction des données de référence RPT au %s.", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 		try {
-			return docService.newDoc(ExtractionDonneesRptRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ExtractionDonneesRptRapport>() {
-				@Override
-				public void writeDoc(ExtractionDonneesRptRapport doc, OutputStream os) throws Exception {
-					final PdfExtractionDonneesRptRapport document = new PdfExtractionDonneesRptRapport();
-					document.write(results, nom, description, dateGeneration, os, statusManager);
-				}
+			return docService.newDoc(ExtractionDonneesRptRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfExtractionDonneesRptRapport document = new PdfExtractionDonneesRptRapport();
+				document.write(results, nom, description, dateGeneration, os, statusManager);
 			});
 		}
 		catch (Exception e) {
@@ -786,12 +719,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final String description = String.format("Rapport de l'extraction des données de référence RPT au %s.", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 		try {
-			return docService.newDoc(ExtractionDonneesRptRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ExtractionDonneesRptRapport>() {
-				@Override
-				public void writeDoc(ExtractionDonneesRptRapport doc, OutputStream os) throws Exception {
-					final PdfExtractionDonneesRptPMRapport document = new PdfExtractionDonneesRptPMRapport();
-					document.write(results, nom, description, dateGeneration, os, statusManager);
-				}
+			return docService.newDoc(ExtractionDonneesRptRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfExtractionDonneesRptPMRapport document = new PdfExtractionDonneesRptPMRapport();
+				document.write(results, nom, description, dateGeneration, os, statusManager);
 			});
 		}
 		catch (Exception e) {
@@ -811,12 +741,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(EchoirDIsPPRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<EchoirDIsPPRapport>() {
-				@Override
-				public void writeDoc(EchoirDIsPPRapport doc, OutputStream os) throws Exception {
-					final PdfEchoirDIsPPRapport document = new PdfEchoirDIsPPRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(EchoirDIsPPRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfEchoirDIsPPRapport document = new PdfEchoirDIsPPRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -835,12 +762,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(EchoirDIsPMRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<EchoirDIsPMRapport>() {
-				@Override
-				public void writeDoc(EchoirDIsPMRapport doc, OutputStream os) throws Exception {
-					final PdfEchoirDIsPMRapport document = new PdfEchoirDIsPMRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(EchoirDIsPMRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfEchoirDIsPMRapport document = new PdfEchoirDIsPMRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -859,12 +783,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(ReinitialiserBaremeDoubleGainRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ReinitialiserBaremeDoubleGainRapport>() {
-				@Override
-				public void writeDoc(ReinitialiserBaremeDoubleGainRapport doc, OutputStream os) throws Exception {
-					PdfReinitDoubleGainRapport document = new PdfReinitDoubleGainRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(ReinitialiserBaremeDoubleGainRapport.class, nom, description, "pdf", (doc, os) -> {
+				PdfReinitDoubleGainRapport document = new PdfReinitDoubleGainRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -878,12 +799,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final String description = String.format("Rapport de la liste des Taches en instance par OID.. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.dateTraitement));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 		try {
-			return docService.newDoc(ListeTachesEnIsntanceParOIDRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ListeTachesEnIsntanceParOIDRapport>() {
-				@Override
-				public void writeDoc(ListeTachesEnIsntanceParOIDRapport doc, OutputStream os) throws Exception {
-					PdfListeTacheEnInstanceParOIDRapport document = new PdfListeTacheEnInstanceParOIDRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(ListeTachesEnIsntanceParOIDRapport.class, nom, description, "pdf", (doc, os) -> {
+				PdfListeTacheEnInstanceParOIDRapport document = new PdfListeTacheEnInstanceParOIDRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -901,12 +819,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(ExclureContribuablesEnvoiRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ExclureContribuablesEnvoiRapport>() {
-				@Override
-				public void writeDoc(ExclureContribuablesEnvoiRapport doc, OutputStream os) throws Exception {
-					PdfExclureContribuablesEnvoiRapport document = new PdfExclureContribuablesEnvoiRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(ExclureContribuablesEnvoiRapport.class, nom, description, "pdf", (doc, os) -> {
+				PdfExclureContribuablesEnvoiRapport document = new PdfExclureContribuablesEnvoiRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -924,12 +839,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(DemandeDelaiCollectiveRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<DemandeDelaiCollectiveRapport>() {
-				@Override
-				public void writeDoc(DemandeDelaiCollectiveRapport doc, OutputStream os) throws Exception {
-					PdfDemandeDelaiCollectiveRapport document = new PdfDemandeDelaiCollectiveRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(DemandeDelaiCollectiveRapport.class, nom, description, "pdf", (doc, os) -> {
+				PdfDemandeDelaiCollectiveRapport document = new PdfDemandeDelaiCollectiveRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -947,13 +859,10 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 	       final Date dateGeneration = DateHelper.getCurrentDate();
 
 	       try {
-	           return docService.newDoc(ListeContribuablesResidentsSansForVaudoisRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ListeContribuablesResidentsSansForVaudoisRapport>() {
-				   @Override
-				   public void writeDoc(ListeContribuablesResidentsSansForVaudoisRapport doc, OutputStream os) throws Exception {
-					   final PdfListeContribuablesResidentsSansForVaudoisRapport document = new PdfListeContribuablesResidentsSansForVaudoisRapport();
-					   document.write(results, nom, description, dateGeneration, os, status);
-				   }
-			   });
+	           return docService.newDoc(ListeContribuablesResidentsSansForVaudoisRapport.class, nom, description, "pdf", (doc, os) -> {
+		           final PdfListeContribuablesResidentsSansForVaudoisRapport document = new PdfListeContribuablesResidentsSansForVaudoisRapport();
+		           document.write(results, nom, description, dateGeneration, os, status);
+	           });
 	       }
 	       catch (Exception e) {
 	           throw new RuntimeException(e);
@@ -971,12 +880,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(CorrectionFlagHabitantRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<CorrectionFlagHabitantRapport>() {
-				@Override
-				public void writeDoc(CorrectionFlagHabitantRapport doc, OutputStream os) throws Exception {
-					final PdfCorrectionFlagHabitantRapport document = new PdfCorrectionFlagHabitantRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(CorrectionFlagHabitantRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfCorrectionFlagHabitantRapport document = new PdfCorrectionFlagHabitantRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -998,12 +904,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(StatistiquesEvenementsRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<StatistiquesEvenementsRapport>() {
-				@Override
-				public void writeDoc(StatistiquesEvenementsRapport doc, OutputStream os) throws Exception {
-					final PdfStatistiquesEvenementsRapport document = new PdfStatistiquesEvenementsRapport();
-					document.write(civilsPersonnes, civilsEntreprises, externes, identCtb, notaires, dateReference, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(StatistiquesEvenementsRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfStatistiquesEvenementsRapport document = new PdfStatistiquesEvenementsRapport();
+				document.write(civilsPersonnes, civilsEntreprises, externes, identCtb, notaires, dateReference, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -1021,12 +924,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(DeterminerMouvementsDossiersEnMasseRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<DeterminerMouvementsDossiersEnMasseRapport>() {
-				@Override
-				public void writeDoc(DeterminerMouvementsDossiersEnMasseRapport doc, OutputStream os) throws Exception {
-					final PdfDeterminerMouvementsDossiersEnMasseRapport document = new PdfDeterminerMouvementsDossiersEnMasseRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(DeterminerMouvementsDossiersEnMasseRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfDeterminerMouvementsDossiersEnMasseRapport document = new PdfDeterminerMouvementsDossiersEnMasseRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -1044,12 +944,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(DeterminerLRsEchuesRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<DeterminerLRsEchuesRapport>() {
-				@Override
-				public void writeDoc(DeterminerLRsEchuesRapport doc, OutputStream os) throws Exception {
-					final PdfDeterminerLRsEchuesRapport document = new PdfDeterminerLRsEchuesRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(DeterminerLRsEchuesRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfDeterminerLRsEchuesRapport document = new PdfDeterminerLRsEchuesRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -1068,12 +965,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 			final Date dateGeneration = DateHelper.getCurrentDate();
 
 			try {
-				return docService.newDoc(IdentifierContribuableRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<IdentifierContribuableRapport>() {
-					@Override
-					public void writeDoc(IdentifierContribuableRapport doc, OutputStream os) throws Exception {
-						final PdfIdentifierContribuableRapport document = new PdfIdentifierContribuableRapport();
-						document.write(results, nom, description, dateGeneration, os, status);
-					}
+				return docService.newDoc(IdentifierContribuableRapport.class, nom, description, "pdf", (doc, os) -> {
+					final PdfIdentifierContribuableRapport document = new PdfIdentifierContribuableRapport();
+					document.write(results, nom, description, dateGeneration, os, status);
 				});
 			}
 			catch (Exception e) {
@@ -1091,12 +985,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 			final Date dateGeneration = DateHelper.getCurrentDate();
 
 			try {
-				return docService.newDoc(TraiterEvenementExterneRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<TraiterEvenementExterneRapport>() {
-					@Override
-					public void writeDoc(TraiterEvenementExterneRapport doc, OutputStream os) throws Exception {
-						final PdfTraiterEvenementExterneRapport document = new PdfTraiterEvenementExterneRapport();
-						document.write(results, nom, description, dateGeneration, os, status);
-					}
+				return docService.newDoc(TraiterEvenementExterneRapport.class, nom, description, "pdf", (doc, os) -> {
+					final PdfTraiterEvenementExterneRapport document = new PdfTraiterEvenementExterneRapport();
+					document.write(results, nom, description, dateGeneration, os, status);
 				});
 			}
 			catch (Exception e) {
@@ -1113,12 +1004,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(ResolutionAdresseRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ResolutionAdresseRapport>() {
-				@Override
-				public void writeDoc(ResolutionAdresseRapport doc, OutputStream os) throws Exception {
-					final PdfResolutionAdresseRapport document = new PdfResolutionAdresseRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(ResolutionAdresseRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfResolutionAdresseRapport document = new PdfResolutionAdresseRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -1136,12 +1024,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(ComparerSituationFamilleRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ComparerSituationFamilleRapport>() {
-				@Override
-				public void writeDoc(ComparerSituationFamilleRapport doc, OutputStream os) throws Exception {
-					final PdfComparerSituationFamilleRapport document = new PdfComparerSituationFamilleRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(ComparerSituationFamilleRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfComparerSituationFamilleRapport document = new PdfComparerSituationFamilleRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -1159,12 +1044,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(ListeNoteRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ListeNoteRapport>() {
-				@Override
-				public void writeDoc(ListeNoteRapport doc, OutputStream os) throws Exception {
-					final PdfListeNoteRapport document = new PdfListeNoteRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(ListeNoteRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfListeNoteRapport document = new PdfListeNoteRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -1182,12 +1064,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(ComparerForFiscalEtCommuneRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ComparerForFiscalEtCommuneRapport>() {
-				@Override
-				public void writeDoc(ComparerForFiscalEtCommuneRapport doc, OutputStream os) throws Exception {
-					final PdfComparerForFiscalEtCommuneRapport document = new PdfComparerForFiscalEtCommuneRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(ComparerForFiscalEtCommuneRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfComparerForFiscalEtCommuneRapport document = new PdfComparerForFiscalEtCommuneRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -1205,12 +1084,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(CorrectionEtatDeclarationRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<CorrectionEtatDeclarationRapport>() {
-				@Override
-				public void writeDoc(CorrectionEtatDeclarationRapport doc, OutputStream os) throws Exception {
-					final PdfCorrectionEtatDeclarationRapport document = new PdfCorrectionEtatDeclarationRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(CorrectionEtatDeclarationRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfCorrectionEtatDeclarationRapport document = new PdfCorrectionEtatDeclarationRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -1227,12 +1103,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(ListeAssujettisRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ListeAssujettisRapport>() {
-				@Override
-				public void writeDoc(ListeAssujettisRapport doc, OutputStream os) throws Exception {
-					final PdfListeAssujettisRapport document = new PdfListeAssujettisRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(ListeAssujettisRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfListeAssujettisRapport document = new PdfListeAssujettisRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -1255,12 +1128,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(ImportCodesSegmentRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ImportCodesSegmentRapport>() {
-				@Override
-				public void writeDoc(ImportCodesSegmentRapport doc, OutputStream os) throws Exception {
-					final PdfImportCodesSegmentRapport document = new PdfImportCodesSegmentRapport();
-					document.write(results, nbLignesLuesFichierEntree, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(ImportCodesSegmentRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfImportCodesSegmentRapport document = new PdfImportCodesSegmentRapport();
+				document.write(results, nbLignesLuesFichierEntree, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -1277,12 +1147,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(ListeDroitsAccesRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ListeDroitsAccesRapport>() {
-				@Override
-				public void writeDoc(ListeDroitsAccesRapport doc, OutputStream os) throws Exception {
-					final PdfListeDroitsAccesRapport document = new PdfListeDroitsAccesRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(ListeDroitsAccesRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfListeDroitsAccesRapport document = new PdfListeDroitsAccesRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -1299,12 +1166,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(SuppressionOIDRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<SuppressionOIDRapport>() {
-				@Override
-				public void writeDoc(SuppressionOIDRapport doc, OutputStream os) throws Exception {
-					final PdfSuppressionOIDRapport document = new PdfSuppressionOIDRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(SuppressionOIDRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfSuppressionOIDRapport document = new PdfSuppressionOIDRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -1321,12 +1185,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(PassageNouveauxRentiersSourciersEnMixteRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<PassageNouveauxRentiersSourciersEnMixteRapport>() {
-				@Override
-				public void writeDoc(PassageNouveauxRentiersSourciersEnMixteRapport doc, OutputStream os) throws Exception {
-					final PdfPassageNouveauxRentiersSourciersEnMixteRapport document = new PdfPassageNouveauxRentiersSourciersEnMixteRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(PassageNouveauxRentiersSourciersEnMixteRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfPassageNouveauxRentiersSourciersEnMixteRapport document = new PdfPassageNouveauxRentiersSourciersEnMixteRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -1344,12 +1205,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(RecalculTachesRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<RecalculTachesRapport>() {
-				@Override
-				public void writeDoc(RecalculTachesRapport doc, OutputStream os) throws Exception {
-					final PdfRecalculTachesRapport document = new PdfRecalculTachesRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(RecalculTachesRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfRecalculTachesRapport document = new PdfRecalculTachesRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -1366,12 +1224,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(AnnoncesIDERapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<AnnoncesIDERapport>() {
-				@Override
-				public void writeDoc(AnnoncesIDERapport doc, OutputStream os) throws Exception {
-					final PdfAnnoncesIDERapport document = new PdfAnnoncesIDERapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(AnnoncesIDERapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfAnnoncesIDERapport document = new PdfAnnoncesIDERapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -1388,12 +1243,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(CalculParentesRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<CalculParentesRapport>() {
-				@Override
-				public void writeDoc(CalculParentesRapport doc, OutputStream os) throws Exception {
-					final PdfCalculParentesRapport document = new PdfCalculParentesRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(CalculParentesRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfCalculParentesRapport document = new PdfCalculParentesRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -1410,12 +1262,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(DumpPeriodesImpositionImpotSourceRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<DumpPeriodesImpositionImpotSourceRapport>() {
-				@Override
-				public void writeDoc(DumpPeriodesImpositionImpotSourceRapport doc, OutputStream os) throws Exception {
-					final PdfDumpPeriodesImpositionImpotSourceRapport document = new PdfDumpPeriodesImpositionImpotSourceRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(DumpPeriodesImpositionImpotSourceRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfDumpPeriodesImpositionImpotSourceRapport document = new PdfDumpPeriodesImpositionImpotSourceRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -1433,12 +1282,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(AssujettiParSubstitutionRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<AssujettiParSubstitutionRapport>() {
-				@Override
-				public void writeDoc(AssujettiParSubstitutionRapport doc, OutputStream os) throws Exception {
-					final PdfAssujettistParSubstitutionRapport document = new PdfAssujettistParSubstitutionRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(AssujettiParSubstitutionRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfAssujettistParSubstitutionRapport document = new PdfAssujettistParSubstitutionRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -1456,12 +1302,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(EnvoiLettresBienvenueRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<EnvoiLettresBienvenueRapport>() {
-				@Override
-				public void writeDoc(EnvoiLettresBienvenueRapport doc, OutputStream os) throws Exception {
-					final PdfEnvoiLettresBienvenueRapport document = new PdfEnvoiLettresBienvenueRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(EnvoiLettresBienvenueRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfEnvoiLettresBienvenueRapport document = new PdfEnvoiLettresBienvenueRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -1479,12 +1322,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(RappelLettresBienvenueRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<RappelLettresBienvenueRapport>() {
-				@Override
-				public void writeDoc(RappelLettresBienvenueRapport doc, OutputStream os) throws Exception {
-					final PdfRappelLettresBienvenueRapport document = new PdfRappelLettresBienvenueRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(RappelLettresBienvenueRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfRappelLettresBienvenueRapport document = new PdfRappelLettresBienvenueRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -1502,12 +1342,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(DeterminationQuestionnairesSNCRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<DeterminationQuestionnairesSNCRapport>() {
-				@Override
-				public void writeDoc(DeterminationQuestionnairesSNCRapport doc, OutputStream os) throws Exception {
-					final PdfDeterminationQuestionnairesSNCRapport document = new PdfDeterminationQuestionnairesSNCRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(DeterminationQuestionnairesSNCRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfDeterminationQuestionnairesSNCRapport document = new PdfDeterminationQuestionnairesSNCRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -1524,12 +1361,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(EnvoiQuestionnairesSNCRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<EnvoiQuestionnairesSNCRapport>() {
-				@Override
-				public void writeDoc(EnvoiQuestionnairesSNCRapport doc, OutputStream os) throws Exception {
-					final PdfEnvoiQuestionnairesSNCRapport document = new PdfEnvoiQuestionnairesSNCRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(EnvoiQuestionnairesSNCRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfEnvoiQuestionnairesSNCRapport document = new PdfEnvoiQuestionnairesSNCRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -1546,12 +1380,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(EnvoiRappelsQuestionnairesSNCRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<EnvoiRappelsQuestionnairesSNCRapport>() {
-				@Override
-				public void writeDoc(EnvoiRappelsQuestionnairesSNCRapport doc, OutputStream os) throws Exception {
-					final PdfEnvoiRappelsQuestionnairesSNCRapport document = new PdfEnvoiRappelsQuestionnairesSNCRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(EnvoiRappelsQuestionnairesSNCRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfEnvoiRappelsQuestionnairesSNCRapport document = new PdfEnvoiRappelsQuestionnairesSNCRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -1568,12 +1399,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(AppariementEtablissementsSecondairesRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<AppariementEtablissementsSecondairesRapport>() {
-				@Override
-				public void writeDoc(AppariementEtablissementsSecondairesRapport doc, OutputStream os) throws Exception {
-					final PdfAppariementEtablissementsSecondairesRapport document = new PdfAppariementEtablissementsSecondairesRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(AppariementEtablissementsSecondairesRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfAppariementEtablissementsSecondairesRapport document = new PdfAppariementEtablissementsSecondairesRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -1591,12 +1419,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(IdentifierContribuableFromListeRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<IdentifierContribuableFromListeRapport>() {
-				@Override
-				public void writeDoc(IdentifierContribuableFromListeRapport doc, OutputStream os) throws Exception {
-					final PdfIdentifierContribuableFromListeRapport document = new PdfIdentifierContribuableFromListeRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(IdentifierContribuableFromListeRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfIdentifierContribuableFromListeRapport document = new PdfIdentifierContribuableFromListeRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -1614,12 +1439,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(RapprochementTiersRFRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<RapprochementTiersRFRapport>() {
-				@Override
-				public void writeDoc(RapprochementTiersRFRapport doc, OutputStream os) throws Exception {
-					final PdfRapprochementTiersRFRapport document = new PdfRapprochementTiersRFRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(RapprochementTiersRFRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfRapprochementTiersRFRapport document = new PdfRapprochementTiersRFRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -1750,12 +1572,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(RattrapageRegimesFiscauxRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<RattrapageRegimesFiscauxRapport>() {
-				@Override
-				public void writeDoc(RattrapageRegimesFiscauxRapport doc, OutputStream os) throws Exception {
-					final PdfRattrapageRegimesFiscauxRapport document = new PdfRattrapageRegimesFiscauxRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(RattrapageRegimesFiscauxRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfRattrapageRegimesFiscauxRapport document = new PdfRattrapageRegimesFiscauxRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -1772,12 +1591,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(ExtractionRegimesFiscauxRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ExtractionRegimesFiscauxRapport>() {
-				@Override
-				public void writeDoc(ExtractionRegimesFiscauxRapport doc, OutputStream os) throws Exception {
-					final PdfExtractionRegimesFiscauxRapport document = new PdfExtractionRegimesFiscauxRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(ExtractionRegimesFiscauxRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfExtractionRegimesFiscauxRapport document = new PdfExtractionRegimesFiscauxRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -1794,12 +1610,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(MigrationMandatairesSpeciauxRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<MigrationMandatairesSpeciauxRapport>() {
-				@Override
-				public void writeDoc(MigrationMandatairesSpeciauxRapport doc, OutputStream os) throws Exception {
-					final PdfMigrationMandatairesSpeciauxRapport document = new PdfMigrationMandatairesSpeciauxRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(MigrationMandatairesSpeciauxRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfMigrationMandatairesSpeciauxRapport document = new PdfMigrationMandatairesSpeciauxRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {
@@ -1988,12 +1801,9 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(AjouterDelaiPourMandataireRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<AjouterDelaiPourMandataireRapport>() {
-				@Override
-				public void writeDoc(AjouterDelaiPourMandataireRapport doc, OutputStream os) throws Exception {
-					PdfAjouterDelaiPourMandataireRapport document = new PdfAjouterDelaiPourMandataireRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
+			return docService.newDoc(AjouterDelaiPourMandataireRapport.class, nom, description, "pdf", (doc, os) -> {
+				PdfAjouterDelaiPourMandataireRapport document = new PdfAjouterDelaiPourMandataireRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {

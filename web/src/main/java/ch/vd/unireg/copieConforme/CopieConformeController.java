@@ -69,29 +69,21 @@ public class CopieConformeController {
 	 */
 	private String getDocumentCopieConforme(final HttpServletRequest request, HttpServletResponse response, String filenameRadical, final String errorMessageIfNoSuchDocument, CopieConformeGetter getter) throws EditiqueException, IOException {
 		final EditiqueResultat reponseEditique = getter.getCopieConforme();
-		final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultat> redirect = new RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultat>() {
-			@Override
-			public String doJob(EditiqueResultat resultat) {
-				return HttpHelper.getRedirectPagePrecedente(request);
+		final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultat> redirect = resultat -> HttpHelper.getRedirectPagePrecedente(request);
+		final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur> erreur = resultat -> {
+			final Integer errorCode = resultat.getErrorCode();
+			final String errorMessage;
+			if (errorCode != null && errorCode == 404 && StringUtils.isNotBlank(errorMessageIfNoSuchDocument)) {
+				errorMessage = errorMessageIfNoSuchDocument;
 			}
-		};
-		final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur> erreur = new RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur>() {
-			@Override
-			public String doJob(EditiqueResultatErreur resultat) {
-				final Integer errorCode = resultat.getErrorCode();
-				final String errorMessage;
-				if (errorCode != null && errorCode == 404 && StringUtils.isNotBlank(errorMessageIfNoSuchDocument)) {
-					errorMessage = errorMessageIfNoSuchDocument;
-				}
-				else if (StringUtils.isNotBlank(resultat.getErrorMessage())) {
-					errorMessage = resultat.getErrorMessage();
-				}
-				else {
-					errorMessage = "Erreur inattendue.";
-				}
-				Flash.error(errorMessage, errorFadingTimeout);
-				return HttpHelper.getRedirectPagePrecedente(request);
+			else if (StringUtils.isNotBlank(resultat.getErrorMessage())) {
+				errorMessage = resultat.getErrorMessage();
 			}
+			else {
+				errorMessage = "Erreur inattendue.";
+			}
+			Flash.error(errorMessage, errorFadingTimeout);
+			return HttpHelper.getRedirectPagePrecedente(request);
 		};
 
 		return helper.traiteRetourEditique(reponseEditique, response, filenameRadical, redirect, null, erreur);
@@ -99,52 +91,27 @@ public class CopieConformeController {
 
 	@RequestMapping(value = "/declaration/copie-conforme-delai.do", method = RequestMethod.GET)
 	public String getDocumentDelai(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = ID_DELAI, required = true) final Long idDelai) throws Exception {
-		return getDocumentCopieConforme(request, response, "copieDelai", "Aucun archivage trouvé pour la confirmation de délai demandée !", new CopieConformeGetter() {
-			@Override
-			public EditiqueResultat getCopieConforme() throws EditiqueException {
-				return copieConformeManager.getPdfCopieConformeDelai(idDelai);
-			}
-		});
+		return getDocumentCopieConforme(request, response, "copieDelai", "Aucun archivage trouvé pour la confirmation de délai demandée !", () -> copieConformeManager.getPdfCopieConformeDelai(idDelai));
 	}
 
 	@RequestMapping(value = "/declaration/copie-conforme-sommation.do", method = RequestMethod.GET)
 	public String getDocumentSommation(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = ID_ETAT, required = true) final Long idEtat) throws Exception {
-		return getDocumentCopieConforme(request, response, "copieSommation", "Aucun archivage trouvé pour la sommation de déclaration demandée !", new CopieConformeGetter() {
-			@Override
-			public EditiqueResultat getCopieConforme() throws EditiqueException {
-				return copieConformeManager.getPdfCopieConformeSommation(idEtat);
-			}
-		});
+		return getDocumentCopieConforme(request, response, "copieSommation", "Aucun archivage trouvé pour la sommation de déclaration demandée !", () -> copieConformeManager.getPdfCopieConformeSommation(idEtat));
 	}
 
 	@RequestMapping(value = "/declaration/copie-conforme-rappel.do", method = RequestMethod.GET)
 	public String getDocumentRappel(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = ID_ETAT, required = true) final Long idEtat) throws Exception {
-		return getDocumentCopieConforme(request, response, "copieRappel", "Aucun archivage trouvé pour le rappel demandé !", new CopieConformeGetter() {
-			@Override
-			public EditiqueResultat getCopieConforme() throws EditiqueException {
-				return copieConformeManager.getPdfCopieConformeRappel(idEtat);
-			}
-		});
+		return getDocumentCopieConforme(request, response, "copieRappel", "Aucun archivage trouvé pour le rappel demandé !", () -> copieConformeManager.getPdfCopieConformeRappel(idEtat));
 	}
 
 	@RequestMapping(value = "/autresdocs/copie-conforme-envoi.do", method = RequestMethod.GET)
 	public String getAutreDocumentFiscalInitial(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = ID_DOC, required = true) final Long idDocument) throws Exception {
-		return getDocumentCopieConforme(request, response, "copieEnvoi", "Aucun archivage trouvé pour le document demandé !", new CopieConformeGetter() {
-			@Override
-			public EditiqueResultat getCopieConforme() throws EditiqueException {
-				return copieConformeManager.getPdfCopieConformeEnvoiAutreDocumentFiscal(idDocument);
-			}
-		});
+		return getDocumentCopieConforme(request, response, "copieEnvoi", "Aucun archivage trouvé pour le document demandé !", () -> copieConformeManager.getPdfCopieConformeEnvoiAutreDocumentFiscal(idDocument));
 	}
 
 	@RequestMapping(value = "/autresdocs/copie-conforme-rappel.do", method = RequestMethod.GET)
 	public String getAutreDocumentFiscalRappel(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = ID_DOC, required = true) final Long idDocument) throws Exception {
-		return getDocumentCopieConforme(request, response, "copieRappel", "Aucun archivage trouvé pour le document demandé !", new CopieConformeGetter() {
-			@Override
-			public EditiqueResultat getCopieConforme() throws EditiqueException {
-				return copieConformeManager.getPdfCopieConformeRappelAutreDocumentFiscal(idDocument);
-			}
-		});
+		return getDocumentCopieConforme(request, response, "copieRappel", "Aucun archivage trouvé pour le document demandé !", () -> copieConformeManager.getPdfCopieConformeRappelAutreDocumentFiscal(idDocument));
 	}
 
 	@RequestMapping(value = "/copie-conforme.do", method = RequestMethod.GET)
@@ -152,11 +119,6 @@ public class CopieConformeController {
 	                          @RequestParam(value = NOCTB, required = true) final long noCtb,
 	                          @RequestParam(value = TYPE_DOC, required = true) final TypeDocumentEditique typeDoc,
 	                          @RequestParam(value = KEY, required = true) final String key) throws Exception {
-		return getDocumentCopieConforme(request, response, "document", "Aucun archivage trouvé pour le document demandé !", new CopieConformeGetter() {
-			@Override
-			public EditiqueResultat getCopieConforme() throws EditiqueException {
-				return copieConformeManager.getPdfCopieConforme(noCtb, typeDoc, key);
-			}
-		});
+		return getDocumentCopieConforme(request, response, "document", "Aucun archivage trouvé pour le document demandé !", () -> copieConformeManager.getPdfCopieConforme(noCtb, typeDoc, key));
 	}
 }

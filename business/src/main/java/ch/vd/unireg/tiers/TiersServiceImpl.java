@@ -4533,21 +4533,18 @@ public class TiersServiceImpl implements TiersService {
 
 			    if (forGestion == null) {
 				    // [UNIREG-1029] On trie les fors secondaires restants par ordre alphabétique du nom de la commune, et on prend le premier.
-				    forsSecondaires.sort(new Comparator<ForFiscal>() {
-					    @Override
-					    public int compare(ForFiscal o1, ForFiscal o2) {
-						    final Integer ofs1 = o1.getNumeroOfsAutoriteFiscale();
-						    final Integer ofs2 = o2.getNumeroOfsAutoriteFiscale();
-						    try {
-							    Commune c1 = serviceInfra.getCommuneByNumeroOfs(ofs1, o1.getDateFin());
-							    Commune c2 = serviceInfra.getCommuneByNumeroOfs(ofs2, o2.getDateFin());
-							    return c1.getNomOfficiel().compareTo(c2.getNomOfficiel());
-						    }
-						    catch (InfrastructureException e) {
-							    LOGGER.warn("Impossible de trier les communes ofs=" + ofs1 + " et ofs=" + ofs2
-									                + " par nom, on trie sur le numéro Ofs à la place", e);
-							    return ofs1.compareTo(ofs2);
-						    }
+				    forsSecondaires.sort((o1, o2) -> {
+					    final Integer ofs1 = o1.getNumeroOfsAutoriteFiscale();
+					    final Integer ofs2 = o2.getNumeroOfsAutoriteFiscale();
+					    try {
+						    Commune c1 = serviceInfra.getCommuneByNumeroOfs(ofs1, o1.getDateFin());
+						    Commune c2 = serviceInfra.getCommuneByNumeroOfs(ofs2, o2.getDateFin());
+						    return c1.getNomOfficiel().compareTo(c2.getNomOfficiel());
+					    }
+					    catch (InfrastructureException e) {
+						    LOGGER.warn("Impossible de trier les communes ofs=" + ofs1 + " et ofs=" + ofs2
+								                + " par nom, on trie sur le numéro Ofs à la place", e);
+						    return ofs1.compareTo(ofs2);
 					    }
 				    });
 				    forGestion = (ForFiscalRevenuFortune) forsSecondaires.get(0);
@@ -6859,19 +6856,16 @@ public class TiersServiceImpl implements TiersService {
 				List<DomicileEtablissement> extractedDomiciles = DateRangeHelper.extract(nonAnnulees,
 				                                                                         principal.getDateDebut(),
 				                                                                         principal.getDateFin(),
-				                                                                         new DateRangeHelper.AdapterCallback<DomicileEtablissement>() {
-					                                                                         @Override
-					                                                                         public DomicileEtablissement adapt(DomicileEtablissement domicile, RegDate debut, RegDate fin) {
-						                                                                         final DomicileEtablissement domicileEtablissement =
-								                                                                         new DomicileEtablissement(debut != null ? debut : domicile.getDateDebut(),
-								                                                                                                   fin != null ? fin : domicile.getDateFin(),
-								                                                                                                   domicile.getTypeAutoriteFiscale(),
-								                                                                                                   domicile.getNumeroOfsAutoriteFiscale(),
-								                                                                                                   domicile.getEtablissement()
-								                                                                         );
-						                                                                         domicileEtablissement.setId(domicile.getId());
-						                                                                         return domicileEtablissement;
-					                                                                         }
+				                                                                         (domicile, debut, fin) -> {
+					                                                                         final DomicileEtablissement domicileEtablissement =
+							                                                                         new DomicileEtablissement(debut != null ? debut : domicile.getDateDebut(),
+							                                                                                                   fin != null ? fin : domicile.getDateFin(),
+							                                                                                                   domicile.getTypeAutoriteFiscale(),
+							                                                                                                   domicile.getNumeroOfsAutoriteFiscale(),
+							                                                                                                   domicile.getEtablissement()
+							                                                                         );
+					                                                                         domicileEtablissement.setId(domicile.getId());
+					                                                                         return domicileEtablissement;
 				                                                                         });
 
 				domiciles.addAll(extractedDomiciles);

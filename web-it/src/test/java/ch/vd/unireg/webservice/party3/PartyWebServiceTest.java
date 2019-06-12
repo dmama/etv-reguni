@@ -2,7 +2,6 @@ package ch.vd.unireg.webservice.party3;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -636,12 +635,7 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 		}
 
 		/* Trie la collection de rapports appartenance ménage par ordre croissant de numéro de l'autre tiers */
-		Collections.sort(rapportsMenage, new Comparator<RelationBetweenParties>() {
-			@Override
-			public int compare(RelationBetweenParties r1, RelationBetweenParties r2) {
-				return (r1.getOtherPartyNumber() - r2.getOtherPartyNumber());
-			}
-		});
+		Collections.sort(rapportsMenage, (r1, r2) -> (r1.getOtherPartyNumber() - r2.getOtherPartyNumber()));
 		assertEquals(2, rapportsMenage.size());
 
 		final RelationBetweenParties rapportMenage0 = rapportsMenage.get(0);
@@ -1561,16 +1555,13 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 			assertEquals(4, relations.size());
 
 			final List<RelationBetweenParties> sortedRelations = new ArrayList<>(relations);
-			Collections.sort(sortedRelations, new Comparator<RelationBetweenParties>() {
-				@Override
-				public int compare(RelationBetweenParties o1, RelationBetweenParties o2) {
-					// d'abord par type, puis par numéro d'autre tiers
-					int comparison = Integer.compare(o1.getType().ordinal(), o2.getType().ordinal());
-					if (comparison == 0) {
-						comparison = Integer.compare(o1.getOtherPartyNumber(), o2.getOtherPartyNumber());
-					}
-					return comparison;
+			Collections.sort(sortedRelations, (o1, o2) -> {
+				// d'abord par type, puis par numéro d'autre tiers
+				int comparison = Integer.compare(o1.getType().ordinal(), o2.getType().ordinal());
+				if (comparison == 0) {
+					comparison = Integer.compare(o1.getOtherPartyNumber(), o2.getOtherPartyNumber());
 				}
+				return comparison;
 			});
 
 			final RelationBetweenParties rel0 = sortedRelations.get(0);
@@ -1653,12 +1644,9 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 			assertEquals(2, relations.size());
 
 			final List<RelationBetweenParties> sortedRelations = new ArrayList<>(relations);
-			Collections.sort(sortedRelations, new Comparator<RelationBetweenParties>() {
-				@Override
-				public int compare(RelationBetweenParties o1, RelationBetweenParties o2) {
-					// par numéro d'autre tiers
-					return Integer.compare(o1.getOtherPartyNumber(), o2.getOtherPartyNumber());
-				}
+			Collections.sort(sortedRelations, (o1, o2) -> {
+				// par numéro d'autre tiers
+				return Integer.compare(o1.getOtherPartyNumber(), o2.getOtherPartyNumber());
 			});
 
 			final RelationBetweenParties rel0 = sortedRelations.get(0);

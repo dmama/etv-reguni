@@ -3,7 +3,6 @@ package ch.vd.unireg.evenement.entreprise.casmetier.information;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import org.junit.Assert;
@@ -98,12 +97,7 @@ public class InformationComplementaireTest extends AbstractEvenementEntrepriseCi
 			Assert.assertEquals(1, evtsFiscaux.size());
 
 			final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
-			Collections.sort(evtsFiscauxTries, new Comparator<EvenementFiscal>() {
-				@Override
-				public int compare(EvenementFiscal o1, EvenementFiscal o2) {
-					return Long.compare(o1.getId(), o2.getId());
-				}
-			});
+			Collections.sort(evtsFiscauxTries, (o1, o2) -> Long.compare(o1.getId(), o2.getId()));
 
 			{
 				final EvenementFiscal ef = evtsFiscauxTries.get(0);
@@ -164,12 +158,7 @@ public class InformationComplementaireTest extends AbstractEvenementEntrepriseCi
 			Assert.assertEquals(1, evtsFiscaux.size());
 
 			final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
-			Collections.sort(evtsFiscauxTries, new Comparator<EvenementFiscal>() {
-				@Override
-				public int compare(EvenementFiscal o1, EvenementFiscal o2) {
-					return Long.compare(o1.getId(), o2.getId());
-				}
-			});
+			Collections.sort(evtsFiscauxTries, (o1, o2) -> Long.compare(o1.getId(), o2.getId()));
 
 			{
 				final EvenementFiscal ef = evtsFiscauxTries.get(0);
@@ -234,12 +223,7 @@ public class InformationComplementaireTest extends AbstractEvenementEntrepriseCi
 			Assert.assertEquals(1, evtsFiscaux.size());
 
 			final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
-			Collections.sort(evtsFiscauxTries, new Comparator<EvenementFiscal>() {
-				@Override
-				public int compare(EvenementFiscal o1, EvenementFiscal o2) {
-					return Long.compare(o1.getId(), o2.getId());
-				}
-			});
+			Collections.sort(evtsFiscauxTries, (o1, o2) -> Long.compare(o1.getId(), o2.getId()));
 
 			{
 				final EvenementFiscal ef = evtsFiscauxTries.get(0);
@@ -304,12 +288,7 @@ public class InformationComplementaireTest extends AbstractEvenementEntrepriseCi
 			Assert.assertEquals(1, evtsFiscaux.size());
 
 			final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
-			Collections.sort(evtsFiscauxTries, new Comparator<EvenementFiscal>() {
-				@Override
-				public int compare(EvenementFiscal o1, EvenementFiscal o2) {
-					return Long.compare(o1.getId(), o2.getId());
-				}
-			});
+			Collections.sort(evtsFiscauxTries, (o1, o2) -> Long.compare(o1.getId(), o2.getId()));
 
 			{
 				final EvenementFiscal ef = evtsFiscauxTries.get(0);
@@ -374,12 +353,7 @@ public class InformationComplementaireTest extends AbstractEvenementEntrepriseCi
 			Assert.assertEquals(1, evtsFiscaux.size());
 
 			final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
-			Collections.sort(evtsFiscauxTries, new Comparator<EvenementFiscal>() {
-				@Override
-				public int compare(EvenementFiscal o1, EvenementFiscal o2) {
-					return Long.compare(o1.getId(), o2.getId());
-				}
-			});
+			Collections.sort(evtsFiscauxTries, (o1, o2) -> Long.compare(o1.getId(), o2.getId()));
 
 			{
 				final EvenementFiscal ef = evtsFiscauxTries.get(0);

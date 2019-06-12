@@ -1,7 +1,6 @@
 package ch.vd.unireg.indexer.tiers;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -165,12 +164,7 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 			final List<TiersIndexedData> resultats = globalTiersSearcher.search(criteria);
 			assertNotNull(resultats);
 			assertEquals(2, resultats.size());
-			Collections.sort(resultats, new Comparator<TiersIndexedData>() {
-				@Override
-				public int compare(TiersIndexedData o1, TiersIndexedData o2) {
-					return Long.compare(o1.getNumero(), o2.getNumero());
-				}
-			});
+			Collections.sort(resultats, (o1, o2) -> Long.compare(o1.getNumero(), o2.getNumero()));
 
 			final TiersIndexedData dataEnt = resultats.get(0);
 			final TiersIndexedData dataDpi = resultats.get(1);
@@ -239,12 +233,7 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 			final List<TiersIndexedData> resultats = globalTiersSearcher.search(criteria);
 			assertNotNull(resultats);
 			assertEquals(3, resultats.size());
-			Collections.sort(resultats, new Comparator<TiersIndexedData>() {
-				@Override
-				public int compare(TiersIndexedData o1, TiersIndexedData o2) {
-					return Long.compare(o1.getNumero(), o2.getNumero());
-				}
-			});
+			Collections.sort(resultats, (o1, o2) -> Long.compare(o1.getNumero(), o2.getNumero()));
 
 			final TiersIndexedData dataEntreprise = resultats.get(0);
 			final TiersIndexedData dataDpi = resultats.get(1);
@@ -322,12 +311,7 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 			final List<TiersIndexedData> resultats = globalTiersSearcher.search(criteria);
 			assertNotNull(resultats);
 			assertEquals(4, resultats.size());
-			Collections.sort(resultats, new Comparator<TiersIndexedData>() {
-				@Override
-				public int compare(TiersIndexedData o1, TiersIndexedData o2) {
-					return Long.compare(o1.getNumero(), o2.getNumero());
-				}
-			});
+			Collections.sort(resultats, (o1, o2) -> Long.compare(o1.getNumero(), o2.getNumero()));
 
 			final TiersIndexedData dataEntreprise = resultats.get(0);
 			final TiersIndexedData dataDpi = resultats.get(1);
