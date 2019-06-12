@@ -11,7 +11,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.common.Annulable;
@@ -66,12 +65,6 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange, Annu
 
 	private MotifFor motifImposition;
 
-	private String libFractionCommune;
-
-	private String libCommuneHorsCanton;
-
-	private String libPays;
-
 	private boolean annule;
 	private String natureForFiscal;
 
@@ -81,13 +74,7 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange, Annu
 
 	private boolean dernierForPrincipalOuDebiteur;
 
-	private boolean changementModeImposition;
-
 	private Boolean forGestion;
-
-	private boolean dateOuvertureEditable = true;
-
-	private boolean dateFermetureEditable = true;
 
 	private final boolean principal;
 
@@ -156,15 +143,6 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange, Annu
 		else {
 			this.dateOuverture = forFiscal.getDateDebut();
 			this.dateFermeture = forFiscal.getDateFin();
-
-			if (forFiscal instanceof ForFiscalSecondaire) {
-				this.dateOuvertureEditable = true;
-				this.dateFermetureEditable = true;
-			}
-			else {
-				this.dateOuvertureEditable = dateOuverture == null;
-				this.dateFermetureEditable = dateFermeture == null || !RegDateHelper.isBeforeOrEqual(dateFermeture, RegDate.get(), NullDateBehavior.LATEST);
-			}
 		}
 
 		setTypeEtNumeroForFiscal(forFiscal.getTypeAutoriteFiscale(), forFiscal.getNumeroOfsAutoriteFiscale());
@@ -194,44 +172,26 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange, Annu
 		this.secondaire = forFiscal instanceof ForFiscalSecondaire;
 	}
 
-	/**
-	 * @return the genreImpot
-	 */
 	public GenreImpot getGenreImpot() {
 		return genreImpot;
 	}
 
-	/**
-	 * @param genreImpot the genreImpot to set
-	 */
 	public void setGenreImpot(GenreImpot genreImpot) {
 		this.genreImpot = genreImpot;
 	}
 
-	/**
-	 * @return the rattachement
-	 */
 	public MotifRattachement getMotifRattachement() {
 		return motifRattachement;
 	}
 
-	/**
-	 * @param rattachement the rattachement to set
-	 */
 	public void setMotifRattachement(MotifRattachement rattachement) {
 		this.motifRattachement = rattachement;
 	}
 
-	/**
-	 * @return the typeForFiscal
-	 */
 	public TypeAutoriteFiscale getTypeAutoriteFiscale() {
 		return typeAutoriteFiscale;
 	}
 
-	/**
-	 * @param typeAutoriteFiscale the typeAutoriteFiscale to set
-	 */
 	public void setTypeAutoriteFiscale(TypeAutoriteFiscale typeAutoriteFiscale) {
 		this.typeAutoriteFiscale = typeAutoriteFiscale;
 	}
@@ -252,45 +212,27 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange, Annu
 		}
 	}
 
-	/**
-	 * @return the numeroForFiscalCommune
-	 */
 	public Integer getNumeroForFiscalCommune() {
 		return numeroForFiscalCommune;
 	}
 
-	/**
-	 * @param numeroForFiscalCommune the numeroForFiscalCommune to set
-	 */
 	public void setNumeroForFiscalCommune(Integer numeroForFiscalCommune) {
 		this.numeroForFiscalCommune = numeroForFiscalCommune;
 	}
 
-	/**
-	 * @return the numeroForFiscalCommuneHorsCanton
-	 */
 	public Integer getNumeroForFiscalCommuneHorsCanton() {
 		return numeroForFiscalCommuneHorsCanton;
 	}
 
-	/**
-	 * @param numeroForFiscalCommuneHorsCanton the numeroForFiscalCommuneHorsCanton to set
-	 */
 	public void setNumeroForFiscalCommuneHorsCanton(
 			Integer numeroForFiscalCommuneHorsCanton) {
 		this.numeroForFiscalCommuneHorsCanton = numeroForFiscalCommuneHorsCanton;
 	}
 
-	/**
-	 * @return the numeroForFiscalPays
-	 */
 	public Integer getNumeroForFiscalPays() {
 		return numeroForFiscalPays;
 	}
 
-	/**
-	 * @param numeroForFiscalPays the numeroForFiscalPays to set
-	 */
 	public void setNumeroForFiscalPays(Integer numeroForFiscalPays) {
 		this.numeroForFiscalPays = numeroForFiscalPays;
 	}
@@ -310,90 +252,54 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange, Annu
 		}
 	}
 
-	/**
-	 * @return the dateOuverture
-	 */
 	public RegDate getRegDateOuverture() {
 		return dateOuverture;
 	}
 
-	/**
-	 * @param dateOuverture the dateOuverture to set
-	 */
 	public void setDateOuverture(RegDate dateOuverture) {
 		this.dateOuverture = dateOuverture;
 	}
 
-	/**
-	 * @return the dateFermeture
-	 */
 	public RegDate getRegDateFermeture() {
 		return dateFermeture;
 	}
 
-	/**
-	 * @param dateFermeture the dateFermeture to set
-	 */
 	public void setDateFermeture(RegDate dateFermeture) {
 		this.dateFermeture = dateFermeture;
 	}
 
-	/**
-	 * @return the dateEvenement
-	 */
 	public RegDate getRegDateEvenement() {
 		return dateEvenement;
 	}
 
-	/**
-	 * @param dateEvenement the dateEvenement to set
-	 */
 	public void setDateEvenement(RegDate dateEvenement) {
 		this.dateEvenement = dateEvenement;
 	}
 
-	/**
-	 * @return the dateOuverture
-	 */
 	public Date getDateOuverture() {
 		return "ForFiscalAutreImpot".equals(getNatureForFiscal()) ?
 				RegDate.asJavaDate(dateEvenement) :
 				RegDate.asJavaDate(dateOuverture);
 	}
 
-	/**
-	 * @param dateOuverture the dateOuverture to set
-	 */
 	public void setDateOuverture(Date dateOuverture) {
 		this.dateOuverture = RegDateHelper.get(dateOuverture);
 	}
 
-	/**
-	 * @return the dateFermeture
-	 */
 	public Date getDateFermeture() {
 		return "ForFiscalAutreImpot".equals(getNatureForFiscal()) ?
 				RegDate.asJavaDate(dateEvenement) :
 				RegDate.asJavaDate(dateFermeture);
 	}
 
-	/**
-	 * @param dateFermeture the dateFermeture to set
-	 */
 	public void setDateFermeture(Date dateFermeture) {
 		this.dateFermeture = RegDateHelper.get(dateFermeture);
 	}
 
-	/**
-	 * @return the dateEvenement
-	 */
 	public Date getDateEvenement() {
 		return RegDate.asJavaDate(dateEvenement);
 	}
 
-	/**
-	 * @param dateEvenement the dateEvenement to set
-	 */
 	public void setDateEvenement(Date dateEvenement) {
 		this.dateEvenement = RegDateHelper.get(dateEvenement);
 	}
@@ -455,26 +361,6 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange, Annu
 		this.id = id;
 	}
 
-	public String getLibFractionCommune() {
-		return libFractionCommune;
-	}
-
-	public void setLibFractionCommune(String libFractionCommune) {
-		this.libFractionCommune = libFractionCommune;
-	}
-
-	public String getLibCommuneHorsCanton() {
-		return libCommuneHorsCanton;
-	}
-
-	public void setLibCommuneHorsCanton(String libCommuneHorsCanton) {
-		this.libCommuneHorsCanton = libCommuneHorsCanton;
-	}
-
-	public String getLibPays() {
-		return libPays;
-	}
-
 	/**
 	 * Compare d'apres la date de ForFiscalView
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
@@ -492,16 +378,8 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange, Annu
 		return - dateDebut.compareTo(autreDateDebut);
 	}
 
-	public void setLibPays(String libPays) {
-		this.libPays = libPays;
-	}
-
 	public String getNatureForFiscal() {
 		return natureForFiscal;
-	}
-
-	public void setNatureForFiscal(String natureForFiscal) {
-		this.natureForFiscal = natureForFiscal;
 	}
 
 	@Override
@@ -517,10 +395,6 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange, Annu
 		return natureTiers;
 	}
 
-	public void setNatureTiers(NatureTiers natureTiers) {
-		this.natureTiers = natureTiers;
-	}
-
 	public boolean isPrincipalActif() {
 		return isPrincipalActif;
 	}
@@ -529,24 +403,8 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange, Annu
 		return dernierForPrincipalOuDebiteur;
 	}
 
-	public void setDernierForPrincipalOuDebiteur(boolean dernierForPrincipalOuDebiteur) {
-		this.dernierForPrincipalOuDebiteur = dernierForPrincipalOuDebiteur;
-	}
-
-	public boolean isChangementModeImposition() {
-		return changementModeImposition;
-	}
-
-	public void setChangementModeImposition(boolean changementModeImposition) {
-		this.changementModeImposition = changementModeImposition;
-	}
-
 	public Boolean getForGestion() {
 		return forGestion;
-	}
-
-	public void setForGestion(Boolean forGestion) {
-		this.forGestion = forGestion;
 	}
 
 	public MotifFor getMotifImposition() {
@@ -555,14 +413,6 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange, Annu
 
 	public void setMotifImposition(MotifFor motifImposition) {
 		this.motifImposition = motifImposition;
-	}
-
-	public boolean isDateOuvertureEditable() {
-		return dateOuvertureEditable;
-	}
-
-	public boolean isDateFermetureEditable() {
-		return dateFermetureEditable;
 	}
 
 	@Override
