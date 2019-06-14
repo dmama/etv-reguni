@@ -1,5 +1,6 @@
 package ch.vd.unireg.webservice.batch;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -11,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.unireg.common.WebitTest;
+import ch.vd.unireg.ubr.BatchRunnerApp;
 import ch.vd.unireg.ubr.BatchRunnerClient;
 import ch.vd.unireg.ubr.BatchRunnerClientException;
 import ch.vd.unireg.ubr.JobDescription;
@@ -279,6 +281,26 @@ public class BatchClientTest extends WebitTest {
 		final JobDescription description = client.getBatchDescription(BATCH_NAME);
 		assertNotNull(description);
 		assertEquals(JobStatus.INTERRUPTED, description.getStatus());
+	}
+
+	/**
+	 * Il ne s'agit pas vraiment d'un test : cette méthode va générer le fichier de définition des batches et de leurs paramètres
+	 * et Jenkins l'uploadera ensuite sur le serveur de documentation Unireg (http://tom.etat-de-vaud.ch/unireg/files/).
+	 */
+	@Test
+	public void generateBatchDefinitionFile() throws Exception {
+		try (final PrintStream out = new PrintStream("batches-definition-" + shortVersion + ".txt")) {
+			client.getBatchNames().forEach(n -> {
+				try {
+					out.println("-----------------------------------------------------------------");
+					BatchRunnerApp.printBatchDefinition(n, client, out);
+					out.println();
+				}
+				catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			});
+		}
 	}
 
 	private static void assertParam(JobParamDescription param, final String paramName, final String paramType) {

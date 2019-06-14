@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -32,6 +33,8 @@ import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFact
 import org.apache.logging.log4j.core.config.builder.api.LayoutComponentBuilder;
 import org.apache.logging.log4j.core.config.builder.api.RootLoggerComponentBuilder;
 import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.util.ResourceUtils;
 
 /**
@@ -145,7 +148,7 @@ public class BatchRunnerApp {
 				client.getBatchNames().forEach(n -> {
 					System.out.println("-----------------------------------------------------------------");
 					try {
-						showBatch(n, client);
+						printBatchDefinition(n, client, System.out);
 					}
 					catch (Exception e) {
 						throw new RuntimeException(e);
@@ -154,7 +157,7 @@ public class BatchRunnerApp {
 				});
 				break;
 			case "show":
-				showBatch(name, client);
+				printBatchDefinition(name, client, System.out);
 				break;
 			case "status":
 				statusBatch(name, client);
@@ -219,26 +222,26 @@ public class BatchRunnerApp {
 		}
 	}
 
-	private static void showBatch(String name, BatchRunnerClient client) throws UnknownBatchException, BatchRunnerClientException {
+	public static void printBatchDefinition(String name, BatchRunnerClient client, @NotNull PrintStream out) throws UnknownBatchException, BatchRunnerClientException {
 		final JobDescription def = client.getBatchDescription(name);
 		if (def == null) {
 			throw new UnknownBatchException(name);
 		}
 		else {
-			System.out.print("name:            ");
-			System.out.println(def.getName());
-			System.out.print("description:     ");
-			System.out.println(def.getDescription());
-			System.out.print("parameters:      ");
-			toString(def.getParameters());
-			System.out.print("last stop:       ");
-			System.out.println(toString(def.getLastEnd()));
-			System.out.print("last start:      ");
-			System.out.println(toString(def.getLastStart()));
-			System.out.print("running message: ");
-			System.out.println(toString(def.getRunningMessage()));
-			System.out.print("status:          ");
-			System.out.println(def.getStatus().name());
+			out.print("name:            ");
+			out.println(def.getName());
+			out.print("description:     ");
+			out.println(def.getDescription());
+			out.print("parameters:      ");
+			printParametersDefinition(def.getParameters(), out);
+			out.print("last stop:       ");
+			out.println(toString(def.getLastEnd()));
+			out.print("last start:      ");
+			out.println(toString(def.getLastStart()));
+			out.print("running message: ");
+			out.println(toString(def.getRunningMessage()));
+			out.print("status:          ");
+			out.println(def.getStatus().name());
 		}
 	}
 
@@ -313,18 +316,18 @@ public class BatchRunnerApp {
 			this.enumValues = p.getEnumValues() == null || p.getEnumValues().length == 0 ? N_A : ArrayUtils.toString(p.getEnumValues());
 		}
 
-		public void println(String format) {
+		public void println(String format, @NotNull PrintStream out) {
 			final String line = String.format(format, name, type, mandatoryFlag, multiValues, enumValues);
-			System.out.println(line);
+			out.println(line);
 		}
 	}
 
-	private static void toString(List<JobParamDescription> pl) {
+	private static void printParametersDefinition(@Nullable List<JobParamDescription> pl, @NotNull PrintStream out) {
 		if (pl == null || pl.isEmpty()) {
-			System.out.println(N_A);
+			out.println(N_A);
 		}
 		else {
-			System.out.println();
+			out.println();
 
 			final List<ParamLine> lines = new ArrayList<>(pl.size() + 1);
 			lines.add(new ParamLine("name", "type", "mandatory", "multivalues", "enum values"));
@@ -348,9 +351,9 @@ public class BatchRunnerApp {
 
 			for (int i = 0; i < lines.size(); ++i) {
 				final ParamLine line = lines.get(i);
-				line.println(format);
+				line.println(format, out);
 				if (i == 0) {
-					System.out.println("      " + fillString('-', maxName + maxType + maxMandatory + maxMultivalues + maxEnum + 18));
+					out.println("      " + fillString('-', maxName + maxType + maxMandatory + maxMultivalues + maxEnum + 18));
 				}
 			}
 		}

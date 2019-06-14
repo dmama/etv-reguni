@@ -1,5 +1,6 @@
 package ch.vd.unireg.common;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URL;
@@ -17,6 +18,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlFileInput;
 import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -32,6 +34,9 @@ public abstract class WebitTest {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WebitTest.class);
 	private static final Pattern valiPattern = Pattern.compile("( *---.{4}-)");
+
+	protected String shortVersion;  // e.g. 19R3
+	protected String longVersion;   // e.g. 19R3.A.0-SNAPSHOT
 
 	protected String baseUrl;
 	protected String baseWsUrl;
@@ -78,6 +83,19 @@ public abstract class WebitTest {
 		try (InputStream inStream = new FileInputStream(uniregUTPropertiesFile)) {
 			propsUT.load(inStream);
 		}
+
+		// Récupère la version d'Unireg
+		final String versionFile = propsWebIT.getProperty("version.txt");
+		shortVersion = FileUtils.readLines(new File(versionFile), "UTF-8").stream()
+				.filter(line -> line.startsWith("short="))
+				.map(line -> line.substring(6)) // short=19R3 => 19R3
+				.findFirst()
+				.orElseThrow(() -> new IllegalArgumentException("Le fichier [" + versionFile + "] ne contient pas la version applicative"));
+		longVersion = FileUtils.readLines(new File(versionFile), "UTF-8").stream()
+				.filter(line -> line.startsWith("long="))
+				.map(line -> line.substring(5)) // long=19R3.A.0-SNAPSHOT => 19R3.A.0-SNAPSHOT
+				.findFirst()
+				.orElseThrow(() -> new IllegalArgumentException("Le fichier [" + versionFile + "] ne contient pas la version applicative"));
 
 		// Récupère les valeurs des propriétés 
 		baseUrl = propsWebIT.getProperty("unireg.baseurl") + propsUT.getProperty("testprop.unireg.deploymenturl");
