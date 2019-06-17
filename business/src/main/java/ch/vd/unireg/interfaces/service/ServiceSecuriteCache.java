@@ -395,7 +395,7 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 
 	@Override
 	public String getName() {
-		return "SECURITE";
+		return "SECURITE-SERVICE";
 	}
 
 	@Override
