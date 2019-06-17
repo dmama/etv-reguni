@@ -7,4 +7,12 @@
 		<property name="acceptExisting" value="true" /> <!-- réutilisation du même cache manager entre les différents contextes Spring -->
 	</bean>
 
+	<bean id="uniregCacheManager" class="ch.vd.unireg.cache.UniregCacheManagerImpl">
+		<constructor-arg>
+			<map>
+                <!-- vide-->
+			</map>
+		</constructor-arg>
+	</bean>
+
 </beans>

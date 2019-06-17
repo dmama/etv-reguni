@@ -23,7 +23,6 @@ import ch.vd.unireg.cache.CacheStats;
 import ch.vd.unireg.cache.EhCacheStats;
 import ch.vd.unireg.cache.KeyDumpableCache;
 import ch.vd.unireg.cache.UniregCacheInterface;
-import ch.vd.unireg.cache.UniregCacheManager;
 import ch.vd.unireg.indexer.EmptySearchCriteriaException;
 import ch.vd.unireg.indexer.IndexerException;
 import ch.vd.unireg.security.SecurityProviderInterface;
@@ -60,7 +59,6 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 	private static final Logger LOGGER = LoggerFactory.getLogger(BusinessWebServiceCache.class);
 
 	private Ehcache cache;
-	private UniregCacheManager uniregCacheManager;
 	private StatsService statsService;
 	private SecurityProviderInterface securityProvider;
 	private BusinessWebService target;
@@ -71,10 +69,6 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 
 	public void setCache(Ehcache cache) {
 		this.cache = cache;
-	}
-
-	public void setUniregCacheManager(UniregCacheManager uniregCacheManager) {
-		this.uniregCacheManager = uniregCacheManager;
 	}
 
 	public void setStatsService(StatsService statsService) {
@@ -97,9 +91,6 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 		if (statsService != null) {
 			statsService.registerCache(SERVICE_NAME, this);
 		}
-		if (uniregCacheManager != null) {
-			uniregCacheManager.register(this);
-		}
 	}
 
 	@Override
@@ -107,19 +98,11 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 		if (statsService != null) {
 			statsService.unregisterCache(SERVICE_NAME);
 		}
-		if (uniregCacheManager != null) {
-			uniregCacheManager.unregister(this);
-		}
 	}
 
 	@Override
 	public void dumpCacheKeys(Logger logger, LogLevel.Level level) {
 		CacheHelper.dumpCacheKeys(cache, logger, level);
-	}
-
-	@Override
-	public String getName() {
-		return "WS-v5";
 	}
 
 	@Override

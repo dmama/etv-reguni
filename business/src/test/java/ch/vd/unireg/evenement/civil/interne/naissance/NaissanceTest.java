@@ -377,7 +377,6 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 		final IndividuConnectorCache cache = new IndividuConnectorCache();
 		cache.setTarget(realService);
 		cache.setCache(cacheManager.getCache("serviceCivil"));
-		cache.setUniregCacheManager(uniregCacheManager);
 		cache.afterPropertiesSet();
 		cache.reset();
 		pluggableCivilDataEventNotifier.setTarget(new CivilDataEventNotifierImpl(Collections.singletonList(cache)));

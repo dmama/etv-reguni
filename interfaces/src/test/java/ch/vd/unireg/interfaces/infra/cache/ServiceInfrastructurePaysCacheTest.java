@@ -13,7 +13,6 @@ import org.springframework.util.ResourceUtils;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.cache.UniregCacheManagerImpl;
 import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Pays;
@@ -234,7 +233,6 @@ public class ServiceInfrastructurePaysCacheTest {
 		cache = new InfrastructureConnectorCache();
 		cache.setCache(manager.getCache("infraConnector"));
 		cache.setShortLivedCache(manager.getCache("infraConnectorShortLived"));
-		cache.setUniregCacheManager(new UniregCacheManagerImpl());
 		target = new Test();
 		cache.setTarget(target);
 		cache.afterPropertiesSet();

@@ -23,7 +23,6 @@ import ch.vd.unireg.cache.EhCacheStats;
 import ch.vd.unireg.cache.KeyDumpableCache;
 import ch.vd.unireg.cache.KeyValueDumpableCache;
 import ch.vd.unireg.cache.UniregCacheInterface;
-import ch.vd.unireg.cache.UniregCacheManager;
 import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.common.TiersNotFoundException;
 import ch.vd.unireg.data.FiscalDataEventListener;
@@ -40,7 +39,6 @@ public class SecurityProviderCache implements UniregCacheInterface, KeyDumpableC
 	private Ehcache cache;
 	private TiersDAO tiersDAO;
 	private DroitAccesDAO droitAccesDAO;
-	private UniregCacheManager uniregCacheManager;
 	private PlatformTransactionManager transactionManager;
 
 	private boolean preloadTiersIds;
@@ -69,10 +67,6 @@ public class SecurityProviderCache implements UniregCacheInterface, KeyDumpableC
 
 	public void setCache(Ehcache cache) {
 		this.cache = cache;
-	}
-
-	public void setUniregCacheManager(UniregCacheManager uniregCacheManager) {
-		this.uniregCacheManager = uniregCacheManager;
 	}
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
@@ -398,14 +392,12 @@ public class SecurityProviderCache implements UniregCacheInterface, KeyDumpableC
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		uniregCacheManager.register(this);
 		initCaches();
 	}
 
 	@Override
 	public void destroy() throws Exception {
 		cache = null;
-		uniregCacheManager.unregister(this);
 	}
 
 	/**
@@ -492,11 +484,6 @@ public class SecurityProviderCache implements UniregCacheInterface, KeyDumpableC
 	@Override
 	public String getDescription() {
 		return "security provider";
-	}
-
-	@Override
-	public String getName() {
-		return "SECURITY-PROVIDER";
 	}
 
 	@Override

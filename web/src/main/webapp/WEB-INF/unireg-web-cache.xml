@@ -6,4 +6,19 @@
 	  <property name="configLocation" value="file:${extprop.ehcache.file}" />
 	</bean>
 
+	<bean id="uniregCacheManager" class="ch.vd.unireg.cache.UniregCacheManagerImpl">
+		<constructor-arg>
+			<map>
+				<!-- business-->
+				<entry key="ENTREPRISE" value-ref="entrepriseConnectorCache"/>
+				<entry key="INDIVIDU" value-ref="individuConnectorCache"/>
+				<entry key="INFRA" value-ref="infrastructureConnectorCache"/>
+				<entry key="SECURITE-SERVICE" value-ref="serviceSecuriteCache"/>
+				<entry key="SECURITY-PROVIDER" value-ref="securityProviderCache"/>
+				<!-- web-->
+				<entry key="AUTH-WEB" value-ref="autorisationCache"/>
+			</map>
+		</constructor-arg>
+	</bean>
+
 </beans>

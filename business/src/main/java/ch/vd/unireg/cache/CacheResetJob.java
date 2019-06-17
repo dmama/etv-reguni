@@ -1,12 +1,12 @@
 package ch.vd.unireg.cache;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.scheduler.JobCategory;
@@ -44,20 +44,21 @@ public class CacheResetJob extends JobDefinition {
 	private void refreshParamDefinition() {
 
 		// On construit la liste des paramètres dynamiquement en fonction des caches enregistrés dans le manager
-
-		final List<UniregCacheInterface> caches = new ArrayList<>(manager.getCaches());
-		caches.sort(Comparator.comparing(UniregCacheInterface::getName));
-
-		final List<Pair<JobParam, ?>> params = new ArrayList<>();
-		for (UniregCacheInterface c : caches) {
-			final JobParam param = new JobParam();
-			param.setDescription("Reset du cache " + c.getDescription());
-			param.setName(c.getName());
-			param.setMandatory(true);
-			param.setType(new JobParamBoolean());
-			params.add(Pair.of(param, Boolean.FALSE));
-		}
+		final List<Pair<JobParam, ?>> params = manager.getCaches().entrySet().stream()
+				.sorted(Comparator.comparing(Map.Entry::getKey))
+				.map(CacheResetJob::newParamDefinition)
+				.collect(Collectors.toList());
 		refreshParameterDefinitions(params);
+	}
+
+	@NotNull
+	private static Pair<JobParam, Boolean> newParamDefinition(@NotNull Map.Entry<String, UniregCacheInterface> e) {
+		final JobParam param = new JobParam();
+		param.setDescription("Reset du cache " + e.getValue().getDescription());
+		param.setName(e.getKey());
+		param.setMandatory(true);
+		param.setType(new JobParamBoolean());
+		return Pair.of(param, Boolean.FALSE);
 	}
 
 	@Override
@@ -70,11 +71,12 @@ public class CacheResetJob extends JobDefinition {
 
 		int i = 0;
 
-		final Collection<UniregCacheInterface> caches = manager.getCaches();
+		final @NotNull Map<String, UniregCacheInterface> caches = manager.getCaches();
 		final int size = caches.size();
 
-		for (UniregCacheInterface c : caches) {
-			final Boolean reset = (Boolean) params.get(c.getName());
+		for (Map.Entry<String, UniregCacheInterface> entry : caches.entrySet()) {
+			final UniregCacheInterface c = entry.getValue();
+			final Boolean reset = (Boolean) params.get(entry.getKey());
 			if (reset != null && reset) {
 				message = "Reset du cache " + c.getDescription();
 				statusManager.setMessage(message, (100 * (i + 1)) / size);

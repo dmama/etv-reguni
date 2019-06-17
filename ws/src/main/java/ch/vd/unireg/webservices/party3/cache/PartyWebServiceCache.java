@@ -20,7 +20,6 @@ import ch.vd.unireg.cache.CacheStats;
 import ch.vd.unireg.cache.EhCacheStats;
 import ch.vd.unireg.cache.KeyDumpableCache;
 import ch.vd.unireg.cache.UniregCacheInterface;
-import ch.vd.unireg.cache.UniregCacheManager;
 import ch.vd.unireg.stats.StatsService;
 import ch.vd.unireg.utils.LogLevel;
 import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationsRequest;
@@ -58,7 +57,6 @@ public class PartyWebServiceCache implements UniregCacheInterface, KeyDumpableCa
 
 	private PartyWebService target;
 	private Ehcache cache;
-	private UniregCacheManager uniregCacheManager;
 	private StatsService statsService;
 
 	public void setTarget(PartyWebService target) {
@@ -67,10 +65,6 @@ public class PartyWebServiceCache implements UniregCacheInterface, KeyDumpableCa
 
 	public void setCache(Ehcache cache) {
 		this.cache = cache;
-	}
-
-	public void setUniregCacheManager(UniregCacheManager uniregCacheManager) {
-		this.uniregCacheManager = uniregCacheManager;
 	}
 
 	public void setStatsService(StatsService statsService) {
@@ -95,7 +89,6 @@ public class PartyWebServiceCache implements UniregCacheInterface, KeyDumpableCa
 		if (statsService != null) {
 			statsService.registerCache(SERVICE_NAME, this);
 		}
-		uniregCacheManager.register(this);
 	}
 
 	@Override
@@ -103,7 +96,6 @@ public class PartyWebServiceCache implements UniregCacheInterface, KeyDumpableCa
 		if (statsService != null) {
 			statsService.unregisterCache(SERVICE_NAME);
 		}
-		uniregCacheManager.unregister(this);
 	}
 
 	@Override
@@ -427,11 +419,6 @@ public class PartyWebServiceCache implements UniregCacheInterface, KeyDumpableCa
 	@Override
 	public String getDescription() {
 		return "web-service party v3";
-	}
-
-	@Override
-	public String getName() {
-		return "WS-PARTY-3";
 	}
 
 	@Override

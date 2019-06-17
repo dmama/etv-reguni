@@ -1,19 +1,20 @@
 package ch.vd.unireg.cache;
 
-import java.util.Collection;
+import java.util.Map;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
- * Cache manager dans lequel doivent venir s'enregistrer les caches d'Unireg
+ * Cache manager qui expose les caches d'Unireg
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
 public interface UniregCacheManager {
 
-	void register(UniregCacheInterface cache);
+	@NotNull
+	Map<String, UniregCacheInterface> getCaches();
 
-	void unregister(UniregCacheInterface cache);
-
-	Collection<UniregCacheInterface> getCaches();
-
-	UniregCacheInterface getCache(String name);
+	@Nullable
+	UniregCacheInterface getCache(@NotNull String name);
 }

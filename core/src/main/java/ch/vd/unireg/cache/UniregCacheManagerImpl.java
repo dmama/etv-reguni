@@ -4,19 +4,19 @@ import javax.management.Attribute;
 import javax.management.AttributeList;
 import javax.management.AttributeNotFoundException;
 import javax.management.DynamicMBean;
-import javax.management.InvalidAttributeValueException;
 import javax.management.MBeanAttributeInfo;
-import javax.management.MBeanException;
 import javax.management.MBeanInfo;
 import javax.management.MBeanOperationInfo;
 import javax.management.ReflectionException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.NotImplementedException;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,33 +26,25 @@ public class UniregCacheManagerImpl implements UniregCacheManager, DynamicMBean 
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(UniregCacheManagerImpl.class);
 
-	private final Map<String, UniregCacheInterface> map = new HashMap<>();
+	@NotNull
+	private final Map<String, UniregCacheInterface> map;
+
+	public UniregCacheManagerImpl(@NotNull Map<String, UniregCacheInterface> map) {
+		this.map = Collections.unmodifiableMap(map);
+	}
 
 	@Override
-	public UniregCacheInterface getCache(String name) {
+	public UniregCacheInterface getCache(@NotNull String name) {
 		return map.get(name);
 	}
 
-	@Override
-	public Collection<UniregCacheInterface> getCaches() {
-		return map.values();
+	@NotNull
+	public Map<String, UniregCacheInterface> getCaches() {
+		return map;
 	}
 
 	@Override
-	public void register(UniregCacheInterface cache) {
-		if (map.containsKey(cache.getName())) {
-			throw new IllegalArgumentException("Cache " + cache.getName() + " déjà enregistré");
-		}
-		map.put(cache.getName(), cache);
-	}
-
-	@Override
-	public void unregister(UniregCacheInterface cache) {
-		map.remove(cache.getName());
-	}
-
-	@Override
-	public Object getAttribute(String attribute) throws AttributeNotFoundException, MBeanException, ReflectionException {
+	public Object getAttribute(String attribute) throws AttributeNotFoundException {
 		final UniregCacheInterface cache = map.get(attribute);
 		if (cache == null) {
 			throw new AttributeNotFoundException();
@@ -62,7 +54,7 @@ public class UniregCacheManagerImpl implements UniregCacheManager, DynamicMBean 
 	}
 
 	@Override
-	public void setAttribute(Attribute attribute) throws AttributeNotFoundException, InvalidAttributeValueException, MBeanException, ReflectionException {
+	public void setAttribute(Attribute attribute) {
 		throw new NotImplementedException("");
 	}
 
@@ -82,7 +74,7 @@ public class UniregCacheManagerImpl implements UniregCacheManager, DynamicMBean 
 	}
 
 	@Override
-	public Object invoke(String actionName, Object[] params, String[] signature) throws MBeanException, ReflectionException {
+	public Object invoke(String actionName, Object[] params, String[] signature) throws ReflectionException {
 		try {
 			if (actionName.startsWith("reset")) {
 				final String cacheName = actionName.substring(5);
@@ -133,8 +125,10 @@ public class UniregCacheManagerImpl implements UniregCacheManager, DynamicMBean 
 	public MBeanInfo getMBeanInfo() {
 
 		// Récupère la liste des caches, et on la trie pour éviter que l'ordre change entre deux appels
-		final List<UniregCacheInterface> caches = new ArrayList<>(map.values());
-		caches.sort((o1, o2) -> o1.getName().compareTo(o2.getName()));
+		final List<Map.Entry<String, UniregCacheInterface>> caches = map.entrySet()
+				.stream()
+				.sorted(Comparator.comparing(Map.Entry::getKey))
+				.collect(Collectors.toList());
 
 		final MBeanAttributeInfo[] atts = new MBeanAttributeInfo[caches.size()];
 
@@ -144,14 +138,16 @@ public class UniregCacheManagerImpl implements UniregCacheManager, DynamicMBean 
 		// Pour chacun des cache, on créé un attribut virtuel qui expose les statistiques du cache, ainsi qu'une méthode virtuelle qui permet de resetter le cache
 		resets.add(new MBeanOperationInfo("resetALL", "Vide et réinitialise tous les cache pour retrouver leurs états tel qu'au démarrage de l'application", null, "void", MBeanOperationInfo.ACTION));
 		for (int i = 0, cachesSize = caches.size(); i < cachesSize; i++) {
-			final UniregCacheInterface c = caches.get(i);
-			atts[i] = new MBeanAttributeInfo(c.getName(), c.getClass().getName(), c.getDescription(), true, false, false);
-			resets.add(new MBeanOperationInfo("reset" + c.getName(), "Vide et réinitialise le cache pour retrouver son état au démarrage de l'application", null, "void", MBeanOperationInfo.ACTION));
-			if (c instanceof KeyDumpableCache) {
-				dumps.add(new MBeanOperationInfo("dumpKeys" + c.getName(), "Produit une liste des clés du cache dans les logs applicatifs", null, "void", MBeanOperationInfo.ACTION));
+			final Map.Entry<String, UniregCacheInterface> entry = caches.get(i);
+			final String cacheName = entry.getKey();
+			final UniregCacheInterface cache = entry.getValue();
+			atts[i] = new MBeanAttributeInfo(cacheName, cache.getClass().getName(), cache.getDescription(), true, false, false);
+			resets.add(new MBeanOperationInfo("reset" + cacheName, "Vide et réinitialise le cache pour retrouver son état au démarrage de l'application", null, "void", MBeanOperationInfo.ACTION));
+			if (cache instanceof KeyDumpableCache) {
+				dumps.add(new MBeanOperationInfo("dumpKeys" + cacheName, "Produit une liste des clés du cache dans les logs applicatifs", null, "void", MBeanOperationInfo.ACTION));
 			}
-			if (c instanceof KeyValueDumpableCache) {
-				dumps.add(new MBeanOperationInfo("dumpValues" + c.getName(), "Produit une liste des clés/valeurs du cache dans les logs applicatifs", null, "void", MBeanOperationInfo.ACTION));
+			if (cache instanceof KeyValueDumpableCache) {
+				dumps.add(new MBeanOperationInfo("dumpValues" + cacheName, "Produit une liste des clés/valeurs du cache dans les logs applicatifs", null, "void", MBeanOperationInfo.ACTION));
 			}
 		}
 

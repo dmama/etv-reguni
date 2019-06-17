@@ -13,7 +13,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -23,7 +22,6 @@ import ch.vd.unireg.cache.EhCacheStats;
 import ch.vd.unireg.cache.KeyDumpableCache;
 import ch.vd.unireg.cache.KeyValueDumpableCache;
 import ch.vd.unireg.cache.UniregCacheInterface;
-import ch.vd.unireg.cache.UniregCacheManager;
 import ch.vd.unireg.data.FiscalDataEventListener;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.MenageCommun;
@@ -34,7 +32,7 @@ import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.TypeRapportEntreTiers;
 import ch.vd.unireg.utils.LogLevel;
 
-public class AutorisationCacheImpl implements AutorisationCache, FiscalDataEventListener, InitializingBean, DisposableBean, UniregCacheInterface, KeyDumpableCache, KeyValueDumpableCache {
+public class AutorisationCacheImpl implements AutorisationCache, FiscalDataEventListener, DisposableBean, UniregCacheInterface, KeyDumpableCache, KeyValueDumpableCache {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AutorisationCacheImpl.class);
 
@@ -94,17 +92,10 @@ public class AutorisationCacheImpl implements AutorisationCache, FiscalDataEvent
 	private AutorisationManager autorisationManager;
 	private PlatformTransactionManager transactionManager;
 	private Cache cache;
-	private UniregCacheManager uniregCacheManager;
-
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		uniregCacheManager.register(this);
-	}
 
 	@Override
 	public void destroy() throws Exception {
 		cache = null;
-		uniregCacheManager.unregister(this);
 	}
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
@@ -125,10 +116,6 @@ public class AutorisationCacheImpl implements AutorisationCache, FiscalDataEvent
 
 	public void setCache(Cache cache) {
 		this.cache = cache;
-	}
-
-	public void setUniregCacheManager(UniregCacheManager uniregCacheManager) {
-		this.uniregCacheManager = uniregCacheManager;
 	}
 
 	@Override
@@ -291,11 +278,6 @@ public class AutorisationCacheImpl implements AutorisationCache, FiscalDataEvent
 	@Override
 	public void onLoadDatabase() {
 		reset();
-	}
-
-	@Override
-	public String getName() {
-		return "AUTH-WEB";
 	}
 
 	@Override

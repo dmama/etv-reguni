@@ -78,7 +78,6 @@
 				<constructor-arg value="webServiceParty3" />
 			</bean>
 		</property>
-		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
 	</bean>
 
@@ -157,7 +156,6 @@
 				<constructor-arg value="webService5" />
 			</bean>
 		</property>
-		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
@@ -250,7 +248,6 @@
 				<constructor-arg value="webService6" />
 			</bean>
 		</property>
-		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
@@ -345,7 +342,6 @@
 				<constructor-arg value="webService7" />
 			</bean>
 		</property>
-		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>

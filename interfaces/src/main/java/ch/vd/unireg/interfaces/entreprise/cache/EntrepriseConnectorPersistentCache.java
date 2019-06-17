@@ -16,7 +16,6 @@ import ch.vd.unireg.cache.CacheStats;
 import ch.vd.unireg.cache.ObjectKey;
 import ch.vd.unireg.cache.PersistentCache;
 import ch.vd.unireg.cache.UniregCacheInterface;
-import ch.vd.unireg.cache.UniregCacheManager;
 import ch.vd.unireg.data.CivilDataEventListener;
 import ch.vd.unireg.interfaces.entreprise.EntrepriseConnector;
 import ch.vd.unireg.interfaces.entreprise.EntrepriseConnectorException;
@@ -37,7 +36,6 @@ public class EntrepriseConnectorPersistentCache implements EntrepriseConnector, 
 	private PersistentCache<EntrepriseDataCache> cache;
 	private PersistentCache<Long> etablissementCache;
 	private EntrepriseConnector target;
-	private UniregCacheManager uniregCacheManager;
 	private StatsService statsService;
 
 	public void setTarget(EntrepriseConnector target) {
@@ -50,10 +48,6 @@ public class EntrepriseConnectorPersistentCache implements EntrepriseConnector, 
 
 	public void setEtablissementCache(PersistentCache<Long> etablissementCache) {
 		this.etablissementCache = etablissementCache;
-	}
-
-	public void setUniregCacheManager(UniregCacheManager uniregCacheManager) {
-		this.uniregCacheManager = uniregCacheManager;
 	}
 
 	public void setStatsService(StatsService statsService) {
@@ -70,12 +64,10 @@ public class EntrepriseConnectorPersistentCache implements EntrepriseConnector, 
 		if (statsService != null) {
 			statsService.registerCache(CACHE_NAME, this);
 		}
-		uniregCacheManager.register(this);
 	}
 
 	@Override
 	public void destroy() throws Exception {
-		uniregCacheManager.unregister(this);
 		if (statsService != null) {
 			statsService.unregisterCache(CACHE_NAME);
 		}
@@ -84,11 +76,6 @@ public class EntrepriseConnectorPersistentCache implements EntrepriseConnector, 
 	@Override
 	public String getDescription() {
 		return "connecteur persistent des entreprises";
-	}
-
-	@Override
-	public String getName() {
-		return "ENTREPRISE-PERSISTENT";
 	}
 
 	@Override

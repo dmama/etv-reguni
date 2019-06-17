@@ -13,7 +13,6 @@ import org.junit.Before;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.cache.UniregCacheManagerImpl;
 import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 
@@ -33,7 +32,6 @@ public class ServiceInfrastructureCommuneCacheTest {
 		cache = new InfrastructureConnectorCache();
 		cache.setCache(manager.getCache("infraConnector"));
 		cache.setShortLivedCache(manager.getCache("infraConnectorShortLived"));
-		cache.setUniregCacheManager(new UniregCacheManagerImpl());
 		target = new Test();
 		cache.setTarget(target);
 		cache.afterPropertiesSet();

@@ -61,7 +61,6 @@
 				<constructor-arg value="serviceCivil" />
 			</bean>
 		</property>
-		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
 	</bean>
 
@@ -88,7 +87,6 @@
 				<constructor-arg value="entrepriseConnector" />
 			</bean>
 		</property>
-		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
 	</bean>
 
@@ -134,7 +132,6 @@
 				<constructor-arg value="infraConnectorShortLived" />
 			</bean>
 		</property>
-		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
 	</bean>
 

@@ -27,7 +27,6 @@ import ch.vd.unireg.cache.CompletePartsCallback;
 import ch.vd.unireg.cache.EhCacheStats;
 import ch.vd.unireg.cache.KeyDumpableCache;
 import ch.vd.unireg.cache.UniregCacheInterface;
-import ch.vd.unireg.cache.UniregCacheManager;
 import ch.vd.unireg.common.ProgrammingException;
 import ch.vd.unireg.data.CivilDataEventListener;
 import ch.vd.unireg.interfaces.civil.IndividuConnector;
@@ -48,7 +47,6 @@ public class IndividuConnectorCache implements IndividuConnector, UniregCacheInt
 
 	private IndividuConnector target;
 	private Ehcache cache;
-	private UniregCacheManager uniregCacheManager;
 	private StatsService statsService;
 
 	public void setTarget(IndividuConnector target) {
@@ -57,10 +55,6 @@ public class IndividuConnectorCache implements IndividuConnector, UniregCacheInt
 
 	public void setCache(Ehcache cache) {
 		this.cache = cache;
-	}
-
-	public void setUniregCacheManager(UniregCacheManager uniregCacheManager) {
-		this.uniregCacheManager = uniregCacheManager;
 	}
 
 	public void setStatsService(StatsService statsService) {
@@ -80,9 +74,6 @@ public class IndividuConnectorCache implements IndividuConnector, UniregCacheInt
 		if (statsService != null) {
 			statsService.registerCache(SERVICE_NAME, this);
 		}
-		if (uniregCacheManager != null) {
-			uniregCacheManager.register(this);
-		}
 	}
 
 	@Override
@@ -90,19 +81,11 @@ public class IndividuConnectorCache implements IndividuConnector, UniregCacheInt
 		if (statsService != null) {
 			statsService.unregisterCache(SERVICE_NAME);
 		}
-		if (uniregCacheManager != null) {
-			uniregCacheManager.unregister(this);
-		}
 	}
 
 	@Override
 	public String getDescription() {
 		return "connecteur des individus";
-	}
-
-	@Override
-	public String getName() {
-		return "INDIVIDU";
 	}
 
 	@Override

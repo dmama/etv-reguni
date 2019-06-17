@@ -14,7 +14,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.cache.UniregCacheManagerImpl;
 import ch.vd.unireg.common.WithoutSpringTest;
 import ch.vd.unireg.interfaces.entreprise.EntrepriseConnector;
 import ch.vd.unireg.interfaces.entreprise.EntrepriseConnectorException;
@@ -109,7 +108,6 @@ public class EntrepriseConnectorCacheTest extends WithoutSpringTest {
 
 		cache = new EntrepriseConnectorCache();
 		cache.setCache(manager.getCache("entrepriseConnector"));
-		cache.setUniregCacheManager(new UniregCacheManagerImpl());
 		cache.setStatsService(new MockStatsService());
 		cache.setTarget(target);
 		cache.afterPropertiesSet();

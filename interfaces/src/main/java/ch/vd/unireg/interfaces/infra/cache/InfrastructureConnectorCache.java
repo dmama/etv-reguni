@@ -26,7 +26,6 @@ import ch.vd.unireg.cache.EhCacheStats;
 import ch.vd.unireg.cache.KeyDumpableCache;
 import ch.vd.unireg.cache.KeyValueDumpableCache;
 import ch.vd.unireg.cache.UniregCacheInterface;
-import ch.vd.unireg.cache.UniregCacheManager;
 import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
@@ -54,7 +53,6 @@ public class InfrastructureConnectorCache implements InfrastructureConnector, Un
 	private InfrastructureConnector target;
 	private Ehcache cache;
 	private Ehcache shortLivedCache;
-	private UniregCacheManager uniregCacheManager;
 	private StatsService statsService;
 
 	public void setTarget(InfrastructureConnector target) {
@@ -67,10 +65,6 @@ public class InfrastructureConnectorCache implements InfrastructureConnector, Un
 
 	public void setShortLivedCache(Ehcache shortLivedCache) {
 		this.shortLivedCache = shortLivedCache;
-	}
-
-	public void setUniregCacheManager(UniregCacheManager uniregCacheManager) {
-		this.uniregCacheManager = uniregCacheManager;
 	}
 
 	public void setStatsService(StatsService statsService) {
@@ -90,7 +84,6 @@ public class InfrastructureConnectorCache implements InfrastructureConnector, Un
 		if (statsService != null) {
 			statsService.registerCache(InfrastructureConnector.SERVICE_NAME, this);
 		}
-		uniregCacheManager.register(this);
 	}
 
 	@Override
@@ -98,7 +91,6 @@ public class InfrastructureConnectorCache implements InfrastructureConnector, Un
 		if (statsService != null) {
 			statsService.unregisterCache(InfrastructureConnector.SERVICE_NAME);
 		}
-		uniregCacheManager.unregister(this);
 	}
 
 	private static class KeyGetAllCantons {
@@ -1388,11 +1380,6 @@ public class InfrastructureConnectorCache implements InfrastructureConnector, Un
 	@Override
 	public String getDescription() {
 		return "connecteur d'infrastructure";
-	}
-
-	@Override
-	public String getName() {
-		return "INFRA";
 	}
 
 	@Override

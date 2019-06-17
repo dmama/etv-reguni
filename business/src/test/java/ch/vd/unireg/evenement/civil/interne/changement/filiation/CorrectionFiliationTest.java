@@ -6,7 +6,6 @@ import net.sf.ehcache.CacheManager;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.cache.UniregCacheManager;
 import ch.vd.unireg.data.CivilDataEventNotifier;
 import ch.vd.unireg.data.CivilDataEventNotifierImpl;
 import ch.vd.unireg.data.PluggableCivilDataEventNotifier;
@@ -62,13 +61,9 @@ public class CorrectionFiliationTest extends AbstractEvenementCivilInterneTest {
 		final CivilDataEventNotifier civilDataEventNotifier = getBean(CivilDataEventNotifier.class, "civilDataEventNotifier");
 		assertNotNull(civilDataEventNotifier);
 
-		final UniregCacheManager uniregCacheManager = getBean(UniregCacheManager.class, "uniregCacheManager");
-		assertNotNull(uniregCacheManager);
-
 		// Initialisation du service civil avec un cache
 		final IndividuConnectorCache cache = new IndividuConnectorCache();
 		cache.setCache(cacheManager.getCache("serviceCivil"));
-		cache.setUniregCacheManager(uniregCacheManager);
 		cache.afterPropertiesSet();
 		cache.reset();
 		pluggableCivilDataEventNotifier.setTarget(new CivilDataEventNotifierImpl(Collections.singletonList(cache)));

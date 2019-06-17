@@ -13,7 +13,6 @@
 				<constructor-arg value="securiteConnector" />
 			</bean>
 		</property>
-		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
 	</bean>
 

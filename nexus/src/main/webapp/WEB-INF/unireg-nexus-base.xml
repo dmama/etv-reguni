@@ -4,8 +4,6 @@
 
 	<bean id="statsService" class="ch.vd.unireg.stats.StatsServiceImpl" />
 
-	<bean id="uniregCacheManager" class="ch.vd.unireg.cache.UniregCacheManagerImpl" />
-
 	<bean id="civilDataEventNotifier" class="ch.vd.unireg.data.CivilDataEventNotifierImpl">
 		<constructor-arg>
 			<list>

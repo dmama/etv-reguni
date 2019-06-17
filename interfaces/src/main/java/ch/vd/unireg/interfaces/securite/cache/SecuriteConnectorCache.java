@@ -16,7 +16,6 @@ import org.springframework.beans.factory.InitializingBean;
 import ch.vd.unireg.cache.CacheStats;
 import ch.vd.unireg.cache.EhCacheStats;
 import ch.vd.unireg.cache.UniregCacheInterface;
-import ch.vd.unireg.cache.UniregCacheManager;
 import ch.vd.unireg.interfaces.civil.cache.IndividuConnectorCache;
 import ch.vd.unireg.interfaces.securite.SecuriteConnector;
 import ch.vd.unireg.interfaces.securite.SecuriteConnectorException;
@@ -30,7 +29,6 @@ public class SecuriteConnectorCache implements SecuriteConnector, UniregCacheInt
 
 	private SecuriteConnector target;
 	private Ehcache cache;
-	private UniregCacheManager uniregCacheManager;
 	private StatsService statsService;
 
 	@Override
@@ -46,9 +44,6 @@ public class SecuriteConnectorCache implements SecuriteConnector, UniregCacheInt
 		if (statsService != null) {
 			statsService.registerCache(SERVICE_NAME, this);
 		}
-		if (uniregCacheManager != null) {
-			uniregCacheManager.register(this);
-		}
 	}
 
 	@Override
@@ -56,19 +51,11 @@ public class SecuriteConnectorCache implements SecuriteConnector, UniregCacheInt
 		if (statsService != null) {
 			statsService.unregisterCache(SERVICE_NAME);
 		}
-		if (uniregCacheManager != null) {
-			uniregCacheManager.unregister(this);
-		}
 	}
 
 	@Override
 	public String getDescription() {
 		return "connecteur de sécurité";
-	}
-
-	@Override
-	public String getName() {
-		return "SECURITE";
 	}
 
 	@Override
@@ -251,10 +238,6 @@ public class SecuriteConnectorCache implements SecuriteConnector, UniregCacheInt
 
 	public void setTarget(SecuriteConnector target) {
 		this.target = target;
-	}
-
-	public void setUniregCacheManager(UniregCacheManager uniregCacheManager) {
-		this.uniregCacheManager = uniregCacheManager;
 	}
 
 	public void setStatsService(StatsService statsService) {

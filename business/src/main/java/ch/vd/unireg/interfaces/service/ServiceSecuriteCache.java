@@ -19,7 +19,6 @@ import ch.vd.unireg.cache.EhCacheStats;
 import ch.vd.unireg.cache.KeyDumpableCache;
 import ch.vd.unireg.cache.KeyValueDumpableCache;
 import ch.vd.unireg.cache.UniregCacheInterface;
-import ch.vd.unireg.cache.UniregCacheManager;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.security.Operateur;
@@ -44,7 +43,6 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 
 	private ServiceSecuriteService target;
 	private Ehcache cache;
-	private UniregCacheManager uniregCacheManager;
 	private StatsService statsService;
 
 	public void setTarget(ServiceSecuriteService target) {
@@ -53,10 +51,6 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 
 	public void setCache(Ehcache cache) {
 		this.cache = cache;
-	}
-
-	public void setUniregCacheManager(UniregCacheManager uniregCacheManager) {
-		this.uniregCacheManager = uniregCacheManager;
 	}
 
 	public void setStatsService(StatsService statsService) {
@@ -76,7 +70,6 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 		if (statsService != null) {
 			statsService.registerCache(SERVICE_NAME, this);
 		}
-		uniregCacheManager.register(this);
 	}
 
 	@Override
@@ -84,7 +77,6 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 		if (statsService != null) {
 			statsService.unregisterCache(SERVICE_NAME);
 		}
-		uniregCacheManager.unregister(this);
 	}
 
 	private static class KeyGetCollectivitesUtilisateurVisaOperateur {
@@ -391,11 +383,6 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 	@Override
 	public String getDescription() {
 		return "service securité";
-	}
-
-	@Override
-	public String getName() {
-		return "SECURITE-SERVICE";
 	}
 
 	@Override

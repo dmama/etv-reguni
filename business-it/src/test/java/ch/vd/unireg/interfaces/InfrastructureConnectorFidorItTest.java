@@ -7,9 +7,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
-import org.mockito.Mockito;
 
-import ch.vd.unireg.cache.UniregCacheManager;
 import ch.vd.unireg.common.BusinessItTest;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
@@ -46,9 +44,7 @@ public class InfrastructureConnectorFidorItTest extends BusinessItTest {
 
 		fidorService = new InfrastructureConnectorFidor();
 		fidorService.setFidorClient(fidorClient);
-		fidorService.setUniregCacheManager(Mockito.mock(UniregCacheManager.class));
 		fidorService.setRegimesFiscauxBlacklist("");
-		fidorService.afterPropertiesSet();
 	}
 
 	@Test

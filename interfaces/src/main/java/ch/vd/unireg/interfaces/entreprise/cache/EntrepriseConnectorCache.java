@@ -21,7 +21,6 @@ import ch.vd.unireg.cache.CacheStats;
 import ch.vd.unireg.cache.EhCacheStats;
 import ch.vd.unireg.cache.KeyDumpableCache;
 import ch.vd.unireg.cache.UniregCacheInterface;
-import ch.vd.unireg.cache.UniregCacheManager;
 import ch.vd.unireg.data.CivilDataEventListener;
 import ch.vd.unireg.interfaces.civil.IndividuConnectorException;
 import ch.vd.unireg.interfaces.entreprise.EntrepriseConnector;
@@ -41,7 +40,6 @@ public class EntrepriseConnectorCache implements EntrepriseConnector, UniregCach
 
 	private EntrepriseConnector target;
 	private Ehcache cache;
-	private UniregCacheManager uniregCacheManager;
 	private StatsService statsService;
 
 	public void setTarget(EntrepriseConnector target) {
@@ -50,10 +48,6 @@ public class EntrepriseConnectorCache implements EntrepriseConnector, UniregCach
 
 	public void setCache(Ehcache cache) {
 		this.cache = cache;
-	}
-
-	public void setUniregCacheManager(UniregCacheManager uniregCacheManager) {
-		this.uniregCacheManager = uniregCacheManager;
 	}
 
 	public void setStatsService(StatsService statsService) {
@@ -73,9 +67,6 @@ public class EntrepriseConnectorCache implements EntrepriseConnector, UniregCach
 		if (statsService != null) {
 			statsService.registerCache(SERVICE_NAME, this);
 		}
-		if (uniregCacheManager != null) {
-			uniregCacheManager.register(this);
-		}
 	}
 
 	@Override
@@ -83,19 +74,11 @@ public class EntrepriseConnectorCache implements EntrepriseConnector, UniregCach
 		if (statsService != null) {
 			statsService.unregisterCache(SERVICE_NAME);
 		}
-		if (uniregCacheManager != null) {
-			uniregCacheManager.unregister(this);
-		}
 	}
 
 	@Override
 	public String getDescription() {
 		return "connecteur des entreprises";
-	}
-
-	@Override
-	public String getName() {
-		return "ENTREPRISE";
 	}
 
 	@Override

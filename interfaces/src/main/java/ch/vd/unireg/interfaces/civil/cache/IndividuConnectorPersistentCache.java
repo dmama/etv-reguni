@@ -23,7 +23,6 @@ import ch.vd.unireg.cache.CompletePartsCallback;
 import ch.vd.unireg.cache.ObjectKey;
 import ch.vd.unireg.cache.PersistentCache;
 import ch.vd.unireg.cache.UniregCacheInterface;
-import ch.vd.unireg.cache.UniregCacheManager;
 import ch.vd.unireg.common.ProgrammingException;
 import ch.vd.unireg.data.CivilDataEventListener;
 import ch.vd.unireg.interfaces.civil.IndividuConnector;
@@ -45,7 +44,6 @@ public class IndividuConnectorPersistentCache implements IndividuConnector, Unir
 
 	private PersistentCache<IndividuCacheValueWithParts> cache;
 	private IndividuConnector target;
-	private UniregCacheManager uniregCacheManager;
 	private StatsService statsService;
 
 	public void setTarget(IndividuConnector target) {
@@ -54,10 +52,6 @@ public class IndividuConnectorPersistentCache implements IndividuConnector, Unir
 
 	public void setCache(PersistentCache<IndividuCacheValueWithParts> cache) {
 		this.cache = cache;
-	}
-
-	public void setUniregCacheManager(UniregCacheManager uniregCacheManager) {
-		this.uniregCacheManager = uniregCacheManager;
 	}
 
 	public void setStatsService(StatsService statsService) {
@@ -74,12 +68,10 @@ public class IndividuConnectorPersistentCache implements IndividuConnector, Unir
 		if (statsService != null) {
 			statsService.registerCache(CACHE_NAME, this);
 		}
-		uniregCacheManager.register(this);
 	}
 
 	@Override
 	public void destroy() throws Exception {
-		uniregCacheManager.unregister(this);
 		if (statsService != null) {
 			statsService.unregisterCache(CACHE_NAME);
 		}
@@ -88,11 +80,6 @@ public class IndividuConnectorPersistentCache implements IndividuConnector, Unir
 	@Override
 	public String getDescription() {
 		return "connecteur persistent des individus";
-	}
-
-	@Override
-	public String getName() {
-		return "INDIVIDU-PERSISTENT";
 	}
 
 	@Override

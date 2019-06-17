@@ -8,11 +8,6 @@ package ch.vd.unireg.cache;
 public interface UniregCacheInterface {
 
 	/**
-	 * @return le nom (= la clé) du cache.
-	 */
-	String getName();
-
-	/**
 	 * @return la description humainement compréhensible du cache.
 	 */
 	String getDescription();

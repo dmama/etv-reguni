@@ -19,7 +19,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.evd0007.v1.Country;
 import ch.vd.evd0007.v1.ExtendedCanton;
@@ -36,7 +35,6 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.cache.CacheStats;
 import ch.vd.unireg.cache.SimpleCacheStats;
 import ch.vd.unireg.cache.UniregCacheInterface;
-import ch.vd.unireg.cache.UniregCacheManager;
 import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.InfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
@@ -73,7 +71,7 @@ import static ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeImpl.
 /**
  * Implémentation Fidor du connecteur d'infrastructure [UNIREG-2187].
  */
-public class InfrastructureConnectorFidor implements InfrastructureConnector, UniregCacheInterface, InitializingBean {
+public class InfrastructureConnectorFidor implements InfrastructureConnector, UniregCacheInterface {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(InfrastructureConnectorFidor.class);
 
@@ -87,7 +85,6 @@ public class InfrastructureConnectorFidor implements InfrastructureConnector, Un
 	private static final long fiveMinutes = 5L * 60L * 1000000000L; // en nanosecondes
 
 	private FidorClient fidorClient;
-	private UniregCacheManager uniregCacheManager;
 
 	/**
 	 * Implémentation cachée du connecteur d'infrastructure, utilisée notamment pour résoudre les rues et les localités sur les adresses.
@@ -104,10 +101,6 @@ public class InfrastructureConnectorFidor implements InfrastructureConnector, Un
 
 	public void setFidorClient(FidorClient fidorClient) {
 		this.fidorClient = fidorClient;
-	}
-
-	public void setUniregCacheManager(UniregCacheManager uniregCacheManager) {
-		this.uniregCacheManager = uniregCacheManager;
 	}
 
 	public void setCachedInfraConnector(@Nullable InfrastructureConnector cachedInfraConnector) {
@@ -128,11 +121,6 @@ public class InfrastructureConnectorFidor implements InfrastructureConnector, Un
 	}
 
 	@Override
-	public String getName() {
-		return "URLS-FIDOR";
-	}
-
-	@Override
 	public String getDescription() {
 		return "urls de fidor";
 	}
@@ -145,11 +133,6 @@ public class InfrastructureConnectorFidor implements InfrastructureConnector, Un
 	@Override
 	public void reset() {
 		urlsApplication = null;
-	}
-
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		uniregCacheManager.register(this);
 	}
 
 	@Override

@@ -21,7 +21,6 @@
 				<constructor-arg value="serviceCivil" />
 			</bean>
 		</property>
-		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
 	</bean>
 
@@ -48,7 +47,6 @@
 				<constructor-arg value="entrepriseConnector" />
 			</bean>
 		</property>
-		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
 	</bean>
 
@@ -83,7 +81,6 @@
 
 	<bean id="infrastructureConnectorFidor" class="ch.vd.unireg.interfaces.infra.fidor.InfrastructureConnectorFidor">
 		<property name="fidorClient" ref="fidorClient" />
-		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="regimesFiscauxBlacklist" value=""/>
 	</bean>
 
@@ -109,7 +106,6 @@
 				<constructor-arg value="infraConnectorShortLived" />
 			</bean>
 		</property>
-		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
 	</bean>
 
