@@ -115,7 +115,7 @@ public class AnnulationMariageEchProcessorTest extends AbstractEvenementCivilEch
 		});
 	}
 
-	@Test(timeout = 10000L)
+	@Test(timeout = 20000L)
 	public void testAnnulationMariageAvecRedondance() throws Exception {
 
 		final long noIndividuLui = 36712456523468L;

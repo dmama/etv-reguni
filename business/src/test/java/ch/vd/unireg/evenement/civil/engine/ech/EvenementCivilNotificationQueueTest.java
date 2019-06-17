@@ -569,7 +569,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		}
 	}
 
-	@Test(timeout = 2000L)
+	@Test(timeout = 10000L)
 	public void testPostImmediatEtPresenceSurAutreQueueInput() throws Exception {
 
 		final long noIndividu = 243523L;
@@ -599,7 +599,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		});
 	}
 
-	@Test(timeout = 2000L)
+	@Test(timeout = 10000L)
 	public void testDoublonSurQueuesSeparees() throws Exception {
 
 		final long noIndividu = 243523L;
